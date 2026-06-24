@@ -2,6 +2,7 @@ import { ipcMain, dialog, BrowserWindow } from 'electron'
 import type { OpenDialogOptions } from 'electron'
 import { Channels } from '../../shared/ipc'
 import type {
+  Annotation,
   AppState,
   BookUpdate,
   ImportProgress,
@@ -160,8 +161,8 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.setQuoteTags, (_e, quoteId: string, tags: string[]) =>
     quotes.setQuoteTags(quoteId, tags)
   )
-  ipcMain.handle(Channels.setQuoteAnnotation, (_e, quoteId: string, annotation: string) =>
-    quotes.setQuoteAnnotation(quoteId, annotation)
+  ipcMain.handle(Channels.setQuoteAnnotations, (_e, quoteId: string, annotations: Annotation[]) =>
+    quotes.setQuoteAnnotations(quoteId, annotations)
   )
   ipcMain.handle(Channels.deleteQuote, (_e, quoteId: string) => quotes.deleteQuote(quoteId))
 

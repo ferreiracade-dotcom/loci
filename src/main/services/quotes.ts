@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { getDb } from '../db/connection'
 import { readConfig } from './config'
-import type { NewQuote, Quote } from '../../shared/ipc'
+import type { Annotation, NewQuote, Quote } from '../../shared/ipc'
 
 interface BookMetaRow {
   title: string
@@ -29,9 +29,20 @@ interface SidecarQuote {
   anchor: { page: number | null; offset: number | null }
   color: string
   tags: string[]
-  annotation: string
+  annotations: Annotation[]
   source: { title: string; author: string | null; page: number | null }
   used_in: string[]
+}
+
+/** Parse the stored annotation column; tolerate a legacy single-string value. */
+function parseAnnotations(raw: string): Annotation[] {
+  if (!raw) return []
+  try {
+    const v = JSON.parse(raw)
+    return Array.isArray(v) ? (v as Annotation[]) : []
+  } catch {
+    return [{ id: randomUUID(), text: raw, createdAt: Date.now() }]
+  }
 }
 
 function citationFor(b: BookMetaRow, page: number | null): string {
@@ -65,10 +76,14 @@ function ensureNote(vault: string, b: BookMetaRow): string {
   return rel
 }
 
-/** Markdown for one quote: the blockquote, its citation, then any annotation. */
-function buildBlock(id: string, text: string, citation: string, annotation: string): string {
+/** Markdown for one quote: the blockquote, its citation, then any annotations. */
+function buildBlock(id: string, text: string, citation: string, annotations: Annotation[]): string {
   const quoted = text.replace(/\r?\n+/g, '\n> ')
-  const ann = annotation.trim() ? `\n${annotation.trim()}\n` : '\n'
+  const body = annotations
+    .map((a) => a.text.trim())
+    .filter(Boolean)
+    .join('\n\n')
+  const ann = body ? `\n${body}\n` : '\n'
   return `<!-- quote:${id} -->\n> ${quoted}\n>\n> — ${citation}\n${ann}<!-- /quote:${id} -->`
 }
 
@@ -134,7 +149,7 @@ function rowToQuote(r: QuoteRow): Quote {
     page: r.page,
     color: r.color,
     tags,
-    annotation: r.annotation ?? '',
+    annotations: parseAnnotations(r.annotation ?? ''),
     citation: b ? citationFor(b, r.page) : '',
     notePath: r.note_path,
     usedIn,
@@ -153,7 +168,7 @@ export function addQuote(input: NewQuote): Quote {
   const citation = citationFor(b, page)
 
   const rel = ensureNote(vault, b)
-  upsertQuoteBlock(vault, rel, id, buildBlock(id, input.text, citation, ''))
+  upsertQuoteBlock(vault, rel, id, buildBlock(id, input.text, citation, []))
 
   const sp = sidecarPath(vault, b.title_sanitized)
   const list = readSidecar(sp)
@@ -163,7 +178,7 @@ export function addQuote(input: NewQuote): Quote {
     anchor: { page, offset: null },
     color,
     tags: [],
-    annotation: '',
+    annotations: [],
     source: { title: b.title, author: b.author, page },
     used_in: [rel]
   })
@@ -223,11 +238,13 @@ export function setQuoteTags(quoteId: string, tagNames: string[]): void {
   updateSidecarTags(quoteId, bookId, cleaned)
 }
 
-export function setQuoteAnnotation(quoteId: string, annotation: string): void {
+export function setQuoteAnnotations(quoteId: string, annotations: Annotation[]): void {
   const vault = readConfig().vaultPath
   const r = getDb().prepare('SELECT * FROM quotes WHERE id = ?').get(quoteId) as QuoteRow | undefined
   if (!r) return
-  getDb().prepare('UPDATE quotes SET annotation = ? WHERE id = ?').run(annotation, quoteId)
+  getDb()
+    .prepare('UPDATE quotes SET annotation = ? WHERE id = ?')
+    .run(JSON.stringify(annotations), quoteId)
   if (!vault || !r.book_id) return
   const b = bookMeta(r.book_id)
   if (!b) return
@@ -235,7 +252,7 @@ export function setQuoteAnnotation(quoteId: string, annotation: string): void {
   const list = readSidecar(sp)
   const entry = list.find((q) => q.id === quoteId)
   if (entry) {
-    entry.annotation = annotation
+    entry.annotations = annotations
     writeSidecar(sp, list)
   }
   if (r.note_path) {
@@ -243,7 +260,7 @@ export function setQuoteAnnotation(quoteId: string, annotation: string): void {
       vault,
       r.note_path,
       quoteId,
-      buildBlock(quoteId, r.text, citationFor(b, r.page), annotation)
+      buildBlock(quoteId, r.text, citationFor(b, r.page), annotations)
     )
   }
 }

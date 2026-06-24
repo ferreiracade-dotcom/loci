@@ -37,8 +37,8 @@ const api: LociApi = {
   addQuote: (input) => ipcRenderer.invoke(Channels.addQuote, input),
   listQuotes: (bookId) => ipcRenderer.invoke(Channels.listQuotes, bookId),
   setQuoteTags: (quoteId, tags) => ipcRenderer.invoke(Channels.setQuoteTags, quoteId, tags),
-  setQuoteAnnotation: (quoteId, annotation) =>
-    ipcRenderer.invoke(Channels.setQuoteAnnotation, quoteId, annotation),
+  setQuoteAnnotations: (quoteId, annotations) =>
+    ipcRenderer.invoke(Channels.setQuoteAnnotations, quoteId, annotations),
   deleteQuote: (quoteId) => ipcRenderer.invoke(Channels.deleteQuote, quoteId),
   getBookNote: (bookId) => ipcRenderer.invoke(Channels.getBookNote, bookId),
   saveNote: (path, content) => ipcRenderer.invoke(Channels.saveNote, path, content),

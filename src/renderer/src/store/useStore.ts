@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { api } from '../lib/api'
 import { applyAccent } from '../lib/theme'
 import type {
+  Annotation,
   AppState,
   Book,
   BookUpdate,
@@ -60,7 +61,7 @@ interface Store {
   deleteBook: (id: string) => Promise<void>
   setBookShelves: (id: string, shelfIds: string[]) => Promise<void>
   setBookTags: (id: string, tags: string[]) => Promise<void>
-  setQuoteAnnotation: (quoteId: string, annotation: string) => Promise<void>
+  setQuoteAnnotations: (quoteId: string, annotations: Annotation[]) => Promise<void>
   refetchMetadata: (id: string) => Promise<void>
   createShelf: (name: string) => Promise<void>
 }
@@ -202,11 +203,11 @@ export const useStore = create<Store>((set, get) => {
       if (id) await get().loadQuotes(id)
     },
 
-    setQuoteAnnotation: async (quoteId, annotation) => {
-      await api.setQuoteAnnotation(quoteId, annotation)
-      // Update in place so the editor doesn't lose focus or scroll.
+    setQuoteAnnotations: async (quoteId, annotations) => {
+      await api.setQuoteAnnotations(quoteId, annotations)
+      // Update in place so the panel doesn't lose scroll/focus.
       set({
-        quotes: get().quotes.map((q) => (q.id === quoteId ? { ...q, annotation } : q))
+        quotes: get().quotes.map((q) => (q.id === quoteId ? { ...q, annotations } : q))
       })
     },
 

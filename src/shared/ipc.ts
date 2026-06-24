@@ -35,7 +35,7 @@ export const Channels = {
   addQuote: 'quotes:add',
   listQuotes: 'quotes:list',
   setQuoteTags: 'quotes:setTags',
-  setQuoteAnnotation: 'quotes:setAnnotation',
+  setQuoteAnnotations: 'quotes:setAnnotations',
   deleteQuote: 'quotes:delete',
   getBookNote: 'notes:getBookNote',
   saveNote: 'notes:save',
@@ -134,7 +134,7 @@ export interface LociApi {
   addQuote(input: NewQuote): Promise<Quote>
   listQuotes(bookId: string): Promise<Quote[]>
   setQuoteTags(quoteId: string, tags: string[]): Promise<void>
-  setQuoteAnnotation(quoteId: string, annotation: string): Promise<void>
+  setQuoteAnnotations(quoteId: string, annotations: Annotation[]): Promise<void>
   deleteQuote(quoteId: string): Promise<void>
   getBookNote(bookId: string): Promise<BookNote | null>
   saveNote(path: string, content: string): Promise<void>
@@ -217,6 +217,12 @@ export interface BookNote {
   content: string
 }
 
+export interface Annotation {
+  id: string
+  text: string
+  createdAt: number
+}
+
 export interface Quote {
   id: string
   bookId: string
@@ -224,8 +230,8 @@ export interface Quote {
   page: number | null
   color: string
   tags: string[]
-  /** The user's comment/annotation on this quote. */
-  annotation: string
+  /** The user's comments/annotations on this quote (saved, editable). */
+  annotations: Annotation[]
   /** Stub citation until the CMOS 18 engine lands in Phase 4. */
   citation: string
   notePath: string | null
