@@ -118,6 +118,15 @@ const migrations: Migration[] = [
           ('tag-christology',  'christology');
       `)
     }
+  },
+  {
+    version: 3,
+    name: 'book-meta-fetched',
+    up: (db) => {
+      // Tracks whether a background metadata fetch has been attempted, so we never
+      // re-hammer Google Books for titles that returned nothing.
+      db.exec(`ALTER TABLE books ADD COLUMN meta_fetched INTEGER NOT NULL DEFAULT 0;`)
+    }
   }
 ]
 

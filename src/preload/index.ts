@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
+import type { IpcRendererEvent } from 'electron'
 import { Channels } from '../shared/ipc'
-import type { LociApi } from '../shared/ipc'
+import type { ImportProgress, LociApi } from '../shared/ipc'
 
 const api: LociApi = {
   getAppState: () => ipcRenderer.invoke(Channels.getAppState),
@@ -28,7 +29,18 @@ const api: LociApi = {
   refetchMetadata: (id) => ipcRenderer.invoke(Channels.refetchMetadata, id),
   listShelves: () => ipcRenderer.invoke(Channels.listShelves),
   createShelf: (name) => ipcRenderer.invoke(Channels.createShelf, name),
-  listTags: () => ipcRenderer.invoke(Channels.listTags)
+  listTags: () => ipcRenderer.invoke(Channels.listTags),
+
+  onImportProgress: (cb) => {
+    const listener = (_e: IpcRendererEvent, p: ImportProgress): void => cb(p)
+    ipcRenderer.on(Channels.importProgress, listener)
+    return () => ipcRenderer.removeListener(Channels.importProgress, listener)
+  },
+  onLibraryChanged: (cb) => {
+    const listener = (): void => cb()
+    ipcRenderer.on(Channels.libraryChanged, listener)
+    return () => ipcRenderer.removeListener(Channels.libraryChanged, listener)
+  }
 }
 
 if (process.contextIsolated) {

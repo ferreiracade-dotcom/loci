@@ -27,7 +27,11 @@ export const Channels = {
   refetchMetadata: 'library:refetchMetadata',
   listShelves: 'library:listShelves',
   createShelf: 'library:createShelf',
-  listTags: 'library:listTags'
+  listTags: 'library:listTags',
+
+  // main → renderer events
+  importProgress: 'library:importProgress',
+  libraryChanged: 'library:libraryChanged'
 } as const
 
 export type ChannelName = (typeof Channels)[keyof typeof Channels]
@@ -108,6 +112,19 @@ export interface LociApi {
   listShelves(): Promise<Shelf[]>
   createShelf(name: string): Promise<Shelf>
   listTags(): Promise<Tag[]>
+
+  /** Subscribe to import progress; returns an unsubscribe function. */
+  onImportProgress(cb: (p: ImportProgress) => void): () => void
+  /** Fired when the book/shelf data changes in the background; returns unsubscribe. */
+  onLibraryChanged(cb: () => void): () => void
+}
+
+export type ImportPhase = 'importing' | 'enriching' | 'done'
+
+export interface ImportProgress {
+  phase: ImportPhase
+  done: number
+  total: number
 }
 
 export type ReadingStatus = 'unread' | 'reading' | 'finished'

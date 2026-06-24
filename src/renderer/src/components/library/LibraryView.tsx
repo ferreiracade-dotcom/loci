@@ -64,6 +64,7 @@ export function LibraryView() {
   const importFromSource = useStore((s) => s.importFromSource)
   const importFiles = useStore((s) => s.importFiles)
   const libraryBusy = useStore((s) => s.libraryBusy)
+  const importProgress = useStore((s) => s.importProgress)
   const [infoId, setInfoId] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
 
@@ -74,10 +75,11 @@ export function LibraryView() {
 
   async function doImport(kind: 'source' | 'files'): Promise<void> {
     const res = kind === 'source' ? await importFromSource() : await importFiles()
+    const tail = res.imported > 0 ? ' · fetching metadata in background…' : ''
     setToast(
-      `Imported ${res.imported} · skipped ${res.skipped}${res.failed ? ` · failed ${res.failed}` : ''}`
+      `Imported ${res.imported} · skipped ${res.skipped}${res.failed ? ` · failed ${res.failed}` : ''}${tail}`
     )
-    window.setTimeout(() => setToast(null), 4000)
+    window.setTimeout(() => setToast(null), 5000)
   }
 
   const view = layout.libraryView
@@ -129,6 +131,23 @@ export function LibraryView() {
           )}
         </div>
       </div>
+
+      {importProgress && (
+        <div className="import-progress">
+          <span className="ip-label">
+            {importProgress.phase === 'importing' ? 'Indexing' : 'Fetching metadata'}{' '}
+            {importProgress.done}/{importProgress.total}
+          </span>
+          <div className="ip-track">
+            <div
+              className="ip-fill"
+              style={{
+                width: `${importProgress.total ? Math.round((importProgress.done / importProgress.total) * 100) : 0}%`
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       <div className="shelf-bar">
         <button className={`chip${!activeShelf ? ' active' : ''}`} onClick={() => setActiveShelf(null)}>

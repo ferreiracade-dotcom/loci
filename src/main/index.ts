@@ -3,6 +3,8 @@ import { join } from 'path'
 import { closeDb, getDb } from './db/connection'
 import { registerIpc } from './ipc'
 import { backupSnapshot } from './services/backup'
+import { enrichPending } from './services/library'
+import { Channels } from '../shared/ipc'
 
 function createWindow(): void {
   const win = new BrowserWindow({
@@ -23,6 +25,17 @@ function createWindow(): void {
   })
 
   win.on('ready-to-show', () => win.show())
+
+  // Resume any metadata enrichment left pending from a previous session.
+  win.webContents.once('did-finish-load', () => {
+    const send = (channel: string, payload?: unknown): void => {
+      if (!win.isDestroyed()) win.webContents.send(channel, payload)
+    }
+    void enrichPending(
+      (p) => send(Channels.importProgress, p),
+      () => send(Channels.libraryChanged)
+    )
+  })
 
   // Open external links in the system browser, never in-app.
   win.webContents.setWindowOpenHandler(({ url }) => {

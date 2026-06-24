@@ -1,17 +1,19 @@
 import { randomUUID } from 'crypto'
-import {
-  copyFileSync,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  readdirSync,
-  unlinkSync
-} from 'fs'
-import { basename, extname, join } from 'path'
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, unlinkSync } from 'fs'
+import { copyFile } from 'fs/promises'
+import { basename, extname, isAbsolute, join, relative } from 'path'
 import { getDataDir, getDb } from '../db/connection'
 import { readConfig } from './config'
 import { downloadCover, fetchBookMeta } from './metadata'
-import type { Book, BookUpdate, ImportResult, ReadingStatus, Shelf, Tag } from '../../shared/ipc'
+import type {
+  Book,
+  BookUpdate,
+  ImportProgress,
+  ImportResult,
+  ReadingStatus,
+  Shelf,
+  Tag
+} from '../../shared/ipc'
 
 interface BookRow {
   id: string
@@ -49,6 +51,16 @@ function coversDir(): string {
   const dir = join(getDataDir(), 'covers')
   mkdirSync(dir, { recursive: true })
   return dir
+}
+
+/** True when `child` lives inside `parent` (so we reference it in place, not copy). */
+function isInside(child: string, parent: string): boolean {
+  const rel = relative(parent, child)
+  return !!rel && !rel.startsWith('..') && !isAbsolute(rel)
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms))
 }
 
 function rowToBook(r: BookRow): Book {
@@ -102,88 +114,184 @@ export function getCoverDataUrl(id: string): string | null {
   return `data:${mime};base64,${buf.toString('base64')}`
 }
 
-async function enrichBook(id: string, title: string, force = false): Promise<void> {
-  const meta = await fetchBookMeta(title)
-  if (!meta) return
-  let coverPath: string | null = null
-  if (meta.coverUrl) {
-    const dest = join(coversDir(), `${id}.jpg`)
-    if (await downloadCover(meta.coverUrl, dest)) coverPath = dest
-  }
-  const setExpr = force
-    ? 'author=@author, year=@year, publisher=@publisher, genre=@genre'
-    : 'author=COALESCE(author,@author), year=COALESCE(year,@year), publisher=COALESCE(publisher,@publisher), genre=COALESCE(genre,@genre)'
-  getDb()
-    .prepare(`UPDATE books SET ${setExpr}, cover_path=COALESCE(@cover, cover_path) WHERE id=@id`)
-    .run({
-      id,
-      author: meta.author ?? null,
-      year: meta.year ?? null,
-      publisher: meta.publisher ?? null,
-      genre: meta.genre ?? null,
-      cover: coverPath
-    })
-}
+// ---------- Import (fast, local-only) ----------
 
 type ImportOutcome = 'imported' | 'skipped' | 'failed'
 
-async function importOne(sourcePath: string): Promise<ImportOutcome> {
+async function importOneLocal(sourcePath: string): Promise<ImportOutcome> {
   try {
     const cfg = readConfig()
     if (!cfg.vaultPath) return 'failed'
     if (extname(sourcePath).toLowerCase() !== '.pdf') return 'skipped'
     if (!existsSync(sourcePath)) return 'failed'
 
-    const already = getDb().prepare('SELECT id FROM books WHERE source_path = ?').get(sourcePath)
-    if (already) return 'skipped'
+    const dupe = getDb()
+      .prepare('SELECT id FROM books WHERE source_path = ? OR pdf_path = ?')
+      .get(sourcePath, sourcePath)
+    if (dupe) return 'skipped'
 
     const id = randomUUID()
     const title = titleFromFilename(sourcePath)
     const sanitized = sanitizeName(title)
-    const cacheDir = join(cfg.vaultPath, 'pdfs', 'cache')
-    mkdirSync(cacheDir, { recursive: true })
-    let dest = join(cacheDir, `${sanitized}.pdf`)
-    if (existsSync(dest)) dest = join(cacheDir, `${sanitized}-${id.slice(0, 8)}.pdf`)
-    copyFileSync(sourcePath, dest)
+
+    let pdfPath: string
+    if (isInside(sourcePath, cfg.vaultPath)) {
+      // Already in the vault — reference in place; never duplicate (or hydrate Drive).
+      pdfPath = sourcePath
+    } else {
+      const cacheDir = join(cfg.vaultPath, 'pdfs', 'cache')
+      mkdirSync(cacheDir, { recursive: true })
+      let dest = join(cacheDir, `${sanitized}.pdf`)
+      if (existsSync(dest)) dest = join(cacheDir, `${sanitized}-${id.slice(0, 8)}.pdf`)
+      await copyFile(sourcePath, dest)
+      pdfPath = dest
+    }
 
     getDb()
       .prepare(
         `INSERT INTO books (id, title, title_sanitized, pdf_path, source_path, date_added, status)
          VALUES (?, ?, ?, ?, ?, ?, 'unread')`
       )
-      .run(id, title, sanitized, dest, sourcePath, Date.now())
-
-    await enrichBook(id, title)
+      .run(id, title, sanitized, pdfPath, sourcePath, Date.now())
     return 'imported'
   } catch {
     return 'failed'
   }
 }
 
-async function runImport(paths: string[]): Promise<ImportResult> {
+/** Phase A: copy/reference + insert records only (no network). Fast and responsive. */
+export async function quickImport(
+  paths: string[],
+  onProgress: (p: ImportProgress) => void
+): Promise<ImportResult> {
   const result: ImportResult = { imported: 0, skipped: 0, failed: 0, titles: [] }
-  for (const p of paths) {
-    const outcome = await importOne(p)
+  const total = paths.length
+  for (let i = 0; i < total; i++) {
+    const outcome = await importOneLocal(paths[i])
     result[outcome]++
-    if (outcome === 'imported') result.titles.push(titleFromFilename(p))
+    if (outcome === 'imported' && result.titles.length < 50) {
+      result.titles.push(titleFromFilename(paths[i]))
+    }
+    if (i % 10 === 0 || i === total - 1) {
+      onProgress({ phase: 'importing', done: i + 1, total })
+    }
   }
   return result
 }
 
-export async function importFromSource(): Promise<ImportResult> {
-  const cfg = readConfig()
-  if (!cfg.pdfSourcePath || !existsSync(cfg.pdfSourcePath)) {
-    return { imported: 0, skipped: 0, failed: 0, titles: [] }
+function walkPdfs(dir: string, excludeDir: string): string[] {
+  const out: string[] = []
+  let entries: string[]
+  try {
+    entries = readdirSync(dir)
+  } catch {
+    return out
   }
-  const files = readdirSync(cfg.pdfSourcePath)
-    .filter((f) => f.toLowerCase().endsWith('.pdf'))
-    .map((f) => join(cfg.pdfSourcePath as string, f))
-  return runImport(files)
+  for (const name of entries) {
+    const full = join(dir, name)
+    if (full === excludeDir) continue
+    if (name.startsWith('.')) continue
+    let isDir = false
+    try {
+      isDir = statSync(full).isDirectory()
+    } catch {
+      continue
+    }
+    if (isDir) {
+      out.push(...walkPdfs(full, excludeDir))
+    } else if (name.toLowerCase().endsWith('.pdf')) {
+      out.push(full)
+    }
+  }
+  return out
 }
 
-export function importPaths(paths: string[]): Promise<ImportResult> {
-  return runImport(paths)
+export function collectSourcePdfs(): string[] {
+  const cfg = readConfig()
+  if (!cfg.pdfSourcePath || !existsSync(cfg.pdfSourcePath)) return []
+  const exclude = cfg.vaultPath ? join(cfg.vaultPath, 'pdfs', 'cache') : ''
+  return walkPdfs(cfg.pdfSourcePath, exclude)
 }
+
+// ---------- Enrichment (slow, network, throttled, background) ----------
+
+async function pool<T>(
+  items: T[],
+  limit: number,
+  worker: (item: T) => Promise<void>
+): Promise<void> {
+  let cursor = 0
+  const runners = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (cursor < items.length) {
+      const item = items[cursor++]
+      await worker(item)
+    }
+  })
+  await Promise.all(runners)
+}
+
+async function enrichOne(id: string, title: string, force = false): Promise<void> {
+  const meta = await fetchBookMeta(title)
+  let coverPath: string | null = null
+  if (meta?.coverUrl) {
+    const dest = join(coversDir(), `${id}.jpg`)
+    if (await downloadCover(meta.coverUrl, dest)) coverPath = dest
+  }
+  if (meta) {
+    const setExpr = force
+      ? 'author=@author, year=@year, publisher=@publisher, genre=@genre'
+      : 'author=COALESCE(author,@author), year=COALESCE(year,@year), publisher=COALESCE(publisher,@publisher), genre=COALESCE(genre,@genre)'
+    getDb()
+      .prepare(
+        `UPDATE books SET ${setExpr}, cover_path=COALESCE(@cover, cover_path), meta_fetched=1 WHERE id=@id`
+      )
+      .run({
+        id,
+        author: meta.author ?? null,
+        year: meta.year ?? null,
+        publisher: meta.publisher ?? null,
+        genre: meta.genre ?? null,
+        cover: coverPath
+      })
+  } else {
+    getDb().prepare('UPDATE books SET meta_fetched=1 WHERE id=@id').run({ id })
+  }
+}
+
+let enriching = false
+
+/** Phase B: enrich books that haven't been attempted yet, throttled, in the background. */
+export async function enrichPending(
+  onProgress: (p: ImportProgress) => void,
+  onChanged: () => void
+): Promise<void> {
+  if (enriching) return
+  enriching = true
+  try {
+    for (;;) {
+      const pending = getDb()
+        .prepare('SELECT id, title FROM books WHERE meta_fetched = 0')
+        .all() as { id: string; title: string }[]
+      if (pending.length === 0) break
+      const total = pending.length
+      let done = 0
+      await pool(pending, 2, async (b) => {
+        await enrichOne(b.id, b.title)
+        await sleep(300) // be gentle on the unauthenticated Google Books rate limit
+        done++
+        onProgress({ phase: 'enriching', done, total })
+        if (done % 5 === 0) onChanged()
+      })
+      onChanged()
+    }
+  } finally {
+    enriching = false
+    onProgress({ phase: 'done', done: 0, total: 0 })
+    onChanged()
+  }
+}
+
+// ---------- Mutations ----------
 
 export function updateBook(id: string, patch: BookUpdate): void {
   const columns: Record<keyof BookUpdate, string> = {
@@ -209,17 +317,23 @@ export function updateBook(id: string, patch: BookUpdate): void {
 }
 
 export function deleteBook(id: string): void {
-  const r = getDb().prepare('SELECT cover_path, pdf_path FROM books WHERE id = ?').get(id) as
-    | { cover_path: string | null; pdf_path: string | null }
+  const r = getDb().prepare('SELECT cover_path, pdf_path, source_path FROM books WHERE id = ?').get(id) as
+    | { cover_path: string | null; pdf_path: string | null; source_path: string | null }
     | undefined
   getDb().prepare('DELETE FROM books WHERE id = ?').run(id)
-  for (const p of [r?.cover_path, r?.pdf_path]) {
-    if (p && existsSync(p)) {
-      try {
-        unlinkSync(p)
-      } catch {
-        /* best effort */
-      }
+  // Remove the cover, and the cached PDF — but never the user's in-place source file.
+  if (r?.cover_path && existsSync(r.cover_path)) {
+    try {
+      unlinkSync(r.cover_path)
+    } catch {
+      /* best effort */
+    }
+  }
+  if (r?.pdf_path && r.pdf_path !== r.source_path && existsSync(r.pdf_path)) {
+    try {
+      unlinkSync(r.pdf_path)
+    } catch {
+      /* best effort */
     }
   }
 }
@@ -261,27 +375,26 @@ export async function refetchMetadata(id: string): Promise<Book | null> {
     | { title: string }
     | undefined
   if (!r) return null
-  await enrichBook(id, r.title, true)
+  await enrichOne(id, r.title, true)
   const row = getDb().prepare('SELECT * FROM books WHERE id = ?').get(id) as BookRow | undefined
   return row ? rowToBook(row) : null
 }
 
 export function listShelves(): Shelf[] {
-  const rows = getDb()
+  return getDb()
     .prepare(
       `SELECT s.id, s.name, s.sort_order AS sortOrder, COUNT(bs.book_id) AS count
        FROM shelves s LEFT JOIN book_shelves bs ON bs.shelf_id = s.id
        GROUP BY s.id ORDER BY s.sort_order, s.name COLLATE NOCASE`
     )
     .all() as Shelf[]
-  return rows
 }
 
 export function createShelf(name: string): Shelf {
   const clean = name.trim()
-  const existing = getDb().prepare('SELECT id, name, sort_order AS sortOrder FROM shelves WHERE name = ?').get(clean) as
-    | { id: string; name: string; sortOrder: number }
-    | undefined
+  const existing = getDb()
+    .prepare('SELECT id, name, sort_order AS sortOrder FROM shelves WHERE name = ?')
+    .get(clean) as { id: string; name: string; sortOrder: number } | undefined
   if (existing) return { ...existing, count: 0 }
   const id = randomUUID()
   const max =

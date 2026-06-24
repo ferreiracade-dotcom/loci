@@ -1,7 +1,14 @@
 import { ipcMain, dialog, BrowserWindow } from 'electron'
 import type { OpenDialogOptions } from 'electron'
 import { Channels } from '../../shared/ipc'
-import type { AppState, BookUpdate, PanelLayout, PublicConfig, WizardData } from '../../shared/ipc'
+import type {
+  AppState,
+  BookUpdate,
+  ImportProgress,
+  PanelLayout,
+  PublicConfig,
+  WizardData
+} from '../../shared/ipc'
 import * as auth from '../services/auth'
 import * as library from '../services/library'
 import { hasApiKey, readConfig, setApiKey, toPublicConfig, writeConfig } from '../services/config'
@@ -75,7 +82,16 @@ export function registerIpc(): void {
 
   // --- Library (Phase 1) ---
   ipcMain.handle(Channels.listBooks, () => library.listBooks())
-  ipcMain.handle(Channels.importFromSource, () => library.importFromSource())
+
+  ipcMain.handle(Channels.importFromSource, async (e) => {
+    const notify = (p: ImportProgress): void => e.sender.send(Channels.importProgress, p)
+    const changed = (): void => e.sender.send(Channels.libraryChanged)
+    const result = await library.quickImport(library.collectSourcePdfs(), notify)
+    changed()
+    void library.enrichPending(notify, changed) // background, throttled
+    return result
+  })
+
   ipcMain.handle(Channels.importFiles, async (e) => {
     const win = BrowserWindow.fromWebContents(e.sender)
     const opts: OpenDialogOptions = {
@@ -87,7 +103,12 @@ export function registerIpc(): void {
     if (res.canceled || res.filePaths.length === 0) {
       return { imported: 0, skipped: 0, failed: 0, titles: [] }
     }
-    return library.importPaths(res.filePaths)
+    const notify = (p: ImportProgress): void => e.sender.send(Channels.importProgress, p)
+    const changed = (): void => e.sender.send(Channels.libraryChanged)
+    const result = await library.quickImport(res.filePaths, notify)
+    changed()
+    void library.enrichPending(notify, changed) // background, throttled
+    return result
   })
   ipcMain.handle(Channels.updateBook, (_e, id: string, patch: BookUpdate) =>
     library.updateBook(id, patch)
