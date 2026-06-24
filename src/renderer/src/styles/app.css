@@ -903,6 +903,53 @@ select.field {
   font-size: 11px;
   color: var(--muted);
 }
+.row-status {
+  position: static;
+}
+.card-info {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(22, 19, 16, 0.8);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.book-card:hover .card-info {
+  opacity: 1;
+}
+.card-info:hover {
+  color: var(--accent);
+  border-color: var(--gold);
+}
+.row-info {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.book-row:hover .row-info {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.row-info:hover {
+  color: var(--accent);
+}
 
 .toast {
   position: fixed;
@@ -1170,10 +1217,23 @@ select.field {
   background: #100e0b;
   min-height: 0;
 }
-.pdf-canvas {
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.55);
-  border-radius: 2px;
+.reader-pages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.page-slot {
+  position: relative;
   background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  flex: 0 0 auto;
+}
+.pdf-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
 }
 .reader-msg {
   margin-top: 18vh;

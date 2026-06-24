@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
@@ -10,28 +10,44 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc
 
 type RenderHandle = { cancel: () => void; promise: Promise<void> }
 
+const GAP = 16
+
 export function PdfReader({ bookId }: { bookId: string }) {
   const book = useStore((s) => s.books.find((b) => b.id === bookId))
   const closeBook = useStore((s) => s.closeBook)
 
-  const canvasRef = useRef<HTMLCanvasElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
   const docRef = useRef<PDFDocumentProxy | null>(null)
-  const renderRef = useRef<RenderHandle | null>(null)
+  const slotRefs = useRef<(HTMLDivElement | null)[]>([])
+  const renderedRef = useRef<Set<number>>(new Set())
+  const tasksRef = useRef<Map<number, RenderHandle>>(new Map())
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const didInitialScroll = useRef(false)
 
   const [numPages, setNumPages] = useState(0)
-  const [page, setPage] = useState(book?.lastPage ?? 1)
-  const [scale, setScale] = useState(1.2)
+  const [base, setBase] = useState<{ w: number; h: number } | null>(null)
+  const [containerW, setContainerW] = useState(0)
+  const [manualScale, setManualScale] = useState(1)
   const [fitWidth, setFitWidth] = useState(true)
+  const [currentPage, setCurrentPage] = useState(book?.lastPage ?? 1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Load the document.
+  const effScale = useMemo(() => {
+    if (!base) return 1
+    if (fitWidth && containerW) return Math.max(0.4, Math.min(3, (containerW - 56) / base.w))
+    return manualScale
+  }, [base, containerW, fitWidth, manualScale])
+
+  // Load document + first page dimensions.
   useEffect(() => {
     let cancelled = false
     setLoading(true)
     setError(null)
+    setBase(null)
+    setNumPages(0)
+    renderedRef.current.clear()
+    didInitialScroll.current = false
     void api.getBookPdf(bookId).then(async (data) => {
       if (cancelled) return
       if (!data) {
@@ -45,9 +61,12 @@ export function PdfReader({ bookId }: { bookId: string }) {
           void doc.destroy()
           return
         }
+        const first = await doc.getPage(1)
+        const vp = first.getViewport({ scale: 1 })
         docRef.current = doc
+        slotRefs.current = new Array(doc.numPages).fill(null)
+        setBase({ w: vp.width, h: vp.height })
         setNumPages(doc.numPages)
-        setPage((p) => Math.min(Math.max(1, p), doc.numPages))
         setLoading(false)
       } catch {
         if (!cancelled) {
@@ -58,6 +77,15 @@ export function PdfReader({ bookId }: { bookId: string }) {
     })
     return () => {
       cancelled = true
+      tasksRef.current.forEach((t) => {
+        try {
+          t.cancel()
+        } catch {
+          /* noop */
+        }
+      })
+      tasksRef.current.clear()
+      renderedRef.current.clear()
       if (docRef.current) {
         void docRef.current.destroy()
         docRef.current = null
@@ -65,82 +93,166 @@ export function PdfReader({ bookId }: { bookId: string }) {
     }
   }, [bookId])
 
-  const renderPage = useCallback(async () => {
-    const doc = docRef.current
-    const canvas = canvasRef.current
-    if (!doc || !canvas) return
-    const pg = await doc.getPage(page)
-    let useScale = scale
-    if (fitWidth && stageRef.current) {
-      const base = pg.getViewport({ scale: 1 })
-      const avail = stageRef.current.clientWidth - 56
-      useScale = Math.max(0.4, Math.min(3, avail / base.width))
-    }
-    const viewport = pg.getViewport({ scale: useScale })
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    const dpr = window.devicePixelRatio || 1
-    canvas.width = Math.floor(viewport.width * dpr)
-    canvas.height = Math.floor(viewport.height * dpr)
-    canvas.style.width = `${Math.floor(viewport.width)}px`
-    canvas.style.height = `${Math.floor(viewport.height)}px`
-    if (renderRef.current) {
+  // Track the container width for fit-width.
+  useEffect(() => {
+    const el = stageRef.current
+    if (!el) return
+    setContainerW(el.clientWidth)
+    const ro = new ResizeObserver(() => setContainerW(el.clientWidth))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [loading])
+
+  const renderPage = useCallback(
+    async (pageNum: number, slot: HTMLDivElement, scale: number) => {
+      const doc = docRef.current
+      if (!doc) return
       try {
-        renderRef.current.cancel()
+        const pg = await doc.getPage(pageNum)
+        if (!renderedRef.current.has(pageNum)) return
+        const viewport = pg.getViewport({ scale })
+        const dpr = window.devicePixelRatio || 1
+        const canvas = document.createElement('canvas')
+        canvas.className = 'pdf-canvas'
+        canvas.width = Math.floor(viewport.width * dpr)
+        canvas.height = Math.floor(viewport.height * dpr)
+        canvas.style.width = '100%'
+        canvas.style.height = '100%'
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return
+        slot.querySelector('canvas')?.remove()
+        slot.appendChild(canvas)
+        const task = pg.render({
+          canvasContext: ctx,
+          viewport,
+          transform: dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : undefined
+        })
+        tasksRef.current.set(pageNum, task)
+        await task.promise.catch(() => {})
+      } catch {
+        /* ignore */
+      }
+    },
+    []
+  )
+
+  // Render pages near the viewport; unload far ones. Re-runs when scale changes.
+  useEffect(() => {
+    if (loading || error || !base || !numPages) return
+    const stage = stageRef.current
+    if (!stage) return
+
+    // Scale changed → drop everything and re-render the visible window.
+    renderedRef.current.clear()
+    tasksRef.current.forEach((t) => {
+      try {
+        t.cancel()
       } catch {
         /* noop */
       }
-    }
-    const task = pg.render({
-      canvasContext: ctx,
-      viewport,
-      transform: dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : undefined
     })
-    renderRef.current = task
-    try {
-      await task.promise
-    } catch {
-      /* cancelled */
+    tasksRef.current.clear()
+    slotRefs.current.forEach((s) => s?.querySelector('canvas')?.remove())
+
+    let raf = 0
+    const sync = (): void => {
+      const top = stage.scrollTop
+      const bottom = top + stage.clientHeight
+      const margin = stage.clientHeight
+      slotRefs.current.forEach((slot, i) => {
+        if (!slot) return
+        const pageNum = i + 1
+        const sTop = slot.offsetTop
+        const sBottom = sTop + slot.offsetHeight
+        const visible = sBottom >= top - margin && sTop <= bottom + margin
+        if (visible && !renderedRef.current.has(pageNum)) {
+          renderedRef.current.add(pageNum)
+          void renderPage(pageNum, slot, effScale)
+        } else if (!visible && renderedRef.current.has(pageNum)) {
+          renderedRef.current.delete(pageNum)
+          const t = tasksRef.current.get(pageNum)
+          if (t) {
+            try {
+              t.cancel()
+            } catch {
+              /* noop */
+            }
+            tasksRef.current.delete(pageNum)
+          }
+          slot.querySelector('canvas')?.remove()
+        }
+      })
+      // Current page = last slot whose top is above the viewport's upper third.
+      const probe = top + 80
+      let cur = 1
+      for (let i = 0; i < slotRefs.current.length; i++) {
+        const s = slotRefs.current[i]
+        if (s && s.offsetTop <= probe) cur = i + 1
+        else break
+      }
+      setCurrentPage(cur)
     }
-  }, [page, scale, fitWidth])
 
-  useEffect(() => {
-    if (!loading && !error) void renderPage()
-  }, [renderPage, loading, error, numPages])
+    const onScroll = (): void => {
+      if (raf) return
+      raf = window.requestAnimationFrame(() => {
+        raf = 0
+        sync()
+      })
+    }
 
-  // Re-render on resize while fitting width.
-  useEffect(() => {
-    if (!fitWidth) return
-    const el = stageRef.current
-    if (!el) return
-    const ro = new ResizeObserver(() => void renderPage())
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [fitWidth, renderPage])
+    stage.addEventListener('scroll', onScroll, { passive: true })
+
+    // Jump to the resume page on first layout.
+    if (!didInitialScroll.current) {
+      didInitialScroll.current = true
+      const target = slotRefs.current[Math.min(Math.max(1, book?.lastPage ?? 1), numPages) - 1]
+      if (target) stage.scrollTop = Math.max(0, target.offsetTop - GAP)
+    }
+    sync()
+
+    return () => {
+      stage.removeEventListener('scroll', onScroll)
+      if (raf) window.cancelAnimationFrame(raf)
+    }
+  }, [effScale, base, numPages, loading, error, renderPage, book?.lastPage])
 
   // Persist the resume page (debounced).
   useEffect(() => {
     if (loading) return
     if (saveTimer.current) clearTimeout(saveTimer.current)
-    saveTimer.current = setTimeout(() => void api.setBookLastPage(bookId, page), 600)
+    saveTimer.current = setTimeout(() => void api.setBookLastPage(bookId, currentPage), 700)
     return () => {
       if (saveTimer.current) clearTimeout(saveTimer.current)
     }
-  }, [page, bookId, loading])
+  }, [currentPage, bookId, loading])
 
-  const go = useCallback(
-    (target: number) => setPage(Math.min(Math.max(1, target), numPages || 1)),
+  const goToPage = useCallback(
+    (target: number) => {
+      const n = Math.min(Math.max(1, target), numPages || 1)
+      const slot = slotRefs.current[n - 1]
+      const stage = stageRef.current
+      if (slot && stage) stage.scrollTo({ top: Math.max(0, slot.offsetTop - GAP), behavior: 'smooth' })
+    },
     [numPages]
   )
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'ArrowRight' || e.key === 'PageDown') go(page + 1)
-      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') go(page - 1)
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') goToPage(currentPage + 1)
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') goToPage(currentPage - 1)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [go, page])
+  }, [goToPage, currentPage])
+
+  const zoom = (delta: number): void => {
+    setFitWidth(false)
+    setManualScale((s) => Math.max(0.4, Math.min(3, (fitWidth ? effScale : s) + delta)))
+  }
+
+  const slotW = base ? Math.floor(base.w * effScale) : 0
+  const slotH = base ? Math.floor(base.h * effScale) : 0
 
   return (
     <div className="reader">
@@ -152,49 +264,31 @@ export function PdfReader({ bookId }: { bookId: string }) {
           {book?.title ?? 'Document'}
         </div>
         <div className="reader-controls">
-          <button className="icon-btn" title="Previous page" onClick={() => go(page - 1)} disabled={page <= 1}>
+          <button className="icon-btn" title="Previous page" onClick={() => goToPage(currentPage - 1)} disabled={currentPage <= 1}>
             <ChevronLeft size={16} />
           </button>
           <span className="reader-page">
             <input
               className="page-input"
-              value={String(page)}
+              value={String(currentPage)}
               onChange={(e) => {
                 const n = Number(e.target.value)
-                if (!Number.isNaN(n) && n > 0) go(n)
+                if (!Number.isNaN(n) && n > 0) goToPage(n)
               }}
             />
             <span className="reader-of">/ {numPages || '—'}</span>
           </span>
-          <button className="icon-btn" title="Next page" onClick={() => go(page + 1)} disabled={page >= numPages}>
+          <button className="icon-btn" title="Next page" onClick={() => goToPage(currentPage + 1)} disabled={currentPage >= numPages}>
             <ChevronRight size={16} />
           </button>
           <span className="reader-sep" />
-          <button
-            className="icon-btn"
-            title="Zoom out"
-            onClick={() => {
-              setFitWidth(false)
-              setScale((s) => Math.max(0.4, s - 0.15))
-            }}
-          >
+          <button className="icon-btn" title="Zoom out" onClick={() => zoom(-0.15)}>
             <ZoomOut size={16} />
           </button>
-          <button
-            className="icon-btn"
-            title="Zoom in"
-            onClick={() => {
-              setFitWidth(false)
-              setScale((s) => Math.min(3, s + 0.15))
-            }}
-          >
+          <button className="icon-btn" title="Zoom in" onClick={() => zoom(0.15)}>
             <ZoomIn size={16} />
           </button>
-          <button
-            className={`icon-btn${fitWidth ? ' active' : ''}`}
-            title="Fit width"
-            onClick={() => setFitWidth(true)}
-          >
+          <button className={`icon-btn${fitWidth ? ' active' : ''}`} title="Fit width" onClick={() => setFitWidth(true)}>
             <Maximize2 size={16} />
           </button>
         </div>
@@ -202,7 +296,21 @@ export function PdfReader({ bookId }: { bookId: string }) {
       <div className="reader-stage" ref={stageRef}>
         {loading && <div className="reader-msg">Opening…</div>}
         {error && <div className="reader-msg error">{error}</div>}
-        {!loading && !error && <canvas ref={canvasRef} className="pdf-canvas" />}
+        {!loading && !error && base && (
+          <div className="reader-pages" style={{ gap: GAP }}>
+            {Array.from({ length: numPages }, (_, i) => (
+              <div
+                key={i}
+                ref={(el) => {
+                  slotRefs.current[i] = el
+                }}
+                className="page-slot"
+                data-page={i + 1}
+                style={{ width: slotW, height: slotH }}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

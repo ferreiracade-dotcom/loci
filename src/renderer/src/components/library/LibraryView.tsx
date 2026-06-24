@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Upload, FolderInput, LayoutGrid, List as ListIcon, RefreshCw, BookOpen } from 'lucide-react'
+import { Upload, FolderInput, LayoutGrid, List as ListIcon, RefreshCw, BookOpen, Info } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { EmptyState } from '../EmptyState'
 import { BookCover } from './BookCover'
@@ -24,15 +24,24 @@ function BookCard({
   onRead: () => void
 }) {
   return (
-    <button
+    <div
       className="book-card"
-      onClick={onOpen}
-      onDoubleClick={onRead}
-      title={`${book.title}${book.author ? ` — ${book.author}` : ''} · double-click to read`}
+      onClick={onRead}
+      title={`${book.title}${book.author ? ` — ${book.author}` : ''} · click to read`}
     >
       <div className="cover" style={{ height: Math.round(size * 1.4) }}>
         <BookCover id={book.id} hasCover={book.hasCover} title={book.title} />
         <span className={`status-badge ${book.status}`}>{STATUS_LABEL[book.status]}</span>
+        <button
+          className="card-info"
+          title="Book info"
+          onClick={(e) => {
+            e.stopPropagation()
+            onOpen()
+          }}
+        >
+          <Info size={15} />
+        </button>
       </div>
       <div className="book-meta">
         <div className="book-title">{book.title}</div>
@@ -41,7 +50,7 @@ function BookCard({
           {book.year ? ` · ${book.year}` : ''}
         </div>
       </div>
-    </button>
+    </div>
   )
 }
 
@@ -55,7 +64,7 @@ function BookListRow({
   onRead: () => void
 }) {
   return (
-    <button className="book-row" onClick={onOpen} onDoubleClick={onRead}>
+    <div className="book-row" onClick={onRead} title="Click to read">
       <div className="row-cover">
         <BookCover id={book.id} hasCover={book.hasCover} title={book.title} />
       </div>
@@ -68,8 +77,18 @@ function BookListRow({
         </div>
       </div>
       {book.quoteCount > 0 && <span className="row-quotes">{book.quoteCount} quotes</span>}
-      <span className={`status-badge ${book.status}`}>{STATUS_LABEL[book.status]}</span>
-    </button>
+      <span className={`status-badge ${book.status} row-status`}>{STATUS_LABEL[book.status]}</span>
+      <button
+        className="row-info"
+        title="Book info"
+        onClick={(e) => {
+          e.stopPropagation()
+          onOpen()
+        }}
+      >
+        <Info size={15} />
+      </button>
+    </div>
   )
 }
 
