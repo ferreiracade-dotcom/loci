@@ -1,0 +1,43 @@
+{
+  "name": "loci",
+  "version": "0.1.0",
+  "description": "A personal theological library and reading-notes desktop app",
+  "main": "./out/main/index.js",
+  "author": "Loci",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "npm run typecheck && electron-vite build",
+    "build:win": "npm run typecheck && electron-vite build && electron-builder --win",
+    "start": "electron-vite preview",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "@fontsource/crimson-pro": "^5.1.0",
+    "@fontsource/inter": "^5.1.0",
+    "@fontsource/playfair-display": "^5.1.0",
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^12.2.0",
+    "lucide-react": "^0.469.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.5",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^33.3.1",
+    "electron-builder": "^25.1.8",
+    "electron-vite": "^2.3.0",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11"
+  }
+}
