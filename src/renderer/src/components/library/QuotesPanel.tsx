@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type TextareaHTMLAttributes } from 'react'
-import { Trash2, Plus } from 'lucide-react'
+import { Trash2, Plus, Pencil } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import type { Annotation, Quote } from '@shared/ipc'
 
@@ -127,21 +127,33 @@ function QuoteCard({ q }: { q: Quote }) {
               <div key={a.id} className="anno-item">
                 <span
                   className="anno-text"
-                  title="Click to edit"
-                  onClick={() => {
+                  title="Double-click to edit"
+                  onDoubleClick={() => {
                     setEditingId(a.id)
                     setEditText(a.text)
                   }}
                 >
                   {a.text}
                 </span>
-                <button
-                  className="anno-del"
-                  title="Delete note"
-                  onClick={() => removeAnnotation(a.id)}
-                >
-                  ×
-                </button>
+                <div className="anno-actions">
+                  <button
+                    className="anno-act"
+                    title="Edit note"
+                    onClick={() => {
+                      setEditingId(a.id)
+                      setEditText(a.text)
+                    }}
+                  >
+                    <Pencil size={12} />
+                  </button>
+                  <button
+                    className="anno-act anno-del"
+                    title="Delete note"
+                    onClick={() => removeAnnotation(a.id)}
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                </div>
               </div>
             )
           )}

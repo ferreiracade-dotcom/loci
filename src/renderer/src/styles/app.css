@@ -1360,11 +1360,15 @@ select.field {
   font-size: 14px;
   line-height: 1.45;
   color: var(--text);
+  user-select: text;
+  -webkit-user-select: text;
 }
 .quote-cite {
   margin-top: 6px;
   font-size: 11px;
   color: var(--muted);
+  user-select: text;
+  -webkit-user-select: text;
 }
 .anno-list {
   display: flex;
@@ -1377,35 +1381,49 @@ select.field {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 7px 24px 7px 9px;
+  padding: 7px 46px 7px 9px;
   font-family: var(--font-read);
   font-size: 13px;
   line-height: 1.5;
   color: var(--text);
   white-space: pre-wrap;
+  user-select: text;
+  -webkit-user-select: text;
 }
 .anno-item:hover {
   border-color: var(--border-strong);
 }
 .anno-text {
   cursor: text;
+  user-select: text;
+  -webkit-user-select: text;
 }
-.anno-del {
+.anno-actions {
   position: absolute;
-  top: 4px;
-  right: 5px;
+  top: 5px;
+  right: 6px;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+}
+.anno-item:hover .anno-actions {
+  opacity: 1;
+}
+.anno-act {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
   color: var(--muted);
   cursor: pointer;
-  font-size: 15px;
+  padding: 2px;
   line-height: 1;
-  opacity: 0;
 }
-.anno-item:hover .anno-del {
-  opacity: 1;
+.anno-act:hover {
+  color: var(--accent);
 }
-.anno-del:hover {
+.anno-act.anno-del:hover {
   color: #d98a76;
 }
 .anno-edit {
