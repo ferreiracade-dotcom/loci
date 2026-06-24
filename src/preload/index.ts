@@ -15,7 +15,20 @@ const api: LociApi = {
   getSession: (key) => ipcRenderer.invoke(Channels.getSession, key),
   setSession: (key, value) => ipcRenderer.invoke(Channels.setSession, key, value),
   setApiKey: (key) => ipcRenderer.invoke(Channels.setApiKey, key),
-  hasApiKey: () => ipcRenderer.invoke(Channels.hasApiKey)
+  hasApiKey: () => ipcRenderer.invoke(Channels.hasApiKey),
+
+  listBooks: () => ipcRenderer.invoke(Channels.listBooks),
+  importFromSource: () => ipcRenderer.invoke(Channels.importFromSource),
+  importFiles: () => ipcRenderer.invoke(Channels.importFiles),
+  updateBook: (id, patch) => ipcRenderer.invoke(Channels.updateBook, id, patch),
+  deleteBook: (id) => ipcRenderer.invoke(Channels.deleteBook, id),
+  setBookShelves: (id, shelfIds) => ipcRenderer.invoke(Channels.setBookShelves, id, shelfIds),
+  setBookTags: (id, tags) => ipcRenderer.invoke(Channels.setBookTags, id, tags),
+  getCover: (id) => ipcRenderer.invoke(Channels.getCover, id),
+  refetchMetadata: (id) => ipcRenderer.invoke(Channels.refetchMetadata, id),
+  listShelves: () => ipcRenderer.invoke(Channels.listShelves),
+  createShelf: (name) => ipcRenderer.invoke(Channels.createShelf, name),
+  listTags: () => ipcRenderer.invoke(Channels.listTags)
 }
 
 if (process.contextIsolated) {

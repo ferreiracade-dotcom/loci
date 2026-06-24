@@ -1,6 +1,16 @@
 import { create } from 'zustand'
 import { api } from '../lib/api'
-import type { AppState, PanelLayout, PublicConfig, WizardData } from '@shared/ipc'
+import type {
+  AppState,
+  Book,
+  BookUpdate,
+  ImportResult,
+  PanelLayout,
+  PublicConfig,
+  Shelf,
+  Tag,
+  WizardData
+} from '@shared/ipc'
 
 export type Phase = 'loading' | 'wizard' | 'locked' | 'ready'
 
@@ -10,23 +20,51 @@ interface Store {
   config: PublicConfig | null
   layout: PanelLayout | null
 
+  books: Book[]
+  shelves: Shelf[]
+  tags: Tag[]
+  activeShelf: string | null
+  libraryBusy: boolean
+
   init: () => Promise<void>
   unlock: (password: string) => Promise<boolean>
   completeWizard: (data: WizardData) => Promise<void>
   relocateVault: () => Promise<void>
   refreshConfig: () => Promise<void>
 
-  /** Update layout in memory only (used during a drag). */
   setLayoutLocal: (patch: Partial<PanelLayout>) => void
-  /** Update layout in memory and persist the patch immediately. */
   saveLayout: (patch: Partial<PanelLayout>) => void
-  /** Persist the whole current layout (used at the end of a drag). */
   persistLayout: () => void
+
+  setActiveShelf: (shelfId: string | null) => void
+  refreshLibrary: () => Promise<void>
+  importFromSource: () => Promise<ImportResult>
+  importFiles: () => Promise<ImportResult>
+  updateBook: (id: string, patch: BookUpdate) => Promise<void>
+  deleteBook: (id: string) => Promise<void>
+  setBookShelves: (id: string, shelfIds: string[]) => Promise<void>
+  setBookTags: (id: string, tags: string[]) => Promise<void>
+  refetchMetadata: (id: string) => Promise<void>
+  createShelf: (name: string) => Promise<void>
 }
 
-async function loadShellData(): Promise<{ config: PublicConfig; layout: PanelLayout }> {
-  const [config, layout] = await Promise.all([api.getConfig(), api.getLayout()])
-  return { config, layout }
+interface ShellData {
+  config: PublicConfig
+  layout: PanelLayout
+  books: Book[]
+  shelves: Shelf[]
+  tags: Tag[]
+}
+
+async function loadAll(): Promise<ShellData> {
+  const [config, layout, books, shelves, tags] = await Promise.all([
+    api.getConfig(),
+    api.getLayout(),
+    api.listBooks(),
+    api.listShelves(),
+    api.listTags()
+  ])
+  return { config, layout, books, shelves, tags }
 }
 
 export const useStore = create<Store>((set, get) => ({
@@ -34,6 +72,11 @@ export const useStore = create<Store>((set, get) => ({
   appState: null,
   config: null,
   layout: null,
+  books: [],
+  shelves: [],
+  tags: [],
+  activeShelf: null,
+  libraryBusy: false,
 
   init: async () => {
     const appState = await api.getAppState()
@@ -41,29 +84,24 @@ export const useStore = create<Store>((set, get) => ({
       set({ appState, phase: 'wizard' })
       return
     }
-    const { config, layout } = await loadShellData()
-    set({ appState, config, layout, phase: appState.hasPassword ? 'locked' : 'ready' })
+    const data = await loadAll()
+    set({ appState, ...data, phase: appState.hasPassword ? 'locked' : 'ready' })
   },
 
   unlock: async (password) => {
     const ok = await api.unlock(password)
-    if (ok) {
-      const { config, layout } = await loadShellData()
-      set({ config, layout, phase: 'ready' })
-    }
+    if (ok) set({ ...(await loadAll()), phase: 'ready' })
     return ok
   },
 
   completeWizard: async (data) => {
     const appState = await api.completeWizard(data)
-    const { config, layout } = await loadShellData()
-    set({ appState, config, layout, phase: 'ready' })
+    set({ appState, ...(await loadAll()), phase: 'ready' })
   },
 
   relocateVault: async () => {
     const appState = await api.relocateVault()
-    const config = await api.getConfig()
-    set({ appState, config })
+    set({ appState, config: await api.getConfig() })
   },
 
   refreshConfig: async () => {
@@ -85,5 +123,73 @@ export const useStore = create<Store>((set, get) => ({
   persistLayout: () => {
     const layout = get().layout
     if (layout) void api.setLayout(layout)
+  },
+
+  setActiveShelf: (shelfId) => set({ activeShelf: shelfId }),
+
+  refreshLibrary: async () => {
+    const [books, shelves, tags] = await Promise.all([
+      api.listBooks(),
+      api.listShelves(),
+      api.listTags()
+    ])
+    set({ books, shelves, tags })
+  },
+
+  importFromSource: async () => {
+    set({ libraryBusy: true })
+    try {
+      const result = await api.importFromSource()
+      await get().refreshLibrary()
+      return result
+    } finally {
+      set({ libraryBusy: false })
+    }
+  },
+
+  importFiles: async () => {
+    set({ libraryBusy: true })
+    try {
+      const result = await api.importFiles()
+      await get().refreshLibrary()
+      return result
+    } finally {
+      set({ libraryBusy: false })
+    }
+  },
+
+  updateBook: async (id, patch) => {
+    await api.updateBook(id, patch)
+    await get().refreshLibrary()
+  },
+
+  deleteBook: async (id) => {
+    await api.deleteBook(id)
+    await get().refreshLibrary()
+  },
+
+  setBookShelves: async (id, shelfIds) => {
+    await api.setBookShelves(id, shelfIds)
+    await get().refreshLibrary()
+  },
+
+  setBookTags: async (id, tags) => {
+    await api.setBookTags(id, tags)
+    await get().refreshLibrary()
+  },
+
+  refetchMetadata: async (id) => {
+    set({ libraryBusy: true })
+    try {
+      await api.refetchMetadata(id)
+      await get().refreshLibrary()
+    } finally {
+      set({ libraryBusy: false })
+    }
+  },
+
+  createShelf: async (name) => {
+    await api.createShelf(name)
+    await get().refreshLibrary()
   }
 }))

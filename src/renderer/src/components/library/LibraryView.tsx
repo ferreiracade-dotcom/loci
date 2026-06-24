@@ -1,0 +1,181 @@
+import { useMemo, useState } from 'react'
+import { Upload, FolderInput, LayoutGrid, List as ListIcon, RefreshCw, BookOpen } from 'lucide-react'
+import { useStore } from '../../store/useStore'
+import { EmptyState } from '../EmptyState'
+import { BookCover } from './BookCover'
+import { BookInfoDrawer } from './BookInfoDrawer'
+import type { Book, ReadingStatus } from '@shared/ipc'
+
+const STATUS_LABEL: Record<ReadingStatus, string> = {
+  unread: 'Unread',
+  reading: 'Reading',
+  finished: 'Finished'
+}
+
+function BookCard({ book, size, onOpen }: { book: Book; size: number; onOpen: () => void }) {
+  return (
+    <button
+      className="book-card"
+      onClick={onOpen}
+      title={`${book.title}${book.author ? ` — ${book.author}` : ''}`}
+    >
+      <div className="cover" style={{ height: Math.round(size * 1.4) }}>
+        <BookCover id={book.id} hasCover={book.hasCover} title={book.title} />
+        <span className={`status-badge ${book.status}`}>{STATUS_LABEL[book.status]}</span>
+      </div>
+      <div className="book-meta">
+        <div className="book-title">{book.title}</div>
+        <div className="book-author">
+          {book.author ?? '—'}
+          {book.year ? ` · ${book.year}` : ''}
+        </div>
+      </div>
+    </button>
+  )
+}
+
+function BookListRow({ book, onOpen }: { book: Book; onOpen: () => void }) {
+  return (
+    <button className="book-row" onClick={onOpen}>
+      <div className="row-cover">
+        <BookCover id={book.id} hasCover={book.hasCover} title={book.title} />
+      </div>
+      <div className="row-main">
+        <div className="book-title">{book.title}</div>
+        <div className="book-author">
+          {book.author ?? '—'}
+          {book.year ? ` · ${book.year}` : ''}
+          {book.genre ? ` · ${book.genre}` : ''}
+        </div>
+      </div>
+      {book.quoteCount > 0 && <span className="row-quotes">{book.quoteCount} quotes</span>}
+      <span className={`status-badge ${book.status}`}>{STATUS_LABEL[book.status]}</span>
+    </button>
+  )
+}
+
+export function LibraryView() {
+  const books = useStore((s) => s.books)
+  const shelves = useStore((s) => s.shelves)
+  const layout = useStore((s) => s.layout)!
+  const saveLayout = useStore((s) => s.saveLayout)
+  const activeShelf = useStore((s) => s.activeShelf)
+  const setActiveShelf = useStore((s) => s.setActiveShelf)
+  const importFromSource = useStore((s) => s.importFromSource)
+  const importFiles = useStore((s) => s.importFiles)
+  const libraryBusy = useStore((s) => s.libraryBusy)
+  const [infoId, setInfoId] = useState<string | null>(null)
+  const [toast, setToast] = useState<string | null>(null)
+
+  const filtered = useMemo(
+    () => (activeShelf ? books.filter((b) => b.shelfIds.includes(activeShelf)) : books),
+    [books, activeShelf]
+  )
+
+  async function doImport(kind: 'source' | 'files'): Promise<void> {
+    const res = kind === 'source' ? await importFromSource() : await importFiles()
+    setToast(
+      `Imported ${res.imported} · skipped ${res.skipped}${res.failed ? ` · failed ${res.failed}` : ''}`
+    )
+    window.setTimeout(() => setToast(null), 4000)
+  }
+
+  const view = layout.libraryView
+  const coverSize = layout.coverSize
+
+  return (
+    <div className="library">
+      <div className="library-toolbar">
+        <div className="tb-left">
+          <button className="btn btn-sm" disabled={libraryBusy} onClick={() => void doImport('source')}>
+            <Upload size={14} /> Import from source
+          </button>
+          <button className="btn btn-sm" disabled={libraryBusy} onClick={() => void doImport('files')}>
+            <FolderInput size={14} /> Choose files…
+          </button>
+          {libraryBusy && (
+            <span className="muted-inline">
+              <RefreshCw size={14} className="spin" /> Working…
+            </span>
+          )}
+        </div>
+        <div className="tb-right">
+          <div className="seg tiny">
+            <button
+              className={`seg-btn${view === 'grid' ? ' active' : ''}`}
+              title="Grid view"
+              onClick={() => saveLayout({ libraryView: 'grid' })}
+            >
+              <LayoutGrid size={14} />
+            </button>
+            <button
+              className={`seg-btn${view === 'list' ? ' active' : ''}`}
+              title="List view"
+              onClick={() => saveLayout({ libraryView: 'list' })}
+            >
+              <ListIcon size={14} />
+            </button>
+          </div>
+          {view === 'grid' && (
+            <input
+              className="slider"
+              type="range"
+              min={90}
+              max={200}
+              value={coverSize}
+              title="Cover size"
+              onChange={(e) => saveLayout({ coverSize: Number(e.target.value) })}
+            />
+          )}
+        </div>
+      </div>
+
+      <div className="shelf-bar">
+        <button className={`chip${!activeShelf ? ' active' : ''}`} onClick={() => setActiveShelf(null)}>
+          All <span className="chip-n">{books.length}</span>
+        </button>
+        {shelves.map((s) => (
+          <button
+            key={s.id}
+            className={`chip${activeShelf === s.id ? ' active' : ''}`}
+            onClick={() => setActiveShelf(s.id)}
+          >
+            {s.name} <span className="chip-n">{s.count}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="library-body">
+        {filtered.length === 0 ? (
+          <EmptyState
+            icon={BookOpen}
+            title={books.length === 0 ? 'Your library is empty' : 'No books on this shelf'}
+            subtitle={
+              books.length === 0
+                ? 'Import PDFs from your source folder, or choose files above.'
+                : 'Try another shelf, or import more books.'
+            }
+          />
+        ) : view === 'grid' ? (
+          <div
+            className="grid"
+            style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${coverSize}px, 1fr))` }}
+          >
+            {filtered.map((b) => (
+              <BookCard key={b.id} book={b} size={coverSize} onOpen={() => setInfoId(b.id)} />
+            ))}
+          </div>
+        ) : (
+          <div className="list">
+            {filtered.map((b) => (
+              <BookListRow key={b.id} book={b} onOpen={() => setInfoId(b.id)} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {toast && <div className="toast">{toast}</div>}
+      {infoId && <BookInfoDrawer bookId={infoId} onClose={() => setInfoId(null)} />}
+    </div>
+  )
+}

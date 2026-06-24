@@ -2,6 +2,7 @@ import { app, BrowserWindow, shell } from 'electron'
 import { join } from 'path'
 import { closeDb, getDb } from './db/connection'
 import { registerIpc } from './ipc'
+import { backupSnapshot } from './services/backup'
 
 function createWindow(): void {
   const win = new BrowserWindow({
@@ -47,6 +48,8 @@ app.whenReady().then(() => {
 })
 
 app.on('window-all-closed', () => {
+  // Local backup snapshot on close (spec §2), then release the DB and quit.
+  backupSnapshot()
   closeDb()
   if (process.platform !== 'darwin') app.quit()
 })

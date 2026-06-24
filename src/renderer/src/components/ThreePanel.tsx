@@ -5,6 +5,7 @@ import { Divider } from './Divider'
 import { IconRail } from './IconRail'
 import { EmptyState } from './EmptyState'
 import { LEFT_VIEWS, RIGHT_TABS, CENTER_EMPTY } from './navigation'
+import { LibraryView } from './library/LibraryView'
 import { clamp } from '../lib/util'
 
 const RAIL = 48
@@ -93,7 +94,11 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
       )}
 
       <main className="center">
-        <EmptyState icon={empty.icon} title={empty.title} subtitle={empty.subtitle} />
+        {layout.activeLeftView === 'library' ? (
+          <LibraryView />
+        ) : (
+          <EmptyState icon={empty.icon} title={empty.title} subtitle={empty.subtitle} />
+        )}
       </main>
 
       {layout.notesCollapsed ? (

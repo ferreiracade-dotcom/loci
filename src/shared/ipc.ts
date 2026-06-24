@@ -14,7 +14,20 @@ export const Channels = {
   getSession: 'session:get',
   setSession: 'session:set',
   setApiKey: 'secret:setApiKey',
-  hasApiKey: 'secret:hasApiKey'
+  hasApiKey: 'secret:hasApiKey',
+
+  listBooks: 'library:listBooks',
+  importFromSource: 'library:importFromSource',
+  importFiles: 'library:importFiles',
+  updateBook: 'library:updateBook',
+  deleteBook: 'library:deleteBook',
+  setBookShelves: 'library:setBookShelves',
+  setBookTags: 'library:setBookTags',
+  getCover: 'library:getCover',
+  refetchMetadata: 'library:refetchMetadata',
+  listShelves: 'library:listShelves',
+  createShelf: 'library:createShelf',
+  listTags: 'library:listTags'
 } as const
 
 export type ChannelName = (typeof Channels)[keyof typeof Channels]
@@ -82,4 +95,68 @@ export interface LociApi {
   setSession(key: string, value: string): Promise<void>
   setApiKey(key: string): Promise<boolean>
   hasApiKey(): Promise<boolean>
+
+  listBooks(): Promise<Book[]>
+  importFromSource(): Promise<ImportResult>
+  importFiles(): Promise<ImportResult>
+  updateBook(id: string, patch: BookUpdate): Promise<void>
+  deleteBook(id: string): Promise<void>
+  setBookShelves(id: string, shelfIds: string[]): Promise<void>
+  setBookTags(id: string, tags: string[]): Promise<void>
+  getCover(id: string): Promise<string | null>
+  refetchMetadata(id: string): Promise<Book | null>
+  listShelves(): Promise<Shelf[]>
+  createShelf(name: string): Promise<Shelf>
+  listTags(): Promise<Tag[]>
+}
+
+export type ReadingStatus = 'unread' | 'reading' | 'finished'
+
+export interface Shelf {
+  id: string
+  name: string
+  sortOrder: number
+  count: number
+}
+
+export interface Tag {
+  id: string
+  name: string
+}
+
+export interface Book {
+  id: string
+  title: string
+  author: string | null
+  year: number | null
+  publisher: string | null
+  city: string | null
+  genre: string | null
+  status: ReadingStatus
+  hasCover: boolean
+  pageOffset: number
+  quoteCount: number
+  lastPage: number
+  dateAdded: number
+  lastOpened: number | null
+  shelfIds: string[]
+  tags: string[]
+}
+
+export interface BookUpdate {
+  title?: string
+  author?: string | null
+  year?: number | null
+  publisher?: string | null
+  city?: string | null
+  genre?: string | null
+  status?: ReadingStatus
+  pageOffset?: number
+}
+
+export interface ImportResult {
+  imported: number
+  skipped: number
+  failed: number
+  titles: string[]
 }
