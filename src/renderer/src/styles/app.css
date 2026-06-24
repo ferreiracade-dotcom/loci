@@ -1256,6 +1256,9 @@ select.field {
   forced-color-adjust: none;
   transform-origin: 0 0;
   z-index: 2;
+  /* Re-enable selection here; the app body sets user-select: none globally. */
+  user-select: text;
+  -webkit-user-select: text;
 }
 .textLayer :is(span, br) {
   color: transparent;
@@ -1263,6 +1266,8 @@ select.field {
   white-space: pre;
   cursor: text;
   transform-origin: 0% 0%;
+  user-select: text;
+  -webkit-user-select: text;
 }
 .textLayer span.markedContent {
   top: 0;
