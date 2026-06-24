@@ -36,6 +36,8 @@ export const Channels = {
   listQuotes: 'quotes:list',
   setQuoteTags: 'quotes:setTags',
   deleteQuote: 'quotes:delete',
+  getBookNote: 'notes:getBookNote',
+  saveNote: 'notes:save',
 
   // main → renderer events
   importProgress: 'library:importProgress',
@@ -132,6 +134,8 @@ export interface LociApi {
   listQuotes(bookId: string): Promise<Quote[]>
   setQuoteTags(quoteId: string, tags: string[]): Promise<void>
   deleteQuote(quoteId: string): Promise<void>
+  getBookNote(bookId: string): Promise<BookNote | null>
+  saveNote(path: string, content: string): Promise<void>
 
   /** Subscribe to import progress; returns an unsubscribe function. */
   onImportProgress(cb: (p: ImportProgress) => void): () => void
@@ -203,6 +207,12 @@ export interface NewQuote {
   text: string
   page: number | null
   color?: string
+}
+
+export interface BookNote {
+  /** Vault-relative path to the markdown note. */
+  path: string
+  content: string
 }
 
 export interface Quote {

@@ -12,6 +12,7 @@ import type {
 } from '../../shared/ipc'
 import * as library from '../services/library'
 import * as quotes from '../services/quotes'
+import * as notes from '../services/notes'
 import {
   getWelcomeBackgroundDataUrl,
   hasApiKey,
@@ -160,4 +161,10 @@ export function registerIpc(): void {
     quotes.setQuoteTags(quoteId, tags)
   )
   ipcMain.handle(Channels.deleteQuote, (_e, quoteId: string) => quotes.deleteQuote(quoteId))
+
+  // --- Notes (Phase 2c) ---
+  ipcMain.handle(Channels.getBookNote, (_e, bookId: string) => notes.getBookNote(bookId))
+  ipcMain.handle(Channels.saveNote, (_e, path: string, content: string) =>
+    notes.saveNote(path, content)
+  )
 }

@@ -32,6 +32,8 @@ interface Store {
   importProgress: ImportProgress | null
   openBookId: string | null
   quotes: Quote[]
+  /** Bumped when the open book's note changes on disk (e.g. a quote was captured). */
+  noteReloadToken: number
 
   init: () => Promise<void>
   enter: () => void
@@ -114,6 +116,7 @@ export const useStore = create<Store>((set, get) => {
     importProgress: null,
     openBookId: null,
     quotes: [],
+    noteReloadToken: 0,
 
     init: async () => {
       if (!listenersBound) {
@@ -189,6 +192,7 @@ export const useStore = create<Store>((set, get) => {
       await api.addQuote(input)
       await get().loadQuotes(input.bookId)
       await get().refreshLibrary()
+      set({ noteReloadToken: get().noteReloadToken + 1 })
     },
 
     setQuoteTags: async (quoteId, tags) => {
@@ -202,6 +206,7 @@ export const useStore = create<Store>((set, get) => {
       const id = get().openBookId
       if (id) await get().loadQuotes(id)
       await get().refreshLibrary()
+      set({ noteReloadToken: get().noteReloadToken + 1 })
     },
 
     refreshLibrary: async () => {

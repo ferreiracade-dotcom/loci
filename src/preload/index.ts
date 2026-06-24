@@ -38,6 +38,8 @@ const api: LociApi = {
   listQuotes: (bookId) => ipcRenderer.invoke(Channels.listQuotes, bookId),
   setQuoteTags: (quoteId, tags) => ipcRenderer.invoke(Channels.setQuoteTags, quoteId, tags),
   deleteQuote: (quoteId) => ipcRenderer.invoke(Channels.deleteQuote, quoteId),
+  getBookNote: (bookId) => ipcRenderer.invoke(Channels.getBookNote, bookId),
+  saveNote: (path, content) => ipcRenderer.invoke(Channels.saveNote, path, content),
 
   onImportProgress: (cb) => {
     const listener = (_e: IpcRendererEvent, p: ImportProgress): void => cb(p)

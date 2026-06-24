@@ -7,7 +7,7 @@ import { EmptyState } from './EmptyState'
 import { LEFT_VIEWS, RIGHT_TABS, CENTER_EMPTY } from './navigation'
 import { LibraryView } from './library/LibraryView'
 import { PdfReader } from './library/PdfReader'
-import { QuotesPanel } from './library/QuotesPanel'
+import { BookNotesPanel } from './library/BookNotesPanel'
 import { clamp } from '../lib/util'
 
 const RAIL = 48
@@ -141,7 +141,7 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
             </div>
             <div className="notes-body">
               {openBookId && layout.activeRightTab === 'book-notes' ? (
-                <QuotesPanel />
+                <BookNotesPanel bookId={openBookId} />
               ) : (
                 <EmptyState
                   icon={activeTab.icon}

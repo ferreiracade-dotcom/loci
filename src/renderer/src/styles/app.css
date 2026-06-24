@@ -1433,3 +1433,94 @@ select.field {
 .quote-del:hover {
   color: #d98a76;
 }
+
+/* Book Notes panel (Note / Quotes) */
+.book-notes {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.bn-toggle {
+  display: flex;
+  gap: 4px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.bn-toggle button {
+  flex: 1;
+  padding: 5px 8px;
+  font-size: 12px;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.bn-toggle button.active {
+  color: var(--accent);
+  border-color: var(--gold);
+  background: var(--accent-12);
+}
+.bn-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+/* Note editor */
+.note-editor {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+.note-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+.note-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+.note-toolbar button:hover {
+  color: var(--text);
+  background: var(--card);
+}
+.nt-sep {
+  width: 1px;
+  height: 16px;
+  background: var(--border-strong);
+  margin: 0 4px;
+}
+.note-status {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--muted);
+  padding-right: 4px;
+}
+.note-cm {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.note-cm .cm-editor {
+  height: 100%;
+}
