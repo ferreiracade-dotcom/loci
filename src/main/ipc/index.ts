@@ -146,4 +146,8 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.listShelves, () => library.listShelves())
   ipcMain.handle(Channels.createShelf, (_e, name: string) => library.createShelf(name))
   ipcMain.handle(Channels.listTags, () => library.listTags())
+  ipcMain.handle(Channels.getBookPdf, (_e, id: string) => library.getBookPdf(id))
+  ipcMain.handle(Channels.setBookLastPage, (_e, id: string, page: number) =>
+    library.setBookLastPage(id, page)
+  )
 }

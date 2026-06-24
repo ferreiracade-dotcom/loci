@@ -28,6 +28,7 @@ interface Store {
   activeShelf: string | null
   libraryBusy: boolean
   importProgress: ImportProgress | null
+  openBookId: string | null
 
   init: () => Promise<void>
   enter: () => void
@@ -41,6 +42,8 @@ interface Store {
   persistLayout: () => void
 
   setActiveShelf: (shelfId: string | null) => void
+  openBook: (id: string) => void
+  closeBook: () => void
   refreshLibrary: () => Promise<void>
   importFromSource: () => Promise<ImportResult>
   importFiles: () => Promise<ImportResult>
@@ -102,6 +105,7 @@ export const useStore = create<Store>((set, get) => {
     activeShelf: null,
     libraryBusy: false,
     importProgress: null,
+    openBookId: null,
 
     init: async () => {
       if (!listenersBound) {
@@ -161,6 +165,9 @@ export const useStore = create<Store>((set, get) => {
     },
 
     setActiveShelf: (shelfId) => set({ activeShelf: shelfId }),
+
+    openBook: (id) => set({ openBookId: id }),
+    closeBook: () => set({ openBookId: null }),
 
     refreshLibrary: async () => {
       const [books, shelves, tags] = await Promise.all([

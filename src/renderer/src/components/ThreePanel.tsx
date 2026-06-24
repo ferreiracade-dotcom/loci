@@ -6,6 +6,7 @@ import { IconRail } from './IconRail'
 import { EmptyState } from './EmptyState'
 import { LEFT_VIEWS, RIGHT_TABS, CENTER_EMPTY } from './navigation'
 import { LibraryView } from './library/LibraryView'
+import { PdfReader } from './library/PdfReader'
 import { clamp } from '../lib/util'
 
 const RAIL = 48
@@ -18,6 +19,7 @@ const DIVIDER_ALLOWANCE = 14
 
 export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const layout = useStore((s) => s.layout)!
+  const openBookId = useStore((s) => s.openBookId)
   const setLayoutLocal = useStore((s) => s.setLayoutLocal)
   const saveLayout = useStore((s) => s.saveLayout)
   const persistLayout = useStore((s) => s.persistLayout)
@@ -94,7 +96,9 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
       )}
 
       <main className="center">
-        {layout.activeLeftView === 'library' ? (
+        {openBookId ? (
+          <PdfReader bookId={openBookId} />
+        ) : layout.activeLeftView === 'library' ? (
           <LibraryView />
         ) : (
           <EmptyState icon={empty.icon} title={empty.title} subtitle={empty.subtitle} />

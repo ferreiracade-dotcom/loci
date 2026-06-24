@@ -32,6 +32,8 @@ const api: LociApi = {
   listShelves: () => ipcRenderer.invoke(Channels.listShelves),
   createShelf: (name) => ipcRenderer.invoke(Channels.createShelf, name),
   listTags: () => ipcRenderer.invoke(Channels.listTags),
+  getBookPdf: (id) => ipcRenderer.invoke(Channels.getBookPdf, id),
+  setBookLastPage: (id, page) => ipcRenderer.invoke(Channels.setBookLastPage, id, page),
 
   onImportProgress: (cb) => {
     const listener = (_e: IpcRendererEvent, p: ImportProgress): void => cb(p)

@@ -12,12 +12,23 @@ const STATUS_LABEL: Record<ReadingStatus, string> = {
   finished: 'Finished'
 }
 
-function BookCard({ book, size, onOpen }: { book: Book; size: number; onOpen: () => void }) {
+function BookCard({
+  book,
+  size,
+  onOpen,
+  onRead
+}: {
+  book: Book
+  size: number
+  onOpen: () => void
+  onRead: () => void
+}) {
   return (
     <button
       className="book-card"
       onClick={onOpen}
-      title={`${book.title}${book.author ? ` — ${book.author}` : ''}`}
+      onDoubleClick={onRead}
+      title={`${book.title}${book.author ? ` — ${book.author}` : ''} · double-click to read`}
     >
       <div className="cover" style={{ height: Math.round(size * 1.4) }}>
         <BookCover id={book.id} hasCover={book.hasCover} title={book.title} />
@@ -34,9 +45,17 @@ function BookCard({ book, size, onOpen }: { book: Book; size: number; onOpen: ()
   )
 }
 
-function BookListRow({ book, onOpen }: { book: Book; onOpen: () => void }) {
+function BookListRow({
+  book,
+  onOpen,
+  onRead
+}: {
+  book: Book
+  onOpen: () => void
+  onRead: () => void
+}) {
   return (
-    <button className="book-row" onClick={onOpen}>
+    <button className="book-row" onClick={onOpen} onDoubleClick={onRead}>
       <div className="row-cover">
         <BookCover id={book.id} hasCover={book.hasCover} title={book.title} />
       </div>
@@ -65,6 +84,7 @@ export function LibraryView() {
   const importFiles = useStore((s) => s.importFiles)
   const libraryBusy = useStore((s) => s.libraryBusy)
   const importProgress = useStore((s) => s.importProgress)
+  const openBook = useStore((s) => s.openBook)
   const [infoId, setInfoId] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
 
@@ -181,13 +201,19 @@ export function LibraryView() {
             style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${coverSize}px, 1fr))` }}
           >
             {filtered.map((b) => (
-              <BookCard key={b.id} book={b} size={coverSize} onOpen={() => setInfoId(b.id)} />
+              <BookCard
+                key={b.id}
+                book={b}
+                size={coverSize}
+                onOpen={() => setInfoId(b.id)}
+                onRead={() => openBook(b.id)}
+              />
             ))}
           </div>
         ) : (
           <div className="list">
             {filtered.map((b) => (
-              <BookListRow key={b.id} book={b} onOpen={() => setInfoId(b.id)} />
+              <BookListRow key={b.id} book={b} onOpen={() => setInfoId(b.id)} onRead={() => openBook(b.id)} />
             ))}
           </div>
         )}

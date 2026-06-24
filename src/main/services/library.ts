@@ -114,6 +114,21 @@ export function getCoverDataUrl(id: string): string | null {
   return `data:${mime};base64,${buf.toString('base64')}`
 }
 
+export function getBookPdf(id: string): Uint8Array | null {
+  const r = getDb().prepare('SELECT pdf_path FROM books WHERE id = ?').get(id) as
+    | { pdf_path: string | null }
+    | undefined
+  if (!r?.pdf_path || !existsSync(r.pdf_path)) return null
+  getDb().prepare('UPDATE books SET last_opened = ? WHERE id = ?').run(Date.now(), id)
+  return readFileSync(r.pdf_path)
+}
+
+export function setBookLastPage(id: string, page: number): void {
+  getDb()
+    .prepare('UPDATE books SET last_page = ? WHERE id = ?')
+    .run(Math.max(1, Math.round(page)), id)
+}
+
 // ---------- Import (fast, local-only) ----------
 
 type ImportOutcome = 'imported' | 'skipped' | 'failed'

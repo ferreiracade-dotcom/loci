@@ -30,6 +30,8 @@ export const Channels = {
   listShelves: 'library:listShelves',
   createShelf: 'library:createShelf',
   listTags: 'library:listTags',
+  getBookPdf: 'library:getBookPdf',
+  setBookLastPage: 'library:setBookLastPage',
 
   // main → renderer events
   importProgress: 'library:importProgress',
@@ -119,6 +121,9 @@ export interface LociApi {
   listShelves(): Promise<Shelf[]>
   createShelf(name: string): Promise<Shelf>
   listTags(): Promise<Tag[]>
+  /** Raw PDF bytes for a book (also marks it opened), or null if the file is missing. */
+  getBookPdf(id: string): Promise<Uint8Array | null>
+  setBookLastPage(id: string, page: number): Promise<void>
 
   /** Subscribe to import progress; returns an unsubscribe function. */
   onImportProgress(cb: (p: ImportProgress) => void): () => void

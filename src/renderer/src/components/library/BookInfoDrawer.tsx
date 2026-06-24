@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { X, RefreshCw, Trash2 } from 'lucide-react'
+import { X, RefreshCw, Trash2, BookOpen } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { BookCover } from './BookCover'
 import type { ReadingStatus } from '@shared/ipc'
@@ -27,6 +27,7 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
   const setBookTags = useStore((s) => s.setBookTags)
   const deleteBook = useStore((s) => s.deleteBook)
   const refetchMetadata = useStore((s) => s.refetchMetadata)
+  const openBook = useStore((s) => s.openBook)
   const libraryBusy = useStore((s) => s.libraryBusy)
 
   const [form, setForm] = useState<Form>({
@@ -210,9 +211,16 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
 
           <section className="set-section">
             <h3 className="set-h">Reading</h3>
-            <button className="btn btn-sm" disabled title="The PDF reader arrives in Phase 2">
-              Open in reader (Phase 2)
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={() => {
+                onClose()
+                openBook(book.id)
+              }}
+            >
+              <BookOpen size={14} /> Open in reader
             </button>
+            {book.lastPage > 1 && <p className="folder-hint">Resumes on page {book.lastPage}.</p>}
           </section>
 
           <section className="set-section">
