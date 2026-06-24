@@ -1208,6 +1208,7 @@ select.field {
   background: var(--accent-12);
 }
 .reader-stage {
+  position: relative;
   flex: 1;
   overflow: auto;
   display: flex;
@@ -1275,6 +1276,19 @@ select.field {
 }
 .textLayer ::selection {
   background: rgba(201, 169, 110, 0.45);
+}
+/* Smooth drag-selection: the endOfContent backstop expands while selecting so
+   the range doesn't snap to the end of the layer. */
+.textLayer .endOfContent {
+  display: block;
+  position: absolute;
+  inset: 100% 0 0;
+  z-index: -1;
+  cursor: default;
+  user-select: none;
+}
+.textLayer.selecting .endOfContent {
+  top: 0;
 }
 
 .quote-pop {

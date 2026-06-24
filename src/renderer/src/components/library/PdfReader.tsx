@@ -156,6 +156,9 @@ export function PdfReader({ bookId }: { bookId: string }) {
           viewport
         })
         await textLayer.render()
+        const eoc = document.createElement('div')
+        eoc.className = 'endOfContent'
+        textDiv.appendChild(eoc)
       } catch {
         /* ignore */
       }
@@ -278,7 +281,17 @@ export function PdfReader({ bookId }: { bookId: string }) {
     setManualScale((s) => Math.max(0.4, Math.min(3, (fitWidth ? effScale : s) + delta)))
   }
 
+  const setSelecting = (on: boolean): void => {
+    stageRef.current?.querySelectorAll('.textLayer').forEach((tl) => tl.classList.toggle('selecting', on))
+  }
+
+  const onStageMouseDown = (): void => {
+    setSel(null)
+    setSelecting(true)
+  }
+
   const onStageMouseUp = (): void => {
+    setSelecting(false)
     const s = window.getSelection()
     const text = s?.toString().replace(/\s+/g, ' ').trim() ?? ''
     const stage = stageRef.current
@@ -351,7 +364,7 @@ export function PdfReader({ bookId }: { bookId: string }) {
           </button>
         </div>
       </div>
-      <div className="reader-stage" ref={stageRef} onMouseUp={onStageMouseUp}>
+      <div className="reader-stage" ref={stageRef} onMouseDown={onStageMouseDown} onMouseUp={onStageMouseUp}>
         {loading && <div className="reader-msg">Opening…</div>}
         {error && <div className="reader-msg error">{error}</div>}
         {!loading && !error && base && (
@@ -373,7 +386,10 @@ export function PdfReader({ bookId }: { bookId: string }) {
           <button
             className="quote-pop"
             style={{ left: sel.x, top: sel.y }}
-            onMouseDown={(e) => e.preventDefault()}
+            onMouseDown={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+            }}
             onClick={() => void onAddQuote()}
           >
             <Highlighter size={14} /> Add quote{sel.page ? ` · p.${sel.page}` : ''}
