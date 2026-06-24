@@ -152,6 +152,13 @@ const migrations: Migration[] = [
         CREATE INDEX idx_quote_tags_tag ON quote_tags(tag_id);
       `)
     }
+  },
+  {
+    version: 5,
+    name: 'quote-annotation',
+    up: (db) => {
+      db.exec(`ALTER TABLE quotes ADD COLUMN annotation TEXT NOT NULL DEFAULT '';`)
+    }
   }
 ]
 

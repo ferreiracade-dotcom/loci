@@ -20,6 +20,7 @@ interface QuoteRow {
   note_path: string | null
   used_in: string
   created: number
+  annotation: string
 }
 
 interface SidecarQuote {
@@ -28,6 +29,7 @@ interface SidecarQuote {
   anchor: { page: number | null; offset: number | null }
   color: string
   tags: string[]
+  annotation: string
   source: { title: string; author: string | null; page: number | null }
   used_in: string[]
 }
@@ -63,12 +65,24 @@ function ensureNote(vault: string, b: BookMetaRow): string {
   return rel
 }
 
-function appendQuoteBlock(vault: string, rel: string, id: string, text: string, citation: string): void {
-  const abs = join(vault, rel)
+/** Markdown for one quote: the blockquote, its citation, then any annotation. */
+function buildBlock(id: string, text: string, citation: string, annotation: string): string {
   const quoted = text.replace(/\r?\n+/g, '\n> ')
-  const block = `\n<!-- quote:${id} -->\n> ${quoted}\n>\n> — ${citation}\n<!-- /quote:${id} -->\n`
-  const existing = existsSync(abs) ? readFileSync(abs, 'utf-8') : ''
-  writeFileSync(abs, existing + block, 'utf-8')
+  const ann = annotation.trim() ? `\n${annotation.trim()}\n` : '\n'
+  return `<!-- quote:${id} -->\n> ${quoted}\n>\n> — ${citation}\n${ann}<!-- /quote:${id} -->`
+}
+
+/** Insert or replace a quote's block in the note, keyed on its id markers. */
+function upsertQuoteBlock(vault: string, rel: string, id: string, block: string): void {
+  const abs = join(vault, rel)
+  let txt = existsSync(abs) ? readFileSync(abs, 'utf-8') : ''
+  const re = new RegExp(`<!-- quote:${id} -->[\\s\\S]*?<!-- /quote:${id} -->`)
+  if (re.test(txt)) {
+    txt = txt.replace(re, block)
+  } else {
+    txt = `${txt}${txt.endsWith('\n') ? '' : '\n'}\n${block}\n`
+  }
+  writeFileSync(abs, txt, 'utf-8')
 }
 
 function removeQuoteBlock(vault: string, rel: string | null, id: string): void {
@@ -120,6 +134,7 @@ function rowToQuote(r: QuoteRow): Quote {
     page: r.page,
     color: r.color,
     tags,
+    annotation: r.annotation ?? '',
     citation: b ? citationFor(b, r.page) : '',
     notePath: r.note_path,
     usedIn,
@@ -138,7 +153,7 @@ export function addQuote(input: NewQuote): Quote {
   const citation = citationFor(b, page)
 
   const rel = ensureNote(vault, b)
-  appendQuoteBlock(vault, rel, id, input.text, citation)
+  upsertQuoteBlock(vault, rel, id, buildBlock(id, input.text, citation, ''))
 
   const sp = sidecarPath(vault, b.title_sanitized)
   const list = readSidecar(sp)
@@ -148,6 +163,7 @@ export function addQuote(input: NewQuote): Quote {
     anchor: { page, offset: null },
     color,
     tags: [],
+    annotation: '',
     source: { title: b.title, author: b.author, page },
     used_in: [rel]
   })
@@ -205,6 +221,31 @@ export function setQuoteTags(quoteId: string, tagNames: string[]): void {
     }
   })()
   updateSidecarTags(quoteId, bookId, cleaned)
+}
+
+export function setQuoteAnnotation(quoteId: string, annotation: string): void {
+  const vault = readConfig().vaultPath
+  const r = getDb().prepare('SELECT * FROM quotes WHERE id = ?').get(quoteId) as QuoteRow | undefined
+  if (!r) return
+  getDb().prepare('UPDATE quotes SET annotation = ? WHERE id = ?').run(annotation, quoteId)
+  if (!vault || !r.book_id) return
+  const b = bookMeta(r.book_id)
+  if (!b) return
+  const sp = sidecarPath(vault, b.title_sanitized)
+  const list = readSidecar(sp)
+  const entry = list.find((q) => q.id === quoteId)
+  if (entry) {
+    entry.annotation = annotation
+    writeSidecar(sp, list)
+  }
+  if (r.note_path) {
+    upsertQuoteBlock(
+      vault,
+      r.note_path,
+      quoteId,
+      buildBlock(quoteId, r.text, citationFor(b, r.page), annotation)
+    )
+  }
 }
 
 export function deleteQuote(quoteId: string): void {

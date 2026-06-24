@@ -160,6 +160,9 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.setQuoteTags, (_e, quoteId: string, tags: string[]) =>
     quotes.setQuoteTags(quoteId, tags)
   )
+  ipcMain.handle(Channels.setQuoteAnnotation, (_e, quoteId: string, annotation: string) =>
+    quotes.setQuoteAnnotation(quoteId, annotation)
+  )
   ipcMain.handle(Channels.deleteQuote, (_e, quoteId: string) => quotes.deleteQuote(quoteId))
 
   // --- Notes (Phase 2c) ---
