@@ -7,8 +7,10 @@ import type {
   BookUpdate,
   ImportProgress,
   ImportResult,
+  NewQuote,
   PanelLayout,
   PublicConfig,
+  Quote,
   Shelf,
   Tag,
   WizardData
@@ -29,6 +31,7 @@ interface Store {
   libraryBusy: boolean
   importProgress: ImportProgress | null
   openBookId: string | null
+  quotes: Quote[]
 
   init: () => Promise<void>
   enter: () => void
@@ -44,6 +47,10 @@ interface Store {
   setActiveShelf: (shelfId: string | null) => void
   openBook: (id: string) => void
   closeBook: () => void
+  loadQuotes: (bookId: string) => Promise<void>
+  addQuote: (input: NewQuote) => Promise<void>
+  setQuoteTags: (quoteId: string, tags: string[]) => Promise<void>
+  deleteQuote: (quoteId: string) => Promise<void>
   refreshLibrary: () => Promise<void>
   importFromSource: () => Promise<ImportResult>
   importFiles: () => Promise<ImportResult>
@@ -106,6 +113,7 @@ export const useStore = create<Store>((set, get) => {
     libraryBusy: false,
     importProgress: null,
     openBookId: null,
+    quotes: [],
 
     init: async () => {
       if (!listenersBound) {
@@ -166,8 +174,35 @@ export const useStore = create<Store>((set, get) => {
 
     setActiveShelf: (shelfId) => set({ activeShelf: shelfId }),
 
-    openBook: (id) => set({ openBookId: id }),
-    closeBook: () => set({ openBookId: null }),
+    openBook: (id) => {
+      set({ openBookId: id, quotes: [] })
+      void get().loadQuotes(id)
+    },
+    closeBook: () => set({ openBookId: null, quotes: [] }),
+
+    loadQuotes: async (bookId) => {
+      const quotes = await api.listQuotes(bookId)
+      if (get().openBookId === bookId) set({ quotes })
+    },
+
+    addQuote: async (input) => {
+      await api.addQuote(input)
+      await get().loadQuotes(input.bookId)
+      await get().refreshLibrary()
+    },
+
+    setQuoteTags: async (quoteId, tags) => {
+      await api.setQuoteTags(quoteId, tags)
+      const id = get().openBookId
+      if (id) await get().loadQuotes(id)
+    },
+
+    deleteQuote: async (quoteId) => {
+      await api.deleteQuote(quoteId)
+      const id = get().openBookId
+      if (id) await get().loadQuotes(id)
+      await get().refreshLibrary()
+    },
 
     refreshLibrary: async () => {
       const [books, shelves, tags] = await Promise.all([

@@ -7,6 +7,7 @@ import { EmptyState } from './EmptyState'
 import { LEFT_VIEWS, RIGHT_TABS, CENTER_EMPTY } from './navigation'
 import { LibraryView } from './library/LibraryView'
 import { PdfReader } from './library/PdfReader'
+import { QuotesPanel } from './library/QuotesPanel'
 import { clamp } from '../lib/util'
 
 const RAIL = 48
@@ -139,11 +140,15 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
               ))}
             </div>
             <div className="notes-body">
-              <EmptyState
-                icon={activeTab.icon}
-                title="Nothing here yet"
-                subtitle="Notes, backlinks, and tags fill in as you read and write (Phase 2)."
-              />
+              {openBookId && layout.activeRightTab === 'book-notes' ? (
+                <QuotesPanel />
+              ) : (
+                <EmptyState
+                  icon={activeTab.icon}
+                  title="Nothing here yet"
+                  subtitle="Notes, backlinks, and tags fill in as you read and write (Phase 2)."
+                />
+              )}
             </div>
           </aside>
         </>

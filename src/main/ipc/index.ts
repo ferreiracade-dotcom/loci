@@ -5,11 +5,13 @@ import type {
   AppState,
   BookUpdate,
   ImportProgress,
+  NewQuote,
   PanelLayout,
   PublicConfig,
   WizardData
 } from '../../shared/ipc'
 import * as library from '../services/library'
+import * as quotes from '../services/quotes'
 import {
   getWelcomeBackgroundDataUrl,
   hasApiKey,
@@ -150,4 +152,12 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.setBookLastPage, (_e, id: string, page: number) =>
     library.setBookLastPage(id, page)
   )
+
+  // --- Quotes (Phase 2b) ---
+  ipcMain.handle(Channels.addQuote, (_e, input: NewQuote) => quotes.addQuote(input))
+  ipcMain.handle(Channels.listQuotes, (_e, bookId: string) => quotes.listQuotes(bookId))
+  ipcMain.handle(Channels.setQuoteTags, (_e, quoteId: string, tags: string[]) =>
+    quotes.setQuoteTags(quoteId, tags)
+  )
+  ipcMain.handle(Channels.deleteQuote, (_e, quoteId: string) => quotes.deleteQuote(quoteId))
 }

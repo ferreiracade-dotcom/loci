@@ -32,6 +32,10 @@ export const Channels = {
   listTags: 'library:listTags',
   getBookPdf: 'library:getBookPdf',
   setBookLastPage: 'library:setBookLastPage',
+  addQuote: 'quotes:add',
+  listQuotes: 'quotes:list',
+  setQuoteTags: 'quotes:setTags',
+  deleteQuote: 'quotes:delete',
 
   // main → renderer events
   importProgress: 'library:importProgress',
@@ -124,6 +128,10 @@ export interface LociApi {
   /** Raw PDF bytes for a book (also marks it opened), or null if the file is missing. */
   getBookPdf(id: string): Promise<Uint8Array | null>
   setBookLastPage(id: string, page: number): Promise<void>
+  addQuote(input: NewQuote): Promise<Quote>
+  listQuotes(bookId: string): Promise<Quote[]>
+  setQuoteTags(quoteId: string, tags: string[]): Promise<void>
+  deleteQuote(quoteId: string): Promise<void>
 
   /** Subscribe to import progress; returns an unsubscribe function. */
   onImportProgress(cb: (p: ImportProgress) => void): () => void
@@ -188,4 +196,25 @@ export interface ImportResult {
   skipped: number
   failed: number
   titles: string[]
+}
+
+export interface NewQuote {
+  bookId: string
+  text: string
+  page: number | null
+  color?: string
+}
+
+export interface Quote {
+  id: string
+  bookId: string
+  text: string
+  page: number | null
+  color: string
+  tags: string[]
+  /** Stub citation until the CMOS 18 engine lands in Phase 4. */
+  citation: string
+  notePath: string | null
+  usedIn: string[]
+  createdAt: number
 }

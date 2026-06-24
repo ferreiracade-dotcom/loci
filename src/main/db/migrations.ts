@@ -127,6 +127,31 @@ const migrations: Migration[] = [
       // re-hammer Google Books for titles that returned nothing.
       db.exec(`ALTER TABLE books ADD COLUMN meta_fetched INTEGER NOT NULL DEFAULT 0;`)
     }
+  },
+  {
+    version: 4,
+    name: 'quotes',
+    up: (db) => {
+      db.exec(`
+        CREATE TABLE quotes (
+          id         TEXT PRIMARY KEY,
+          book_id    TEXT REFERENCES books(id) ON DELETE CASCADE,
+          text       TEXT NOT NULL,
+          page       INTEGER,
+          color      TEXT NOT NULL DEFAULT 'amber',
+          note_path  TEXT,
+          used_in    TEXT NOT NULL DEFAULT '[]',
+          created    INTEGER NOT NULL
+        );
+        CREATE TABLE quote_tags (
+          quote_id TEXT NOT NULL REFERENCES quotes(id) ON DELETE CASCADE,
+          tag_id   TEXT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+          PRIMARY KEY (quote_id, tag_id)
+        );
+        CREATE INDEX idx_quotes_book ON quotes(book_id);
+        CREATE INDEX idx_quote_tags_tag ON quote_tags(tag_id);
+      `)
+    }
   }
 ]
 

@@ -2,9 +2,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Maximize2, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Maximize2, X, Highlighter } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
+
+interface Selection {
+  text: string
+  page: number | null
+  x: number
+  y: number
+}
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc
 
@@ -15,6 +22,9 @@ const GAP = 16
 export function PdfReader({ bookId }: { bookId: string }) {
   const book = useStore((s) => s.books.find((b) => b.id === bookId))
   const closeBook = useStore((s) => s.closeBook)
+  const addQuote = useStore((s) => s.addQuote)
+  const [sel, setSel] = useState<Selection | null>(null)
+  const [savedMsg, setSavedMsg] = useState(false)
 
   const stageRef = useRef<HTMLDivElement>(null)
   const docRef = useRef<PDFDocumentProxy | null>(null)
@@ -120,8 +130,7 @@ export function PdfReader({ bookId }: { bookId: string }) {
         canvas.style.height = '100%'
         const ctx = canvas.getContext('2d')
         if (!ctx) return
-        slot.querySelector('canvas')?.remove()
-        slot.appendChild(canvas)
+        slot.replaceChildren(canvas)
         const task = pg.render({
           canvasContext: ctx,
           viewport,
@@ -129,6 +138,24 @@ export function PdfReader({ bookId }: { bookId: string }) {
         })
         tasksRef.current.set(pageNum, task)
         await task.promise.catch(() => {})
+        if (!renderedRef.current.has(pageNum)) return
+
+        // Selectable text layer over the canvas.
+        const textDiv = document.createElement('div')
+        textDiv.className = 'textLayer'
+        textDiv.style.setProperty('--scale-factor', String(scale))
+        slot.appendChild(textDiv)
+        const textContent = await pg.getTextContent()
+        if (!renderedRef.current.has(pageNum)) {
+          textDiv.remove()
+          return
+        }
+        const textLayer = new pdfjsLib.TextLayer({
+          textContentSource: textContent,
+          container: textDiv,
+          viewport
+        })
+        await textLayer.render()
       } catch {
         /* ignore */
       }
@@ -152,7 +179,7 @@ export function PdfReader({ bookId }: { bookId: string }) {
       }
     })
     tasksRef.current.clear()
-    slotRefs.current.forEach((s) => s?.querySelector('canvas')?.remove())
+    slotRefs.current.forEach((s) => s?.replaceChildren())
 
     let raf = 0
     const sync = (): void => {
@@ -179,7 +206,7 @@ export function PdfReader({ bookId }: { bookId: string }) {
             }
             tasksRef.current.delete(pageNum)
           }
-          slot.querySelector('canvas')?.remove()
+          slot.replaceChildren()
         }
       })
       // Current page = last slot whose top is above the viewport's upper third.
@@ -251,6 +278,37 @@ export function PdfReader({ bookId }: { bookId: string }) {
     setManualScale((s) => Math.max(0.4, Math.min(3, (fitWidth ? effScale : s) + delta)))
   }
 
+  const onStageMouseUp = (): void => {
+    const s = window.getSelection()
+    const text = s?.toString().replace(/\s+/g, ' ').trim() ?? ''
+    const stage = stageRef.current
+    if (!text || !s || s.rangeCount === 0 || !stage) {
+      setSel(null)
+      return
+    }
+    const rect = s.getRangeAt(0).getBoundingClientRect()
+    const sr = stage.getBoundingClientRect()
+    const node = s.anchorNode
+    const el = node && node.nodeType === 1 ? (node as Element) : (node?.parentElement ?? null)
+    const slot = el?.closest('.page-slot') as HTMLElement | null
+    const page = slot ? Number(slot.getAttribute('data-page')) : null
+    setSel({
+      text,
+      page,
+      x: rect.left - sr.left + stage.scrollLeft + rect.width / 2,
+      y: rect.top - sr.top + stage.scrollTop
+    })
+  }
+
+  const onAddQuote = async (): Promise<void> => {
+    if (!sel) return
+    await addQuote({ bookId, text: sel.text, page: sel.page })
+    window.getSelection()?.removeAllRanges()
+    setSel(null)
+    setSavedMsg(true)
+    window.setTimeout(() => setSavedMsg(false), 1800)
+  }
+
   const slotW = base ? Math.floor(base.w * effScale) : 0
   const slotH = base ? Math.floor(base.h * effScale) : 0
 
@@ -293,7 +351,7 @@ export function PdfReader({ bookId }: { bookId: string }) {
           </button>
         </div>
       </div>
-      <div className="reader-stage" ref={stageRef}>
+      <div className="reader-stage" ref={stageRef} onMouseUp={onStageMouseUp}>
         {loading && <div className="reader-msg">Opening…</div>}
         {error && <div className="reader-msg error">{error}</div>}
         {!loading && !error && base && (
@@ -311,6 +369,17 @@ export function PdfReader({ bookId }: { bookId: string }) {
             ))}
           </div>
         )}
+        {sel && (
+          <button
+            className="quote-pop"
+            style={{ left: sel.x, top: sel.y }}
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => void onAddQuote()}
+          >
+            <Highlighter size={14} /> Add quote{sel.page ? ` · p.${sel.page}` : ''}
+          </button>
+        )}
+        {savedMsg && <div className="reader-saved">Quote added</div>}
       </div>
     </div>
   )
