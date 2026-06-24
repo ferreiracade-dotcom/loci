@@ -9,9 +9,17 @@ import type {
   PublicConfig,
   WizardData
 } from '../../shared/ipc'
-import * as auth from '../services/auth'
 import * as library from '../services/library'
-import { hasApiKey, readConfig, setApiKey, toPublicConfig, writeConfig } from '../services/config'
+import {
+  getWelcomeBackgroundDataUrl,
+  hasApiKey,
+  readConfig,
+  resetWelcomeBackground,
+  setApiKey,
+  setWelcomeBackgroundFromFile,
+  toPublicConfig,
+  writeConfig
+} from '../services/config'
 import { getLayout, getSession, setLayout, setSession } from '../services/state'
 import { scaffoldVault, vaultExists } from '../services/vault'
 
@@ -19,7 +27,6 @@ function appState(): AppState {
   const cfg = readConfig()
   return {
     setupComplete: cfg.setupComplete,
-    hasPassword: auth.hasPassword(),
     vaultPath: cfg.vaultPath,
     vaultExists: vaultExists()
   }
@@ -46,7 +53,6 @@ export function registerIpc(): void {
 
   ipcMain.handle(Channels.completeWizard, (_e, data: WizardData) => {
     scaffoldVault(data.vaultPath)
-    auth.setPassword(data.password)
     writeConfig({
       setupComplete: true,
       vaultPath: data.vaultPath,
@@ -55,8 +61,6 @@ export function registerIpc(): void {
     })
     return appState()
   })
-
-  ipcMain.handle(Channels.unlock, (_e, password: string) => auth.verifyPassword(password))
 
   ipcMain.handle(Channels.getConfig, () => toPublicConfig())
 
@@ -71,6 +75,23 @@ export function registerIpc(): void {
     const picked = await pickFolder(e.sender, 'Locate vault folder', false)
     if (picked) writeConfig({ vaultPath: picked })
     return appState()
+  })
+
+  ipcMain.handle(Channels.pickWelcomeBackground, async (e) => {
+    const win = BrowserWindow.fromWebContents(e.sender)
+    const opts: OpenDialogOptions = {
+      title: 'Choose unlock background',
+      properties: ['openFile'],
+      filters: [{ name: 'Images', extensions: ['jpg', 'jpeg', 'png', 'webp'] }]
+    }
+    const res = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts)
+    if (!res.canceled && res.filePaths[0]) setWelcomeBackgroundFromFile(res.filePaths[0])
+    return toPublicConfig()
+  })
+  ipcMain.handle(Channels.getWelcomeBackground, () => getWelcomeBackgroundDataUrl())
+  ipcMain.handle(Channels.resetWelcomeBackground, () => {
+    resetWelcomeBackground()
+    return toPublicConfig()
   })
 
   ipcMain.handle(Channels.getLayout, () => getLayout())

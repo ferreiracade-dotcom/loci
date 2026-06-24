@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { api } from '../lib/api'
+import { applyAccent } from '../lib/theme'
 import type {
   AppState,
   Book,
@@ -13,7 +14,7 @@ import type {
   WizardData
 } from '@shared/ipc'
 
-export type Phase = 'loading' | 'wizard' | 'locked' | 'ready'
+export type Phase = 'loading' | 'wizard' | 'welcome' | 'ready'
 
 interface Store {
   phase: Phase
@@ -29,7 +30,8 @@ interface Store {
   importProgress: ImportProgress | null
 
   init: () => Promise<void>
-  unlock: (password: string) => Promise<boolean>
+  enter: () => void
+  setAccent: (color: string) => Promise<void>
   completeWizard: (data: WizardData) => Promise<void>
   relocateVault: () => Promise<void>
   refreshConfig: () => Promise<void>
@@ -113,18 +115,23 @@ export const useStore = create<Store>((set, get) => {
         return
       }
       const data = await loadAll()
-      set({ appState, ...data, phase: appState.hasPassword ? 'locked' : 'ready' })
+      applyAccent(data.config.accentColor)
+      set({ appState, ...data, phase: 'welcome' })
     },
 
-    unlock: async (password) => {
-      const ok = await api.unlock(password)
-      if (ok) set({ ...(await loadAll()), phase: 'ready' })
-      return ok
+    enter: () => set({ phase: 'ready' }),
+
+    setAccent: async (color) => {
+      const config = await api.setConfig({ accentColor: color })
+      applyAccent(color)
+      set({ config })
     },
 
     completeWizard: async (data) => {
       const appState = await api.completeWizard(data)
-      set({ appState, ...(await loadAll()), phase: 'ready' })
+      const all = await loadAll()
+      applyAccent(all.config.accentColor)
+      set({ appState, ...all, phase: 'ready' })
     },
 
     relocateVault: async () => {

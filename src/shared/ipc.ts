@@ -5,10 +5,12 @@ export const Channels = {
   getAppState: 'app:getState',
   chooseFolder: 'dialog:chooseFolder',
   completeWizard: 'wizard:complete',
-  unlock: 'auth:unlock',
   getConfig: 'config:get',
   setConfig: 'config:set',
   relocateVault: 'vault:relocate',
+  pickWelcomeBackground: 'appearance:pickWelcomeBackground',
+  getWelcomeBackground: 'appearance:getWelcomeBackground',
+  resetWelcomeBackground: 'appearance:resetWelcomeBackground',
   getLayout: 'layout:get',
   setLayout: 'layout:set',
   getSession: 'session:get',
@@ -56,11 +58,13 @@ export interface PublicConfig {
   aiMode: AiMode
   rateCard: RateCard
   hasApiKey: boolean
+  accentColor: string
+  /** Absolute path to a user-chosen unlock background, or null for the bundled default. */
+  welcomeBackground: string | null
 }
 
 export interface AppState {
   setupComplete: boolean
-  hasPassword: boolean
   vaultPath: string | null
   vaultExists: boolean
 }
@@ -69,7 +73,6 @@ export interface WizardData {
   vaultPath: string
   pdfSourcePath: string
   backupPath: string
-  password: string
 }
 
 export interface PanelLayout {
@@ -89,10 +92,14 @@ export interface LociApi {
   getAppState(): Promise<AppState>
   chooseFolder(title: string): Promise<string | null>
   completeWizard(data: WizardData): Promise<AppState>
-  unlock(password: string): Promise<boolean>
   getConfig(): Promise<PublicConfig>
   setConfig(patch: Partial<PublicConfig>): Promise<PublicConfig>
   relocateVault(): Promise<AppState>
+  /** Opens an image picker, copies the chosen image into app-data, returns updated config. */
+  pickWelcomeBackground(): Promise<PublicConfig>
+  /** Data URL of the current unlock background (custom one), or null to use the bundled default. */
+  getWelcomeBackground(): Promise<string | null>
+  resetWelcomeBackground(): Promise<PublicConfig>
   getLayout(): Promise<PanelLayout>
   setLayout(patch: Partial<PanelLayout>): Promise<void>
   getSession(key: string): Promise<string | null>

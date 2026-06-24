@@ -28,7 +28,8 @@ function FolderRow({ label, hint, value, onPick, warn }: FolderRowProps) {
   )
 }
 
-const STEP_TITLES = ['Vault folder', 'PDF source', 'Local backup', 'Set a password']
+const STEP_TITLES = ['Vault folder', 'PDF source', 'Local backup']
+const LAST_STEP = STEP_TITLES.length - 1
 
 export function Wizard() {
   const completeWizard = useStore((s) => s.completeWizard)
@@ -36,8 +37,6 @@ export function Wizard() {
   const [vaultPath, setVaultPath] = useState<string | null>(null)
   const [pdfSourcePath, setPdfSourcePath] = useState<string | null>(null)
   const [backupPath, setBackupPath] = useState<string | null>(null)
-  const [pw, setPw] = useState('')
-  const [pw2, setPw2] = useState('')
   const [busy, setBusy] = useState(false)
 
   async function pick(setter: (p: string) => void): Promise<void> {
@@ -46,16 +45,11 @@ export function Wizard() {
   }
 
   const backupSameAsVault = !!backupPath && backupPath === vaultPath
-  const pwTooShort = pw.length > 0 && pw.length < 4
-  const pwMismatch = pw2.length > 0 && pw !== pw2
-
   const canAdvance =
     (step === 0 && !!vaultPath) ||
     (step === 1 && !!pdfSourcePath) ||
-    (step === 2 && !!backupPath && !backupSameAsVault) ||
-    step === 3
-  const canFinish =
-    !!vaultPath && !!pdfSourcePath && !!backupPath && !backupSameAsVault && pw.length >= 4 && pw === pw2
+    (step === 2 && !!backupPath && !backupSameAsVault)
+  const canFinish = !!vaultPath && !!pdfSourcePath && !!backupPath && !backupSameAsVault
 
   async function finish(): Promise<void> {
     if (!canFinish || busy) return
@@ -63,8 +57,7 @@ export function Wizard() {
     await completeWizard({
       vaultPath: vaultPath as string,
       pdfSourcePath: pdfSourcePath as string,
-      backupPath: backupPath as string,
-      password: pw
+      backupPath: backupPath as string
     })
   }
 
@@ -77,7 +70,9 @@ export function Wizard() {
           </div>
           <div>
             <h1 className="brand small">Welcome to Loci</h1>
-            <p className="brand-sub">Let’s set up your study. ({step + 1} of 4)</p>
+            <p className="brand-sub">
+              Let’s set up your study. ({step + 1} of {STEP_TITLES.length})
+            </p>
           </div>
         </div>
 
@@ -102,7 +97,7 @@ export function Wizard() {
           {step === 1 && (
             <FolderRow
               label="PDF source folder"
-              hint="Loci imports PDFs from here. They are cached into your vault."
+              hint="Loci imports PDFs from here. PDFs already inside your vault are referenced in place; others are cached into the vault."
               value={pdfSourcePath}
               onPick={() => pick(setPdfSourcePath)}
             />
@@ -116,30 +111,6 @@ export function Wizard() {
               warn={backupSameAsVault ? 'The backup folder must be different from the vault folder.' : undefined}
             />
           )}
-          {step === 3 && (
-            <div className="pw-step">
-              <p className="folder-hint">
-                Loci locks on launch. There is no password recovery — keep it safe. (Reset means
-                deleting the stored hash; documented in Help.)
-              </p>
-              <input
-                className="field"
-                type="password"
-                placeholder="Password (min 4 characters)"
-                value={pw}
-                onChange={(e) => setPw(e.target.value)}
-              />
-              {pwTooShort && <div className="field-error">Use at least 4 characters.</div>}
-              <input
-                className="field"
-                type="password"
-                placeholder="Confirm password"
-                value={pw2}
-                onChange={(e) => setPw2(e.target.value)}
-              />
-              {pwMismatch && <div className="field-error">Passwords don’t match.</div>}
-            </div>
-          )}
         </div>
 
         <div className="wizard-foot">
@@ -147,7 +118,7 @@ export function Wizard() {
             <ChevronLeft size={14} />
             Back
           </button>
-          {step < 3 ? (
+          {step < LAST_STEP ? (
             <button className="btn btn-primary" disabled={!canAdvance} onClick={() => setStep((s) => s + 1)}>
               Next
               <ChevronRight size={14} />

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { X, FolderOpen, KeyRound, ShieldCheck } from 'lucide-react'
+import { X, FolderOpen, KeyRound, ShieldCheck, Image as ImageIcon } from 'lucide-react'
 import { useStore } from '../store/useStore'
 import { api } from '../lib/api'
+import { ACCENT_PRESETS } from '../lib/theme'
 import type { AiMode } from '@shared/ipc'
 
 const TRANSLATIONS = [
@@ -16,8 +17,18 @@ export function Settings({ onClose }: { onClose: () => void }) {
   const config = useStore((s) => s.config)
   const refreshConfig = useStore((s) => s.refreshConfig)
   const relocateVault = useStore((s) => s.relocateVault)
+  const setAccent = useStore((s) => s.setAccent)
   const [apiKey, setApiKey] = useState('')
   const [note, setNote] = useState<string | null>(null)
+
+  async function pickBackground(): Promise<void> {
+    await api.pickWelcomeBackground()
+    await refreshConfig()
+  }
+  async function resetBackground(): Promise<void> {
+    await api.resetWelcomeBackground()
+    await refreshConfig()
+  }
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
@@ -89,6 +100,50 @@ export function Settings({ onClose }: { onClose: () => void }) {
               <button className="btn btn-sm" onClick={() => void changeFolder('backupPath')}>
                 <FolderOpen size={14} /> Change
               </button>
+            </div>
+          </section>
+
+          <section className="set-section">
+            <h3 className="set-h">Appearance</h3>
+            <div className="set-label">Accent colour</div>
+            <div className="accent-row">
+              {ACCENT_PRESETS.map((p) => (
+                <button
+                  key={p.id}
+                  className={`accent-swatch${
+                    config.accentColor.toLowerCase() === p.color.toLowerCase() ? ' active' : ''
+                  }`}
+                  style={{ background: p.color }}
+                  title={p.label}
+                  onClick={() => void setAccent(p.color)}
+                />
+              ))}
+              <label className="accent-custom" title="Custom colour">
+                <input
+                  type="color"
+                  value={config.accentColor}
+                  onChange={(e) => void setAccent(e.target.value)}
+                />
+              </label>
+            </div>
+
+            <div className="set-label appearance-bg-label">Unlock background</div>
+            <div className="set-row">
+              <div className="set-path">
+                {config.welcomeBackground
+                  ? 'Custom image'
+                  : 'Default painting — St. Joseph the Carpenter'}
+              </div>
+              <div className="bg-actions">
+                <button className="btn btn-sm" onClick={() => void pickBackground()}>
+                  <ImageIcon size={14} /> Choose…
+                </button>
+                {config.welcomeBackground && (
+                  <button className="btn btn-sm" onClick={() => void resetBackground()}>
+                    Reset
+                  </button>
+                )}
+              </div>
             </div>
           </section>
 

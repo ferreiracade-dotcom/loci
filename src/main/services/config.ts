@@ -1,6 +1,6 @@
 import { safeStorage } from 'electron'
-import { join } from 'path'
-import { readFileSync, writeFileSync, existsSync } from 'fs'
+import { extname, join } from 'path'
+import { copyFileSync, existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs'
 import { getDataDir } from '../db/connection'
 import type { AiMode, PublicConfig, RateCard } from '../../shared/ipc'
 
@@ -13,6 +13,8 @@ export interface LociConfig {
   scriptureTranslation: string
   aiMode: AiMode
   rateCard: RateCard
+  accentColor: string
+  welcomeBackground: string | null
   /** base64 of the safeStorage-encrypted API key; never sent to the renderer. */
   apiKeyEncrypted: string | null
 }
@@ -25,6 +27,8 @@ const defaults: LociConfig = {
   scriptureTranslation: 'WEB',
   aiMode: 'copy-api',
   rateCard: { sonnetInput: 3, sonnetOutput: 15, haikuInput: 0.8, haikuOutput: 4 },
+  accentColor: '#c9a96e',
+  welcomeBackground: null,
   apiKeyEncrypted: null
 }
 
@@ -73,4 +77,47 @@ export function setApiKey(key: string): boolean {
 
 export function hasApiKey(): boolean {
   return !!readConfig().apiKeyEncrypted
+}
+
+function backgroundsDir(): string {
+  const dir = join(getDataDir(), 'backgrounds')
+  mkdirSync(dir, { recursive: true })
+  return dir
+}
+
+/** Copy a chosen image into app-data and set it as the unlock background. */
+export function setWelcomeBackgroundFromFile(srcPath: string): LociConfig {
+  const ext = extname(srcPath).toLowerCase() || '.jpg'
+  const dest = join(backgroundsDir(), `welcome${ext}`)
+  const current = readConfig().welcomeBackground
+  if (current && current !== dest && existsSync(current)) {
+    try {
+      unlinkSync(current)
+    } catch {
+      /* best effort */
+    }
+  }
+  copyFileSync(srcPath, dest)
+  return writeConfig({ welcomeBackground: dest })
+}
+
+export function resetWelcomeBackground(): LociConfig {
+  const current = readConfig().welcomeBackground
+  if (current && existsSync(current)) {
+    try {
+      unlinkSync(current)
+    } catch {
+      /* best effort */
+    }
+  }
+  return writeConfig({ welcomeBackground: null })
+}
+
+export function getWelcomeBackgroundDataUrl(): string | null {
+  const p = readConfig().welcomeBackground
+  if (!p || !existsSync(p)) return null
+  const buf = readFileSync(p)
+  const ext = extname(p).toLowerCase()
+  const mime = ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg'
+  return `data:${mime};base64,${buf.toString('base64')}`
 }
