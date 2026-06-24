@@ -1256,7 +1256,8 @@ select.field {
   text-size-adjust: none;
   forced-color-adjust: none;
   transform-origin: 0 0;
-  z-index: 2;
+  caret-color: CanvasText;
+  z-index: 0;
   /* Re-enable selection here; the app body sets user-select: none globally. */
   user-select: text;
   -webkit-user-select: text;
@@ -1269,6 +1270,10 @@ select.field {
   transform-origin: 0% 0%;
   user-select: text;
   -webkit-user-select: text;
+}
+.textLayer > :not(.markedContent),
+.textLayer .markedContent span:not(.markedContent) {
+  z-index: 1;
 }
 .textLayer span.markedContent {
   top: 0;

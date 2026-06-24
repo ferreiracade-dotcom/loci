@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
@@ -294,9 +294,12 @@ export function PdfReader({ bookId }: { bookId: string }) {
     stageRef.current?.querySelectorAll('.textLayer').forEach((tl) => tl.classList.toggle('selecting', on))
   }
 
-  const onStageMouseDown = (): void => {
+  const onStageMouseDown = (e: MouseEvent): void => {
     setSel(null)
-    setSelecting(true)
+    setSelecting(false)
+    // Only the page under the cursor gets the endOfContent backstop, so a drag
+    // can't bleed selection across pages in the continuous scroll.
+    ;(e.target as Element).closest?.('.textLayer')?.classList.add('selecting')
   }
 
   const onStageMouseUp = (): void => {
