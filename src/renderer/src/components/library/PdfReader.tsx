@@ -114,13 +114,22 @@ export function PdfReader({ bookId }: { bookId: string }) {
   }, [loading])
 
   const renderPage = useCallback(
-    async (pageNum: number, slot: HTMLDivElement, scale: number) => {
+    async (pageNum: number, slot: HTMLDivElement) => {
       const doc = docRef.current
       if (!doc) return
       try {
         const pg = await doc.getPage(pageNum)
         if (!renderedRef.current.has(pageNum)) return
+        // Scale per page from its OWN width so every page fits and the text layer
+        // (sized to the slot) matches the rendered canvas exactly.
+        const natural = pg.getViewport({ scale: 1 })
+        const scale =
+          fitWidth && containerW
+            ? Math.max(0.4, Math.min(3, (containerW - 56) / natural.width))
+            : manualScale
         const viewport = pg.getViewport({ scale })
+        slot.style.width = `${Math.floor(viewport.width)}px`
+        slot.style.height = `${Math.floor(viewport.height)}px`
         const dpr = window.devicePixelRatio || 1
         const canvas = document.createElement('canvas')
         canvas.className = 'pdf-canvas'
@@ -143,7 +152,7 @@ export function PdfReader({ bookId }: { bookId: string }) {
         // Selectable text layer over the canvas.
         const textDiv = document.createElement('div')
         textDiv.className = 'textLayer'
-        textDiv.style.setProperty('--scale-factor', String(scale))
+        textDiv.style.setProperty('--scale-factor', String(viewport.scale))
         slot.appendChild(textDiv)
         const textContent = await pg.getTextContent()
         if (!renderedRef.current.has(pageNum)) {
@@ -163,7 +172,7 @@ export function PdfReader({ bookId }: { bookId: string }) {
         /* ignore */
       }
     },
-    []
+    [fitWidth, containerW, manualScale]
   )
 
   // Render pages near the viewport; unload far ones. Re-runs when scale changes.
@@ -197,7 +206,7 @@ export function PdfReader({ bookId }: { bookId: string }) {
         const visible = sBottom >= top - margin && sTop <= bottom + margin
         if (visible && !renderedRef.current.has(pageNum)) {
           renderedRef.current.add(pageNum)
-          void renderPage(pageNum, slot, effScale)
+          void renderPage(pageNum, slot)
         } else if (!visible && renderedRef.current.has(pageNum)) {
           renderedRef.current.delete(pageNum)
           const t = tasksRef.current.get(pageNum)
@@ -325,6 +334,27 @@ export function PdfReader({ bookId }: { bookId: string }) {
   const slotW = base ? Math.floor(base.w * effScale) : 0
   const slotH = base ? Math.floor(base.h * effScale) : 0
 
+  // Memoized so frequent re-renders (scroll updates currentPage) don't reset the
+  // per-page sizes that renderPage sets imperatively.
+  const pagesEl = useMemo(
+    () => (
+      <div className="reader-pages" style={{ gap: GAP }}>
+        {Array.from({ length: numPages }, (_, i) => (
+          <div
+            key={i}
+            ref={(el) => {
+              slotRefs.current[i] = el
+            }}
+            className="page-slot"
+            data-page={i + 1}
+            style={{ width: slotW, height: slotH }}
+          />
+        ))}
+      </div>
+    ),
+    [numPages, slotW, slotH]
+  )
+
   return (
     <div className="reader">
       <div className="reader-toolbar">
@@ -367,21 +397,7 @@ export function PdfReader({ bookId }: { bookId: string }) {
       <div className="reader-stage" ref={stageRef} onMouseDown={onStageMouseDown} onMouseUp={onStageMouseUp}>
         {loading && <div className="reader-msg">Opening…</div>}
         {error && <div className="reader-msg error">{error}</div>}
-        {!loading && !error && base && (
-          <div className="reader-pages" style={{ gap: GAP }}>
-            {Array.from({ length: numPages }, (_, i) => (
-              <div
-                key={i}
-                ref={(el) => {
-                  slotRefs.current[i] = el
-                }}
-                className="page-slot"
-                data-page={i + 1}
-                style={{ width: slotW, height: slotH }}
-              />
-            ))}
-          </div>
-        )}
+        {!loading && !error && base && pagesEl}
         {sel && (
           <button
             className="quote-pop"
