@@ -56,6 +56,7 @@ const api: LociApi = {
   indexBookText: (bookId, title, pages) =>
     ipcRenderer.invoke(Channels.indexBookText, bookId, title, pages),
   unindexedBooks: () => ipcRenderer.invoke(Channels.unindexedBooks),
+  exportNotePdf: (opts) => ipcRenderer.invoke(Channels.exportNotePdf, opts),
 
   onImportProgress: (cb) => {
     const listener = (_e: IpcRendererEvent, p: ImportProgress): void => cb(p)

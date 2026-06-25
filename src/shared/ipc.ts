@@ -52,6 +52,7 @@ export const Channels = {
   search: 'search:query',
   indexBookText: 'search:indexBookText',
   unindexedBooks: 'search:unindexed',
+  exportNotePdf: 'export:notePdf',
 
   // main → renderer events
   importProgress: 'library:importProgress',
@@ -192,6 +193,8 @@ export interface LociApi {
   search(query: string, scope: SearchScope): Promise<SearchHit[]>
   indexBookText(bookId: string, title: string, pages: IndexedPage[]): Promise<void>
   unindexedBooks(): Promise<{ id: string; title: string }[]>
+  /** Render a note to a styled academic PDF; returns the saved path or null if cancelled. */
+  exportNotePdf(opts: ExportOptions): Promise<string | null>
 
   /** Subscribe to import progress; returns an unsubscribe function. */
   onImportProgress(cb: (p: ImportProgress) => void): () => void
@@ -300,6 +303,14 @@ export interface VaultHealth {
   quotes: number
   indexed: number
   brokenLinks: BrokenLink[]
+}
+
+export interface ExportOptions {
+  /** Vault-relative path of the note to export. */
+  notePath: string
+  includeBibliography: boolean
+  /** Cover byline; defaults to the OS user name if omitted. */
+  author?: string | null
 }
 
 export type LinkTarget =

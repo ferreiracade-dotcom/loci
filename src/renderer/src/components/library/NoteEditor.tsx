@@ -21,7 +21,8 @@ import {
   Code,
   Link as LinkIcon,
   Check,
-  Loader2
+  Loader2,
+  FileDown
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
@@ -134,6 +135,7 @@ export function NoteEditor({ path }: { path: string }) {
   const cmRef = useRef<ReactCodeMirrorRef>(null)
   const [value, setValue] = useState('')
   const [status, setStatus] = useState<SaveStatus>('idle')
+  const [exporting, setExporting] = useState(false)
   const valueRef = useRef('')
   const dirtyRef = useRef(false)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -211,6 +213,15 @@ export function NoteEditor({ path }: { path: string }) {
     view.dispatch({ changes })
     view.focus()
   }, [])
+
+  const exportPdf = useCallback(async () => {
+    setExporting(true)
+    try {
+      await api.exportNotePdf({ notePath: path, includeBibliography: true })
+    } finally {
+      setExporting(false)
+    }
+  }, [path])
 
   const insertLink = useCallback(() => {
     const view = cmRef.current?.view
@@ -312,6 +323,14 @@ export function NoteEditor({ path }: { path: string }) {
         </button>
         <button title="Link" onClick={insertLink}>
           <LinkIcon size={15} />
+        </button>
+        <span className="nt-sep" />
+        <button
+          title="Export to PDF (with bibliography)"
+          onClick={() => void exportPdf()}
+          disabled={exporting}
+        >
+          {exporting ? <Loader2 size={15} className="spin" /> : <FileDown size={15} />}
         </button>
         <span className="note-status">
           {status === 'saving' && (
