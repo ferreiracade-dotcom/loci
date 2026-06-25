@@ -81,6 +81,7 @@ interface Store {
   loadStandaloneNotes: () => Promise<void>
   createNote: (title: string, type?: NoteType) => Promise<void>
   openNote: (path: string) => void
+  openNoteInLeft: (path: string) => void
   openNoteInSplit: (path: string) => void
   closeSplitNote: () => void
   deleteNote: (path: string) => Promise<void>
@@ -313,6 +314,21 @@ export const useStore = create<Store>((set, get) => {
     openNote: (path) => {
       // Keep any open book; the Notes view opens beside it in the split.
       set({ activeNotePath: path })
+      get().saveLayout({ activeLeftView: 'notes' })
+    },
+
+    openNoteInLeft: (path) => {
+      const { activeNotePath, splitNotePath } = get()
+      if (path === activeNotePath) return
+      if (path === splitNotePath) {
+        // It's already in the right pane — swap the two panes.
+        set({ activeNotePath: path, splitNotePath: activeNotePath })
+      } else if (activeNotePath && !splitNotePath) {
+        // Preserve the current note by moving it into the right pane.
+        set({ activeNotePath: path, splitNotePath: activeNotePath })
+      } else {
+        set({ activeNotePath: path })
+      }
       get().saveLayout({ activeLeftView: 'notes' })
     },
 

@@ -30,6 +30,7 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
   const activeNotePath = useStore((s) => s.activeNotePath)
   const splitNotePath = useStore((s) => s.splitNotePath)
   const openNote = useStore((s) => s.openNote)
+  const openNoteInLeft = useStore((s) => s.openNoteInLeft)
   const openNoteInSplit = useStore((s) => s.openNoteInSplit)
   const closeSplitNote = useStore((s) => s.closeSplitNote)
   const createNote = useStore((s) => s.createNote)
@@ -280,11 +281,12 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
           <button
             className="ctx-item"
             onClick={() => {
-              openNote(menu.path)
+              if (compact) openNote(menu.path)
+              else openNoteInLeft(menu.path)
               setMenu(null)
             }}
           >
-            <FileText size={14} /> Open in Note 1 (left)
+            <FileText size={14} /> {compact ? 'Open' : 'Open in Note 1 (left)'}
           </button>
           {!compact && (
             <button
