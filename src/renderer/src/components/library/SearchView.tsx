@@ -11,9 +11,15 @@ const KINDS: { id: SearchKind; label: string }[] = [
   { id: 'note', label: 'Notes' }
 ]
 
-export function SearchView() {
+export function SearchView({ compact = false }: { compact?: boolean }) {
   const shelves = useStore((s) => s.shelves)
   const results = useStore((s) => s.searchResults)
+  const query = useStore((s) => s.searchQuery)
+  const kind = useStore((s) => s.searchKind)
+  const shelfId = useStore((s) => s.searchShelf)
+  const setSearchQuery = useStore((s) => s.setSearchQuery)
+  const setSearchKind = useStore((s) => s.setSearchKind)
+  const setSearchShelf = useStore((s) => s.setSearchShelf)
   const runSearch = useStore((s) => s.runSearch)
   const openBookAt = useStore((s) => s.openBookAt)
   const openNote = useStore((s) => s.openNote)
@@ -21,9 +27,6 @@ export function SearchView() {
   const startIndexing = useStore((s) => s.startIndexing)
   const cancelIndexing = useStore((s) => s.cancelIndexing)
 
-  const [query, setQuery] = useState('')
-  const [kind, setKind] = useState<SearchKind>('all')
-  const [shelfId, setShelfId] = useState<string>('')
   const [searching, setSearching] = useState(false)
 
   useEffect(() => {
@@ -40,38 +43,39 @@ export function SearchView() {
   }
 
   return (
-    <div className="search-view">
+    <div className={`search-view${compact ? ' compact' : ''}`}>
       <div className="search-bar">
         <div className="search-input-wrap">
           <SearchIcon size={16} className="search-icon" />
           <input
             className="search-input"
             autoFocus
-            placeholder="Search books, quotes, and notes…"
+            placeholder="Search books, quotes, notes…"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        {indexing ? (
-          <div className="index-progress">
-            <span>
-              {indexing.total === 0 ? 'Up to date' : `Indexing ${indexing.done}/${indexing.total}`}
-            </span>
-            {indexing.total > 0 && (
-              <button className="btn btn-sm" onClick={cancelIndexing}>
-                <X size={14} /> Stop
-              </button>
-            )}
-          </div>
-        ) : (
-          <button
-            className="btn btn-sm"
-            title="Extract and index any books not yet searchable (runs in the background)"
-            onClick={() => void startIndexing()}
-          >
-            <DatabaseZap size={14} /> Build index
-          </button>
-        )}
+        {!compact &&
+          (indexing ? (
+            <div className="index-progress">
+              <span>
+                {indexing.total === 0 ? 'Up to date' : `Indexing ${indexing.done}/${indexing.total}`}
+              </span>
+              {indexing.total > 0 && (
+                <button className="btn btn-sm" onClick={cancelIndexing}>
+                  <X size={14} /> Stop
+                </button>
+              )}
+            </div>
+          ) : (
+            <button
+              className="btn btn-sm"
+              title="Extract and index any books not yet searchable (runs in the background)"
+              onClick={() => void startIndexing()}
+            >
+              <DatabaseZap size={14} /> Build index
+            </button>
+          ))}
       </div>
 
       <div className="search-scope">
@@ -80,13 +84,17 @@ export function SearchView() {
             <button
               key={k.id}
               className={`seg-btn${kind === k.id ? ' active' : ''}`}
-              onClick={() => setKind(k.id)}
+              onClick={() => setSearchKind(k.id)}
             >
               {k.label}
             </button>
           ))}
         </div>
-        <select className="field scope-shelf" value={shelfId} onChange={(e) => setShelfId(e.target.value)}>
+        <select
+          className="field scope-shelf"
+          value={shelfId}
+          onChange={(e) => setSearchShelf(e.target.value)}
+        >
           <option value="">All shelves</option>
           {shelves.map((s) => (
             <option key={s.id} value={s.id}>
@@ -98,8 +106,8 @@ export function SearchView() {
 
       {query.trim() && !searching && results.length === 0 ? (
         <div className="quotes-empty">
-          No matches. If books look unsearchable, click <b>Build index</b> above (it runs in the
-          background — you can keep working).
+          No matches. If books look unsearchable, use <b>Build index</b> in the Search view (it runs
+          in the background).
         </div>
       ) : (
         <SearchResults onHit={onHit} />

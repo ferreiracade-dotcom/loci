@@ -15,6 +15,7 @@ import type {
   PublicConfig,
   Quote,
   SearchHit,
+  SearchKind,
   SearchScope,
   Shelf,
   Tag,
@@ -47,6 +48,10 @@ interface Store {
   searchResults: SearchHit[]
   /** Folded query tokens, used to flash-highlight matches when jumping to a page. */
   searchTerms: string[]
+  /** Persisted search inputs so the bar survives moving between books. */
+  searchQuery: string
+  searchKind: SearchKind
+  searchShelf: string
 
   init: () => Promise<void>
   enter: () => void
@@ -89,6 +94,9 @@ interface Store {
   cancelIndexing: () => void
   runSearch: (query: string, scope: SearchScope) => Promise<void>
   clearSearch: () => void
+  setSearchQuery: (q: string) => void
+  setSearchKind: (k: SearchKind) => void
+  setSearchShelf: (s: string) => void
 }
 
 function foldTokens(query: string): string[] {
@@ -163,6 +171,9 @@ export const useStore = create<Store>((set, get) => {
     indexing: null,
     searchResults: [],
     searchTerms: [],
+    searchQuery: '',
+    searchKind: 'all',
+    searchShelf: '',
 
     init: async () => {
       if (!listenersBound) {
@@ -421,6 +432,10 @@ export const useStore = create<Store>((set, get) => {
       set({ searchResults: results, searchTerms: foldTokens(query) })
     },
 
-    clearSearch: () => set({ searchResults: [], searchTerms: [] })
+    clearSearch: () => set({ searchResults: [], searchTerms: [] }),
+
+    setSearchQuery: (q) => set({ searchQuery: q }),
+    setSearchKind: (k) => set({ searchKind: k }),
+    setSearchShelf: (s) => set({ searchShelf: s })
   }
 })

@@ -11,9 +11,7 @@ import { QuotesPanel } from './library/QuotesPanel'
 import { NotesView } from './library/NotesView'
 import { BacklinksPanel } from './library/BacklinksPanel'
 import { SearchView } from './library/SearchView'
-import { SearchResults } from './library/SearchResults'
 import { clamp } from '../lib/util'
-import type { SearchHit } from '@shared/ipc'
 
 const RAIL = 48
 const CENTER_MIN = 300
@@ -27,8 +25,6 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const layout = useStore((s) => s.layout)!
   const openBookId = useStore((s) => s.openBookId)
   const searchResults = useStore((s) => s.searchResults)
-  const openBookAt = useStore((s) => s.openBookAt)
-  const openNote = useStore((s) => s.openNote)
   const setLayoutLocal = useStore((s) => s.setLayoutLocal)
   const saveLayout = useStore((s) => s.saveLayout)
   const persistLayout = useStore((s) => s.persistLayout)
@@ -49,11 +45,6 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
 
   const empty = CENTER_EMPTY[layout.activeLeftView] ?? CENTER_EMPTY.library
   const activeTab = RIGHT_TABS.find((t) => t.id === layout.activeRightTab) ?? RIGHT_TABS[0]
-
-  const onSearchHit = (h: SearchHit): void => {
-    if ((h.kind === 'page' || h.kind === 'quote') && h.bookId) openBookAt(h.bookId, h.page ?? 1)
-    else if (h.kind === 'note' && h.ref) openNote(h.ref)
-  }
 
   return (
     <div className="three-panel" ref={ref}>
@@ -114,7 +105,7 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
           searchResults.length > 0 ? (
             <div className="reader-split">
               <div className="reader-split-list">
-                <SearchResults onHit={onSearchHit} />
+                <SearchView compact />
               </div>
               <PdfReader bookId={openBookId} />
             </div>

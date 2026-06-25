@@ -1756,17 +1756,19 @@ select.field {
   min-height: 0;
 }
 .reader-split-list {
-  width: 300px;
-  flex: 0 0 300px;
+  width: 320px;
+  flex: 0 0 320px;
   border-right: 1px solid var(--border);
-  overflow: auto;
   min-height: 0;
+  display: flex;
   background: var(--base);
 }
-.reader-split-list .search-results {
-  overflow: visible;
-  flex: none;
-  padding: 8px;
+.reader-split-list .search-view {
+  flex: 1;
+  min-width: 0;
+}
+.search-view.compact .search-bar {
+  padding: 10px 12px;
 }
 .hit-row.active {
   background: var(--accent-12);
