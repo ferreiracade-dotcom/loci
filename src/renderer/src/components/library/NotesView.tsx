@@ -3,6 +3,17 @@ import { FilePlus, FileText, Trash2 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { NoteEditor } from './NoteEditor'
 import { EmptyState } from '../EmptyState'
+import type { NoteType } from '@shared/ipc'
+
+const TYPE_LABEL: Record<NoteType, string> = {
+  note: 'Note',
+  page: 'Page',
+  chapter: 'Chapter',
+  topic: 'Topic',
+  'book-note': 'Book'
+}
+const CREATE_TYPES: NoteType[] = ['note', 'topic', 'chapter', 'page']
+const FILTERS: ('all' | NoteType)[] = ['all', 'note', 'topic', 'chapter', 'page']
 
 export function NotesView({ compact = false }: { compact?: boolean }) {
   const notes = useStore((s) => s.standaloneNotes)
@@ -13,13 +24,17 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
 
   const [creating, setCreating] = useState(false)
   const [title, setTitle] = useState('')
+  const [newType, setNewType] = useState<NoteType>('note')
+  const [filter, setFilter] = useState<'all' | NoteType>('all')
 
   const commitNew = (): void => {
     const t = title.trim()
     setCreating(false)
     setTitle('')
-    if (t) void createNote(t)
+    if (t) void createNote(t, newType)
   }
+
+  const shown = filter === 'all' ? notes : notes.filter((n) => n.type === filter)
 
   return (
     <div className={`notes-view${compact ? ' compact' : ''}`}>
@@ -30,28 +45,61 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
             <FilePlus size={16} />
           </button>
         </div>
+
+        <div className="notes-filter">
+          {FILTERS.map((f) => (
+            <button
+              key={f}
+              className={`nf-chip${filter === f ? ' active' : ''}`}
+              onClick={() => setFilter(f)}
+            >
+              {f === 'all' ? 'All' : TYPE_LABEL[f]}
+            </button>
+          ))}
+        </div>
+
         {creating && (
-          <input
-            className="note-new-input"
-            autoFocus
-            placeholder="Note title…"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            onBlur={commitNew}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') commitNew()
-              else if (e.key === 'Escape') {
-                setCreating(false)
-                setTitle('')
-              }
-            }}
-          />
+          <div className="note-new">
+            <input
+              className="note-new-input"
+              autoFocus
+              placeholder="Note title…"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') commitNew()
+                else if (e.key === 'Escape') {
+                  setCreating(false)
+                  setTitle('')
+                }
+              }}
+            />
+            <select
+              className="note-new-type"
+              value={newType}
+              onChange={(e) => setNewType(e.target.value as NoteType)}
+            >
+              {CREATE_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {TYPE_LABEL[t]}
+                </option>
+              ))}
+            </select>
+            <button className="btn btn-sm" onClick={commitNew}>
+              Add
+            </button>
+          </div>
         )}
+
         <div className="notes-list-scroll">
-          {notes.length === 0 && !creating ? (
-            <div className="notes-list-empty">No standalone notes yet.</div>
+          {shown.length === 0 && !creating ? (
+            <div className="notes-list-empty">
+              {filter === 'all'
+                ? 'No standalone notes yet.'
+                : `No ${TYPE_LABEL[filter as NoteType].toLowerCase()} notes.`}
+            </div>
           ) : (
-            notes.map((n) => (
+            shown.map((n) => (
               <div
                 key={n.path}
                 className={`note-row${activeNotePath === n.path ? ' active' : ''}`}
@@ -59,6 +107,7 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
               >
                 <FileText size={14} />
                 <span className="note-row-title">{n.title}</span>
+                <span className={`note-type-badge ${n.type}`}>{TYPE_LABEL[n.type]}</span>
                 <button
                   className="note-row-del"
                   title="Delete note"

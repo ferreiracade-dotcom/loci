@@ -1635,6 +1635,63 @@ select.field {
 .note-new-input:focus {
   outline: none;
 }
+.note-new {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 10px 0;
+  align-items: center;
+}
+.note-new .note-new-input {
+  margin: 0;
+  flex: 1 1 120px;
+}
+.note-new-type {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  padding: 6px 6px;
+  font-size: 12px;
+}
+.notes-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px 10px 2px;
+}
+.nf-chip {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.nf-chip:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.nf-chip.active {
+  border-color: var(--gold);
+  color: var(--accent);
+  background: var(--accent-12);
+}
+.note-type-badge {
+  flex: 0 0 auto;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.note-type-badge.topic {
+  color: var(--accent);
+  border-color: var(--gold);
+}
 .notes-list-scroll {
   flex: 1;
   overflow: auto;
@@ -2165,4 +2222,102 @@ select.field {
 }
 .note-cm .cm-editor {
   height: 100%;
+}
+
+/* ---------- Dashboard / Vault Health ---------- */
+.dashboard {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 22px 26px;
+}
+.dashboard.compact {
+  padding: 16px;
+}
+.dash-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.dash-head h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 22px;
+  color: var(--text);
+  margin: 0;
+}
+.dash-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 26px;
+}
+.dash-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--accent);
+}
+.dash-card-val {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text);
+}
+.dash-card-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.dash-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text);
+  margin: 0 0 12px;
+}
+.dash-ok {
+  font-size: 13px;
+  color: var(--muted);
+  padding: 6px 2px;
+}
+.broken-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.broken-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 9px 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+}
+.broken-link {
+  font-family: var(--font-read);
+  color: #d98a76;
+}
+.broken-src {
+  flex: 1;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.linkish {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  padding: 0;
+  font-size: 12px;
+  text-decoration: underline;
 }

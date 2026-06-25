@@ -46,10 +46,11 @@ const api: LociApi = {
   saveNote: (path, content) => ipcRenderer.invoke(Channels.saveNote, path, content),
   readNote: (path) => ipcRenderer.invoke(Channels.readNote, path),
   listStandaloneNotes: () => ipcRenderer.invoke(Channels.listStandaloneNotes),
-  createNote: (title) => ipcRenderer.invoke(Channels.createNote, title),
+  createNote: (title, type) => ipcRenderer.invoke(Channels.createNote, title, type),
   deleteNote: (path) => ipcRenderer.invoke(Channels.deleteNote, path),
   backlinks: (target) => ipcRenderer.invoke(Channels.backlinks, target),
   resolveLink: (name) => ipcRenderer.invoke(Channels.resolveLink, name),
+  vaultHealth: () => ipcRenderer.invoke(Channels.vaultHealth),
   search: (query, scope) => ipcRenderer.invoke(Channels.search, query, scope),
   indexBookText: (bookId, title, pages) =>
     ipcRenderer.invoke(Channels.indexBookText, bookId, title, pages),

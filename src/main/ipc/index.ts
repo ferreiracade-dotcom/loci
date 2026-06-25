@@ -8,6 +8,7 @@ import type {
   ImportProgress,
   IndexedPage,
   NewQuote,
+  NoteType,
   PanelLayout,
   PublicConfig,
   SearchScope,
@@ -180,10 +181,13 @@ export function registerIpc(): void {
   )
   ipcMain.handle(Channels.readNote, (_e, path: string) => notes.readNote(path))
   ipcMain.handle(Channels.listStandaloneNotes, () => notes.listStandaloneNotes())
-  ipcMain.handle(Channels.createNote, (_e, title: string) => notes.createStandaloneNote(title))
+  ipcMain.handle(Channels.createNote, (_e, title: string, type?: NoteType) =>
+    notes.createStandaloneNote(title, type)
+  )
   ipcMain.handle(Channels.deleteNote, (_e, path: string) => notes.deleteNote(path))
   ipcMain.handle(Channels.backlinks, (_e, target: string) => notes.backlinks(target))
   ipcMain.handle(Channels.resolveLink, (_e, name: string) => notes.resolveLink(name))
+  ipcMain.handle(Channels.vaultHealth, () => notes.vaultHealth())
 
   // --- Search (Phase 3) ---
   ipcMain.handle(Channels.search, (_e, query: string, scope: SearchScope) =>

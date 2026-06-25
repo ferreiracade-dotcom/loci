@@ -4,7 +4,19 @@ import { getDb } from '../db/connection'
 import { readConfig } from './config'
 import { sanitizeName } from './library'
 import * as search from './search'
-import type { BookNote, LinkTarget, NoteSummary } from '../../shared/ipc'
+import type { BookNote, LinkTarget, NoteSummary, NoteType, VaultHealth } from '../../shared/ipc'
+
+const NOTE_TYPES: NoteType[] = ['note', 'page', 'chapter', 'topic', 'book-note']
+
+function typeFromContent(content: string): NoteType {
+  const fm = content.match(/^---\n([\s\S]*?)\n---/)
+  if (fm) {
+    const m = fm[1].match(/^type:\s*(.+)$/m)
+    const t = m?.[1].trim() as NoteType | undefined
+    if (t && NOTE_TYPES.includes(t)) return t
+  }
+  return 'note'
+}
 
 interface BookMetaRow {
   title: string
@@ -87,15 +99,20 @@ export function listStandaloneNotes(): NoteSummary[] {
     .map((f) => {
       const rel = `notes/standalone/${f}`
       const content = readFileSync(join(vault, rel), 'utf-8')
-      return { path: rel, title: titleFromContent(content, f.replace(/\.md$/i, '')) }
+      return {
+        path: rel,
+        title: titleFromContent(content, f.replace(/\.md$/i, '')),
+        type: typeFromContent(content)
+      }
     })
     .sort((a, b) => a.title.localeCompare(b.title))
 }
 
-export function createStandaloneNote(title: string): NoteSummary {
+export function createStandaloneNote(title: string, type: NoteType = 'note'): NoteSummary {
   const vault = readConfig().vaultPath
   if (!vault) throw new Error('No vault')
   const clean = (title || 'Untitled').trim()
+  const safeType: NoteType = NOTE_TYPES.includes(type) ? type : 'note'
   const base = sanitizeName(clean)
   let rel = `notes/standalone/${base}.md`
   if (existsSync(join(vault, rel))) {
@@ -103,10 +120,10 @@ export function createStandaloneNote(title: string): NoteSummary {
   }
   const abs = join(vault, rel)
   mkdirSync(dirname(abs), { recursive: true })
-  const content = `---\ntitle: ${clean}\ntype: note\n---\n\n# ${clean}\n\n`
+  const content = `---\ntitle: ${clean}\ntype: ${safeType}\n---\n\n# ${clean}\n\n`
   writeFileSync(abs, content, 'utf-8')
   search.indexNote(rel, clean, content)
-  return { path: rel, title: clean }
+  return { path: rel, title: clean, type: safeType }
 }
 
 export function deleteNote(relPath: string): void {
@@ -162,11 +179,56 @@ export function backlinks(target: string): NoteSummary[] {
     if (re.test(content)) {
       out.push({
         path: relative(vault, abs).replace(/\\/g, '/'),
-        title: titleFromContent(content, basename(abs, '.md'))
+        title: titleFromContent(content, basename(abs, '.md')),
+        type: typeFromContent(content)
       })
     }
   }
   return out.sort((a, b) => a.title.localeCompare(b.title))
+}
+
+/** Scan the vault for stats and unresolved [[wiki-links]]. */
+export function vaultHealth(): VaultHealth {
+  const db = getDb()
+  const vault = readConfig().vaultPath
+  const books = (db.prepare('SELECT COUNT(*) AS n FROM books').get() as { n: number }).n
+  const indexed = (db.prepare('SELECT COUNT(*) AS n FROM books WHERE indexed = 1').get() as { n: number }).n
+  const quotes = (db.prepare('SELECT COUNT(*) AS n FROM quotes').get() as { n: number }).n
+
+  const valid = new Set<string>()
+  for (const b of db.prepare('SELECT title FROM books').all() as { title: string }[]) {
+    valid.add(b.title.toLowerCase())
+  }
+  for (const n of listStandaloneNotes()) valid.add(n.title.toLowerCase())
+
+  const brokenLinks: VaultHealth['brokenLinks'] = []
+  let notes = 0
+  if (vault) {
+    const seen = new Set<string>()
+    for (const abs of walkMd(join(vault, 'notes'))) {
+      notes++
+      let content: string
+      try {
+        content = readFileSync(abs, 'utf-8')
+      } catch {
+        continue
+      }
+      const source = relative(vault, abs).replace(/\\/g, '/')
+      const sourceTitle = titleFromContent(content, basename(abs, '.md'))
+      const re = /\[\[([^\]\n]+)\]\]/g
+      let m: RegExpExecArray | null
+      while ((m = re.exec(content))) {
+        const link = m[1].split('|')[0].split('#')[0].trim()
+        if (!link) continue
+        const key = `${source}::${link.toLowerCase()}`
+        if (seen.has(key)) continue
+        seen.add(key)
+        if (!valid.has(link.toLowerCase())) brokenLinks.push({ source, sourceTitle, link })
+      }
+    }
+  }
+  brokenLinks.sort((a, b) => a.link.localeCompare(b.link))
+  return { books, notes, quotes, indexed, brokenLinks }
 }
 
 /** Resolve a [[name]] to a book or a standalone note, for navigation. */

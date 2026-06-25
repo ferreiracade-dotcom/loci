@@ -14,6 +14,7 @@ import type {
   NoteSummary,
   PanelLayout,
   PublicConfig,
+  NoteType,
   Quote,
   SearchHit,
   SearchKind,
@@ -76,7 +77,7 @@ interface Store {
   clearPendingPage: () => void
   closeBook: () => void
   loadStandaloneNotes: () => Promise<void>
-  createNote: (title: string) => Promise<void>
+  createNote: (title: string, type?: NoteType) => Promise<void>
   openNote: (path: string) => void
   deleteNote: (path: string) => Promise<void>
   navigateLink: (name: string) => Promise<void>
@@ -280,8 +281,8 @@ export const useStore = create<Store>((set, get) => {
       set({ standaloneNotes: await api.listStandaloneNotes() })
     },
 
-    createNote: async (title) => {
-      const note = await api.createNote(title)
+    createNote: async (title, type) => {
+      const note = await api.createNote(title, type)
       await get().loadStandaloneNotes()
       set({ activeNotePath: note.path })
       get().saveLayout({ activeLeftView: 'notes' })

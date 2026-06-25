@@ -129,6 +129,7 @@ export function NoteEditor({ path }: { path: string }) {
   const notes = useStore((s) => s.standaloneNotes)
   const tags = useStore((s) => s.tags)
   const navigateLink = useStore((s) => s.navigateLink)
+  const createNote = useStore((s) => s.createNote)
 
   const cmRef = useRef<ReactCodeMirrorRef>(null)
   const [value, setValue] = useState('')
@@ -256,7 +257,14 @@ export function NoteEditor({ path }: { path: string }) {
             const name = el.getAttribute('data-link')
             if (name) {
               e.preventDefault()
-              void navigateLink(name)
+              if (el.classList.contains('cm-wikilink-broken')) {
+                // Click-to-fix: create the missing note so the link resolves.
+                if (window.confirm(`“${name}” doesn't exist yet. Create a note for it?`)) {
+                  void createNote(name)
+                }
+              } else {
+                void navigateLink(name)
+              }
               return true
             }
           }
@@ -264,7 +272,7 @@ export function NoteEditor({ path }: { path: string }) {
         }
       })
     ],
-    [completion, validNames, navigateLink]
+    [completion, validNames, navigateLink, createNote]
   )
 
   return (

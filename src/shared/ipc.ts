@@ -47,6 +47,7 @@ export const Channels = {
   deleteNote: 'notes:delete',
   backlinks: 'notes:backlinks',
   resolveLink: 'notes:resolveLink',
+  vaultHealth: 'vault:health',
   search: 'search:query',
   indexBookText: 'search:indexBookText',
   unindexedBooks: 'search:unindexed',
@@ -180,10 +181,11 @@ export interface LociApi {
   saveNote(path: string, content: string): Promise<void>
   readNote(path: string): Promise<string>
   listStandaloneNotes(): Promise<NoteSummary[]>
-  createNote(title: string): Promise<NoteSummary>
+  createNote(title: string, type?: NoteType): Promise<NoteSummary>
   deleteNote(path: string): Promise<void>
   backlinks(target: string): Promise<NoteSummary[]>
   resolveLink(name: string): Promise<LinkTarget>
+  vaultHealth(): Promise<VaultHealth>
   search(query: string, scope: SearchScope): Promise<SearchHit[]>
   indexBookText(bookId: string, title: string, pages: IndexedPage[]): Promise<void>
   unindexedBooks(): Promise<{ id: string; title: string }[]>
@@ -273,9 +275,28 @@ export interface Annotation {
   createdAt: number
 }
 
+export type NoteType = 'note' | 'page' | 'chapter' | 'topic' | 'book-note'
+
 export interface NoteSummary {
   path: string
   title: string
+  type: NoteType
+}
+
+export interface BrokenLink {
+  /** Vault-relative path of the note that contains the broken link. */
+  source: string
+  sourceTitle: string
+  /** The [[name]] that resolves to nothing. */
+  link: string
+}
+
+export interface VaultHealth {
+  books: number
+  notes: number
+  quotes: number
+  indexed: number
+  brokenLinks: BrokenLink[]
 }
 
 export type LinkTarget =
