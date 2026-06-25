@@ -42,6 +42,9 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
     const maxNotes = Math.min(NOTES_MAX, containerW() - leftSlot - CENTER_MIN - DIVIDER_ALLOWANCE)
     setLayoutLocal({ notesWidth: clamp(layout.notesWidth - dx, NOTES_MIN, maxNotes) })
   }
+  const onSplitDrag = (dx: number): void => {
+    setLayoutLocal({ resultsWidth: clamp(layout.resultsWidth + dx, 240, 640) })
+  }
 
   const empty = CENTER_EMPTY[layout.activeLeftView] ?? CENTER_EMPTY.library
   const activeTab = RIGHT_TABS.find((t) => t.id === layout.activeRightTab) ?? RIGHT_TABS[0]
@@ -119,7 +122,10 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
             <PdfReader bookId={openBookId} />
           ) : (
             <div className="reader-split">
-              <div className="reader-split-list">{viewPanel(true)}</div>
+              <div className="reader-split-list" style={{ width: layout.resultsWidth }}>
+                {viewPanel(true)}
+              </div>
+              <Divider onDrag={onSplitDrag} onDragEnd={persistLayout} />
               <PdfReader bookId={openBookId} />
             </div>
           )
