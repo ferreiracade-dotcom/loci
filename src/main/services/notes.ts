@@ -18,6 +18,29 @@ function typeFromContent(content: string): NoteType {
   return 'note'
 }
 
+function parseTagList(s: string): string[] {
+  const t = s.trim()
+  if (!t) return []
+  if (t.startsWith('[')) {
+    return t
+      .replace(/^\[|\]$/g, '')
+      .split(',')
+      .map((x) => x.trim().replace(/^['"]|['"]$/g, ''))
+      .filter(Boolean)
+  }
+  return t
+    .split(/[\s,]+/)
+    .map((x) => x.replace(/^#/, ''))
+    .filter(Boolean)
+}
+
+function tagsFromContent(content: string): string[] {
+  const fm = content.match(/^---\n([\s\S]*?)\n---/)
+  if (!fm) return []
+  const m = fm[1].match(/^tags:\s*(.*)$/m)
+  return m ? parseTagList(m[1]) : []
+}
+
 interface BookMetaRow {
   title: string
   title_sanitized: string
@@ -102,7 +125,8 @@ export function listStandaloneNotes(): NoteSummary[] {
       return {
         path: rel,
         title: titleFromContent(content, f.replace(/\.md$/i, '')),
-        type: typeFromContent(content)
+        type: typeFromContent(content),
+        tags: tagsFromContent(content)
       }
     })
     .sort((a, b) => a.title.localeCompare(b.title))
@@ -123,7 +147,7 @@ export function createStandaloneNote(title: string, type: NoteType = 'note'): No
   const content = `---\ntitle: ${clean}\ntype: ${safeType}\n---\n\n# ${clean}\n\n`
   writeFileSync(abs, content, 'utf-8')
   search.indexNote(rel, clean, content)
-  return { path: rel, title: clean, type: safeType }
+  return { path: rel, title: clean, type: safeType, tags: [] }
 }
 
 export function deleteNote(relPath: string): void {
@@ -180,7 +204,8 @@ export function backlinks(target: string): NoteSummary[] {
       out.push({
         path: relative(vault, abs).replace(/\\/g, '/'),
         title: titleFromContent(content, basename(abs, '.md')),
-        type: typeFromContent(content)
+        type: typeFromContent(content),
+        tags: tagsFromContent(content)
       })
     }
   }

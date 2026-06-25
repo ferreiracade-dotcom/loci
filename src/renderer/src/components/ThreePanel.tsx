@@ -11,6 +11,7 @@ import { QuotesPanel } from './library/QuotesPanel'
 import { NotesView } from './library/NotesView'
 import { BacklinksPanel } from './library/BacklinksPanel'
 import { StandaloneNotesPanel } from './library/StandaloneNotesPanel'
+import { TagsPanel } from './library/TagsPanel'
 import { SearchView } from './library/SearchView'
 import { DashboardView } from './library/DashboardView'
 import { clamp } from '../lib/util'
@@ -177,6 +178,8 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
                 <StandaloneNotesPanel />
               ) : layout.activeRightTab === 'backlinks' ? (
                 <BacklinksPanel />
+              ) : layout.activeRightTab === 'tags' ? (
+                <TagsPanel />
               ) : (
                 <EmptyState
                   icon={activeTab.icon}

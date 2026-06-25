@@ -287,6 +287,7 @@ export interface NoteSummary {
   path: string
   title: string
   type: NoteType
+  tags: string[]
 }
 
 export interface BrokenLink {

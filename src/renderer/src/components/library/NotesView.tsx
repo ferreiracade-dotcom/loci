@@ -23,12 +23,13 @@ const TYPE_LABEL: Record<NoteType, string> = {
   'book-note': 'Book'
 }
 const CREATE_TYPES: NoteType[] = ['note', 'topic', 'chapter', 'page']
-const FILTERS: ('all' | NoteType)[] = ['all', 'note', 'topic', 'chapter', 'page']
 
 export function NotesView({ compact = false }: { compact?: boolean }) {
   const notes = useStore((s) => s.standaloneNotes)
   const activeNotePath = useStore((s) => s.activeNotePath)
   const splitNotePath = useStore((s) => s.splitNotePath)
+  const tagFilter = useStore((s) => s.notesTagFilter)
+  const setTagFilter = useStore((s) => s.setNotesTagFilter)
   const openNote = useStore((s) => s.openNote)
   const openNoteInLeft = useStore((s) => s.openNoteInLeft)
   const openNoteInSplit = useStore((s) => s.openNoteInSplit)
@@ -40,7 +41,6 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
   const [creating, setCreating] = useState(false)
   const [title, setTitle] = useState('')
   const [newType, setNewType] = useState<NoteType>('note')
-  const [filter, setFilter] = useState<'all' | NoteType>('all')
   const [listCollapsed, setListCollapsed] = useState(false)
   const [ratio, setRatio] = useState(0.5)
   const splitRef = useRef<HTMLDivElement>(null)
@@ -88,7 +88,8 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
     setMenu({ x: e.clientX, y: e.clientY, path, title: t })
   }
 
-  const shown = filter === 'all' ? notes : notes.filter((n) => n.type === filter)
+  const allTags = [...new Set(notes.flatMap((n) => n.tags))].sort((a, b) => a.localeCompare(b))
+  const shown = tagFilter ? notes.filter((n) => n.tags.includes(tagFilter)) : notes
   const leftTitle = notes.find((n) => n.path === activeNotePath)?.title ?? 'Note'
   const splitTitle = notes.find((n) => n.path === splitNotePath)?.title ?? 'Note'
   const showSplit = !!splitNotePath && !compact
@@ -139,17 +140,25 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
             </div>
           </div>
 
-          <div className="notes-filter">
-            {FILTERS.map((f) => (
+          {allTags.length > 0 && (
+            <div className="notes-filter">
               <button
-                key={f}
-                className={`nf-chip${filter === f ? ' active' : ''}`}
-                onClick={() => setFilter(f)}
+                className={`nf-chip${!tagFilter ? ' active' : ''}`}
+                onClick={() => setTagFilter(null)}
               >
-                {f === 'all' ? 'All' : TYPE_LABEL[f]}
+                All
               </button>
-            ))}
-          </div>
+              {allTags.map((t) => (
+                <button
+                  key={t}
+                  className={`nf-chip${tagFilter === t ? ' active' : ''}`}
+                  onClick={() => setTagFilter(tagFilter === t ? null : t)}
+                >
+                  #{t}
+                </button>
+              ))}
+            </div>
+          )}
 
           {creating && (
             <div className="note-new">
@@ -187,9 +196,7 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
           <div className="notes-list-scroll">
             {shown.length === 0 && !creating ? (
               <div className="notes-list-empty">
-                {filter === 'all'
-                  ? 'No standalone notes yet.'
-                  : `No ${TYPE_LABEL[filter as NoteType].toLowerCase()} notes.`}
+                {tagFilter ? `No notes tagged #${tagFilter}.` : 'No standalone notes yet.'}
               </div>
             ) : (
               shown.map((n) => (

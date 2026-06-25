@@ -47,6 +47,8 @@ interface Store {
   activeNotePath: string | null
   /** A second note shown side-by-side in the Notes view, or null. */
   splitNotePath: string | null
+  /** Filter the standalone-notes list to a single tag, or null for all. */
+  notesTagFilter: string | null
   /** Target page to jump to when (re)opening a book from search; consumed by the reader. */
   pendingPage: number | null
   indexing: { done: number; total: number } | null
@@ -83,6 +85,7 @@ interface Store {
   openNote: (path: string) => void
   openNoteInLeft: (path: string) => void
   openNoteInSplit: (path: string) => void
+  setNotesTagFilter: (tag: string | null) => void
   closeSplitNote: () => void
   closeLeftNote: () => void
   deleteNote: (path: string) => Promise<void>
@@ -183,6 +186,7 @@ export const useStore = create<Store>((set, get) => {
     standaloneNotes: [],
     activeNotePath: null,
     splitNotePath: null,
+    notesTagFilter: null,
     pendingPage: null,
     indexing: null,
     searchResults: [],
@@ -345,6 +349,8 @@ export const useStore = create<Store>((set, get) => {
     },
 
     closeSplitNote: () => set({ splitNotePath: null }),
+
+    setNotesTagFilter: (tag) => set({ notesTagFilter: tag }),
 
     // Close Note 1 (left): Note 2 (right), if any, is promoted to Note 1.
     closeLeftNote: () => set({ activeNotePath: get().splitNotePath, splitNotePath: null }),
