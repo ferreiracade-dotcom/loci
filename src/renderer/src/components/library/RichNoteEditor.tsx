@@ -20,10 +20,75 @@ import {
   Code,
   Check,
   Loader2,
-  FileDown
+  FileDown,
+  Plus,
+  Tag as TagIcon
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
+
+// ---------- frontmatter ----------
+
+interface FrontMatter {
+  title?: string
+  type?: string
+  tags: string[]
+  /** Other frontmatter lines preserved verbatim. */
+  rest: string[]
+}
+
+function parseTagList(s: string): string[] {
+  const t = s.trim()
+  if (!t) return []
+  if (t.startsWith('[')) {
+    return t
+      .replace(/^\[|\]$/g, '')
+      .split(',')
+      .map((x) => x.trim().replace(/^['"]|['"]$/g, ''))
+      .filter(Boolean)
+  }
+  return t
+    .split(/[\s,]+/)
+    .map((x) => x.replace(/^#/, ''))
+    .filter(Boolean)
+}
+
+function parseNote(raw: string): { fm: FrontMatter; body: string } {
+  const m = raw.match(/^---\n([\s\S]*?)\n---\n?/)
+  if (!m) return { fm: { tags: [], rest: [] }, body: raw }
+  const fm: FrontMatter = { tags: [], rest: [] }
+  for (const line of m[1].split('\n')) {
+    const title = line.match(/^title:\s*(.*)$/)
+    if (title) {
+      fm.title = title[1].trim()
+      continue
+    }
+    const type = line.match(/^type:\s*(.*)$/)
+    if (type) {
+      fm.type = type[1].trim()
+      continue
+    }
+    const tags = line.match(/^tags:\s*(.*)$/)
+    if (tags) {
+      fm.tags = parseTagList(tags[1])
+      continue
+    }
+    if (line.trim()) fm.rest.push(line)
+  }
+  return { fm, body: raw.slice(m[0].length).replace(/^\s+/, '') }
+}
+
+function serializeFrontMatter(fm: FrontMatter): string {
+  const lines = ['---']
+  if (fm.title != null) lines.push(`title: ${fm.title}`)
+  if (fm.type != null) lines.push(`type: ${fm.type}`)
+  lines.push(`tags: [${fm.tags.join(', ')}]`)
+  lines.push(...fm.rest)
+  lines.push('---')
+  return lines.join('\n')
+}
+
+// ---------- wiki-link highlighting ----------
 
 const WIKI_RE = /\[\[([^\]\n]+)\]\]/g
 
@@ -32,7 +97,6 @@ interface WikiOpts {
   onOpen: (name: string) => void
 }
 
-/** Highlights [[wiki-links]] (valid vs broken) and Ctrl/Cmd-click to open. */
 const WikiLink = Extension.create<WikiOpts>({
   name: 'wikiLink',
   addOptions() {
@@ -81,19 +145,25 @@ const WikiLink = Extension.create<WikiOpts>({
   }
 })
 
+// ---------- component ----------
+
 export function RichNoteEditor({ path }: { path: string }) {
   const books = useStore((s) => s.books)
   const notes = useStore((s) => s.standaloneNotes)
   const navigateLink = useStore((s) => s.navigateLink)
   const createNote = useStore((s) => s.createNote)
+  const loadStandaloneNotes = useStore((s) => s.loadStandaloneNotes)
 
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
   const [exporting, setExporting] = useState(false)
-  const fmRef = useRef('')
+  const [tags, setTags] = useState<string[]>([])
+  const [addingTag, setAddingTag] = useState(false)
+  const [tagText, setTagText] = useState('')
+
+  const fmRef = useRef<FrontMatter>({ tags: [], rest: [] })
   const loadingRef = useRef(false)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Live refs so the editor's (stable) extensions see current data.
   const validRef = useRef<(n: string) => boolean>(() => false)
   const openRef = useRef<(n: string) => void>(() => undefined)
   validRef.current = (name) => {
@@ -114,11 +184,15 @@ export function RichNoteEditor({ path }: { path: string }) {
         /\\\[\\\[([^\]]*?)\\\]\\\]/g,
         '[[$1]]'
       )
-      const body = fmRef.current ? `${fmRef.current.trimEnd()}\n\n${md}` : md
-      await api.saveNote(path, `${body}\n`)
+      // Keep the note's title in sync with its first heading (Google-Docs style).
+      const h1 = md.match(/^#\s+(.+)$/m)
+      if (h1) fmRef.current.title = h1[1].trim()
+      const body = `${serializeFrontMatter(fmRef.current)}\n\n${md}\n`
+      await api.saveNote(path, body)
       setStatus('saved')
+      void loadStandaloneNotes()
     },
-    [path]
+    [path, loadStandaloneNotes]
   )
 
   const editor = useEditor({
@@ -148,10 +222,13 @@ export function RichNoteEditor({ path }: { path: string }) {
     loadingRef.current = true
     void api.readNote(path).then((raw) => {
       if (!alive) return
-      const fm = raw.match(/^(---\n[\s\S]*?\n---\n?)/)
-      fmRef.current = fm ? fm[1] : ''
-      const bodyMd = (fm ? raw.slice(fm[1].length) : raw).replace(/^\s+/, '')
-      editor.commands.setContent(bodyMd)
+      const { fm, body } = parseNote(raw)
+      fmRef.current = fm
+      setTags(fm.tags)
+      // Ensure the note opens with its name as a Heading 1.
+      const hasH1 = /^#\s+/.test(body)
+      const titled = hasH1 ? body : `# ${fm.title ?? 'Untitled'}\n\n${body}`
+      editor.commands.setContent(titled)
       setStatus('idle')
       window.setTimeout(() => {
         loadingRef.current = false
@@ -169,6 +246,18 @@ export function RichNoteEditor({ path }: { path: string }) {
       if (editor && !loadingRef.current) void save(editor)
     }
   }, [editor, save])
+
+  const commitTags = (next: string[]): void => {
+    setTags(next)
+    fmRef.current.tags = next
+    if (editor) void save(editor)
+  }
+  const addTag = (): void => {
+    const t = tagText.trim().replace(/^#/, '').toLowerCase()
+    setTagText('')
+    setAddingTag(false)
+    if (t && !tags.includes(t)) commitTags([...tags, t])
+  }
 
   const exportPdf = useCallback(async () => {
     setExporting(true)
@@ -276,7 +365,41 @@ export function RichNoteEditor({ path }: { path: string }) {
         </span>
       </div>
       <div className="note-doc-wrap">
-        <EditorContent editor={editor} className="note-doc" />
+        <div className="note-doc">
+          <div className="note-tags">
+            <TagIcon size={13} className="note-tags-icon" />
+            {tags.map((t) => (
+              <span key={t} className="ntag">
+                #{t}
+                <button title="Remove tag" onClick={() => commitTags(tags.filter((x) => x !== t))}>
+                  ×
+                </button>
+              </span>
+            ))}
+            {addingTag ? (
+              <input
+                className="ntag-input"
+                autoFocus
+                placeholder="tag"
+                value={tagText}
+                onChange={(e) => setTagText(e.target.value)}
+                onBlur={addTag}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') addTag()
+                  else if (e.key === 'Escape') {
+                    setTagText('')
+                    setAddingTag(false)
+                  }
+                }}
+              />
+            ) : (
+              <button className="ntag-add" title="Add note tag" onClick={() => setAddingTag(true)}>
+                <Plus size={12} /> tag
+              </button>
+            )}
+          </div>
+          <EditorContent editor={editor} className="note-doc-content" />
+        </div>
       </div>
     </div>
   )

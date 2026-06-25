@@ -2596,19 +2596,76 @@ select.field {
 .note-doc {
   width: 100%;
   max-width: 760px;
-}
-.note-doc .ProseMirror {
+  align-self: flex-start;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 10px;
   min-height: 72vh;
-  padding: 54px 64px;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.28);
+}
+.note-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 22px 64px 0;
+}
+.note-tags-icon {
+  color: var(--muted);
+  margin-right: 2px;
+}
+.ntag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--accent);
+  background: var(--accent-12);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.ntag button {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  padding: 0;
+  font-size: 13px;
+  line-height: 1;
+}
+.ntag-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--muted);
+  background: none;
+  border: 1px dashed var(--border-strong);
+  border-radius: 999px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+.ntag-add:hover {
+  color: var(--accent);
+  border-color: var(--gold);
+}
+.ntag-input {
+  width: 90px;
+  font-size: 11px;
+  background: var(--base);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--text);
+  padding: 2px 8px;
+}
+.note-doc .ProseMirror {
+  padding: 16px 64px 56px;
   font-family: var(--font-read);
   font-size: 16px;
   line-height: 1.7;
   color: var(--text);
   outline: none;
-  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.28);
+  min-height: 40vh;
 }
 .note-doc .ProseMirror > * + * {
   margin-top: 0.55em;
