@@ -6,14 +6,17 @@ import type {
   AppState,
   BookUpdate,
   ImportProgress,
+  IndexedPage,
   NewQuote,
   PanelLayout,
   PublicConfig,
+  SearchScope,
   WizardData
 } from '../../shared/ipc'
 import * as library from '../services/library'
 import * as quotes from '../services/quotes'
 import * as notes from '../services/notes'
+import * as search from '../services/search'
 import {
   getWelcomeBackgroundDataUrl,
   hasApiKey,
@@ -177,4 +180,13 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.deleteNote, (_e, path: string) => notes.deleteNote(path))
   ipcMain.handle(Channels.backlinks, (_e, target: string) => notes.backlinks(target))
   ipcMain.handle(Channels.resolveLink, (_e, name: string) => notes.resolveLink(name))
+
+  // --- Search (Phase 3) ---
+  ipcMain.handle(Channels.search, (_e, query: string, scope: SearchScope) =>
+    search.search(query, scope)
+  )
+  ipcMain.handle(Channels.indexBookText, (_e, bookId: string, title: string, pages: IndexedPage[]) =>
+    search.indexBookText(bookId, title, pages)
+  )
+  ipcMain.handle(Channels.unindexedBooks, () => search.unindexedBooks())
 }

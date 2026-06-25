@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { getDb } from '../db/connection'
 import { readConfig } from './config'
+import * as search from './search'
 import type { Annotation, NewQuote, Quote } from '../../shared/ipc'
 
 interface BookMetaRow {
@@ -157,6 +158,18 @@ function rowToQuote(r: QuoteRow): Quote {
   }
 }
 
+/** Refresh the FTS row for a quote (text + annotations + tags). */
+function reindexQuote(quoteId: string): void {
+  const row = getDb().prepare('SELECT * FROM quotes WHERE id = ?').get(quoteId) as QuoteRow | undefined
+  if (!row) return
+  const q = rowToQuote(row)
+  const b = row.book_id ? bookMeta(row.book_id) : undefined
+  const content = [q.text, ...q.annotations.map((a) => a.text), q.tags.map((t) => `#${t}`).join(' ')]
+    .filter(Boolean)
+    .join('\n')
+  search.indexQuote({ id: q.id, bookId: q.bookId || null, content, page: q.page, title: b?.title ?? '' })
+}
+
 export function addQuote(input: NewQuote): Quote {
   const vault = readConfig().vaultPath
   const b = bookMeta(input.bookId)
@@ -192,6 +205,7 @@ export function addQuote(input: NewQuote): Quote {
     .run(id, input.bookId, input.text, page, color, rel, JSON.stringify([rel]), Date.now())
   getDb().prepare('UPDATE books SET quote_count = quote_count + 1 WHERE id = ?').run(input.bookId)
 
+  reindexQuote(id)
   const row = getDb().prepare('SELECT * FROM quotes WHERE id = ?').get(id) as QuoteRow
   return rowToQuote(row)
 }
@@ -236,6 +250,7 @@ export function setQuoteTags(quoteId: string, tagNames: string[]): void {
     }
   })()
   updateSidecarTags(quoteId, bookId, cleaned)
+  reindexQuote(quoteId)
 }
 
 export function setQuoteAnnotations(quoteId: string, annotations: Annotation[]): void {
@@ -263,6 +278,7 @@ export function setQuoteAnnotations(quoteId: string, annotations: Annotation[]):
       buildBlock(quoteId, r.text, citationFor(b, r.page), annotations)
     )
   }
+  reindexQuote(quoteId)
 }
 
 export function deleteQuote(quoteId: string): void {
@@ -283,6 +299,7 @@ export function deleteQuote(quoteId: string): void {
     }
   }
   getDb().prepare('DELETE FROM quotes WHERE id = ?').run(quoteId)
+  search.removeQuote(quoteId)
   if (r.book_id) {
     getDb()
       .prepare('UPDATE books SET quote_count = MAX(0, quote_count - 1) WHERE id = ?')

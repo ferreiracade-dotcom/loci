@@ -17,12 +17,37 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc
 
 type RenderHandle = { cancel: () => void; promise: Promise<void> }
 
+const indexedThisSession = new Set<string>()
+
+/** Extract each page's text from an already-loaded doc and send it to the FTS index. */
+async function indexBookPages(
+  doc: PDFDocumentProxy,
+  bookId: string,
+  title: string,
+  isCancelled: () => boolean
+): Promise<void> {
+  const pages: { page: number; text: string }[] = []
+  for (let n = 1; n <= doc.numPages; n++) {
+    if (isCancelled()) return
+    try {
+      const pg = await doc.getPage(n)
+      const tc = await pg.getTextContent()
+      pages.push({ page: n, text: tc.items.map((it) => ('str' in it ? it.str : '')).join(' ') })
+    } catch {
+      /* skip unreadable page */
+    }
+  }
+  if (!isCancelled()) await api.indexBookText(bookId, title, pages)
+}
+
 const GAP = 16
 
 export function PdfReader({ bookId }: { bookId: string }) {
   const book = useStore((s) => s.books.find((b) => b.id === bookId))
   const closeBook = useStore((s) => s.closeBook)
   const addQuote = useStore((s) => s.addQuote)
+  const pendingPage = useStore((s) => s.pendingPage)
+  const clearPendingPage = useStore((s) => s.clearPendingPage)
   const [sel, setSel] = useState<Selection | null>(null)
   const [savedMsg, setSavedMsg] = useState(false)
 
@@ -78,6 +103,10 @@ export function PdfReader({ bookId }: { bookId: string }) {
         setBase({ w: vp.width, h: vp.height })
         setNumPages(doc.numPages)
         setLoading(false)
+        if (book && !book.indexed && !indexedThisSession.has(bookId)) {
+          indexedThisSession.add(bookId)
+          void indexBookPages(doc, bookId, book.title, () => cancelled)
+        }
       } catch {
         if (!cancelled) {
           setError('Failed to render this PDF.')
@@ -284,6 +313,14 @@ export function PdfReader({ bookId }: { bookId: string }) {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [goToPage, currentPage])
+
+  // Jump to a page requested from search.
+  useEffect(() => {
+    if (pendingPage && !loading && numPages) {
+      goToPage(pendingPage)
+      clearPendingPage()
+    }
+  }, [pendingPage, loading, numPages, goToPage, clearPendingPage])
 
   const zoom = (delta: number): void => {
     setFitWidth(false)

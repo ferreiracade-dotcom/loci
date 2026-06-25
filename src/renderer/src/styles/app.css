@@ -1597,6 +1597,133 @@ select.field {
   color: var(--accent);
 }
 
+/* ---------- Search ---------- */
+.search-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+.search-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.search-input-wrap {
+  position: relative;
+  flex: 1;
+}
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+}
+.search-input {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  padding: 9px 12px 9px 34px;
+}
+.search-input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+.search-scope {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.scope-shelf {
+  width: auto;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+.search-hint {
+  padding: 8px 14px;
+  font-size: 12px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.search-results {
+  flex: 1;
+  overflow: auto;
+  padding: 8px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hit-row {
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.hit-row:hover {
+  background: var(--panel);
+  border-color: var(--border);
+}
+.hit-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hit-kind {
+  display: inline-flex;
+  color: var(--muted);
+}
+.hit-kind.quote {
+  color: var(--accent);
+}
+.hit-title {
+  font-weight: 600;
+  font-size: 13px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hit-page {
+  font-size: 11px;
+  color: var(--muted);
+}
+.hit-used {
+  font-size: 10px;
+  color: var(--accent);
+  background: var(--accent-12);
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+.hit-snippet {
+  font-family: var(--font-read);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.hit-mark {
+  background: var(--accent-40);
+  color: var(--text);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
 /* ---------- Quick capture ---------- */
 .qc-body {
   min-height: 140px;

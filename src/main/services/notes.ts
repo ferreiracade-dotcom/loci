@@ -3,6 +3,7 @@ import { basename, dirname, join, relative } from 'path'
 import { getDb } from '../db/connection'
 import { readConfig } from './config'
 import { sanitizeName } from './library'
+import * as search from './search'
 import type { BookNote, LinkTarget, NoteSummary } from '../../shared/ipc'
 
 interface BookMetaRow {
@@ -60,6 +61,7 @@ export function saveNote(relPath: string, content: string): void {
   if (!abs.startsWith(vault)) return // guard against traversal
   mkdirSync(dirname(abs), { recursive: true })
   writeFileSync(abs, content, 'utf-8')
+  search.indexNote(relPath, titleFromContent(content, basename(relPath, '.md')), content)
 }
 
 export function readNote(relPath: string): string {
@@ -101,7 +103,9 @@ export function createStandaloneNote(title: string): NoteSummary {
   }
   const abs = join(vault, rel)
   mkdirSync(dirname(abs), { recursive: true })
-  writeFileSync(abs, `---\ntitle: ${clean}\ntype: note\n---\n\n# ${clean}\n\n`, 'utf-8')
+  const content = `---\ntitle: ${clean}\ntype: note\n---\n\n# ${clean}\n\n`
+  writeFileSync(abs, content, 'utf-8')
+  search.indexNote(rel, clean, content)
   return { path: rel, title: clean }
 }
 
@@ -115,6 +119,7 @@ export function deleteNote(relPath: string): void {
   } catch {
     /* best effort */
   }
+  search.removeNote(relPath)
 }
 
 // ---------- Links & backlinks ----------

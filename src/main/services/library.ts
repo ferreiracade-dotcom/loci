@@ -5,6 +5,7 @@ import { basename, extname, isAbsolute, join, relative } from 'path'
 import { getDataDir, getDb } from '../db/connection'
 import { readConfig } from './config'
 import { downloadCover, fetchBookMeta } from './metadata'
+import * as search from './search'
 import type {
   Book,
   BookUpdate,
@@ -33,6 +34,7 @@ interface BookRow {
   last_page: number
   date_added: number
   last_opened: number | null
+  indexed: number
 }
 
 const INVALID_FILENAME = /[:/\\?*"<>|]/g
@@ -92,6 +94,7 @@ function rowToBook(r: BookRow): Book {
     lastPage: r.last_page,
     dateAdded: r.date_added,
     lastOpened: r.last_opened,
+    indexed: !!r.indexed,
     shelfIds,
     tags
   }
@@ -336,6 +339,7 @@ export function deleteBook(id: string): void {
     | { cover_path: string | null; pdf_path: string | null; source_path: string | null }
     | undefined
   getDb().prepare('DELETE FROM books WHERE id = ?').run(id)
+  search.removeBook(id)
   // Remove the cover, and the cached PDF — but never the user's in-place source file.
   if (r?.cover_path && existsSync(r.cover_path)) {
     try {

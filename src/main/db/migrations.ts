@@ -159,6 +159,25 @@ const migrations: Migration[] = [
     up: (db) => {
       db.exec(`ALTER TABLE quotes ADD COLUMN annotation TEXT NOT NULL DEFAULT '';`)
     }
+  },
+  {
+    version: 6,
+    name: 'search-fts',
+    up: (db) => {
+      db.exec(`
+        ALTER TABLE books ADD COLUMN indexed INTEGER NOT NULL DEFAULT 0;
+
+        CREATE VIRTUAL TABLE search_fts USING fts5(
+          content,
+          kind UNINDEXED,
+          book_id UNINDEXED,
+          ref UNINDEXED,
+          page UNINDEXED,
+          title UNINDEXED,
+          tokenize = 'unicode61 remove_diacritics 2'
+        );
+      `)
+    }
   }
 ]
 

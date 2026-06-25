@@ -10,6 +10,7 @@ import { PdfReader } from './library/PdfReader'
 import { QuotesPanel } from './library/QuotesPanel'
 import { NotesView } from './library/NotesView'
 import { BacklinksPanel } from './library/BacklinksPanel'
+import { SearchView } from './library/SearchView'
 import { clamp } from '../lib/util'
 
 const RAIL = 48
@@ -105,6 +106,8 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
           <LibraryView />
         ) : layout.activeLeftView === 'notes' ? (
           <NotesView />
+        ) : layout.activeLeftView === 'search' ? (
+          <SearchView />
         ) : (
           <EmptyState icon={empty.icon} title={empty.title} subtitle={empty.subtitle} />
         )}

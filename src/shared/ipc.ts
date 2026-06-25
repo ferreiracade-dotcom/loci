@@ -45,6 +45,9 @@ export const Channels = {
   deleteNote: 'notes:delete',
   backlinks: 'notes:backlinks',
   resolveLink: 'notes:resolveLink',
+  search: 'search:query',
+  indexBookText: 'search:indexBookText',
+  unindexedBooks: 'search:unindexed',
 
   // main → renderer events
   importProgress: 'library:importProgress',
@@ -150,6 +153,9 @@ export interface LociApi {
   deleteNote(path: string): Promise<void>
   backlinks(target: string): Promise<NoteSummary[]>
   resolveLink(name: string): Promise<LinkTarget>
+  search(query: string, scope: SearchScope): Promise<SearchHit[]>
+  indexBookText(bookId: string, title: string, pages: IndexedPage[]): Promise<void>
+  unindexedBooks(): Promise<{ id: string; title: string }[]>
 
   /** Subscribe to import progress; returns an unsubscribe function. */
   onImportProgress(cb: (p: ImportProgress) => void): () => void
@@ -194,6 +200,7 @@ export interface Book {
   lastPage: number
   dateAdded: number
   lastOpened: number | null
+  indexed: boolean
   shelfIds: string[]
   tags: string[]
 }
@@ -244,6 +251,31 @@ export type LinkTarget =
   | { type: 'book'; id: string }
   | { type: 'note'; path: string }
   | null
+
+export type SearchKind = 'all' | 'page' | 'quote' | 'note'
+
+export interface SearchScope {
+  kind: SearchKind
+  bookId?: string | null
+  shelfId?: string | null
+  tag?: string | null
+}
+
+export interface SearchHit {
+  kind: 'page' | 'quote' | 'note'
+  bookId: string | null
+  ref: string | null
+  page: number | null
+  title: string
+  /** Snippet with ⟦…⟧ marking matched terms. */
+  snippet: string
+  usedInCount: number
+}
+
+export interface IndexedPage {
+  page: number
+  text: string
+}
 
 export interface Quote {
   id: string

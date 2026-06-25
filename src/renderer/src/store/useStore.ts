@@ -38,6 +38,8 @@ interface Store {
   noteReloadToken: number
   standaloneNotes: NoteSummary[]
   activeNotePath: string | null
+  /** Target page to jump to when (re)opening a book from search; consumed by the reader. */
+  pendingPage: number | null
 
   init: () => Promise<void>
   enter: () => void
@@ -52,6 +54,8 @@ interface Store {
 
   setActiveShelf: (shelfId: string | null) => void
   openBook: (id: string) => void
+  openBookAt: (id: string, page: number) => void
+  clearPendingPage: () => void
   closeBook: () => void
   loadStandaloneNotes: () => Promise<void>
   createNote: (title: string) => Promise<void>
@@ -131,6 +135,7 @@ export const useStore = create<Store>((set, get) => {
     noteReloadToken: 0,
     standaloneNotes: [],
     activeNotePath: null,
+    pendingPage: null,
 
     init: async () => {
       if (!listenersBound) {
@@ -192,9 +197,24 @@ export const useStore = create<Store>((set, get) => {
     setActiveShelf: (shelfId) => set({ activeShelf: shelfId }),
 
     openBook: (id) => {
-      set({ openBookId: id, quotes: [], activeNotePath: null })
+      set({ openBookId: id, quotes: [], activeNotePath: null, pendingPage: null })
       void get().loadQuotes(id)
     },
+
+    openBookAt: (id, page) => {
+      set({
+        openBookId: id,
+        quotes: [],
+        activeNotePath: null,
+        pendingPage: page,
+        books: get().books.map((b) => (b.id === id ? { ...b, lastPage: page } : b))
+      })
+      void api.setBookLastPage(id, page)
+      void get().loadQuotes(id)
+    },
+
+    clearPendingPage: () => set({ pendingPage: null }),
+
     closeBook: () => set({ openBookId: null, quotes: [] }),
 
     loadStandaloneNotes: async () => {

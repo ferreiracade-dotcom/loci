@@ -48,6 +48,10 @@ const api: LociApi = {
   deleteNote: (path) => ipcRenderer.invoke(Channels.deleteNote, path),
   backlinks: (target) => ipcRenderer.invoke(Channels.backlinks, target),
   resolveLink: (name) => ipcRenderer.invoke(Channels.resolveLink, name),
+  search: (query, scope) => ipcRenderer.invoke(Channels.search, query, scope),
+  indexBookText: (bookId, title, pages) =>
+    ipcRenderer.invoke(Channels.indexBookText, bookId, title, pages),
+  unindexedBooks: () => ipcRenderer.invoke(Channels.unindexedBooks),
 
   onImportProgress: (cb) => {
     const listener = (_e: IpcRendererEvent, p: ImportProgress): void => cb(p)
