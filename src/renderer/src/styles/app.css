@@ -2576,3 +2576,94 @@ select.field {
   font-size: 12px;
   text-decoration: underline;
 }
+
+/* ---------- Rich (WYSIWYG) note editor — document feel ---------- */
+.note-editor.rich {
+  background: var(--base);
+}
+.nt-btn.is-active {
+  color: var(--accent);
+  background: var(--accent-12);
+}
+.note-doc-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  padding: 28px 24px 96px;
+}
+.note-doc {
+  width: 100%;
+  max-width: 760px;
+}
+.note-doc .ProseMirror {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-height: 72vh;
+  padding: 54px 64px;
+  font-family: var(--font-read);
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text);
+  outline: none;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.28);
+}
+.note-doc .ProseMirror > * + * {
+  margin-top: 0.55em;
+}
+.note-doc .ProseMirror h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0.5em 0 0.2em;
+  line-height: 1.25;
+}
+.note-doc .ProseMirror h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0.5em 0 0.2em;
+  line-height: 1.3;
+}
+.note-doc .ProseMirror h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0.5em 0 0.2em;
+}
+.note-doc .ProseMirror ul,
+.note-doc .ProseMirror ol {
+  padding-left: 1.5em;
+}
+.note-doc .ProseMirror blockquote {
+  border-left: 3px solid var(--gold);
+  padding-left: 16px;
+  margin-left: 0;
+  color: var(--muted);
+}
+.note-doc .ProseMirror code {
+  background: var(--card);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+.note-doc .ProseMirror a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.note-doc .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--muted);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+.tt-wikilink {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.tt-wikilink.broken {
+  color: #d98a76;
+  text-decoration-style: dotted;
+}

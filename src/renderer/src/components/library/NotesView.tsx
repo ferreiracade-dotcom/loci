@@ -10,7 +10,7 @@ import {
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
-import { NoteEditor } from './NoteEditor'
+import { RichNoteEditor as NoteEditor } from './RichNoteEditor'
 import { Divider } from '../Divider'
 import { EmptyState } from '../EmptyState'
 import type { NoteType } from '@shared/ipc'
