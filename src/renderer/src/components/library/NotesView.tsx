@@ -87,6 +87,7 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
   }
 
   const shown = filter === 'all' ? notes : notes.filter((n) => n.type === filter)
+  const leftTitle = notes.find((n) => n.path === activeNotePath)?.title ?? 'Note'
   const splitTitle = notes.find((n) => n.path === splitNotePath)?.title ?? 'Note'
   const showSplit = !!splitNotePath && !compact
 
@@ -204,7 +205,7 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
                   {!compact && (
                     <button
                       className="note-row-split"
-                      title="Open in split pane"
+                      title="Open in Note 2 (right)"
                       onClick={(e) => {
                         e.stopPropagation()
                         openNoteInSplit(n.path)
@@ -236,13 +237,18 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
             {showSplit ? (
               <>
                 <div className="notes-pane" style={{ flex: `${ratio} 1 0%` }}>
+                  <div className="split-head">
+                    <span className="split-slot">1</span>
+                    <span className="split-title">{leftTitle}</span>
+                  </div>
                   <NoteEditor key={activeNotePath} path={activeNotePath} />
                 </div>
                 <Divider onDrag={onSplitDrag} onDragEnd={() => undefined} />
                 <div className="notes-split-pane" style={{ flex: `${1 - ratio} 1 0%` }}>
                   <div className="split-head">
+                    <span className="split-slot">2</span>
                     <span className="split-title">{splitTitle}</span>
-                    <button className="icon-btn" title="Close split" onClick={closeSplitNote}>
+                    <button className="icon-btn" title="Close Note 2" onClick={closeSplitNote}>
                       <X size={14} />
                     </button>
                   </div>
@@ -278,7 +284,7 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
               setMenu(null)
             }}
           >
-            <FileText size={14} /> Open
+            <FileText size={14} /> Open in Note 1 (left)
           </button>
           {!compact && (
             <button
@@ -288,7 +294,7 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
                 setMenu(null)
               }}
             >
-              <Columns2 size={14} /> Open in split
+              <Columns2 size={14} /> Open in Note 2 (right)
             </button>
           )}
           <div className="ctx-sep" />

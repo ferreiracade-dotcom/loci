@@ -2273,10 +2273,22 @@ select.field {
   min-width: 0;
   min-height: 0;
   display: flex;
+  flex-direction: column;
 }
 .notes-pane .note-editor {
   flex: 1;
-  min-width: 0;
+  min-height: 0;
+}
+.split-slot {
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-12);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  padding: 0 6px;
+  line-height: 16px;
 }
 .notes-split-pane {
   flex: 1;
@@ -2302,6 +2314,8 @@ select.field {
   color: var(--muted);
 }
 .split-title {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
