@@ -220,18 +220,21 @@ export function vaultHealth(): VaultHealth {
   const indexed = (db.prepare('SELECT COUNT(*) AS n FROM books WHERE indexed = 1').get() as { n: number }).n
   const quotes = (db.prepare('SELECT COUNT(*) AS n FROM quotes').get() as { n: number }).n
 
+  const standalone = listStandaloneNotes()
+  // "Notes" = the notes you can browse; book-note files (auto-created per book)
+  // are surfaced under Book Notes, not counted here.
+  const notes = standalone.length
+
   const valid = new Set<string>()
   for (const b of db.prepare('SELECT title FROM books').all() as { title: string }[]) {
     valid.add(b.title.toLowerCase())
   }
-  for (const n of listStandaloneNotes()) valid.add(n.title.toLowerCase())
+  for (const n of standalone) valid.add(n.title.toLowerCase())
 
   const brokenLinks: VaultHealth['brokenLinks'] = []
-  let notes = 0
   if (vault) {
     const seen = new Set<string>()
     for (const abs of walkMd(join(vault, 'notes'))) {
-      notes++
       let content: string
       try {
         content = readFileSync(abs, 'utf-8')
