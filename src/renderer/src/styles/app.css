@@ -2139,15 +2139,9 @@ select.field {
   flex: 1;
   min-width: 0;
 }
-.notes-view.compact {
-  flex-direction: column;
-}
 .notes-view.compact .notes-list-col {
-  width: auto;
-  flex: 0 0 auto;
-  max-height: 170px;
-  border-right: none;
-  border-bottom: 1px solid var(--border);
+  width: 168px;
+  flex: 0 0 168px;
 }
 .reader-split-list .search-view {
   flex: 1;

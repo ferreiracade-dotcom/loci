@@ -95,7 +95,7 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
 
   return (
     <div className={`notes-view${compact ? ' compact' : ''}`}>
-      {!compact && listCollapsed ? (
+      {listCollapsed ? (
         <div className="notes-list-rail">
           <button className="rail-btn" title="Show notes list" onClick={() => toggleList(false)}>
             <PanelLeftOpen size={16} />
@@ -133,11 +133,9 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
               <button className="icon-btn" title="New note" onClick={() => setCreating(true)}>
                 <FilePlus size={16} />
               </button>
-              {!compact && (
-                <button className="icon-btn" title="Hide list" onClick={() => toggleList(true)}>
-                  <PanelLeftClose size={15} />
-                </button>
-              )}
+              <button className="icon-btn" title="Hide list" onClick={() => toggleList(true)}>
+                <PanelLeftClose size={15} />
+              </button>
             </div>
           </div>
 
