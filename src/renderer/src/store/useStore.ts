@@ -52,6 +52,8 @@ interface Store {
   searchQuery: string
   searchKind: SearchKind
   searchShelf: string
+  /** Index of the result the user last opened, highlighted in the results panel. */
+  activeHit: number | null
 
   init: () => Promise<void>
   enter: () => void
@@ -97,6 +99,7 @@ interface Store {
   setSearchQuery: (q: string) => void
   setSearchKind: (k: SearchKind) => void
   setSearchShelf: (s: string) => void
+  setActiveHit: (i: number | null) => void
 }
 
 function foldTokens(query: string): string[] {
@@ -174,6 +177,7 @@ export const useStore = create<Store>((set, get) => {
     searchQuery: '',
     searchKind: 'all',
     searchShelf: '',
+    activeHit: null,
 
     init: async () => {
       if (!listenersBound) {
@@ -425,17 +429,18 @@ export const useStore = create<Store>((set, get) => {
 
     runSearch: async (query, scope) => {
       if (!query.trim()) {
-        set({ searchResults: [], searchTerms: [] })
+        set({ searchResults: [], searchTerms: [], activeHit: null })
         return
       }
       const results = await api.search(query, scope)
-      set({ searchResults: results, searchTerms: foldTokens(query) })
+      set({ searchResults: results, searchTerms: foldTokens(query), activeHit: null })
     },
 
-    clearSearch: () => set({ searchResults: [], searchTerms: [] }),
+    clearSearch: () => set({ searchResults: [], searchTerms: [], activeHit: null }),
 
     setSearchQuery: (q) => set({ searchQuery: q }),
     setSearchKind: (k) => set({ searchKind: k }),
-    setSearchShelf: (s) => set({ searchShelf: s })
+    setSearchShelf: (s) => set({ searchShelf: s }),
+    setActiveHit: (i) => set({ activeHit: i })
   }
 })

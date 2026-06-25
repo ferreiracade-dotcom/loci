@@ -25,17 +25,17 @@ function KindIcon({ kind }: { kind: SearchHit['kind'] }) {
   return <BookOpen size={14} />
 }
 
-export function SearchResults({ onHit }: { onHit: (h: SearchHit) => void }) {
+export function SearchResults({ onHit }: { onHit: (h: SearchHit, index: number) => void }) {
   const results = useStore((s) => s.searchResults)
-  const openBookId = useStore((s) => s.openBookId)
+  const activeHit = useStore((s) => s.activeHit)
 
   return (
     <div className="search-results">
       {results.map((h, i) => (
         <button
           key={i}
-          className={`hit-row${h.bookId && h.bookId === openBookId ? ' active' : ''}`}
-          onClick={() => onHit(h)}
+          className={`hit-row${i === activeHit ? ' active' : ''}`}
+          onClick={() => onHit(h, i)}
         >
           <div className="hit-head">
             <span className={`hit-kind ${h.kind}`}>

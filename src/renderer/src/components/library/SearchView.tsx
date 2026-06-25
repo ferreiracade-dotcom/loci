@@ -23,6 +23,7 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
   const runSearch = useStore((s) => s.runSearch)
   const openBookAt = useStore((s) => s.openBookAt)
   const openNote = useStore((s) => s.openNote)
+  const setActiveHit = useStore((s) => s.setActiveHit)
   const indexing = useStore((s) => s.indexing)
   const startIndexing = useStore((s) => s.startIndexing)
   const cancelIndexing = useStore((s) => s.cancelIndexing)
@@ -37,7 +38,8 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
     return () => clearTimeout(t)
   }, [query, kind, shelfId, runSearch])
 
-  const onHit = (h: SearchHit): void => {
+  const onHit = (h: SearchHit, index: number): void => {
+    setActiveHit(index)
     if ((h.kind === 'page' || h.kind === 'quote') && h.bookId) openBookAt(h.bookId, h.page ?? 1)
     else if (h.kind === 'note' && h.ref) openNote(h.ref)
   }
