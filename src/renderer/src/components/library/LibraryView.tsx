@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type MouseEvent } from 'react'
 import {
   Upload,
   FolderInput,
@@ -8,7 +8,8 @@ import {
   BookOpen,
   Info,
   Pencil,
-  Layers
+  Layers,
+  Check
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
@@ -37,18 +38,26 @@ function BookCard({
   book,
   size,
   onOpen,
-  onRead
+  onRead,
+  onMenu
 }: {
   book: Book
   size: number
   onOpen: () => void
   onRead: () => void
+  onMenu: (e: MouseEvent) => void
 }) {
   return (
     <div
       className="book-card"
       onClick={onRead}
-      title={`${book.title}${book.author ? ` — ${book.author}` : ''} · click to read`}
+      onContextMenu={onMenu}
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData('application/x-loci-book', book.id)
+        e.dataTransfer.effectAllowed = 'copy'
+      }}
+      title={`${book.title}${book.author ? ` — ${book.author}` : ''} · click to read · right-click for shelves`}
     >
       <div className="cover" style={{ height: Math.round(size * 1.4) }}>
         <BookCover id={book.id} hasCover={book.hasCover} title={book.title} />
@@ -78,14 +87,26 @@ function BookCard({
 function BookListRow({
   book,
   onOpen,
-  onRead
+  onRead,
+  onMenu
 }: {
   book: Book
   onOpen: () => void
   onRead: () => void
+  onMenu: (e: MouseEvent) => void
 }) {
   return (
-    <div className="book-row" onClick={onRead} title="Click to read">
+    <div
+      className="book-row"
+      onClick={onRead}
+      onContextMenu={onMenu}
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData('application/x-loci-book', book.id)
+        e.dataTransfer.effectAllowed = 'copy'
+      }}
+      title="Click to read · right-click for shelves"
+    >
       <div className="row-cover">
         <BookCover id={book.id} hasCover={book.hasCover} title={book.title} />
       </div>
@@ -125,10 +146,13 @@ export function LibraryView() {
   const libraryBusy = useStore((s) => s.libraryBusy)
   const importProgress = useStore((s) => s.importProgress)
   const openBook = useStore((s) => s.openBook)
+  const setBookShelves = useStore((s) => s.setBookShelves)
   const [infoId, setInfoId] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [shelvesOpen, setShelvesOpen] = useState(false)
   const [groupBy, setGroupBy] = useState('none')
+  const [dropShelf, setDropShelf] = useState<string | null>(null)
+  const [menu, setMenu] = useState<{ x: number; y: number; bookId: string } | null>(null)
 
   useEffect(() => {
     void api.getSession('libraryGroup').then((v) => {
@@ -139,6 +163,39 @@ export function LibraryView() {
   function changeGroup(v: string): void {
     setGroupBy(v)
     void api.setSession('libraryGroup', v)
+  }
+
+  useEffect(() => {
+    if (!menu) return
+    const onDoc = (): void => setMenu(null)
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') setMenu(null)
+    }
+    window.addEventListener('click', onDoc)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('click', onDoc)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [menu])
+
+  function openMenu(e: MouseEvent, bookId: string): void {
+    e.preventDefault()
+    setMenu({ x: e.clientX, y: e.clientY, bookId })
+  }
+  async function toggleShelf(book: Book, shelfId: string): Promise<void> {
+    const next = book.shelfIds.includes(shelfId)
+      ? book.shelfIds.filter((s) => s !== shelfId)
+      : [...book.shelfIds, shelfId]
+    await setBookShelves(book.id, next)
+  }
+  async function dropOnShelf(bookId: string, shelfId: string): Promise<void> {
+    const b = books.find((x) => x.id === bookId)
+    if (!b || b.shelfIds.includes(shelfId)) return
+    await setBookShelves(bookId, [...b.shelfIds, shelfId])
+    const shelfName = shelves.find((s) => s.id === shelfId)?.name ?? 'shelf'
+    setToast(`Added “${b.title}” to ${shelfName}`)
+    window.setTimeout(() => setToast(null), 2800)
   }
 
   const filtered = useMemo(
@@ -199,6 +256,7 @@ export function LibraryView() {
             size={coverSize}
             onOpen={() => setInfoId(b.id)}
             onRead={() => openBook(b.id)}
+            onMenu={(e) => openMenu(e, b.id)}
           />
         ))}
       </div>
@@ -210,6 +268,7 @@ export function LibraryView() {
             book={b}
             onOpen={() => setInfoId(b.id)}
             onRead={() => openBook(b.id)}
+            onMenu={(e) => openMenu(e, b.id)}
           />
         ))}
       </div>
@@ -300,8 +359,22 @@ export function LibraryView() {
         {shelves.map((s) => (
           <button
             key={s.id}
-            className={`chip${activeShelf === s.id ? ' active' : ''}`}
+            className={`chip${activeShelf === s.id ? ' active' : ''}${
+              dropShelf === s.id ? ' drop-over' : ''
+            }`}
             onClick={() => setActiveShelf(s.id)}
+            onDragOver={(e) => {
+              e.preventDefault()
+              e.dataTransfer.dropEffect = 'copy'
+              if (dropShelf !== s.id) setDropShelf(s.id)
+            }}
+            onDragLeave={() => setDropShelf((d) => (d === s.id ? null : d))}
+            onDrop={(e) => {
+              e.preventDefault()
+              const id = e.dataTransfer.getData('application/x-loci-book')
+              setDropShelf(null)
+              if (id) void dropOnShelf(id, s.id)
+            }}
           >
             {s.name} <span className="chip-n">{s.count}</span>
           </button>
@@ -339,6 +412,56 @@ export function LibraryView() {
       {toast && <div className="toast">{toast}</div>}
       {infoId && <BookInfoDrawer bookId={infoId} onClose={() => setInfoId(null)} />}
       {shelvesOpen && <ShelvesManager onClose={() => setShelvesOpen(false)} />}
+
+      {menu &&
+        (() => {
+          const mb = books.find((b) => b.id === menu.bookId)
+          if (!mb) return null
+          return (
+            <div
+              className="ctx-menu"
+              style={{
+                top: Math.min(menu.y, window.innerHeight - 320),
+                left: Math.min(menu.x, window.innerWidth - 210)
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="ctx-item"
+                onClick={() => {
+                  openBook(mb.id)
+                  setMenu(null)
+                }}
+              >
+                <BookOpen size={14} /> Read
+              </button>
+              <button
+                className="ctx-item"
+                onClick={() => {
+                  setInfoId(mb.id)
+                  setMenu(null)
+                }}
+              >
+                <Info size={14} /> Book info…
+              </button>
+              <div className="ctx-sep" />
+              <div className="ctx-label">Shelves</div>
+              {shelves.length === 0 && <div className="ctx-empty">No shelves yet</div>}
+              {shelves.map((s) => (
+                <button
+                  key={s.id}
+                  className="ctx-item ctx-check"
+                  onClick={() => void toggleShelf(mb, s.id)}
+                >
+                  <span className="ctx-tick">
+                    {mb.shelfIds.includes(s.id) ? <Check size={13} /> : null}
+                  </span>
+                  {s.name}
+                </button>
+              ))}
+            </div>
+          )
+        })()}
     </div>
   )
 }

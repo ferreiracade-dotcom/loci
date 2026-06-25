@@ -1159,6 +1159,62 @@ select.field {
   border-radius: 6px;
   cursor: pointer;
 }
+.chip.drop-over {
+  border-color: var(--gold);
+  background: var(--accent-12);
+  color: var(--text);
+}
+.ctx-menu {
+  position: fixed;
+  z-index: 60;
+  min-width: 190px;
+  background: var(--panel);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 5px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 13px;
+  padding: 7px 9px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.ctx-item:hover {
+  background: var(--card);
+}
+.ctx-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 2px;
+}
+.ctx-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  padding: 4px 9px 2px;
+}
+.ctx-tick {
+  width: 14px;
+  display: inline-flex;
+  color: var(--accent);
+}
+.ctx-empty {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 4px 9px;
+}
 .lib-group {
   margin-bottom: 22px;
 }
