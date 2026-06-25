@@ -39,6 +39,12 @@ export const Channels = {
   deleteQuote: 'quotes:delete',
   getBookNote: 'notes:getBookNote',
   saveNote: 'notes:save',
+  readNote: 'notes:read',
+  listStandaloneNotes: 'notes:listStandalone',
+  createNote: 'notes:create',
+  deleteNote: 'notes:delete',
+  backlinks: 'notes:backlinks',
+  resolveLink: 'notes:resolveLink',
 
   // main → renderer events
   importProgress: 'library:importProgress',
@@ -138,6 +144,12 @@ export interface LociApi {
   deleteQuote(quoteId: string): Promise<void>
   getBookNote(bookId: string): Promise<BookNote | null>
   saveNote(path: string, content: string): Promise<void>
+  readNote(path: string): Promise<string>
+  listStandaloneNotes(): Promise<NoteSummary[]>
+  createNote(title: string): Promise<NoteSummary>
+  deleteNote(path: string): Promise<void>
+  backlinks(target: string): Promise<NoteSummary[]>
+  resolveLink(name: string): Promise<LinkTarget>
 
   /** Subscribe to import progress; returns an unsubscribe function. */
   onImportProgress(cb: (p: ImportProgress) => void): () => void
@@ -222,6 +234,16 @@ export interface Annotation {
   text: string
   createdAt: number
 }
+
+export interface NoteSummary {
+  path: string
+  title: string
+}
+
+export type LinkTarget =
+  | { type: 'book'; id: string }
+  | { type: 'note'; path: string }
+  | null
 
 export interface Quote {
   id: string

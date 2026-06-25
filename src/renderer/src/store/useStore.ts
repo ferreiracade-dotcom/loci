@@ -9,6 +9,7 @@ import type {
   ImportProgress,
   ImportResult,
   NewQuote,
+  NoteSummary,
   PanelLayout,
   PublicConfig,
   Quote,
@@ -35,6 +36,8 @@ interface Store {
   quotes: Quote[]
   /** Bumped when the open book's note changes on disk (e.g. a quote was captured). */
   noteReloadToken: number
+  standaloneNotes: NoteSummary[]
+  activeNotePath: string | null
 
   init: () => Promise<void>
   enter: () => void
@@ -50,6 +53,11 @@ interface Store {
   setActiveShelf: (shelfId: string | null) => void
   openBook: (id: string) => void
   closeBook: () => void
+  loadStandaloneNotes: () => Promise<void>
+  createNote: (title: string) => Promise<void>
+  openNote: (path: string) => void
+  deleteNote: (path: string) => Promise<void>
+  navigateLink: (name: string) => Promise<void>
   loadQuotes: (bookId: string) => Promise<void>
   addQuote: (input: NewQuote) => Promise<void>
   setQuoteTags: (quoteId: string, tags: string[]) => Promise<void>
@@ -72,17 +80,19 @@ interface ShellData {
   books: Book[]
   shelves: Shelf[]
   tags: Tag[]
+  standaloneNotes: NoteSummary[]
 }
 
 async function loadAll(): Promise<ShellData> {
-  const [config, layout, books, shelves, tags] = await Promise.all([
+  const [config, layout, books, shelves, tags, standaloneNotes] = await Promise.all([
     api.getConfig(),
     api.getLayout(),
     api.listBooks(),
     api.listShelves(),
-    api.listTags()
+    api.listTags(),
+    api.listStandaloneNotes()
   ])
-  return { config, layout, books, shelves, tags }
+  return { config, layout, books, shelves, tags, standaloneNotes }
 }
 
 export const useStore = create<Store>((set, get) => {
@@ -119,6 +129,8 @@ export const useStore = create<Store>((set, get) => {
     openBookId: null,
     quotes: [],
     noteReloadToken: 0,
+    standaloneNotes: [],
+    activeNotePath: null,
 
     init: async () => {
       if (!listenersBound) {
@@ -180,10 +192,39 @@ export const useStore = create<Store>((set, get) => {
     setActiveShelf: (shelfId) => set({ activeShelf: shelfId }),
 
     openBook: (id) => {
-      set({ openBookId: id, quotes: [] })
+      set({ openBookId: id, quotes: [], activeNotePath: null })
       void get().loadQuotes(id)
     },
     closeBook: () => set({ openBookId: null, quotes: [] }),
+
+    loadStandaloneNotes: async () => {
+      set({ standaloneNotes: await api.listStandaloneNotes() })
+    },
+
+    createNote: async (title) => {
+      const note = await api.createNote(title)
+      await get().loadStandaloneNotes()
+      set({ activeNotePath: note.path, openBookId: null })
+      get().saveLayout({ activeLeftView: 'notes' })
+    },
+
+    openNote: (path) => {
+      set({ activeNotePath: path, openBookId: null })
+      get().saveLayout({ activeLeftView: 'notes' })
+    },
+
+    deleteNote: async (path) => {
+      await api.deleteNote(path)
+      if (get().activeNotePath === path) set({ activeNotePath: null })
+      await get().loadStandaloneNotes()
+    },
+
+    navigateLink: async (name) => {
+      const target = await api.resolveLink(name)
+      if (!target) return
+      if (target.type === 'book') get().openBook(target.id)
+      else get().openNote(target.path)
+    },
 
     loadQuotes: async (bookId) => {
       const quotes = await api.listQuotes(bookId)

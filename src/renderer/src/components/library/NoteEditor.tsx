@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import CodeMirror, { type ReactCodeMirrorRef } from '@uiw/react-codemirror'
-import { EditorView } from '@codemirror/view'
-import { EditorSelection } from '@codemirror/state'
+import { Decoration, EditorView, ViewPlugin, type DecorationSet, type ViewUpdate } from '@codemirror/view'
+import { EditorSelection, RangeSetBuilder } from '@codemirror/state'
 import { markdown } from '@codemirror/lang-markdown'
 import {
   autocompletion,
@@ -44,6 +44,8 @@ const lociTheme = EditorView.theme(
       backgroundColor: 'var(--accent-40) !important'
     },
     '.cm-gutters': { display: 'none' },
+    '.cm-wikilink': { color: 'var(--accent)', textDecoration: 'underline', cursor: 'pointer' },
+    '.cm-wikilink-broken': { color: '#d98a76', textDecorationStyle: 'dotted' },
     '.cm-tooltip': {
       background: 'var(--card)',
       border: '1px solid var(--border-strong)',
@@ -83,75 +85,110 @@ function makeCompletion(
   }
 }
 
-export function NoteEditor({ bookId }: { bookId: string }) {
-  const reloadToken = useStore((s) => s.noteReloadToken)
+const WIKI_RE = /\[\[([^\]\n]+)\]\]/g
+
+function wikiLinkPlugin(validNames: Set<string>) {
+  return ViewPlugin.fromClass(
+    class {
+      decorations: DecorationSet
+      constructor(view: EditorView) {
+        this.decorations = this.build(view)
+      }
+      update(u: ViewUpdate): void {
+        if (u.docChanged || u.viewportChanged) this.decorations = this.build(u.view)
+      }
+      build(view: EditorView): DecorationSet {
+        const builder = new RangeSetBuilder<Decoration>()
+        for (const { from, to } of view.visibleRanges) {
+          const text = view.state.sliceDoc(from, to)
+          let m: RegExpExecArray | null
+          WIKI_RE.lastIndex = 0
+          while ((m = WIKI_RE.exec(text))) {
+            const start = from + m.index
+            const name = m[1].split('|')[0].split('#')[0].trim()
+            const exists = validNames.has(name.toLowerCase())
+            builder.add(
+              start,
+              start + m[0].length,
+              Decoration.mark({
+                class: exists ? 'cm-wikilink' : 'cm-wikilink cm-wikilink-broken',
+                attributes: { 'data-link': name }
+              })
+            )
+          }
+        }
+        return builder.finish()
+      }
+    },
+    { decorations: (v) => v.decorations }
+  )
+}
+
+export function NoteEditor({ path }: { path: string }) {
   const books = useStore((s) => s.books)
+  const notes = useStore((s) => s.standaloneNotes)
   const tags = useStore((s) => s.tags)
+  const navigateLink = useStore((s) => s.navigateLink)
 
   const cmRef = useRef<ReactCodeMirrorRef>(null)
   const [value, setValue] = useState('')
   const [status, setStatus] = useState<SaveStatus>('idle')
-  const pathRef = useRef<string | null>(null)
   const valueRef = useRef('')
   const dirtyRef = useRef(false)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-
   valueRef.current = value
 
-  // Load the note (and reload when a quote is captured into it).
   useEffect(() => {
     let alive = true
-    void api.getBookNote(bookId).then((note) => {
-      if (!alive || !note) return
-      pathRef.current = note.path
+    void api.readNote(path).then((c) => {
+      if (!alive) return
       dirtyRef.current = false
-      setValue(note.content)
+      setValue(c)
       setStatus('idle')
     })
     return () => {
       alive = false
     }
-  }, [bookId, reloadToken])
+  }, [path])
 
-  // Flush a pending save when the book changes or the editor unmounts.
   useEffect(() => {
     return () => {
-      if (saveTimer.current) {
-        clearTimeout(saveTimer.current)
-        saveTimer.current = null
-      }
-      if (dirtyRef.current && pathRef.current) {
-        void api.saveNote(pathRef.current, valueRef.current)
+      if (saveTimer.current) clearTimeout(saveTimer.current)
+      if (dirtyRef.current) {
+        void api.saveNote(path, valueRef.current)
         dirtyRef.current = false
       }
     }
-  }, [bookId])
+  }, [path])
 
-  const onChange = useCallback((val: string) => {
-    setValue(val)
-    dirtyRef.current = true
-    setStatus('saving')
-    if (saveTimer.current) clearTimeout(saveTimer.current)
-    saveTimer.current = setTimeout(() => {
-      if (!pathRef.current) return
-      void api.saveNote(pathRef.current, valueRef.current).then(() => {
-        dirtyRef.current = false
-        setStatus('saved')
-      })
-    }, 800)
-  }, [])
+  const onChange = useCallback(
+    (val: string) => {
+      setValue(val)
+      dirtyRef.current = true
+      setStatus('saving')
+      if (saveTimer.current) clearTimeout(saveTimer.current)
+      saveTimer.current = setTimeout(() => {
+        void api.saveNote(path, valueRef.current).then(() => {
+          dirtyRef.current = false
+          setStatus('saved')
+        })
+      }, 800)
+    },
+    [path]
+  )
 
   const wrap = useCallback((before: string, after: string = before) => {
     const view = cmRef.current?.view
     if (!view) return
-    const tr = view.state.changeByRange((range) => ({
-      changes: [
-        { from: range.from, insert: before },
-        { from: range.to, insert: after }
-      ],
-      range: EditorSelection.range(range.from + before.length, range.to + before.length)
-    }))
-    view.dispatch(tr)
+    view.dispatch(
+      view.state.changeByRange((range) => ({
+        changes: [
+          { from: range.from, insert: before },
+          { from: range.to, insert: after }
+        ],
+        range: EditorSelection.range(range.from + before.length, range.to + before.length)
+      }))
+    )
     view.focus()
   }, [])
 
@@ -177,25 +214,57 @@ export function NoteEditor({ bookId }: { bookId: string }) {
   const insertLink = useCallback(() => {
     const view = cmRef.current?.view
     if (!view) return
-    const tr = view.state.changeByRange((range) => {
-      const text = view.state.sliceDoc(range.from, range.to) || 'text'
-      const insert = `[${text}](url)`
-      return {
-        changes: { from: range.from, to: range.to, insert },
-        range: EditorSelection.range(range.from + 1, range.from + 1 + text.length)
-      }
-    })
-    view.dispatch(tr)
+    view.dispatch(
+      view.state.changeByRange((range) => {
+        const text = view.state.sliceDoc(range.from, range.to) || 'text'
+        const insert = `[${text}](url)`
+        return {
+          changes: { from: range.from, to: range.to, insert },
+          range: EditorSelection.range(range.from + 1, range.from + 1 + text.length)
+        }
+      })
+    )
     view.focus()
   }, [])
 
+  const validNames = useMemo(
+    () =>
+      new Set([
+        ...books.map((b) => b.title.toLowerCase()),
+        ...notes.map((n) => n.title.toLowerCase())
+      ]),
+    [books, notes]
+  )
   const completion = useMemo(
-    () => makeCompletion(books.map((b) => b.title), tags.map((t) => t.name)),
-    [books, tags]
+    () =>
+      makeCompletion(
+        [...books.map((b) => b.title), ...notes.map((n) => n.title)],
+        tags.map((t) => t.name)
+      ),
+    [books, notes, tags]
   )
   const extensions = useMemo(
-    () => [markdown(), EditorView.lineWrapping, autocompletion({ override: [completion] })],
-    [completion]
+    () => [
+      markdown(),
+      EditorView.lineWrapping,
+      autocompletion({ override: [completion] }),
+      wikiLinkPlugin(validNames),
+      EditorView.domEventHandlers({
+        mousedown(e) {
+          const el = (e.target as HTMLElement).closest?.('.cm-wikilink') as HTMLElement | null
+          if (el && (e.metaKey || e.ctrlKey)) {
+            const name = el.getAttribute('data-link')
+            if (name) {
+              e.preventDefault()
+              void navigateLink(name)
+              return true
+            }
+          }
+          return false
+        }
+      })
+    ],
+    [completion, validNames, navigateLink]
   )
 
   return (

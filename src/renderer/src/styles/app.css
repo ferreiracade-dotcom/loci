@@ -1473,6 +1473,144 @@ select.field {
 .anno-save {
   flex: 0 0 auto;
 }
+
+/* ---------- Standalone notes view ---------- */
+.notes-view {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+.notes-list-col {
+  width: 240px;
+  flex: 0 0 240px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.notes-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.note-new-input {
+  margin: 8px 10px 0;
+  background: var(--panel);
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  color: var(--text);
+  padding: 6px 8px;
+  font-size: 13px;
+}
+.note-new-input:focus {
+  outline: none;
+}
+.notes-list-scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 6px;
+  min-height: 0;
+}
+.notes-list-empty {
+  padding: 14px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.note-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 26px 7px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 13px;
+}
+.note-row:hover {
+  background: var(--panel);
+}
+.note-row.active {
+  background: var(--accent-12);
+  color: var(--accent);
+}
+.note-row-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.note-row-del {
+  position: absolute;
+  right: 6px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0;
+  display: inline-flex;
+}
+.note-row:hover .note-row-del {
+  opacity: 1;
+}
+.note-row-del:hover {
+  color: #d98a76;
+}
+.notes-edit-col {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+}
+
+/* ---------- Backlinks ---------- */
+.backlinks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  overflow: auto;
+}
+.backlink-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  font-size: 13px;
+}
+.backlink-row:hover {
+  border-color: var(--border-strong);
+  color: var(--accent);
+}
+
+/* ---------- Quick capture ---------- */
+.qc-body {
+  min-height: 140px;
+  resize: vertical;
+  font-family: var(--font-read);
+  line-height: 1.5;
+  margin-top: 8px;
+}
+.qc-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
 .quote-tags {
   display: flex;
   flex-wrap: wrap;

@@ -171,4 +171,10 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.saveNote, (_e, path: string, content: string) =>
     notes.saveNote(path, content)
   )
+  ipcMain.handle(Channels.readNote, (_e, path: string) => notes.readNote(path))
+  ipcMain.handle(Channels.listStandaloneNotes, () => notes.listStandaloneNotes())
+  ipcMain.handle(Channels.createNote, (_e, title: string) => notes.createStandaloneNote(title))
+  ipcMain.handle(Channels.deleteNote, (_e, path: string) => notes.deleteNote(path))
+  ipcMain.handle(Channels.backlinks, (_e, target: string) => notes.backlinks(target))
+  ipcMain.handle(Channels.resolveLink, (_e, name: string) => notes.resolveLink(name))
 }
