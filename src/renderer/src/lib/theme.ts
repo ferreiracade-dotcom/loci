@@ -88,38 +88,6 @@ export const THEME_PRESETS: ThemePreset[] = [
       border: '#273028',
       borderStrong: '#36433a'
     }
-  },
-  {
-    id: 'wine',
-    label: 'Wine · Dark',
-    theme: {
-      base: '#181012',
-      sidebar: '#1f1518',
-      panel: '#261a1e',
-      card: '#2f2025',
-      accent: '#c2879a',
-      gold: '#84495a',
-      text: '#efdde2',
-      muted: '#6e545b',
-      border: '#33242a',
-      borderStrong: '#452f38'
-    }
-  },
-  {
-    id: 'midnight',
-    label: 'Midnight · Dark',
-    theme: {
-      base: '#0f1320',
-      sidebar: '#151a2b',
-      panel: '#1a2035',
-      card: '#212840',
-      accent: '#93a2f2',
-      gold: '#5763a6',
-      text: '#e0e4f3',
-      muted: '#646d8c',
-      border: '#262d46',
-      borderStrong: '#353e5c'
-    }
   }
 ]
 
