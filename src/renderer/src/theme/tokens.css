@@ -1,6 +1,7 @@
 /* "Candlelit Study" — dark only. A private study lit by a reading lamp. (spec §3) */
 :root {
   --base: #161310;
+  --base-rgb: 22, 19, 16;
   --sidebar: #1e1a15;
   --panel: #231f19;
   --card: #2a251e;

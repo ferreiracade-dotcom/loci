@@ -106,6 +106,8 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
 /** Apply the full palette to the app's CSS variables, live. */
 export function applyTheme(t: ThemePalette): void {
   const s = document.documentElement.style
+  const baseRgb = hexToRgb(t.base)
+  s.setProperty('--base-rgb', `${baseRgb.r}, ${baseRgb.g}, ${baseRgb.b}`)
   s.setProperty('--base', t.base)
   s.setProperty('--sidebar', t.sidebar)
   s.setProperty('--panel', t.panel)
