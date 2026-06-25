@@ -30,12 +30,16 @@ function noteTitle(md: string): string {
   return h ? h[1].trim() : 'Notes'
 }
 
-/** Markdown → HTML, with [[wiki-links]] flattened to plain text. */
+/** Markdown → HTML, with [[wiki-links]] flattened and in-app #tags dropped. */
 function bodyHtml(md: string): string {
-  const flattened = stripFrontmatter(md).replace(/\[\[([^\]]+)\]\]/g, (_m, inner: string) => {
-    const [target, alias] = inner.split('|')
-    return (alias ?? target).split('#')[0].trim()
-  })
+  const flattened = stripFrontmatter(md)
+    .replace(/\[\[([^\]]+)\]\]/g, (_m, inner: string) => {
+      const [target, alias] = inner.split('|')
+      return (alias ?? target).split('#')[0].trim()
+    })
+    // Drop inline #tags (used only in-app for sorting/linking). Headings ("# ")
+    // are untouched because a hashtag has no space after the '#'.
+    .replace(/(^|[\s(])#([A-Za-z][\w-]+)\b/gm, '$1')
   return marked.parse(flattened, { async: false }) as string
 }
 
