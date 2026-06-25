@@ -1,4 +1,5 @@
-import { app, BrowserWindow, shell } from 'electron'
+import { app, BrowserWindow, Menu, shell } from 'electron'
+import type { MenuItemConstructorOptions } from 'electron'
 import { join } from 'path'
 import { closeDb, getDb } from './db/connection'
 import { registerIpc } from './ipc'
@@ -41,6 +42,24 @@ function createWindow(): void {
   win.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url)
     return { action: 'deny' }
+  })
+
+  // Right-click clipboard menu (cut/copy/paste) for editable fields + the editor.
+  win.webContents.on('context-menu', (_e, params) => {
+    const { isEditable, editFlags, selectionText } = params
+    const items: MenuItemConstructorOptions[] = []
+    if (isEditable) {
+      items.push(
+        { role: 'cut', enabled: editFlags.canCut },
+        { role: 'copy', enabled: editFlags.canCopy },
+        { role: 'paste', enabled: editFlags.canPaste },
+        { type: 'separator' },
+        { role: 'selectAll' }
+      )
+    } else if (selectionText && selectionText.trim().length > 0) {
+      items.push({ role: 'copy' })
+    }
+    if (items.length) Menu.buildFromTemplate(items).popup({ window: win })
   })
 
   if (process.env.ELECTRON_RENDERER_URL) {

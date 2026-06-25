@@ -75,8 +75,14 @@ function QuoteCard({ q, book, style }: { q: Quote; book: Book | null; style: Cit
   const citation = book ? formatCitation(sourceFromBook(book), style, printedPage) : q.citation
   const verifyPage = !!book && q.page != null && (book.pageOffset ?? 0) === 0
 
+  /** Markdown blockquote of the quote + its citation, for copy/drag into notes. */
+  const quoteMarkdown = (): string => {
+    const body = q.text.trim().replace(/\n+/g, '\n> ')
+    return `> ${body}\n>\n> — ${citation}`
+  }
+
   const copyCitation = (): void => {
-    void navigator.clipboard.writeText(citation.replace(/\*/g, '')).then(() => {
+    void navigator.clipboard.writeText(quoteMarkdown()).then(() => {
       setCopied(true)
       window.setTimeout(() => setCopied(false), 1400)
     })
@@ -119,7 +125,15 @@ function QuoteCard({ q, book, style }: { q: Quote; book: Book | null; style: Cit
       <button className="quote-del" title="Delete quote" onClick={() => void deleteQuote(q.id)}>
         <Trash2 size={13} />
       </button>
-      <div className="quote-bubble">
+      <div
+        className="quote-bubble"
+        draggable
+        onDragStart={(e) => {
+          e.dataTransfer.setData('text/plain', quoteMarkdown())
+          e.dataTransfer.effectAllowed = 'copy'
+        }}
+        title="Drag into a note to insert the quote + citation"
+      >
         <div className="quote-text">{q.text}</div>
         <div className="quote-cite-row">
           <div className="quote-cite">
@@ -131,11 +145,7 @@ function QuoteCard({ q, book, style }: { q: Quote; book: Book | null; style: Cit
               </span>
             )}
           </div>
-          <button
-            className="cite-copy"
-            title="Copy citation"
-            onClick={copyCitation}
-          >
+          <button className="cite-copy" title="Copy quote + citation" onClick={copyCitation}>
             {copied ? <Check size={12} /> : <Copy size={12} />}
           </button>
         </div>
