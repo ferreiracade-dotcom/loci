@@ -1485,6 +1485,26 @@ select.field {
   padding: 12px;
   overflow: auto;
 }
+.qn-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.book-select {
+  flex: 1;
+  min-width: 0;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  font-size: 12px;
+  padding: 4px 6px;
+  cursor: pointer;
+}
 .quotes-head {
   display: flex;
   align-items: center;

@@ -171,7 +171,7 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
               ))}
             </div>
             <div className="notes-body">
-              {openBookId && layout.activeRightTab === 'book-notes' ? (
+              {layout.activeRightTab === 'book-notes' ? (
                 <QuotesPanel />
               ) : layout.activeRightTab === 'standalone-notes' ? (
                 <StandaloneNotesPanel />

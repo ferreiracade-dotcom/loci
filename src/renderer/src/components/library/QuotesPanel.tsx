@@ -1,13 +1,15 @@
 import {
   Fragment,
+  useCallback,
   useEffect,
   useRef,
   useState,
   type ReactNode,
   type TextareaHTMLAttributes
 } from 'react'
-import { Trash2, Plus, Pencil, Copy, Check } from 'lucide-react'
+import { Trash2, Plus, Pencil, Copy, Check, BookMarked } from 'lucide-react'
 import { useStore } from '../../store/useStore'
+import { api } from '../../lib/api'
 import { formatCitation, parseAuthors, type CitationSource, type CitationStyle } from '@shared/citation'
 import type { Annotation, Book, Quote } from '@shared/ipc'
 
@@ -31,8 +33,7 @@ function sourceFromBook(book: Book): CitationSource {
 
 /** Render a citation string with *markdown italics* and [amber placeholders]. */
 function renderCitation(text: string): ReactNode {
-  const parts = text.split(/(\*[^*]+\*|\[[^\]]+\])/g)
-  return parts.map((p, i) => {
+  return text.split(/(\*[^*]+\*|\[[^\]]+\])/g).map((p, i) => {
     if (p.startsWith('*') && p.endsWith('*')) return <em key={i}>{p.slice(1, -1)}</em>
     if (p.startsWith('[') && p.endsWith(']'))
       return (
@@ -59,11 +60,23 @@ function AutoTextarea({
   return <textarea ref={ref} value={value} {...rest} />
 }
 
-function QuoteCard({ q, book, style }: { q: Quote; book: Book | null; style: CitationStyle }) {
-  const setQuoteTags = useStore((s) => s.setQuoteTags)
-  const setQuoteAnnotations = useStore((s) => s.setQuoteAnnotations)
-  const deleteQuote = useStore((s) => s.deleteQuote)
+interface CardHandlers {
+  onSetTags: (id: string, tags: string[]) => void
+  onSetAnnotations: (id: string, annotations: Annotation[]) => void
+  onDelete: (id: string) => void
+}
 
+function QuoteCard({
+  q,
+  book,
+  style,
+  handlers
+}: {
+  q: Quote
+  book: Book | null
+  style: CitationStyle
+  handlers: CardHandlers
+}) {
   const [adding, setAdding] = useState(false)
   const [tagText, setTagText] = useState('')
   const [draft, setDraft] = useState('')
@@ -75,7 +88,6 @@ function QuoteCard({ q, book, style }: { q: Quote; book: Book | null; style: Cit
   const citation = book ? formatCitation(sourceFromBook(book), style, printedPage) : q.citation
   const verifyPage = !!book && q.page != null && (book.pageOffset ?? 0) === 0
 
-  /** Markdown blockquote of the quote + its citation, for copy/drag into notes. */
   const quoteMarkdown = (): string => {
     const body = q.text.trim().replace(/\n+/g, '\n> ')
     return `> ${body}\n>\n> — ${citation}`
@@ -88,7 +100,7 @@ function QuoteCard({ q, book, style }: { q: Quote; book: Book | null; style: Cit
     })
   }
 
-  const persist = (next: Annotation[]): void => void setQuoteAnnotations(q.id, next)
+  const persist = (next: Annotation[]): void => handlers.onSetAnnotations(q.id, next)
 
   const addAnnotation = (): void => {
     const text = draft.trim()
@@ -105,24 +117,23 @@ function QuoteCard({ q, book, style }: { q: Quote; book: Book | null; style: Cit
     setEditingId(null)
     persist(next)
   }
-  const removeAnnotation = (id: string): void =>
-    persist(q.annotations.filter((a) => a.id !== id))
+  const removeAnnotation = (id: string): void => persist(q.annotations.filter((a) => a.id !== id))
 
   const commitTag = (): void => {
     const t = tagText.trim().replace(/^#/, '').toLowerCase()
-    if (t && !q.tags.includes(t)) void setQuoteTags(q.id, [...q.tags, t])
+    if (t && !q.tags.includes(t)) handlers.onSetTags(q.id, [...q.tags, t])
     setTagText('')
     setAdding(false)
   }
   const removeTag = (t: string): void =>
-    void setQuoteTags(
+    handlers.onSetTags(
       q.id,
       q.tags.filter((x) => x !== t)
     )
 
   return (
     <div className="quote-card">
-      <button className="quote-del" title="Delete quote" onClick={() => void deleteQuote(q.id)}>
+      <button className="quote-del" title="Delete quote" onClick={() => handlers.onDelete(q.id)}>
         <Trash2 size={13} />
       </button>
       <div
@@ -263,25 +274,81 @@ function QuoteCard({ q, book, style }: { q: Quote; book: Book | null; style: Cit
 }
 
 export function QuotesPanel() {
-  const quotes = useStore((s) => s.quotes)
   const openBookId = useStore((s) => s.openBookId)
   const books = useStore((s) => s.books)
+  const storeQuotes = useStore((s) => s.quotes)
+  const noteReloadToken = useStore((s) => s.noteReloadToken)
+  const refreshLibrary = useStore((s) => s.refreshLibrary)
+
+  const [selectedBookId, setSelectedBookId] = useState<string | null>(openBookId)
+  const [quotes, setQuotes] = useState<Quote[]>([])
   const [style, setStyle] = useState<CitationStyle>('footnote')
 
-  const book = books.find((b) => b.id === openBookId) ?? null
+  const booksWithQuotes = books.filter((b) => b.quoteCount > 0)
 
-  if (quotes.length === 0) {
+  // Auto-jump to the open book; otherwise default to the first cited book.
+  useEffect(() => {
+    if (openBookId) setSelectedBookId(openBookId)
+    else setSelectedBookId((cur) => cur ?? booksWithQuotes[0]?.id ?? null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openBookId, books.length])
+
+  const reload = useCallback(async () => {
+    if (!selectedBookId) {
+      setQuotes([])
+      return
+    }
+    setQuotes(await api.listQuotes(selectedBookId))
+  }, [selectedBookId])
+
+  // Reload when the selected book changes, or when quotes are added/removed
+  // (store bumps noteReloadToken), or when the open book's store quotes change.
+  useEffect(() => {
+    void reload()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reload, noteReloadToken, storeQuotes])
+
+  const handlers: CardHandlers = {
+    onSetTags: (id, tags) => void api.setQuoteTags(id, tags).then(reload),
+    onSetAnnotations: (id, annotations) => {
+      setQuotes((qs) => qs.map((q) => (q.id === id ? { ...q, annotations } : q)))
+      void api.setQuoteAnnotations(id, annotations)
+    },
+    onDelete: (id) =>
+      void api
+        .deleteQuote(id)
+        .then(reload)
+        .then(() => refreshLibrary())
+  }
+
+  const book = books.find((b) => b.id === selectedBookId) ?? null
+
+  if (booksWithQuotes.length === 0) {
     return (
       <div className="quotes-empty">
         Select text in the PDF and click <b>Add quote</b> to capture it here. Each quote becomes a
-        bubble you can tag and comment on — comments are saved to the book&apos;s note and a
-        highlights sidecar.
+        bubble you can tag, comment on, copy, or drag into a note.
       </div>
     )
   }
 
   return (
     <div className="quotes-list">
+      <div className="qn-head">
+        <BookMarked size={14} />
+        <select
+          className="book-select"
+          value={selectedBookId ?? ''}
+          onChange={(e) => setSelectedBookId(e.target.value)}
+        >
+          {booksWithQuotes.map((b) => (
+            <option key={b.id} value={b.id}>
+              {b.title}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="quotes-head">
         <span className="quotes-count">
           {quotes.length} quote{quotes.length === 1 ? '' : 's'}
@@ -299,9 +366,12 @@ export function QuotesPanel() {
           ))}
         </select>
       </div>
-      {quotes.map((q) => (
-        <QuoteCard key={q.id} q={q} book={book} style={style} />
-      ))}
+
+      {quotes.length === 0 ? (
+        <div className="quotes-empty">No quotes in this book yet.</div>
+      ) : (
+        quotes.map((q) => <QuoteCard key={q.id} q={q} book={book} style={style} handlers={handlers} />)
+      )}
     </div>
   )
 }
