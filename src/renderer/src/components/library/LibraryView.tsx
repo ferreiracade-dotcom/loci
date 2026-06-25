@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Upload,
   FolderInput,
@@ -7,9 +7,11 @@ import {
   RefreshCw,
   BookOpen,
   Info,
-  Pencil
+  Pencil,
+  Layers
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
+import { api } from '../../lib/api'
 import { EmptyState } from '../EmptyState'
 import { BookCover } from './BookCover'
 import { BookInfoDrawer } from './BookInfoDrawer'
@@ -21,6 +23,15 @@ const STATUS_LABEL: Record<ReadingStatus, string> = {
   reading: 'Reading',
   finished: 'Finished'
 }
+
+const GROUP_OPTIONS: { id: string; label: string }[] = [
+  { id: 'none', label: 'No grouping' },
+  { id: 'author', label: 'Author' },
+  { id: 'genre', label: 'Genre' },
+  { id: 'shelf', label: 'Shelf' },
+  { id: 'tag', label: 'Tag' },
+  { id: 'status', label: 'Status' }
+]
 
 function BookCard({
   book,
@@ -117,11 +128,51 @@ export function LibraryView() {
   const [infoId, setInfoId] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [shelvesOpen, setShelvesOpen] = useState(false)
+  const [groupBy, setGroupBy] = useState('none')
+
+  useEffect(() => {
+    void api.getSession('libraryGroup').then((v) => {
+      if (v) setGroupBy(v)
+    })
+  }, [])
+
+  function changeGroup(v: string): void {
+    setGroupBy(v)
+    void api.setSession('libraryGroup', v)
+  }
 
   const filtered = useMemo(
     () => (activeShelf ? books.filter((b) => b.shelfIds.includes(activeShelf)) : books),
     [books, activeShelf]
   )
+
+  const groups = useMemo(() => {
+    if (groupBy === 'none') return null
+    const map = new Map<string, Book[]>()
+    const add = (k: string, b: Book): void => {
+      const arr = map.get(k)
+      if (arr) arr.push(b)
+      else map.set(k, [b])
+    }
+    for (const b of filtered) {
+      if (groupBy === 'author') add(b.author?.trim() || 'Unknown author', b)
+      else if (groupBy === 'genre') add(b.genre?.trim() || 'No genre', b)
+      else if (groupBy === 'status') add(STATUS_LABEL[b.status], b)
+      else if (groupBy === 'shelf') {
+        const names = b.shelfIds
+          .map((id) => shelves.find((s) => s.id === id)?.name)
+          .filter((n): n is string => !!n)
+        if (names.length === 0) add('Unshelved', b)
+        else names.forEach((n) => add(n, b))
+      } else if (groupBy === 'tag') {
+        if (b.tags.length === 0) add('Untagged', b)
+        else b.tags.forEach((t) => add('#' + t, b))
+      }
+    }
+    return [...map.entries()]
+      .map(([key, items]) => ({ key, items }))
+      .sort((a, b) => a.key.localeCompare(b.key))
+  }, [groupBy, filtered, shelves])
 
   async function doImport(kind: 'source' | 'files'): Promise<void> {
     const res = kind === 'source' ? await importFromSource() : await importFiles()
@@ -134,6 +185,35 @@ export function LibraryView() {
 
   const view = layout.libraryView
   const coverSize = layout.coverSize
+
+  const renderItems = (items: Book[]): JSX.Element =>
+    view === 'grid' ? (
+      <div
+        className="grid"
+        style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${coverSize}px, 1fr))` }}
+      >
+        {items.map((b) => (
+          <BookCard
+            key={b.id}
+            book={b}
+            size={coverSize}
+            onOpen={() => setInfoId(b.id)}
+            onRead={() => openBook(b.id)}
+          />
+        ))}
+      </div>
+    ) : (
+      <div className="list">
+        {items.map((b) => (
+          <BookListRow
+            key={b.id}
+            book={b}
+            onOpen={() => setInfoId(b.id)}
+            onRead={() => openBook(b.id)}
+          />
+        ))}
+      </div>
+    )
 
   return (
     <div className="library">
@@ -152,6 +232,20 @@ export function LibraryView() {
           )}
         </div>
         <div className="tb-right">
+          <div className="group-wrap" title="Group books by">
+            <Layers size={14} />
+            <select
+              className="group-select"
+              value={groupBy}
+              onChange={(e) => changeGroup(e.target.value)}
+            >
+              {GROUP_OPTIONS.map((g) => (
+                <option key={g.id} value={g.id}>
+                  {g.id === 'none' ? g.label : `Group: ${g.label}`}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="seg tiny">
             <button
               className={`seg-btn${view === 'grid' ? ' active' : ''}`}
@@ -228,27 +322,17 @@ export function LibraryView() {
                 : 'Try another shelf, or import more books.'
             }
           />
-        ) : view === 'grid' ? (
-          <div
-            className="grid"
-            style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${coverSize}px, 1fr))` }}
-          >
-            {filtered.map((b) => (
-              <BookCard
-                key={b.id}
-                book={b}
-                size={coverSize}
-                onOpen={() => setInfoId(b.id)}
-                onRead={() => openBook(b.id)}
-              />
-            ))}
-          </div>
+        ) : groups ? (
+          groups.map((g) => (
+            <section key={g.key} className="lib-group">
+              <div className="lib-group-head">
+                {g.key} <span className="lib-group-n">{g.items.length}</span>
+              </div>
+              {renderItems(g.items)}
+            </section>
+          ))
         ) : (
-          <div className="list">
-            {filtered.map((b) => (
-              <BookListRow key={b.id} book={b} onOpen={() => setInfoId(b.id)} onRead={() => openBook(b.id)} />
-            ))}
-          </div>
+          renderItems(filtered)
         )}
       </div>
 
