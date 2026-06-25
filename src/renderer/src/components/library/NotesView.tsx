@@ -4,7 +4,7 @@ import { useStore } from '../../store/useStore'
 import { NoteEditor } from './NoteEditor'
 import { EmptyState } from '../EmptyState'
 
-export function NotesView() {
+export function NotesView({ compact = false }: { compact?: boolean }) {
   const notes = useStore((s) => s.standaloneNotes)
   const activeNotePath = useStore((s) => s.activeNotePath)
   const openNote = useStore((s) => s.openNote)
@@ -22,7 +22,7 @@ export function NotesView() {
   }
 
   return (
-    <div className="notes-view">
+    <div className={`notes-view${compact ? ' compact' : ''}`}>
       <div className="notes-list-col">
         <div className="notes-list-head">
           <span>Standalone notes</span>

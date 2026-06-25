@@ -24,7 +24,6 @@ const DIVIDER_ALLOWANCE = 14
 export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const layout = useStore((s) => s.layout)!
   const openBookId = useStore((s) => s.openBookId)
-  const searchResults = useStore((s) => s.searchResults)
   const setLayoutLocal = useStore((s) => s.setLayoutLocal)
   const saveLayout = useStore((s) => s.saveLayout)
   const persistLayout = useStore((s) => s.persistLayout)
@@ -45,6 +44,19 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
 
   const empty = CENTER_EMPTY[layout.activeLeftView] ?? CENTER_EMPTY.library
   const activeTab = RIGHT_TABS.find((t) => t.id === layout.activeRightTab) ?? RIGHT_TABS[0]
+
+  const viewPanel = (compact: boolean) => {
+    switch (layout.activeLeftView) {
+      case 'library':
+        return <LibraryView />
+      case 'search':
+        return <SearchView compact={compact} />
+      case 'notes':
+        return <NotesView compact={compact} />
+      default:
+        return <EmptyState icon={empty.icon} title={empty.title} subtitle={empty.subtitle} />
+    }
+  }
 
   return (
     <div className="three-panel" ref={ref}>
@@ -101,25 +113,17 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
       )}
 
       <main className="center">
-        {layout.activeLeftView === 'library' ? (
-          openBookId ? <PdfReader bookId={openBookId} /> : <LibraryView />
-        ) : layout.activeLeftView === 'search' ? (
-          openBookId && searchResults.length > 0 ? (
-            <div className="reader-split">
-              <div className="reader-split-list">
-                <SearchView compact />
-              </div>
-              <PdfReader bookId={openBookId} />
-            </div>
-          ) : openBookId ? (
+        {openBookId ? (
+          layout.activeLeftView === 'library' ? (
             <PdfReader bookId={openBookId} />
           ) : (
-            <SearchView />
+            <div className="reader-split">
+              <div className="reader-split-list">{viewPanel(true)}</div>
+              <PdfReader bookId={openBookId} />
+            </div>
           )
-        ) : layout.activeLeftView === 'notes' ? (
-          <NotesView />
         ) : (
-          <EmptyState icon={empty.icon} title={empty.title} subtitle={empty.subtitle} />
+          viewPanel(false)
         )}
       </main>
 

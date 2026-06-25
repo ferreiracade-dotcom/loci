@@ -1756,12 +1756,27 @@ select.field {
   min-height: 0;
 }
 .reader-split-list {
-  width: 320px;
-  flex: 0 0 320px;
+  width: 360px;
+  flex: 0 0 360px;
   border-right: 1px solid var(--border);
   min-height: 0;
   display: flex;
   background: var(--base);
+}
+.reader-split-list .notes-view,
+.reader-split-list .search-view {
+  flex: 1;
+  min-width: 0;
+}
+.notes-view.compact {
+  flex-direction: column;
+}
+.notes-view.compact .notes-list-col {
+  width: auto;
+  flex: 0 0 auto;
+  max-height: 170px;
+  border-right: none;
+  border-bottom: 1px solid var(--border);
 }
 .reader-split-list .search-view {
   flex: 1;
