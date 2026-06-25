@@ -42,6 +42,22 @@ export const THEME_PRESETS: ThemePreset[] = [
     }
   },
   {
+    id: 'onyx',
+    label: 'Onyx · Dark',
+    theme: {
+      base: '#0a0a0b',
+      sidebar: '#121214',
+      panel: '#171719',
+      card: '#1e1e21',
+      accent: '#ededed',
+      gold: '#8c8c92',
+      text: '#f3f3f4',
+      muted: '#8a8a90',
+      border: '#242428',
+      borderStrong: '#34343a'
+    }
+  },
+  {
     id: 'slate',
     label: 'Slate · Dark',
     theme: {
