@@ -347,14 +347,29 @@ export function PdfReader({ bookId }: { bookId: string }) {
   }, [goToPage, currentPage])
 
   // Jump to a page requested from search, then flash the matched words.
+  // Re-scroll a few times because slot heights settle as pages render in.
   useEffect(() => {
-    if (pendingPage && !loading && numPages) {
-      const p = pendingPage
-      goToPage(p)
-      highlightOnPage(p, searchTerms)
-      clearPendingPage()
+    if (!pendingPage || loading || !numPages) return
+    const p = Math.min(Math.max(1, pendingPage), numPages)
+    clearPendingPage()
+    let cancelled = false
+    let tries = 0
+    const scrollToTarget = (): void => {
+      if (cancelled) return
+      const slot = slotRefs.current[p - 1]
+      const stage = stageRef.current
+      if (slot && stage) {
+        stage.scrollTo({ top: Math.max(0, slot.offsetTop - GAP), behavior: 'auto' })
+      }
+      tries += 1
+      if (tries < 6) window.setTimeout(scrollToTarget, 180)
     }
-  }, [pendingPage, loading, numPages, goToPage, clearPendingPage, searchTerms, highlightOnPage])
+    scrollToTarget()
+    highlightOnPage(p, searchTerms)
+    return () => {
+      cancelled = true
+    }
+  }, [pendingPage, loading, numPages, clearPendingPage, searchTerms, highlightOnPage])
 
   const zoom = (delta: number): void => {
     setFitWidth(false)
