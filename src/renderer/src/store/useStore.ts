@@ -84,6 +84,7 @@ interface Store {
   openNoteInLeft: (path: string) => void
   openNoteInSplit: (path: string) => void
   closeSplitNote: () => void
+  closeLeftNote: () => void
   deleteNote: (path: string) => Promise<void>
   navigateLink: (name: string) => Promise<void>
   loadQuotes: (bookId: string) => Promise<void>
@@ -344,6 +345,9 @@ export const useStore = create<Store>((set, get) => {
     },
 
     closeSplitNote: () => set({ splitNotePath: null }),
+
+    // Close Note 1 (left): Note 2 (right), if any, is promoted to Note 1.
+    closeLeftNote: () => set({ activeNotePath: get().splitNotePath, splitNotePath: null }),
 
     deleteNote: async (path) => {
       await api.deleteNote(path)

@@ -33,6 +33,7 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
   const openNoteInLeft = useStore((s) => s.openNoteInLeft)
   const openNoteInSplit = useStore((s) => s.openNoteInSplit)
   const closeSplitNote = useStore((s) => s.closeSplitNote)
+  const closeLeftNote = useStore((s) => s.closeLeftNote)
   const createNote = useStore((s) => s.createNote)
   const deleteNote = useStore((s) => s.deleteNote)
 
@@ -241,6 +242,13 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
                   <div className="split-head">
                     <span className="split-slot">1</span>
                     <span className="split-title">{leftTitle}</span>
+                    <button
+                      className="icon-btn"
+                      title="Close Note 1 (Note 2 becomes Note 1)"
+                      onClick={closeLeftNote}
+                    >
+                      <X size={14} />
+                    </button>
                   </div>
                   <NoteEditor key={activeNotePath} path={activeNotePath} />
                 </div>
