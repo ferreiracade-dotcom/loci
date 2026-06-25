@@ -14,6 +14,8 @@ import type {
   PanelLayout,
   PublicConfig,
   Quote,
+  SearchHit,
+  SearchScope,
   Shelf,
   Tag,
   WizardData
@@ -42,6 +44,9 @@ interface Store {
   /** Target page to jump to when (re)opening a book from search; consumed by the reader. */
   pendingPage: number | null
   indexing: { done: number; total: number } | null
+  searchResults: SearchHit[]
+  /** Folded query tokens, used to flash-highlight matches when jumping to a page. */
+  searchTerms: string[]
 
   init: () => Promise<void>
   enter: () => void
@@ -82,6 +87,18 @@ interface Store {
   deleteShelf: (id: string) => Promise<void>
   startIndexing: () => Promise<void>
   cancelIndexing: () => void
+  runSearch: (query: string, scope: SearchScope) => Promise<void>
+  clearSearch: () => void
+}
+
+function foldTokens(query: string): string[] {
+  return (
+    query
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/\p{Diacritic}/gu, '')
+      .match(/[\p{L}\p{N}]+/gu) ?? []
+  )
 }
 
 interface ShellData {
@@ -144,6 +161,8 @@ export const useStore = create<Store>((set, get) => {
     activeNotePath: null,
     pendingPage: null,
     indexing: null,
+    searchResults: [],
+    searchTerms: [],
 
     init: async () => {
       if (!listenersBound) {
@@ -391,6 +410,17 @@ export const useStore = create<Store>((set, get) => {
 
     cancelIndexing: () => {
       indexCancel = true
-    }
+    },
+
+    runSearch: async (query, scope) => {
+      if (!query.trim()) {
+        set({ searchResults: [], searchTerms: [] })
+        return
+      }
+      const results = await api.search(query, scope)
+      set({ searchResults: results, searchTerms: foldTokens(query) })
+    },
+
+    clearSearch: () => set({ searchResults: [], searchTerms: [] })
   }
 })

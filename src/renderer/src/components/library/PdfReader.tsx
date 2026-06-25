@@ -50,6 +50,7 @@ export function PdfReader({ bookId }: { bookId: string }) {
   const addQuote = useStore((s) => s.addQuote)
   const pendingPage = useStore((s) => s.pendingPage)
   const clearPendingPage = useStore((s) => s.clearPendingPage)
+  const searchTerms = useStore((s) => s.searchTerms)
   const [sel, setSel] = useState<Selection | null>(null)
   const [savedMsg, setSavedMsg] = useState(false)
 
@@ -307,6 +308,35 @@ export function PdfReader({ bookId }: { bookId: string }) {
     [numPages]
   )
 
+  // Briefly flash the matched words on a page jumped to from search.
+  const highlightOnPage = useCallback((targetPage: number, terms: string[]) => {
+    if (terms.length === 0) return
+    const fold = (s: string): string =>
+      s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+    const folded = terms.map(fold)
+    let attempts = 0
+    const run = (): void => {
+      const slot = slotRefs.current[targetPage - 1]
+      const spans = slot?.querySelectorAll<HTMLElement>('.textLayer span')
+      if (!spans || spans.length === 0) {
+        if (attempts++ < 10) window.setTimeout(run, 300)
+        return
+      }
+      const hits: HTMLElement[] = []
+      spans.forEach((sp) => {
+        const txt = fold(sp.textContent ?? '')
+        if (txt && folded.some((t) => txt.includes(t))) {
+          sp.classList.add('pdf-search-hit')
+          hits.push(sp)
+        }
+      })
+      if (hits.length) {
+        window.setTimeout(() => hits.forEach((sp) => sp.classList.remove('pdf-search-hit')), 4000)
+      }
+    }
+    window.setTimeout(run, 350)
+  }, [])
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
       if (e.key === 'ArrowRight' || e.key === 'PageDown') goToPage(currentPage + 1)
@@ -316,13 +346,15 @@ export function PdfReader({ bookId }: { bookId: string }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [goToPage, currentPage])
 
-  // Jump to a page requested from search.
+  // Jump to a page requested from search, then flash the matched words.
   useEffect(() => {
     if (pendingPage && !loading && numPages) {
-      goToPage(pendingPage)
+      const p = pendingPage
+      goToPage(p)
+      highlightOnPage(p, searchTerms)
       clearPendingPage()
     }
-  }, [pendingPage, loading, numPages, goToPage, clearPendingPage])
+  }, [pendingPage, loading, numPages, goToPage, clearPendingPage, searchTerms, highlightOnPage])
 
   const zoom = (delta: number): void => {
     setFitWidth(false)
