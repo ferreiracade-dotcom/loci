@@ -6,13 +6,15 @@ import defaultBg from '../assets/unlock-default.jpg'
 export function WelcomeScreen() {
   const enter = useStore((s) => s.enter)
   const customBackground = useStore((s) => s.config?.welcomeBackground ?? null)
-  const [bg, setBg] = useState<string>(defaultBg)
+  // Don't seed with the default painting when a custom one is set, or it flashes
+  // before the (async) custom image loads.
+  const [bg, setBg] = useState<string | null>(customBackground ? null : defaultBg)
 
   useEffect(() => {
     let alive = true
     if (customBackground) {
       void api.getWelcomeBackground().then((d) => {
-        if (alive && d) setBg(d)
+        if (alive) setBg(d || defaultBg)
       })
     } else {
       setBg(defaultBg)
@@ -31,7 +33,13 @@ export function WelcomeScreen() {
   }, [enter])
 
   return (
-    <div className="welcome" style={{ backgroundImage: `url("${bg}")` }}>
+    <div
+      className="welcome"
+      style={{
+        backgroundColor: 'var(--base)',
+        backgroundImage: bg ? `url("${bg}")` : undefined
+      }}
+    >
       <div className="welcome-scrim" />
       <div className="welcome-content">
         <h1 className="welcome-brand">Loci</h1>
