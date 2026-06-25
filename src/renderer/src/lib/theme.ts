@@ -1,30 +1,110 @@
-import { type ThemePalette } from '@shared/ipc'
+import { DEFAULT_THEME, type ThemePalette } from '@shared/ipc'
 
-export interface AccentPreset {
+export interface ThemePreset {
   id: string
   label: string
-  color: string
+  theme: ThemePalette
 }
 
-export const ACCENT_PRESETS: AccentPreset[] = [
-  { id: 'amber', label: 'Amber', color: '#c9a96e' },
-  { id: 'jade', label: 'Jade', color: '#7faa86' },
-  { id: 'wine', label: 'Wine', color: '#b06a7a' },
-  { id: 'slate', label: 'Slate', color: '#8793ad' }
-]
-
-/** Editable palette tokens, in display order. */
-export const PALETTE_FIELDS: { key: keyof ThemePalette; label: string }[] = [
-  { key: 'base', label: 'Background' },
-  { key: 'sidebar', label: 'Sidebar' },
-  { key: 'panel', label: 'Panel' },
-  { key: 'card', label: 'Card' },
-  { key: 'accent', label: 'Accent' },
-  { key: 'gold', label: 'Gold' },
-  { key: 'text', label: 'Text' },
-  { key: 'muted', label: 'Muted text' },
-  { key: 'border', label: 'Border' },
-  { key: 'borderStrong', label: 'Strong border' }
+/** Curated full-app themes (light, neutral dark, and a few coloured). */
+export const THEME_PRESETS: ThemePreset[] = [
+  { id: 'candlelit', label: 'Candlelit', theme: DEFAULT_THEME },
+  {
+    id: 'parchment',
+    label: 'Parchment · Light',
+    theme: {
+      base: '#efe9dc',
+      sidebar: '#e7e0cf',
+      panel: '#f5f0e6',
+      card: '#fffdf6',
+      accent: '#a06a2c',
+      gold: '#b48a52',
+      text: '#2b2620',
+      muted: '#837a66',
+      border: '#dcd3c0',
+      borderStrong: '#c7bca4'
+    }
+  },
+  {
+    id: 'mist',
+    label: 'Mist · Light',
+    theme: {
+      base: '#eef1f4',
+      sidebar: '#e4e8ee',
+      panel: '#f4f6f9',
+      card: '#ffffff',
+      accent: '#3f6f9a',
+      gold: '#6f86a0',
+      text: '#23282f',
+      muted: '#717a86',
+      border: '#d6dce4',
+      borderStrong: '#c1cad4'
+    }
+  },
+  {
+    id: 'slate',
+    label: 'Slate · Dark',
+    theme: {
+      base: '#14161a',
+      sidebar: '#1b1e24',
+      panel: '#20242b',
+      card: '#272c34',
+      accent: '#84a0c6',
+      gold: '#566884',
+      text: '#dce2ec',
+      muted: '#6a7280',
+      border: '#2a3038',
+      borderStrong: '#39414c'
+    }
+  },
+  {
+    id: 'jade',
+    label: 'Jade · Dark',
+    theme: {
+      base: '#121613',
+      sidebar: '#171d18',
+      panel: '#1c241d',
+      card: '#222c23',
+      accent: '#84b08c',
+      gold: '#517a5c',
+      text: '#dde7de',
+      muted: '#5e6c60',
+      border: '#273028',
+      borderStrong: '#36433a'
+    }
+  },
+  {
+    id: 'wine',
+    label: 'Wine · Dark',
+    theme: {
+      base: '#181012',
+      sidebar: '#1f1518',
+      panel: '#261a1e',
+      card: '#2f2025',
+      accent: '#c2879a',
+      gold: '#84495a',
+      text: '#efdde2',
+      muted: '#6e545b',
+      border: '#33242a',
+      borderStrong: '#452f38'
+    }
+  },
+  {
+    id: 'midnight',
+    label: 'Midnight · Dark',
+    theme: {
+      base: '#0f1320',
+      sidebar: '#151a2b',
+      panel: '#1a2035',
+      card: '#212840',
+      accent: '#93a2f2',
+      gold: '#5763a6',
+      text: '#e0e4f3',
+      muted: '#646d8c',
+      border: '#262d46',
+      borderStrong: '#353e5c'
+    }
+  }
 ]
 
 function hexToRgb(hex: string): { r: number; g: number; b: number } {

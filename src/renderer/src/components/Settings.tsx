@@ -1,9 +1,15 @@
 import { useEffect, useState } from 'react'
-import { X, FolderOpen, KeyRound, ShieldCheck, Image as ImageIcon, RotateCcw } from 'lucide-react'
+import { X, FolderOpen, KeyRound, ShieldCheck, Image as ImageIcon } from 'lucide-react'
 import { useStore } from '../store/useStore'
 import { api } from '../lib/api'
-import { ACCENT_PRESETS, PALETTE_FIELDS } from '../lib/theme'
-import type { AiMode } from '@shared/ipc'
+import { THEME_PRESETS } from '../lib/theme'
+import type { AiMode, ThemePalette } from '@shared/ipc'
+
+function themesMatch(a: ThemePalette, b: ThemePalette): boolean {
+  return (Object.keys(a) as (keyof ThemePalette)[]).every(
+    (k) => a[k].toLowerCase() === b[k].toLowerCase()
+  )
+}
 
 const TRANSLATIONS = [
   { id: 'WEB', label: 'World English Bible' },
@@ -17,8 +23,7 @@ export function Settings({ onClose }: { onClose: () => void }) {
   const config = useStore((s) => s.config)
   const refreshConfig = useStore((s) => s.refreshConfig)
   const relocateVault = useStore((s) => s.relocateVault)
-  const setThemeColor = useStore((s) => s.setThemeColor)
-  const resetTheme = useStore((s) => s.resetTheme)
+  const setTheme = useStore((s) => s.setTheme)
   const [apiKey, setApiKey] = useState('')
   const [note, setNote] = useState<string | null>(null)
 
@@ -106,38 +111,26 @@ export function Settings({ onClose }: { onClose: () => void }) {
 
           <section className="set-section">
             <h3 className="set-h">Appearance</h3>
-            <div className="appearance-head">
-              <span className="set-label">Accent presets</span>
-              <button className="btn btn-sm" onClick={() => void resetTheme()}>
-                <RotateCcw size={13} /> Reset theme
-              </button>
-            </div>
-            <div className="accent-row">
-              {ACCENT_PRESETS.map((p) => (
-                <button
-                  key={p.id}
-                  className={`accent-swatch${
-                    config.theme.accent.toLowerCase() === p.color.toLowerCase() ? ' active' : ''
-                  }`}
-                  style={{ background: p.color }}
-                  title={p.label}
-                  onClick={() => void setThemeColor('accent', p.color)}
-                />
-              ))}
-            </div>
-
-            <div className="set-label appearance-bg-label">Palette</div>
-            <div className="palette-grid">
-              {PALETTE_FIELDS.map((f) => (
-                <label key={f.key} className="palette-row" title={f.label}>
-                  <input
-                    type="color"
-                    value={config.theme[f.key]}
-                    onChange={(e) => void setThemeColor(f.key, e.target.value)}
-                  />
-                  <span>{f.label}</span>
-                </label>
-              ))}
+            <div className="set-label">Theme</div>
+            <div className="theme-grid">
+              {THEME_PRESETS.map((p) => {
+                const active = themesMatch(p.theme, config.theme)
+                return (
+                  <button
+                    key={p.id}
+                    className={`theme-card${active ? ' active' : ''}`}
+                    onClick={() => void setTheme(p.theme)}
+                  >
+                    <div className="theme-swatch" style={{ background: p.theme.base }}>
+                      <span style={{ background: p.theme.sidebar }} />
+                      <span style={{ background: p.theme.card }} />
+                      <span className="theme-swatch-accent" style={{ background: p.theme.accent }} />
+                      <span className="theme-swatch-text" style={{ background: p.theme.text }} />
+                    </div>
+                    <span className="theme-card-label">{p.label}</span>
+                  </button>
+                )
+              })}
             </div>
 
             <div className="set-label appearance-bg-label">Unlock background</div>

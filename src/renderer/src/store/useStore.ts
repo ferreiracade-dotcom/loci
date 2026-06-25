@@ -66,6 +66,7 @@ interface Store {
   init: () => Promise<void>
   enter: () => void
   setThemeColor: (key: keyof ThemePalette, value: string) => Promise<void>
+  setTheme: (theme: ThemePalette) => Promise<void>
   resetTheme: () => Promise<void>
   completeWizard: (data: WizardData) => Promise<void>
   relocateVault: () => Promise<void>
@@ -231,6 +232,12 @@ export const useStore = create<Store>((set, get) => {
       const cfg = get().config
       if (!cfg) return
       const theme = { ...cfg.theme, [key]: value }
+      applyTheme(theme)
+      const config = await api.setConfig({ theme })
+      set({ config })
+    },
+
+    setTheme: async (theme) => {
       applyTheme(theme)
       const config = await api.setConfig({ theme })
       set({ config })
