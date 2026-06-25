@@ -54,6 +54,7 @@ interface Store {
   searchQuery: string
   searchKind: SearchKind
   searchShelf: string
+  searchTag: string
   /** Index of the result the user last opened, highlighted in the results panel. */
   activeHit: number | null
 
@@ -102,6 +103,7 @@ interface Store {
   setSearchQuery: (q: string) => void
   setSearchKind: (k: SearchKind) => void
   setSearchShelf: (s: string) => void
+  setSearchTag: (t: string) => void
   setActiveHit: (i: number | null) => void
 }
 
@@ -180,6 +182,7 @@ export const useStore = create<Store>((set, get) => {
     searchQuery: '',
     searchKind: 'all',
     searchShelf: '',
+    searchTag: '',
     activeHit: null,
 
     init: async () => {
@@ -456,6 +459,7 @@ export const useStore = create<Store>((set, get) => {
     setSearchQuery: (q) => set({ searchQuery: q }),
     setSearchKind: (k) => set({ searchKind: k }),
     setSearchShelf: (s) => set({ searchShelf: s }),
+    setSearchTag: (t) => set({ searchTag: t }),
     setActiveHit: (i) => set({ activeHit: i })
   }
 })

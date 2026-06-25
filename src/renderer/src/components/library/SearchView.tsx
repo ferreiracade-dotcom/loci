@@ -13,13 +13,16 @@ const KINDS: { id: SearchKind; label: string }[] = [
 
 export function SearchView({ compact = false }: { compact?: boolean }) {
   const shelves = useStore((s) => s.shelves)
+  const tags = useStore((s) => s.tags)
   const results = useStore((s) => s.searchResults)
   const query = useStore((s) => s.searchQuery)
   const kind = useStore((s) => s.searchKind)
   const shelfId = useStore((s) => s.searchShelf)
+  const tag = useStore((s) => s.searchTag)
   const setSearchQuery = useStore((s) => s.setSearchQuery)
   const setSearchKind = useStore((s) => s.setSearchKind)
   const setSearchShelf = useStore((s) => s.setSearchShelf)
+  const setSearchTag = useStore((s) => s.setSearchTag)
   const runSearch = useStore((s) => s.runSearch)
   const openBookAt = useStore((s) => s.openBookAt)
   const openNote = useStore((s) => s.openNote)
@@ -33,10 +36,12 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
   useEffect(() => {
     setSearching(true)
     const t = setTimeout(() => {
-      void runSearch(query, { kind, shelfId: shelfId || null }).finally(() => setSearching(false))
+      void runSearch(query, { kind, shelfId: shelfId || null, tag: tag || null }).finally(() =>
+        setSearching(false)
+      )
     }, 300)
     return () => clearTimeout(t)
-  }, [query, kind, shelfId, runSearch])
+  }, [query, kind, shelfId, tag, runSearch])
 
   const onHit = (h: SearchHit, index: number): void => {
     setActiveHit(index)
@@ -104,6 +109,20 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
             </option>
           ))}
         </select>
+        {tags.length > 0 && (
+          <select
+            className="field scope-shelf"
+            value={tag}
+            onChange={(e) => setSearchTag(e.target.value)}
+          >
+            <option value="">All tags</option>
+            {tags.map((t) => (
+              <option key={t.id} value={t.name}>
+                #{t.name}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
 
       {query.trim() && !searching && results.length === 0 ? (

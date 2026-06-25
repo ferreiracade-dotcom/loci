@@ -1748,8 +1748,34 @@ select.field {
   cursor: pointer;
   color: var(--text);
   display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+}
+.hit-body {
+  display: flex;
   flex-direction: column;
   gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+.hit-thumb {
+  width: 34px;
+  height: 46px;
+  flex: 0 0 auto;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+.hit-thumb-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+.hit-thumb-fallback.quote {
+  color: var(--accent);
 }
 .hit-row:hover {
   background: var(--panel);
