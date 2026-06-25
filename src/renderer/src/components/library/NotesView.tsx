@@ -93,9 +93,35 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
   return (
     <div className={`notes-view${compact ? ' compact' : ''}`}>
       {!compact && listCollapsed ? (
-        <button className="notes-list-rail" title="Show notes list" onClick={() => toggleList(false)}>
-          <PanelLeftOpen size={16} />
-        </button>
+        <div className="notes-list-rail">
+          <button className="rail-btn" title="Show notes list" onClick={() => toggleList(false)}>
+            <PanelLeftOpen size={16} />
+          </button>
+          <button
+            className="rail-btn"
+            title="New note"
+            onClick={() => {
+              toggleList(false)
+              setCreating(true)
+            }}
+          >
+            <FilePlus size={15} />
+          </button>
+          <div className="rail-sep" />
+          <div className="rail-notes">
+            {notes.map((n) => (
+              <button
+                key={n.path}
+                className={`rail-note${activeNotePath === n.path ? ' active' : ''}`}
+                title={n.title}
+                onClick={() => openNote(n.path)}
+                onContextMenu={(e) => onRowMenu(e, n.path, n.title)}
+              >
+                <FileText size={15} />
+              </button>
+            ))}
+          </div>
+        </div>
       ) : (
         <div className="notes-list-col">
           <div className="notes-list-head">

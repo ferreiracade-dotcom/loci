@@ -1634,20 +1634,55 @@ select.field {
   min-height: 0;
 }
 .notes-list-rail {
-  flex: 0 0 36px;
-  width: 36px;
-  border: none;
+  flex: 0 0 42px;
+  width: 42px;
   border-right: 1px solid var(--border);
   background: var(--sidebar);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 0;
+  min-height: 0;
+}
+.rail-btn,
+.rail-note {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
   color: var(--muted);
   cursor: pointer;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 14px;
+  border-radius: 7px;
 }
-.notes-list-rail:hover {
+.rail-btn:hover,
+.rail-note:hover {
+  color: var(--text);
+  background: var(--card);
+}
+.rail-note.active {
   color: var(--accent);
+  background: var(--accent-12);
+}
+.rail-sep {
+  width: 22px;
+  height: 1px;
+  background: var(--border);
+  margin: 3px 0;
+}
+.rail-notes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .nlh-actions {
   display: flex;
