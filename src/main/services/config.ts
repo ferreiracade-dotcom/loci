@@ -2,7 +2,8 @@ import { safeStorage } from 'electron'
 import { extname, join } from 'path'
 import { copyFileSync, existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs'
 import { getDataDir } from '../db/connection'
-import type { AiMode, PublicConfig, RateCard } from '../../shared/ipc'
+import { DEFAULT_THEME } from '../../shared/ipc'
+import type { AiMode, PublicConfig, RateCard, ThemePalette } from '../../shared/ipc'
 
 /** Full config persisted to %APPDATA%/Loci/config.json (includes secrets). */
 export interface LociConfig {
@@ -13,7 +14,7 @@ export interface LociConfig {
   scriptureTranslation: string
   aiMode: AiMode
   rateCard: RateCard
-  accentColor: string
+  theme: ThemePalette
   welcomeBackground: string | null
   /** base64 of the safeStorage-encrypted API key; never sent to the renderer. */
   apiKeyEncrypted: string | null
@@ -27,7 +28,7 @@ const defaults: LociConfig = {
   scriptureTranslation: 'WEB',
   aiMode: 'copy-api',
   rateCard: { sonnetInput: 3, sonnetOutput: 15, haikuInput: 0.8, haikuOutput: 4 },
-  accentColor: '#c9a96e',
+  theme: DEFAULT_THEME,
   welcomeBackground: null,
   apiKeyEncrypted: null
 }
@@ -40,8 +41,21 @@ export function readConfig(): LociConfig {
   const p = configPath()
   if (!existsSync(p)) return { ...defaults }
   try {
-    const parsed = JSON.parse(readFileSync(p, 'utf-8')) as Partial<LociConfig>
-    return { ...defaults, ...parsed, rateCard: { ...defaults.rateCard, ...parsed.rateCard } }
+    const parsed = JSON.parse(readFileSync(p, 'utf-8')) as Partial<LociConfig> & {
+      accentColor?: string
+    }
+    const theme: ThemePalette = {
+      ...DEFAULT_THEME,
+      ...(parsed.theme ?? {}),
+      // Migrate a legacy single accent colour into the palette.
+      ...(parsed.accentColor ? { accent: parsed.accentColor } : {})
+    }
+    return {
+      ...defaults,
+      ...parsed,
+      rateCard: { ...defaults.rateCard, ...parsed.rateCard },
+      theme
+    }
   } catch {
     return { ...defaults }
   }

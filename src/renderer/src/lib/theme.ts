@@ -1,3 +1,5 @@
+import { type ThemePalette } from '@shared/ipc'
+
 export interface AccentPreset {
   id: string
   label: string
@@ -9,6 +11,20 @@ export const ACCENT_PRESETS: AccentPreset[] = [
   { id: 'jade', label: 'Jade', color: '#7faa86' },
   { id: 'wine', label: 'Wine', color: '#b06a7a' },
   { id: 'slate', label: 'Slate', color: '#8793ad' }
+]
+
+/** Editable palette tokens, in display order. */
+export const PALETTE_FIELDS: { key: keyof ThemePalette; label: string }[] = [
+  { key: 'base', label: 'Background' },
+  { key: 'sidebar', label: 'Sidebar' },
+  { key: 'panel', label: 'Panel' },
+  { key: 'card', label: 'Card' },
+  { key: 'accent', label: 'Accent' },
+  { key: 'gold', label: 'Gold' },
+  { key: 'text', label: 'Text' },
+  { key: 'muted', label: 'Muted text' },
+  { key: 'border', label: 'Border' },
+  { key: 'borderStrong', label: 'Strong border' }
 ]
 
 function hexToRgb(hex: string): { r: number; g: number; b: number } {
@@ -23,27 +39,20 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
   return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 }
 }
 
-function clampByte(v: number): number {
-  return Math.max(0, Math.min(255, Math.round(v)))
-}
-
-function rgbToHex(r: number, g: number, b: number): string {
-  return '#' + [r, g, b].map((v) => clampByte(v).toString(16).padStart(2, '0')).join('')
-}
-
-/** Darken (amount < 0) or lighten (amount > 0) a hex color. */
-function shade(hex: string, amount: number): string {
-  const { r, g, b } = hexToRgb(hex)
-  const f = 1 + amount
-  return rgbToHex(r * f, g * f, b * f)
-}
-
-/** Apply the accent color across the app's CSS variables, live. */
-export function applyAccent(hex: string): void {
-  const { r, g, b } = hexToRgb(hex)
+/** Apply the full palette to the app's CSS variables, live. */
+export function applyTheme(t: ThemePalette): void {
   const s = document.documentElement.style
-  s.setProperty('--accent', hex)
+  s.setProperty('--base', t.base)
+  s.setProperty('--sidebar', t.sidebar)
+  s.setProperty('--panel', t.panel)
+  s.setProperty('--card', t.card)
+  s.setProperty('--accent', t.accent)
+  s.setProperty('--gold', t.gold)
+  s.setProperty('--text', t.text)
+  s.setProperty('--muted', t.muted)
+  s.setProperty('--border', t.border)
+  s.setProperty('--border-strong', t.borderStrong)
+  const { r, g, b } = hexToRgb(t.accent)
   s.setProperty('--accent-40', `rgba(${r}, ${g}, ${b}, 0.4)`)
   s.setProperty('--accent-12', `rgba(${r}, ${g}, ${b}, 0.12)`)
-  s.setProperty('--gold', shade(hex, -0.28))
 }

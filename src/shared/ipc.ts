@@ -68,6 +68,33 @@ export interface RateCard {
   haikuOutput: number
 }
 
+export interface ThemePalette {
+  base: string
+  sidebar: string
+  panel: string
+  card: string
+  accent: string
+  gold: string
+  text: string
+  muted: string
+  border: string
+  borderStrong: string
+}
+
+/** The default "Candlelit Study" palette (spec §3). */
+export const DEFAULT_THEME: ThemePalette = {
+  base: '#161310',
+  sidebar: '#1e1a15',
+  panel: '#231f19',
+  card: '#2a251e',
+  accent: '#c9a96e',
+  gold: '#8b6e42',
+  text: '#e8dcc8',
+  muted: '#665c47',
+  border: '#2e2820',
+  borderStrong: '#3d3528'
+}
+
 /** Config exposed to the renderer — never includes the encrypted API key. */
 export interface PublicConfig {
   setupComplete: boolean
@@ -78,7 +105,7 @@ export interface PublicConfig {
   aiMode: AiMode
   rateCard: RateCard
   hasApiKey: boolean
-  accentColor: string
+  theme: ThemePalette
   /** Absolute path to a user-chosen unlock background, or null for the bundled default. */
   welcomeBackground: string | null
 }

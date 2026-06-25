@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { X, FolderOpen, KeyRound, ShieldCheck, Image as ImageIcon } from 'lucide-react'
+import { X, FolderOpen, KeyRound, ShieldCheck, Image as ImageIcon, RotateCcw } from 'lucide-react'
 import { useStore } from '../store/useStore'
 import { api } from '../lib/api'
-import { ACCENT_PRESETS } from '../lib/theme'
+import { ACCENT_PRESETS, PALETTE_FIELDS } from '../lib/theme'
 import type { AiMode } from '@shared/ipc'
 
 const TRANSLATIONS = [
@@ -17,7 +17,8 @@ export function Settings({ onClose }: { onClose: () => void }) {
   const config = useStore((s) => s.config)
   const refreshConfig = useStore((s) => s.refreshConfig)
   const relocateVault = useStore((s) => s.relocateVault)
-  const setAccent = useStore((s) => s.setAccent)
+  const setThemeColor = useStore((s) => s.setThemeColor)
+  const resetTheme = useStore((s) => s.resetTheme)
   const [apiKey, setApiKey] = useState('')
   const [note, setNote] = useState<string | null>(null)
 
@@ -105,26 +106,38 @@ export function Settings({ onClose }: { onClose: () => void }) {
 
           <section className="set-section">
             <h3 className="set-h">Appearance</h3>
-            <div className="set-label">Accent colour</div>
+            <div className="appearance-head">
+              <span className="set-label">Accent presets</span>
+              <button className="btn btn-sm" onClick={() => void resetTheme()}>
+                <RotateCcw size={13} /> Reset theme
+              </button>
+            </div>
             <div className="accent-row">
               {ACCENT_PRESETS.map((p) => (
                 <button
                   key={p.id}
                   className={`accent-swatch${
-                    config.accentColor.toLowerCase() === p.color.toLowerCase() ? ' active' : ''
+                    config.theme.accent.toLowerCase() === p.color.toLowerCase() ? ' active' : ''
                   }`}
                   style={{ background: p.color }}
                   title={p.label}
-                  onClick={() => void setAccent(p.color)}
+                  onClick={() => void setThemeColor('accent', p.color)}
                 />
               ))}
-              <label className="accent-custom" title="Custom colour">
-                <input
-                  type="color"
-                  value={config.accentColor}
-                  onChange={(e) => void setAccent(e.target.value)}
-                />
-              </label>
+            </div>
+
+            <div className="set-label appearance-bg-label">Palette</div>
+            <div className="palette-grid">
+              {PALETTE_FIELDS.map((f) => (
+                <label key={f.key} className="palette-row" title={f.label}>
+                  <input
+                    type="color"
+                    value={config.theme[f.key]}
+                    onChange={(e) => void setThemeColor(f.key, e.target.value)}
+                  />
+                  <span>{f.label}</span>
+                </label>
+              ))}
             </div>
 
             <div className="set-label appearance-bg-label">Unlock background</div>

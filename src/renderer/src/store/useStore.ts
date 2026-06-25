@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import { api } from '../lib/api'
-import { applyAccent } from '../lib/theme'
+import { applyTheme } from '../lib/theme'
 import { extractAndIndexBook } from '../lib/pdfIndex'
+import { DEFAULT_THEME } from '@shared/ipc'
 import type {
   Annotation,
   AppState,
@@ -19,6 +20,7 @@ import type {
   SearchScope,
   Shelf,
   Tag,
+  ThemePalette,
   WizardData
 } from '@shared/ipc'
 
@@ -57,7 +59,8 @@ interface Store {
 
   init: () => Promise<void>
   enter: () => void
-  setAccent: (color: string) => Promise<void>
+  setThemeColor: (key: keyof ThemePalette, value: string) => Promise<void>
+  resetTheme: () => Promise<void>
   completeWizard: (data: WizardData) => Promise<void>
   relocateVault: () => Promise<void>
   refreshConfig: () => Promise<void>
@@ -191,22 +194,31 @@ export const useStore = create<Store>((set, get) => {
         return
       }
       const data = await loadAll()
-      applyAccent(data.config.accentColor)
+      applyTheme(data.config.theme)
       set({ appState, ...data, phase: 'welcome' })
     },
 
     enter: () => set({ phase: 'ready' }),
 
-    setAccent: async (color) => {
-      const config = await api.setConfig({ accentColor: color })
-      applyAccent(color)
+    setThemeColor: async (key, value) => {
+      const cfg = get().config
+      if (!cfg) return
+      const theme = { ...cfg.theme, [key]: value }
+      applyTheme(theme)
+      const config = await api.setConfig({ theme })
+      set({ config })
+    },
+
+    resetTheme: async () => {
+      applyTheme(DEFAULT_THEME)
+      const config = await api.setConfig({ theme: DEFAULT_THEME })
       set({ config })
     },
 
     completeWizard: async (data) => {
       const appState = await api.completeWizard(data)
       const all = await loadAll()
-      applyAccent(all.config.accentColor)
+      applyTheme(all.config.theme)
       set({ appState, ...all, phase: 'ready' })
     },
 
