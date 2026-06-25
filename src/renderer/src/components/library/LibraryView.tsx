@@ -19,6 +19,7 @@ import { EmptyState } from '../EmptyState'
 import { BookCover } from './BookCover'
 import { BookInfoDrawer } from './BookInfoDrawer'
 import { ShelvesManager } from './ShelvesManager'
+import { DriveStatus } from './DriveStatus'
 import type { Book, ReadingStatus } from '@shared/ipc'
 
 const STATUS_LABEL: Record<ReadingStatus, string> = {
@@ -335,6 +336,7 @@ export function LibraryView() {
           )}
         </div>
         <div className="tb-right">
+          <DriveStatus />
           {contentTab === 'books' && (
             <>
           <div className="group-wrap" title="Group books by">

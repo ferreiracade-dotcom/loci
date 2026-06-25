@@ -71,6 +71,9 @@ export function SearchResults({ onHit }: { onHit: (h: SearchHit, index: number) 
           <div className="hit-body">
             <div className="hit-head">
               <span className="hit-title">{h.title || 'Untitled'}</span>
+              <span className={`hit-kind-tag ${h.kind}`}>
+                {h.kind === 'page' ? 'Book' : h.kind === 'quote' ? 'Quote' : 'Note'}
+              </span>
               {h.page != null && <span className="hit-page">p. {h.page}</span>}
               {h.kind === 'quote' && h.usedInCount > 0 && (
                 <span className="hit-used">used in {h.usedInCount}</span>
