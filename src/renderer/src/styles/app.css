@@ -1596,6 +1596,11 @@ select.field {
   border-color: var(--border-strong);
   color: var(--accent);
 }
+.backlink-row.active {
+  border-color: var(--gold);
+  color: var(--accent);
+  background: var(--accent-12);
+}
 
 /* ---------- Search ---------- */
 .search-view {
@@ -1639,9 +1644,13 @@ select.field {
 .search-scope {
   display: flex;
   align-items: center;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
   padding: 8px 14px;
   border-bottom: 1px solid var(--border);
+}
+.search-view.compact .scope-shelf {
+  flex: 1 1 100%;
 }
 .scope-shelf {
   width: auto;

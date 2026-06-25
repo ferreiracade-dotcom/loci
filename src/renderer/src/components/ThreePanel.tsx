@@ -10,6 +10,7 @@ import { PdfReader } from './library/PdfReader'
 import { QuotesPanel } from './library/QuotesPanel'
 import { NotesView } from './library/NotesView'
 import { BacklinksPanel } from './library/BacklinksPanel'
+import { StandaloneNotesPanel } from './library/StandaloneNotesPanel'
 import { SearchView } from './library/SearchView'
 import { clamp } from '../lib/util'
 
@@ -163,13 +164,15 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
             <div className="notes-body">
               {openBookId && layout.activeRightTab === 'book-notes' ? (
                 <QuotesPanel />
+              ) : layout.activeRightTab === 'standalone-notes' ? (
+                <StandaloneNotesPanel />
               ) : layout.activeRightTab === 'backlinks' ? (
                 <BacklinksPanel />
               ) : (
                 <EmptyState
                   icon={activeTab.icon}
                   title="Nothing here yet"
-                  subtitle="Open a book to capture quotes, or pick the Backlinks tab to see links."
+                  subtitle="Open a book to capture quotes, or pick another tab."
                 />
               )}
             </div>
