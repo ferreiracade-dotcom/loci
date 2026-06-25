@@ -13,16 +13,6 @@ import { api } from '../../lib/api'
 import { RichNoteEditor as NoteEditor } from './RichNoteEditor'
 import { Divider } from '../Divider'
 import { EmptyState } from '../EmptyState'
-import type { NoteType } from '@shared/ipc'
-
-const TYPE_LABEL: Record<NoteType, string> = {
-  note: 'Note',
-  page: 'Page',
-  chapter: 'Chapter',
-  topic: 'Topic',
-  'book-note': 'Book'
-}
-const CREATE_TYPES: NoteType[] = ['note', 'topic', 'chapter', 'page']
 
 export function NotesView({ compact = false }: { compact?: boolean }) {
   const notes = useStore((s) => s.standaloneNotes)
@@ -40,7 +30,6 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
 
   const [creating, setCreating] = useState(false)
   const [title, setTitle] = useState('')
-  const [newType, setNewType] = useState<NoteType>('note')
   const [listCollapsed, setListCollapsed] = useState(false)
   const [ratio, setRatio] = useState(0.5)
   const splitRef = useRef<HTMLDivElement>(null)
@@ -80,7 +69,7 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
     const t = title.trim()
     setCreating(false)
     setTitle('')
-    if (t) void createNote(t, newType)
+    if (t) void createNote(t)
   }
 
   const onRowMenu = (e: MouseEvent, path: string, t: string): void => {
@@ -176,17 +165,6 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
                   }
                 }}
               />
-              <select
-                className="note-new-type"
-                value={newType}
-                onChange={(e) => setNewType(e.target.value as NoteType)}
-              >
-                {CREATE_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {TYPE_LABEL[t]}
-                  </option>
-                ))}
-              </select>
               <button className="btn btn-sm" onClick={commitNew}>
                 Add
               </button>
@@ -208,7 +186,6 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
                 >
                   <FileText size={14} />
                   <span className="note-row-title">{n.title}</span>
-                  <span className={`note-type-badge ${n.type}`}>{TYPE_LABEL[n.type]}</span>
                   {!compact && (
                     <button
                       className="note-row-split"
