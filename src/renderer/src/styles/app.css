@@ -2494,6 +2494,9 @@ select.field {
   letter-spacing: 0.05em;
   color: var(--muted);
 }
+.dash-section {
+  margin-bottom: 26px;
+}
 .dash-section h3 {
   display: flex;
   align-items: center;
@@ -2501,6 +2504,23 @@ select.field {
   font-size: 14px;
   color: var(--text);
   margin: 0 0 12px;
+}
+.dash-copy-biblio {
+  margin-left: auto;
+}
+.biblio-list {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.biblio-entry {
+  font-family: var(--font-read);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+  /* CMOS hanging indent reads better, but a simple list is fine inline */
 }
 .dash-ok {
   font-size: 13px;

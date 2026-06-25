@@ -72,6 +72,38 @@ function citationFor(b: BookMetaRow, page: number | null): string {
   return formatCitation(sourceFor(b), 'footnote', printedPage(b, page))
 }
 
+/** CMOS 18 bibliography entries for every book that has at least one quote. */
+export function buildBibliography(): string[] {
+  const rows = getDb()
+    .prepare(
+      `SELECT b.title, b.author, b.publisher, b.city, b.year
+       FROM books b
+       WHERE EXISTS (SELECT 1 FROM quotes q WHERE q.book_id = b.id)`
+    )
+    .all() as {
+    title: string
+    author: string | null
+    publisher: string | null
+    city: string | null
+    year: number | null
+  }[]
+  const items = rows.map((r) => {
+    const authors = parseAuthors(r.author)
+    const src: CitationSource = {
+      kind: 'book',
+      authors,
+      title: r.title,
+      publisher: r.publisher,
+      city: r.city,
+      year: r.year
+    }
+    const sortKey = (authors[0]?.trim().split(/\s+/).pop() || r.title).toLowerCase()
+    return { entry: formatCitation(src, 'bibliography', null), sortKey }
+  })
+  items.sort((a, b) => a.sortKey.localeCompare(b.sortKey))
+  return items.map((x) => x.entry)
+}
+
 function bookMeta(bookId: string): BookMetaRow | undefined {
   return getDb()
     .prepare(

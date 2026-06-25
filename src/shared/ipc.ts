@@ -36,6 +36,7 @@ export const Channels = {
   setBookLastPage: 'library:setBookLastPage',
   addQuote: 'quotes:add',
   listQuotes: 'quotes:list',
+  buildBibliography: 'quotes:bibliography',
   setQuoteTags: 'quotes:setTags',
   setQuoteAnnotations: 'quotes:setAnnotations',
   deleteQuote: 'quotes:delete',
@@ -174,6 +175,8 @@ export interface LociApi {
   setBookLastPage(id: string, page: number): Promise<void>
   addQuote(input: NewQuote): Promise<Quote>
   listQuotes(bookId: string): Promise<Quote[]>
+  /** CMOS 18 bibliography entries for every cited book, sorted by author. */
+  buildBibliography(): Promise<string[]>
   setQuoteTags(quoteId: string, tags: string[]): Promise<void>
   setQuoteAnnotations(quoteId: string, annotations: Annotation[]): Promise<void>
   deleteQuote(quoteId: string): Promise<void>

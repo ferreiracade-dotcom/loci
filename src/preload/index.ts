@@ -38,6 +38,7 @@ const api: LociApi = {
   setBookLastPage: (id, page) => ipcRenderer.invoke(Channels.setBookLastPage, id, page),
   addQuote: (input) => ipcRenderer.invoke(Channels.addQuote, input),
   listQuotes: (bookId) => ipcRenderer.invoke(Channels.listQuotes, bookId),
+  buildBibliography: () => ipcRenderer.invoke(Channels.buildBibliography),
   setQuoteTags: (quoteId, tags) => ipcRenderer.invoke(Channels.setQuoteTags, quoteId, tags),
   setQuoteAnnotations: (quoteId, annotations) =>
     ipcRenderer.invoke(Channels.setQuoteAnnotations, quoteId, annotations),

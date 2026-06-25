@@ -166,6 +166,7 @@ export function registerIpc(): void {
   // --- Quotes (Phase 2b) ---
   ipcMain.handle(Channels.addQuote, (_e, input: NewQuote) => quotes.addQuote(input))
   ipcMain.handle(Channels.listQuotes, (_e, bookId: string) => quotes.listQuotes(bookId))
+  ipcMain.handle(Channels.buildBibliography, () => quotes.buildBibliography())
   ipcMain.handle(Channels.setQuoteTags, (_e, quoteId: string, tags: string[]) =>
     quotes.setQuoteTags(quoteId, tags)
   )
