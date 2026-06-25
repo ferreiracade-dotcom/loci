@@ -35,9 +35,7 @@ export function WelcomeScreen() {
       <div className="welcome-scrim" />
       <div className="welcome-content">
         <h1 className="welcome-brand">Loci</h1>
-        <p className="welcome-sub">
-          The common places — where Scripture and confession are gathered around a topic.
-        </p>
+        <p className="welcome-sub">The Commonplace</p>
         <button className="btn btn-primary welcome-enter" onClick={enter} autoFocus>
           Enter
         </button>
