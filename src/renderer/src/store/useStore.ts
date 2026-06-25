@@ -268,12 +268,13 @@ export const useStore = create<Store>((set, get) => {
     createNote: async (title) => {
       const note = await api.createNote(title)
       await get().loadStandaloneNotes()
-      set({ activeNotePath: note.path, openBookId: null })
+      set({ activeNotePath: note.path })
       get().saveLayout({ activeLeftView: 'notes' })
     },
 
     openNote: (path) => {
-      set({ activeNotePath: path, openBookId: null })
+      // Keep any open book; the Notes view opens beside it in the split.
+      set({ activeNotePath: path })
       get().saveLayout({ activeLeftView: 'notes' })
     },
 
