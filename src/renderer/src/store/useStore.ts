@@ -45,6 +45,8 @@ interface Store {
   noteReloadToken: number
   standaloneNotes: NoteSummary[]
   activeNotePath: string | null
+  /** A second note shown side-by-side in the Notes view, or null. */
+  splitNotePath: string | null
   /** Target page to jump to when (re)opening a book from search; consumed by the reader. */
   pendingPage: number | null
   indexing: { done: number; total: number } | null
@@ -79,6 +81,8 @@ interface Store {
   loadStandaloneNotes: () => Promise<void>
   createNote: (title: string, type?: NoteType) => Promise<void>
   openNote: (path: string) => void
+  openNoteInSplit: (path: string) => void
+  closeSplitNote: () => void
   deleteNote: (path: string) => Promise<void>
   navigateLink: (name: string) => Promise<void>
   loadQuotes: (bookId: string) => Promise<void>
@@ -176,6 +180,7 @@ export const useStore = create<Store>((set, get) => {
     noteReloadToken: 0,
     standaloneNotes: [],
     activeNotePath: null,
+    splitNotePath: null,
     pendingPage: null,
     indexing: null,
     searchResults: [],
@@ -311,9 +316,25 @@ export const useStore = create<Store>((set, get) => {
       get().saveLayout({ activeLeftView: 'notes' })
     },
 
+    openNoteInSplit: (path) => {
+      const { activeNotePath } = get()
+      // Nothing to split against (or same note) — just open it normally.
+      if (!activeNotePath || activeNotePath === path) {
+        get().openNote(path)
+        return
+      }
+      set({ splitNotePath: path })
+      get().saveLayout({ activeLeftView: 'notes' })
+    },
+
+    closeSplitNote: () => set({ splitNotePath: null }),
+
     deleteNote: async (path) => {
       await api.deleteNote(path)
-      if (get().activeNotePath === path) set({ activeNotePath: null })
+      const patch: { activeNotePath?: null; splitNotePath?: null } = {}
+      if (get().activeNotePath === path) patch.activeNotePath = null
+      if (get().splitNotePath === path) patch.splitNotePath = null
+      if (Object.keys(patch).length) set(patch)
       await get().loadStandaloneNotes()
     },
 
