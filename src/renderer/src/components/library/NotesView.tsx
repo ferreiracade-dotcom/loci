@@ -1,7 +1,17 @@
-import { useEffect, useState, type MouseEvent } from 'react'
-import { FilePlus, FileText, Trash2, Columns2, X } from 'lucide-react'
+import { useEffect, useRef, useState, type MouseEvent } from 'react'
+import {
+  FilePlus,
+  FileText,
+  Trash2,
+  Columns2,
+  X,
+  PanelLeftClose,
+  PanelLeftOpen
+} from 'lucide-react'
 import { useStore } from '../../store/useStore'
+import { api } from '../../lib/api'
 import { NoteEditor } from './NoteEditor'
+import { Divider } from '../Divider'
 import { EmptyState } from '../EmptyState'
 import type { NoteType } from '@shared/ipc'
 
@@ -29,9 +39,16 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
   const [title, setTitle] = useState('')
   const [newType, setNewType] = useState<NoteType>('note')
   const [filter, setFilter] = useState<'all' | NoteType>('all')
+  const [listCollapsed, setListCollapsed] = useState(false)
+  const [ratio, setRatio] = useState(0.5)
+  const splitRef = useRef<HTMLDivElement>(null)
   const [menu, setMenu] = useState<{ x: number; y: number; path: string; title: string } | null>(
     null
   )
+
+  useEffect(() => {
+    void api.getSession('notesListCollapsed').then((v) => setListCollapsed(v === '1'))
+  }, [])
 
   useEffect(() => {
     if (!menu) return
@@ -47,6 +64,16 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
     }
   }, [menu])
 
+  function toggleList(next: boolean): void {
+    setListCollapsed(next)
+    void api.setSession('notesListCollapsed', next ? '1' : '')
+  }
+
+  const onSplitDrag = (dx: number): void => {
+    const w = splitRef.current?.clientWidth ?? 1
+    setRatio((r) => Math.min(0.8, Math.max(0.2, r + dx / w)))
+  }
+
   const commitNew = (): void => {
     const t = title.trim()
     setCreating(false)
@@ -61,122 +88,143 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
 
   const shown = filter === 'all' ? notes : notes.filter((n) => n.type === filter)
   const splitTitle = notes.find((n) => n.path === splitNotePath)?.title ?? 'Note'
+  const showSplit = !!splitNotePath && !compact
 
   return (
     <div className={`notes-view${compact ? ' compact' : ''}`}>
-      <div className="notes-list-col">
-        <div className="notes-list-head">
-          <span>Standalone notes</span>
-          <button className="icon-btn" title="New note" onClick={() => setCreating(true)}>
-            <FilePlus size={16} />
-          </button>
-        </div>
-
-        <div className="notes-filter">
-          {FILTERS.map((f) => (
-            <button
-              key={f}
-              className={`nf-chip${filter === f ? ' active' : ''}`}
-              onClick={() => setFilter(f)}
-            >
-              {f === 'all' ? 'All' : TYPE_LABEL[f]}
-            </button>
-          ))}
-        </div>
-
-        {creating && (
-          <div className="note-new">
-            <input
-              className="note-new-input"
-              autoFocus
-              placeholder="Note title…"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') commitNew()
-                else if (e.key === 'Escape') {
-                  setCreating(false)
-                  setTitle('')
-                }
-              }}
-            />
-            <select
-              className="note-new-type"
-              value={newType}
-              onChange={(e) => setNewType(e.target.value as NoteType)}
-            >
-              {CREATE_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {TYPE_LABEL[t]}
-                </option>
-              ))}
-            </select>
-            <button className="btn btn-sm" onClick={commitNew}>
-              Add
-            </button>
-          </div>
-        )}
-
-        <div className="notes-list-scroll">
-          {shown.length === 0 && !creating ? (
-            <div className="notes-list-empty">
-              {filter === 'all'
-                ? 'No standalone notes yet.'
-                : `No ${TYPE_LABEL[filter as NoteType].toLowerCase()} notes.`}
+      {!compact && listCollapsed ? (
+        <button className="notes-list-rail" title="Show notes list" onClick={() => toggleList(false)}>
+          <PanelLeftOpen size={16} />
+        </button>
+      ) : (
+        <div className="notes-list-col">
+          <div className="notes-list-head">
+            <span>Standalone notes</span>
+            <div className="nlh-actions">
+              <button className="icon-btn" title="New note" onClick={() => setCreating(true)}>
+                <FilePlus size={16} />
+              </button>
+              {!compact && (
+                <button className="icon-btn" title="Hide list" onClick={() => toggleList(true)}>
+                  <PanelLeftClose size={15} />
+                </button>
+              )}
             </div>
-          ) : (
-            shown.map((n) => (
-              <div
-                key={n.path}
-                className={`note-row${activeNotePath === n.path ? ' active' : ''}`}
-                onClick={() => openNote(n.path)}
-                onContextMenu={(e) => onRowMenu(e, n.path, n.title)}
+          </div>
+
+          <div className="notes-filter">
+            {FILTERS.map((f) => (
+              <button
+                key={f}
+                className={`nf-chip${filter === f ? ' active' : ''}`}
+                onClick={() => setFilter(f)}
               >
-                <FileText size={14} />
-                <span className="note-row-title">{n.title}</span>
-                <span className={`note-type-badge ${n.type}`}>{TYPE_LABEL[n.type]}</span>
-                {!compact && (
+                {f === 'all' ? 'All' : TYPE_LABEL[f]}
+              </button>
+            ))}
+          </div>
+
+          {creating && (
+            <div className="note-new">
+              <input
+                className="note-new-input"
+                autoFocus
+                placeholder="Note title…"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') commitNew()
+                  else if (e.key === 'Escape') {
+                    setCreating(false)
+                    setTitle('')
+                  }
+                }}
+              />
+              <select
+                className="note-new-type"
+                value={newType}
+                onChange={(e) => setNewType(e.target.value as NoteType)}
+              >
+                {CREATE_TYPES.map((t) => (
+                  <option key={t} value={t}>
+                    {TYPE_LABEL[t]}
+                  </option>
+                ))}
+              </select>
+              <button className="btn btn-sm" onClick={commitNew}>
+                Add
+              </button>
+            </div>
+          )}
+
+          <div className="notes-list-scroll">
+            {shown.length === 0 && !creating ? (
+              <div className="notes-list-empty">
+                {filter === 'all'
+                  ? 'No standalone notes yet.'
+                  : `No ${TYPE_LABEL[filter as NoteType].toLowerCase()} notes.`}
+              </div>
+            ) : (
+              shown.map((n) => (
+                <div
+                  key={n.path}
+                  className={`note-row${activeNotePath === n.path ? ' active' : ''}`}
+                  onClick={() => openNote(n.path)}
+                  onContextMenu={(e) => onRowMenu(e, n.path, n.title)}
+                >
+                  <FileText size={14} />
+                  <span className="note-row-title">{n.title}</span>
+                  <span className={`note-type-badge ${n.type}`}>{TYPE_LABEL[n.type]}</span>
+                  {!compact && (
+                    <button
+                      className="note-row-split"
+                      title="Open in split pane"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        openNoteInSplit(n.path)
+                      }}
+                    >
+                      <Columns2 size={13} />
+                    </button>
+                  )}
                   <button
-                    className="note-row-split"
-                    title="Open in split pane"
+                    className="note-row-del"
+                    title="Delete note"
                     onClick={(e) => {
                       e.stopPropagation()
-                      openNoteInSplit(n.path)
+                      if (window.confirm(`Delete “${n.title}”?`)) void deleteNote(n.path)
                     }}
                   >
-                    <Columns2 size={13} />
+                    <Trash2 size={13} />
                   </button>
-                )}
-                <button
-                  className="note-row-del"
-                  title="Delete note"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    if (window.confirm(`Delete “${n.title}”?`)) void deleteNote(n.path)
-                  }}
-                >
-                  <Trash2 size={13} />
-                </button>
-              </div>
-            ))
-          )}
+                </div>
+              ))
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="notes-edit-col">
         {activeNotePath ? (
-          <div className="notes-edit-split">
-            <NoteEditor key={activeNotePath} path={activeNotePath} />
-            {splitNotePath && !compact && (
-              <div className="notes-split-pane">
-                <div className="split-head">
-                  <span className="split-title">{splitTitle}</span>
-                  <button className="icon-btn" title="Close split" onClick={closeSplitNote}>
-                    <X size={14} />
-                  </button>
+          <div className="notes-edit-split" ref={splitRef}>
+            {showSplit ? (
+              <>
+                <div className="notes-pane" style={{ flex: `${ratio} 1 0%` }}>
+                  <NoteEditor key={activeNotePath} path={activeNotePath} />
                 </div>
-                <NoteEditor key={splitNotePath} path={splitNotePath} />
-              </div>
+                <Divider onDrag={onSplitDrag} onDragEnd={() => undefined} />
+                <div className="notes-split-pane" style={{ flex: `${1 - ratio} 1 0%` }}>
+                  <div className="split-head">
+                    <span className="split-title">{splitTitle}</span>
+                    <button className="icon-btn" title="Close split" onClick={closeSplitNote}>
+                      <X size={14} />
+                    </button>
+                  </div>
+                  <NoteEditor key={splitNotePath} path={splitNotePath} />
+                </div>
+              </>
+            ) : (
+              <NoteEditor key={activeNotePath} path={activeNotePath} />
             )}
           </div>
         ) : (
