@@ -29,6 +29,8 @@ export const Channels = {
   refetchMetadata: 'library:refetchMetadata',
   listShelves: 'library:listShelves',
   createShelf: 'library:createShelf',
+  renameShelf: 'library:renameShelf',
+  deleteShelf: 'library:deleteShelf',
   listTags: 'library:listTags',
   getBookPdf: 'library:getBookPdf',
   setBookLastPage: 'library:setBookLastPage',
@@ -136,6 +138,8 @@ export interface LociApi {
   refetchMetadata(id: string): Promise<Book | null>
   listShelves(): Promise<Shelf[]>
   createShelf(name: string): Promise<Shelf>
+  renameShelf(id: string, name: string): Promise<void>
+  deleteShelf(id: string): Promise<void>
   listTags(): Promise<Tag[]>
   /** Raw PDF bytes for a book (also marks it opened), or null if the file is missing. */
   getBookPdf(id: string): Promise<Uint8Array | null>

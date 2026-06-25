@@ -152,6 +152,10 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.refetchMetadata, (_e, id: string) => library.refetchMetadata(id))
   ipcMain.handle(Channels.listShelves, () => library.listShelves())
   ipcMain.handle(Channels.createShelf, (_e, name: string) => library.createShelf(name))
+  ipcMain.handle(Channels.renameShelf, (_e, id: string, name: string) =>
+    library.renameShelf(id, name)
+  )
+  ipcMain.handle(Channels.deleteShelf, (_e, id: string) => library.deleteShelf(id))
   ipcMain.handle(Channels.listTags, () => library.listTags())
   ipcMain.handle(Channels.getBookPdf, (_e, id: string) => library.getBookPdf(id))
   ipcMain.handle(Channels.setBookLastPage, (_e, id: string, page: number) =>

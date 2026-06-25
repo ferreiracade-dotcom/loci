@@ -422,6 +422,21 @@ export function createShelf(name: string): Shelf {
   return { id, name: clean, sortOrder: max + 1, count: 0 }
 }
 
+export function renameShelf(id: string, name: string): void {
+  const clean = name.trim()
+  if (!clean) return
+  try {
+    getDb().prepare('UPDATE shelves SET name = ? WHERE id = ?').run(clean, id)
+  } catch {
+    /* name already taken — ignore */
+  }
+}
+
+export function deleteShelf(id: string): void {
+  // book_shelves rows cascade via the foreign key.
+  getDb().prepare('DELETE FROM shelves WHERE id = ?').run(id)
+}
+
 export function listTags(): Tag[] {
   return getDb().prepare('SELECT id, name FROM tags ORDER BY name').all() as Tag[]
 }

@@ -76,6 +76,8 @@ interface Store {
   setQuoteAnnotations: (quoteId: string, annotations: Annotation[]) => Promise<void>
   refetchMetadata: (id: string) => Promise<void>
   createShelf: (name: string) => Promise<void>
+  renameShelf: (id: string, name: string) => Promise<void>
+  deleteShelf: (id: string) => Promise<void>
 }
 
 interface ShellData {
@@ -343,6 +345,17 @@ export const useStore = create<Store>((set, get) => {
 
     createShelf: async (name) => {
       await api.createShelf(name)
+      await get().refreshLibrary()
+    },
+
+    renameShelf: async (id, name) => {
+      await api.renameShelf(id, name)
+      await get().refreshLibrary()
+    },
+
+    deleteShelf: async (id) => {
+      await api.deleteShelf(id)
+      if (get().activeShelf === id) set({ activeShelf: null })
       await get().refreshLibrary()
     }
   }

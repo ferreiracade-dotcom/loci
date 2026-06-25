@@ -1,9 +1,19 @@
 import { useMemo, useState } from 'react'
-import { Upload, FolderInput, LayoutGrid, List as ListIcon, RefreshCw, BookOpen, Info } from 'lucide-react'
+import {
+  Upload,
+  FolderInput,
+  LayoutGrid,
+  List as ListIcon,
+  RefreshCw,
+  BookOpen,
+  Info,
+  Pencil
+} from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { EmptyState } from '../EmptyState'
 import { BookCover } from './BookCover'
 import { BookInfoDrawer } from './BookInfoDrawer'
+import { ShelvesManager } from './ShelvesManager'
 import type { Book, ReadingStatus } from '@shared/ipc'
 
 const STATUS_LABEL: Record<ReadingStatus, string> = {
@@ -106,6 +116,7 @@ export function LibraryView() {
   const openBook = useStore((s) => s.openBook)
   const [infoId, setInfoId] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
+  const [shelvesOpen, setShelvesOpen] = useState(false)
 
   const filtered = useMemo(
     () => (activeShelf ? books.filter((b) => b.shelfIds.includes(activeShelf)) : books),
@@ -201,6 +212,9 @@ export function LibraryView() {
             {s.name} <span className="chip-n">{s.count}</span>
           </button>
         ))}
+        <button className="chip chip-manage" title="Add or edit shelves" onClick={() => setShelvesOpen(true)}>
+          <Pencil size={12} /> Edit shelves
+        </button>
       </div>
 
       <div className="library-body">
@@ -240,6 +254,7 @@ export function LibraryView() {
 
       {toast && <div className="toast">{toast}</div>}
       {infoId && <BookInfoDrawer bookId={infoId} onClose={() => setInfoId(null)} />}
+      {shelvesOpen && <ShelvesManager onClose={() => setShelvesOpen(false)} />}
     </div>
   )
 }
