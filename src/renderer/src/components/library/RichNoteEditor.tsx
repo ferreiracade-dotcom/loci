@@ -7,6 +7,7 @@ import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Link from '@tiptap/extension-link'
 import { Markdown } from 'tiptap-markdown'
+import Suggestion, { type SuggestionProps, type SuggestionKeyDownProps } from '@tiptap/suggestion'
 import {
   Bold,
   Italic,
@@ -145,6 +146,112 @@ const WikiLink = Extension.create<WikiOpts>({
   }
 })
 
+// ---------- wiki-link autocomplete ([[ … ) ----------
+
+const WikiSuggest = Extension.create<{ getNames: () => string[] }>({
+  name: 'wikiSuggest',
+  addOptions() {
+    return { getNames: () => [] }
+  },
+  addProseMirrorPlugins() {
+    const getNames = this.options.getNames
+    return [
+      Suggestion<string>({
+        editor: this.editor,
+        char: '[[',
+        allowSpaces: true,
+        startOfLine: false,
+        items: ({ query }) => {
+          if (query.includes(']')) return []
+          const q = query.toLowerCase()
+          return getNames()
+            .filter((n) => n.toLowerCase().includes(q))
+            .slice(0, 8)
+        },
+        command: ({ editor, range, props }) => {
+          editor.chain().focus().insertContentAt(range, `[[${props}]]`).run()
+        },
+        render: () => {
+          let el: HTMLDivElement | null = null
+          let items: string[] = []
+          let index = 0
+          let pick: (item: string) => void = () => undefined
+
+          const draw = (): void => {
+            if (!el) return
+            el.innerHTML = ''
+            items.forEach((it, i) => {
+              const b = document.createElement('button')
+              b.className = `wiki-suggest-item${i === index ? ' active' : ''}`
+              b.textContent = it
+              b.onmousedown = (e): void => {
+                e.preventDefault()
+                pick(it)
+              }
+              el?.appendChild(b)
+            })
+          }
+          const place = (rect: DOMRect | null | undefined): void => {
+            if (!el || !rect) return
+            el.style.left = `${rect.left}px`
+            el.style.top = `${rect.bottom + 4}px`
+          }
+          const close = (): void => {
+            el?.remove()
+            el = null
+          }
+          const open = (props: SuggestionProps<string>): void => {
+            items = props.items
+            index = 0
+            pick = props.command
+            if (!items.length) {
+              close()
+              return
+            }
+            if (!el) {
+              el = document.createElement('div')
+              el.className = 'wiki-suggest'
+              document.body.appendChild(el)
+            }
+            draw()
+            place(props.clientRect?.())
+          }
+
+          return {
+            onStart: open,
+            onUpdate: open,
+            onKeyDown: (props: SuggestionKeyDownProps): boolean => {
+              if (!el || !items.length) return false
+              const k = props.event.key
+              if (k === 'ArrowDown') {
+                index = (index + 1) % items.length
+                draw()
+                return true
+              }
+              if (k === 'ArrowUp') {
+                index = (index - 1 + items.length) % items.length
+                draw()
+                return true
+              }
+              if (k === 'Enter' || k === 'Tab') {
+                const it = items[index]
+                if (it) pick(it)
+                return true
+              }
+              if (k === 'Escape') {
+                close()
+                return true
+              }
+              return false
+            },
+            onExit: close
+          }
+        }
+      })
+    ]
+  }
+})
+
 // ---------- component ----------
 
 export function RichNoteEditor({ path }: { path: string }) {
@@ -166,6 +273,8 @@ export function RichNoteEditor({ path }: { path: string }) {
 
   const validRef = useRef<(n: string) => boolean>(() => false)
   const openRef = useRef<(n: string) => void>(() => undefined)
+  const namesRef = useRef<string[]>([])
+  namesRef.current = [...books.map((b) => b.title), ...notes.map((n) => n.title)]
   validRef.current = (name) => {
     const ln = name.toLowerCase()
     return (
@@ -205,7 +314,8 @@ export function RichNoteEditor({ path }: { path: string }) {
       WikiLink.configure({
         isValid: (n) => validRef.current(n),
         onOpen: (n) => openRef.current(n)
-      })
+      }),
+      WikiSuggest.configure({ getNames: () => namesRef.current })
     ],
     onUpdate: ({ editor }) => {
       if (loadingRef.current) return

@@ -2724,3 +2724,37 @@ select.field {
   color: #d98a76;
   text-decoration-style: dotted;
 }
+.wiki-suggest {
+  position: fixed;
+  z-index: 200;
+  min-width: 180px;
+  max-width: 320px;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--card);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.wiki-suggest-item {
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 13px;
+  padding: 6px 9px;
+  border-radius: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.wiki-suggest-item:hover,
+.wiki-suggest-item.active {
+  background: var(--accent-12);
+  color: var(--accent);
+}
