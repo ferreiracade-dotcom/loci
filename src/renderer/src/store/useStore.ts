@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { api } from '../lib/api'
 import { applyAccent } from '../lib/theme'
+import { extractAndIndexBook } from '../lib/pdfIndex'
 import type {
   Annotation,
   AppState,
@@ -40,6 +41,7 @@ interface Store {
   activeNotePath: string | null
   /** Target page to jump to when (re)opening a book from search; consumed by the reader. */
   pendingPage: number | null
+  indexing: { done: number; total: number } | null
 
   init: () => Promise<void>
   enter: () => void
@@ -78,6 +80,8 @@ interface Store {
   createShelf: (name: string) => Promise<void>
   renameShelf: (id: string, name: string) => Promise<void>
   deleteShelf: (id: string) => Promise<void>
+  startIndexing: () => Promise<void>
+  cancelIndexing: () => void
 }
 
 interface ShellData {
@@ -105,6 +109,7 @@ export const useStore = create<Store>((set, get) => {
   let listenersBound = false
   let refreshTimer: ReturnType<typeof setTimeout> | null = null
   let lastRefresh = 0
+  let indexCancel = false
 
   // Coalesce background "library changed" events into at most one refresh per 1.5s.
   const scheduleRefresh = (): void => {
@@ -138,6 +143,7 @@ export const useStore = create<Store>((set, get) => {
     standaloneNotes: [],
     activeNotePath: null,
     pendingPage: null,
+    indexing: null,
 
     init: async () => {
       if (!listenersBound) {
@@ -357,6 +363,34 @@ export const useStore = create<Store>((set, get) => {
       await api.deleteShelf(id)
       if (get().activeShelf === id) set({ activeShelf: null })
       await get().refreshLibrary()
+    },
+
+    startIndexing: async () => {
+      if (get().indexing) return
+      indexCancel = false
+      const pending = await api.unindexedBooks()
+      if (pending.length === 0) {
+        set({ indexing: { done: 0, total: 0 } })
+        setTimeout(() => set({ indexing: null }), 1800)
+        return
+      }
+      set({ indexing: { done: 0, total: pending.length } })
+      for (let i = 0; i < pending.length; i++) {
+        if (indexCancel) break
+        set({ indexing: { done: i, total: pending.length } })
+        try {
+          await extractAndIndexBook(pending[i].id, pending[i].title)
+        } catch {
+          /* skip unreadable book */
+        }
+        await new Promise((r) => setTimeout(r, 20)) // let the UI breathe between books
+      }
+      set({ indexing: null })
+      await get().refreshLibrary()
+    },
+
+    cancelIndexing: () => {
+      indexCancel = true
     }
   }
 })

@@ -1,12 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
-import * as pdfjsLib from 'pdfjs-dist'
-import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
-import { Search as SearchIcon, BookOpen, Quote as QuoteIcon, FileText, DatabaseZap } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Search as SearchIcon, BookOpen, Quote as QuoteIcon, FileText, DatabaseZap, X } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import type { SearchHit, SearchKind } from '@shared/ipc'
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc
 
 function Snippet({ text }: { text: string }) {
   const parts = text.split(/⟦|⟧/)
@@ -42,14 +38,15 @@ export function SearchView() {
   const shelves = useStore((s) => s.shelves)
   const openBookAt = useStore((s) => s.openBookAt)
   const openNote = useStore((s) => s.openNote)
-  const refreshLibrary = useStore((s) => s.refreshLibrary)
+  const indexing = useStore((s) => s.indexing)
+  const startIndexing = useStore((s) => s.startIndexing)
+  const cancelIndexing = useStore((s) => s.cancelIndexing)
 
   const [query, setQuery] = useState('')
   const [kind, setKind] = useState<SearchKind>('all')
   const [shelfId, setShelfId] = useState<string>('')
   const [results, setResults] = useState<SearchHit[]>([])
   const [searching, setSearching] = useState(false)
-  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null)
 
   useEffect(() => {
     if (!query.trim()) {
@@ -66,49 +63,10 @@ export function SearchView() {
     return () => clearTimeout(t)
   }, [query, kind, shelfId])
 
-  const buildIndex = async (): Promise<void> => {
-    const pending = await api.unindexedBooks()
-    if (pending.length === 0) {
-      setProgress({ done: 0, total: 0 })
-      window.setTimeout(() => setProgress(null), 2000)
-      return
-    }
-    setProgress({ done: 0, total: pending.length })
-    for (let i = 0; i < pending.length; i++) {
-      setProgress({ done: i, total: pending.length })
-      try {
-        const data = await api.getBookPdf(pending[i].id)
-        if (!data) continue
-        const doc = await pdfjsLib.getDocument({ data }).promise
-        const pages: { page: number; text: string }[] = []
-        for (let n = 1; n <= doc.numPages; n++) {
-          const pg = await doc.getPage(n)
-          const tc = await pg.getTextContent()
-          pages.push({ page: n, text: tc.items.map((it) => ('str' in it ? it.str : '')).join(' ') })
-        }
-        await api.indexBookText(pending[i].id, pending[i].title, pages)
-        void doc.destroy()
-      } catch {
-        /* skip unreadable book */
-      }
-    }
-    setProgress(null)
-    await refreshLibrary()
-  }
-
   const onHit = (h: SearchHit): void => {
     if ((h.kind === 'page' || h.kind === 'quote') && h.bookId) openBookAt(h.bookId, h.page ?? 1)
     else if (h.kind === 'note' && h.ref) openNote(h.ref)
   }
-
-  const hint = useMemo(() => {
-    if (progress) {
-      return progress.total === 0
-        ? 'Everything is already indexed.'
-        : `Indexing ${progress.done}/${progress.total} books…`
-    }
-    return null
-  }, [progress])
 
   return (
     <div className="search-view">
@@ -123,14 +81,26 @@ export function SearchView() {
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
-        <button
-          className="btn btn-sm"
-          title="Extract and index any books not yet searchable"
-          disabled={!!progress}
-          onClick={() => void buildIndex()}
-        >
-          <DatabaseZap size={14} /> Build index
-        </button>
+        {indexing ? (
+          <div className="index-progress">
+            <span>
+              {indexing.total === 0 ? 'Up to date' : `Indexing ${indexing.done}/${indexing.total}`}
+            </span>
+            {indexing.total > 0 && (
+              <button className="btn btn-sm" onClick={cancelIndexing}>
+                <X size={14} /> Stop
+              </button>
+            )}
+          </div>
+        ) : (
+          <button
+            className="btn btn-sm"
+            title="Extract and index any books not yet searchable (runs in the background)"
+            onClick={() => void startIndexing()}
+          >
+            <DatabaseZap size={14} /> Build index
+          </button>
+        )}
       </div>
 
       <div className="search-scope">
@@ -155,12 +125,11 @@ export function SearchView() {
         </select>
       </div>
 
-      {hint && <div className="search-hint">{hint}</div>}
-
       <div className="search-results">
         {query.trim() && !searching && results.length === 0 && (
           <div className="quotes-empty">
-            No matches. If books look unsearchable, click <b>Build index</b> above.
+            No matches. If books look unsearchable, click <b>Build index</b> above (it runs in the
+            background — you can keep working).
           </div>
         )}
         {results.map((h, i) => (

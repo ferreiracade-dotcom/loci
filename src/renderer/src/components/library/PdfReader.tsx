@@ -33,9 +33,11 @@ async function indexBookPages(
       const pg = await doc.getPage(n)
       const tc = await pg.getTextContent()
       pages.push({ page: n, text: tc.items.map((it) => ('str' in it ? it.str : '')).join(' ') })
+      pg.cleanup()
     } catch {
       /* skip unreadable page */
     }
+    if (n % 25 === 0) await new Promise((r) => setTimeout(r, 0))
   }
   if (!isCancelled()) await api.indexBookText(bookId, title, pages)
 }

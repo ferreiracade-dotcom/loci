@@ -1723,6 +1723,30 @@ select.field {
   border-radius: 2px;
   padding: 0 1px;
 }
+.index-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.indexing-badge {
+  position: fixed;
+  bottom: 14px;
+  left: 14px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--text);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
 
 /* ---------- Quick capture ---------- */
 .qc-body {
