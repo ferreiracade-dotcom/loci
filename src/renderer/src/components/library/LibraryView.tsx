@@ -9,7 +9,9 @@ import {
   Info,
   Pencil,
   Layers,
-  Check
+  Check,
+  Image as ImageIcon,
+  Video
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
@@ -24,6 +26,13 @@ const STATUS_LABEL: Record<ReadingStatus, string> = {
   reading: 'Reading',
   finished: 'Finished'
 }
+
+type ContentTab = 'books' | 'images' | 'videos'
+const CONTENT_TABS: { id: ContentTab; label: string; icon: typeof BookOpen }[] = [
+  { id: 'books', label: 'Books', icon: BookOpen },
+  { id: 'images', label: 'Images', icon: ImageIcon },
+  { id: 'videos', label: 'Videos', icon: Video }
+]
 
 const GROUP_OPTIONS: { id: string; label: string }[] = [
   { id: 'none', label: 'No grouping' },
@@ -151,6 +160,7 @@ export function LibraryView() {
   const [toast, setToast] = useState<string | null>(null)
   const [shelvesOpen, setShelvesOpen] = useState(false)
   const [groupBy, setGroupBy] = useState('none')
+  const [contentTab, setContentTab] = useState<ContentTab>('books')
   const [dropShelf, setDropShelf] = useState<string | null>(null)
   const [menu, setMenu] = useState<{ x: number; y: number; bookId: string } | null>(null)
 
@@ -158,11 +168,18 @@ export function LibraryView() {
     void api.getSession('libraryGroup').then((v) => {
       if (v) setGroupBy(v)
     })
+    void api.getSession('libraryTab').then((v) => {
+      if (v === 'images' || v === 'videos') setContentTab(v)
+    })
   }, [])
 
   function changeGroup(v: string): void {
     setGroupBy(v)
     void api.setSession('libraryGroup', v)
+  }
+  function changeTab(v: ContentTab): void {
+    setContentTab(v)
+    void api.setSession('libraryTab', v)
   }
 
   useEffect(() => {
@@ -278,19 +295,48 @@ export function LibraryView() {
     <div className="library">
       <div className="library-toolbar">
         <div className="tb-left">
-          <button className="btn btn-sm" disabled={libraryBusy} onClick={() => void doImport('source')}>
-            <Upload size={14} /> Import from source
-          </button>
-          <button className="btn btn-sm" disabled={libraryBusy} onClick={() => void doImport('files')}>
-            <FolderInput size={14} /> Choose files…
-          </button>
-          {libraryBusy && (
-            <span className="muted-inline">
-              <RefreshCw size={14} className="spin" /> Working…
-            </span>
+          <div className="seg tiny">
+            {CONTENT_TABS.map((t) => {
+              const Icon = t.icon
+              return (
+                <button
+                  key={t.id}
+                  className={`seg-btn${contentTab === t.id ? ' active' : ''}`}
+                  title={t.label}
+                  onClick={() => changeTab(t.id)}
+                >
+                  <Icon size={14} /> {t.label}
+                </button>
+              )
+            })}
+          </div>
+          {contentTab === 'books' && (
+            <>
+              <button
+                className="btn btn-sm"
+                disabled={libraryBusy}
+                onClick={() => void doImport('source')}
+              >
+                <Upload size={14} /> Import from source
+              </button>
+              <button
+                className="btn btn-sm"
+                disabled={libraryBusy}
+                onClick={() => void doImport('files')}
+              >
+                <FolderInput size={14} /> Choose files…
+              </button>
+              {libraryBusy && (
+                <span className="muted-inline">
+                  <RefreshCw size={14} className="spin" /> Working…
+                </span>
+              )}
+            </>
           )}
         </div>
         <div className="tb-right">
+          {contentTab === 'books' && (
+            <>
           <div className="group-wrap" title="Group books by">
             <Layers size={14} />
             <select
@@ -332,10 +378,14 @@ export function LibraryView() {
               onChange={(e) => saveLayout({ coverSize: Number(e.target.value) })}
             />
           )}
+            </>
+          )}
         </div>
       </div>
 
-      {importProgress && (
+      {contentTab === 'books' ? (
+        <>
+          {importProgress && (
         <div className="import-progress">
           <span className="ip-label">
             {importProgress.phase === 'importing' ? 'Indexing' : 'Fetching metadata'}{' '}
@@ -408,6 +458,20 @@ export function LibraryView() {
           renderItems(filtered)
         )}
       </div>
+        </>
+      ) : (
+        <div className="library-body">
+          <EmptyState
+            icon={contentTab === 'images' ? ImageIcon : Video}
+            title={contentTab === 'images' ? 'Image library' : 'Video transcripts'}
+            subtitle={
+              contentTab === 'images'
+                ? 'The image library arrives in Phase 10.'
+                : 'YouTube-transcript reading arrives in Phase 5.'
+            }
+          />
+        </div>
+      )}
 
       {toast && <div className="toast">{toast}</div>}
       {infoId && <BookInfoDrawer bookId={infoId} onClose={() => setInfoId(null)} />}

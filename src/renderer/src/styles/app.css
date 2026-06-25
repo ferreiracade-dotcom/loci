@@ -677,6 +677,12 @@ select.field {
 .seg.tiny .seg-btn {
   padding: 6px 9px;
 }
+.seg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
 .slider {
   width: 120px;
   accent-color: var(--accent);

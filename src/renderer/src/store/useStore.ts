@@ -199,7 +199,19 @@ export const useStore = create<Store>((set, get) => {
       }
       const data = await loadAll()
       applyTheme(data.config.theme)
-      set({ appState, ...data, phase: 'welcome' })
+      // Restore the book that was open at last quit, scrolled to its last page.
+      let openBookId: string | null = null
+      let pendingPage: number | null = null
+      const lastOpen = await api.getSession('lastOpenBook')
+      if (lastOpen) {
+        const b = data.books.find((x) => x.id === lastOpen)
+        if (b) {
+          openBookId = b.id
+          pendingPage = b.lastPage > 1 ? b.lastPage : null
+        }
+      }
+      set({ appState, ...data, openBookId, pendingPage, phase: 'welcome' })
+      if (openBookId) void get().loadQuotes(openBookId)
     },
 
     enter: () => set({ phase: 'ready' }),
@@ -257,6 +269,7 @@ export const useStore = create<Store>((set, get) => {
     openBook: (id) => {
       set({ openBookId: id, quotes: [], activeNotePath: null, pendingPage: null })
       get().saveLayout({ activeLeftView: 'library' })
+      void api.setSession('lastOpenBook', id)
       void get().loadQuotes(id)
     },
 
@@ -270,12 +283,16 @@ export const useStore = create<Store>((set, get) => {
       })
       get().saveLayout({ activeLeftView: 'search' })
       void api.setBookLastPage(id, page)
+      void api.setSession('lastOpenBook', id)
       void get().loadQuotes(id)
     },
 
     clearPendingPage: () => set({ pendingPage: null }),
 
-    closeBook: () => set({ openBookId: null, quotes: [] }),
+    closeBook: () => {
+      set({ openBookId: null, quotes: [] })
+      void api.setSession('lastOpenBook', '')
+    },
 
     loadStandaloneNotes: async () => {
       set({ standaloneNotes: await api.listStandaloneNotes() })
