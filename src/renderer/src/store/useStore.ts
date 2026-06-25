@@ -240,6 +240,7 @@ export const useStore = create<Store>((set, get) => {
 
     openBook: (id) => {
       set({ openBookId: id, quotes: [], activeNotePath: null, pendingPage: null })
+      get().saveLayout({ activeLeftView: 'library' })
       void get().loadQuotes(id)
     },
 
@@ -251,6 +252,7 @@ export const useStore = create<Store>((set, get) => {
         pendingPage: page,
         books: get().books.map((b) => (b.id === id ? { ...b, lastPage: page } : b))
       })
+      get().saveLayout({ activeLeftView: 'search' })
       void api.setBookLastPage(id, page)
       void get().loadQuotes(id)
     },

@@ -51,7 +51,7 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
           <SearchIcon size={16} className="search-icon" />
           <input
             className="search-input"
-            autoFocus
+            autoFocus={!compact}
             placeholder="Search books, quotes, notes…"
             value={query}
             onChange={(e) => setSearchQuery(e.target.value)}

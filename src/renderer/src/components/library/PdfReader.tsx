@@ -339,6 +339,8 @@ export function PdfReader({ bookId }: { bookId: string }) {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
+      const t = e.target as HTMLElement | null
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return
       if (e.key === 'ArrowRight' || e.key === 'PageDown') goToPage(currentPage + 1)
       else if (e.key === 'ArrowLeft' || e.key === 'PageUp') goToPage(currentPage - 1)
     }
@@ -357,12 +359,9 @@ export function PdfReader({ bookId }: { bookId: string }) {
     const scrollToTarget = (): void => {
       if (cancelled) return
       const slot = slotRefs.current[p - 1]
-      const stage = stageRef.current
-      if (slot && stage) {
-        stage.scrollTo({ top: Math.max(0, slot.offsetTop - GAP), behavior: 'auto' })
-      }
+      if (slot) slot.scrollIntoView({ block: 'start', behavior: 'auto' })
       tries += 1
-      if (tries < 6) window.setTimeout(scrollToTarget, 180)
+      if (tries < 6) window.setTimeout(scrollToTarget, 200)
     }
     scrollToTarget()
     highlightOnPage(p, searchTerms)

@@ -101,23 +101,23 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
       )}
 
       <main className="center">
-        {openBookId ? (
-          searchResults.length > 0 ? (
+        {layout.activeLeftView === 'library' ? (
+          openBookId ? <PdfReader bookId={openBookId} /> : <LibraryView />
+        ) : layout.activeLeftView === 'search' ? (
+          openBookId && searchResults.length > 0 ? (
             <div className="reader-split">
               <div className="reader-split-list">
                 <SearchView compact />
               </div>
               <PdfReader bookId={openBookId} />
             </div>
-          ) : (
+          ) : openBookId ? (
             <PdfReader bookId={openBookId} />
+          ) : (
+            <SearchView />
           )
-        ) : layout.activeLeftView === 'library' ? (
-          <LibraryView />
         ) : layout.activeLeftView === 'notes' ? (
           <NotesView />
-        ) : layout.activeLeftView === 'search' ? (
-          <SearchView />
         ) : (
           <EmptyState icon={empty.icon} title={empty.title} subtitle={empty.subtitle} />
         )}
