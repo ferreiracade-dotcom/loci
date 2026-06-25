@@ -1485,11 +1485,56 @@ select.field {
   padding: 12px;
   overflow: auto;
 }
+.quotes-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
 .quotes-count {
   font-size: 10px;
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
+}
+.cite-style {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  font-size: 11px;
+  padding: 3px 6px;
+  cursor: pointer;
+}
+.quote-cite-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 6px;
+}
+.cite-copy {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 2px;
+  opacity: 0;
+}
+.quote-card:hover .cite-copy {
+  opacity: 1;
+}
+.cite-copy:hover {
+  color: var(--accent);
+}
+.cite-ph {
+  color: var(--accent);
+  background: var(--accent-12);
+  border-radius: 3px;
+  padding: 0 3px;
+}
+.cite-verify {
+  color: var(--gold);
 }
 .quote-card {
   position: relative;
@@ -1508,7 +1553,8 @@ select.field {
   -webkit-user-select: text;
 }
 .quote-cite {
-  margin-top: 6px;
+  flex: 1;
+  min-width: 0;
   font-size: 11px;
   color: var(--muted);
   user-select: text;

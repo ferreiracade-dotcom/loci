@@ -1,7 +1,48 @@
-import { useEffect, useRef, useState, type TextareaHTMLAttributes } from 'react'
-import { Trash2, Plus, Pencil } from 'lucide-react'
+import {
+  Fragment,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+  type TextareaHTMLAttributes
+} from 'react'
+import { Trash2, Plus, Pencil, Copy, Check } from 'lucide-react'
 import { useStore } from '../../store/useStore'
-import type { Annotation, Quote } from '@shared/ipc'
+import { formatCitation, parseAuthors, type CitationSource, type CitationStyle } from '@shared/citation'
+import type { Annotation, Book, Quote } from '@shared/ipc'
+
+const STYLE_OPTIONS: { id: CitationStyle; label: string }[] = [
+  { id: 'footnote', label: 'Footnote' },
+  { id: 'short', label: 'Short note' },
+  { id: 'author-date', label: 'Author–date' },
+  { id: 'bibliography', label: 'Bibliography' }
+]
+
+function sourceFromBook(book: Book): CitationSource {
+  return {
+    kind: 'book',
+    authors: parseAuthors(book.author),
+    title: book.title,
+    publisher: book.publisher,
+    city: book.city,
+    year: book.year
+  }
+}
+
+/** Render a citation string with *markdown italics* and [amber placeholders]. */
+function renderCitation(text: string): ReactNode {
+  const parts = text.split(/(\*[^*]+\*|\[[^\]]+\])/g)
+  return parts.map((p, i) => {
+    if (p.startsWith('*') && p.endsWith('*')) return <em key={i}>{p.slice(1, -1)}</em>
+    if (p.startsWith('[') && p.endsWith(']'))
+      return (
+        <span key={i} className="cite-ph">
+          {p}
+        </span>
+      )
+    return <Fragment key={i}>{p}</Fragment>
+  })
+}
 
 function AutoTextarea({
   value,
@@ -18,7 +59,7 @@ function AutoTextarea({
   return <textarea ref={ref} value={value} {...rest} />
 }
 
-function QuoteCard({ q }: { q: Quote }) {
+function QuoteCard({ q, book, style }: { q: Quote; book: Book | null; style: CitationStyle }) {
   const setQuoteTags = useStore((s) => s.setQuoteTags)
   const setQuoteAnnotations = useStore((s) => s.setQuoteAnnotations)
   const deleteQuote = useStore((s) => s.deleteQuote)
@@ -28,6 +69,18 @@ function QuoteCard({ q }: { q: Quote }) {
   const [draft, setDraft] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
+  const [copied, setCopied] = useState(false)
+
+  const printedPage = q.page != null && book ? q.page - (book.pageOffset ?? 0) : q.page
+  const citation = book ? formatCitation(sourceFromBook(book), style, printedPage) : q.citation
+  const verifyPage = !!book && q.page != null && (book.pageOffset ?? 0) === 0
+
+  const copyCitation = (): void => {
+    void navigator.clipboard.writeText(citation.replace(/\*/g, '')).then(() => {
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 1400)
+    })
+  }
 
   const persist = (next: Annotation[]): void => void setQuoteAnnotations(q.id, next)
 
@@ -68,7 +121,24 @@ function QuoteCard({ q }: { q: Quote }) {
       </button>
       <div className="quote-bubble">
         <div className="quote-text">{q.text}</div>
-        <div className="quote-cite">{q.citation}</div>
+        <div className="quote-cite-row">
+          <div className="quote-cite">
+            {renderCitation(citation)}
+            {verifyPage && (
+              <span className="cite-verify" title="No page offset set for this book — the printed page may differ from the PDF page. Set it in Book Info.">
+                {' '}
+                · verify page
+              </span>
+            )}
+          </div>
+          <button
+            className="cite-copy"
+            title="Copy citation"
+            onClick={copyCitation}
+          >
+            {copied ? <Check size={12} /> : <Copy size={12} />}
+          </button>
+        </div>
       </div>
 
       <div className="quote-tags">
@@ -184,6 +254,11 @@ function QuoteCard({ q }: { q: Quote }) {
 
 export function QuotesPanel() {
   const quotes = useStore((s) => s.quotes)
+  const openBookId = useStore((s) => s.openBookId)
+  const books = useStore((s) => s.books)
+  const [style, setStyle] = useState<CitationStyle>('footnote')
+
+  const book = books.find((b) => b.id === openBookId) ?? null
 
   if (quotes.length === 0) {
     return (
@@ -197,11 +272,25 @@ export function QuotesPanel() {
 
   return (
     <div className="quotes-list">
-      <div className="quotes-count">
-        {quotes.length} quote{quotes.length === 1 ? '' : 's'}
+      <div className="quotes-head">
+        <span className="quotes-count">
+          {quotes.length} quote{quotes.length === 1 ? '' : 's'}
+        </span>
+        <select
+          className="cite-style"
+          value={style}
+          title="Citation style (CMOS 18)"
+          onChange={(e) => setStyle(e.target.value as CitationStyle)}
+        >
+          {STYLE_OPTIONS.map((o) => (
+            <option key={o.id} value={o.id}>
+              {o.label}
+            </option>
+          ))}
+        </select>
       </div>
       {quotes.map((q) => (
-        <QuoteCard key={q.id} q={q} />
+        <QuoteCard key={q.id} q={q} book={book} style={style} />
       ))}
     </div>
   )

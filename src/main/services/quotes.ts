@@ -4,12 +4,17 @@ import { dirname, join } from 'path'
 import { getDb } from '../db/connection'
 import { readConfig } from './config'
 import * as search from './search'
+import { formatCitation, parseAuthors, type CitationSource } from '../../shared/citation'
 import type { Annotation, NewQuote, Quote } from '../../shared/ipc'
 
 interface BookMetaRow {
   title: string
   title_sanitized: string
   author: string | null
+  publisher: string | null
+  city: string | null
+  year: number | null
+  page_offset: number
 }
 
 interface QuoteRow {
@@ -46,14 +51,32 @@ function parseAnnotations(raw: string): Annotation[] {
   }
 }
 
+function sourceFor(b: BookMetaRow): CitationSource {
+  return {
+    kind: 'book',
+    authors: parseAuthors(b.author),
+    title: b.title,
+    publisher: b.publisher,
+    city: b.city,
+    year: b.year
+  }
+}
+
+/** Printed page = stored (PDF) page minus the book's front-matter offset. */
+function printedPage(b: BookMetaRow, page: number | null): number | null {
+  if (page == null) return null
+  return page - (b.page_offset ?? 0)
+}
+
 function citationFor(b: BookMetaRow, page: number | null): string {
-  const head = b.author ? `${b.author}, ${b.title}` : b.title
-  return page ? `${head}, p. ${page}` : head
+  return formatCitation(sourceFor(b), 'footnote', printedPage(b, page))
 }
 
 function bookMeta(bookId: string): BookMetaRow | undefined {
   return getDb()
-    .prepare('SELECT title, title_sanitized, author FROM books WHERE id = ?')
+    .prepare(
+      'SELECT title, title_sanitized, author, publisher, city, year, page_offset FROM books WHERE id = ?'
+    )
     .get(bookId) as BookMetaRow | undefined
 }
 
