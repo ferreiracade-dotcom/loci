@@ -2093,6 +2093,10 @@ select.field {
   background: var(--panel);
   border-color: var(--border);
 }
+.hit-group-head.active {
+  background: var(--accent-12);
+  border-color: var(--gold);
+}
 .hit-group-head > svg {
   flex: 0 0 auto;
   color: var(--muted);

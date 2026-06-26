@@ -113,9 +113,13 @@ export function SearchResults({ onHit }: { onHit: (h: SearchHit, index: number) 
     <div className="search-results">
       {groups.map((g) => {
         const open = expanded.has(g.key)
+        const hasActive = g.items.some((x) => x.i === activeHit)
         return (
           <div className="hit-group" key={g.key}>
-            <button className="hit-group-head" onClick={() => toggle(g.key)}>
+            <button
+              className={`hit-group-head${hasActive ? ' active' : ''}`}
+              onClick={() => toggle(g.key)}
+            >
               {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
               <GroupThumb bookId={g.bookId} books={books} />
               <span className="hit-group-title">{g.title}</span>
