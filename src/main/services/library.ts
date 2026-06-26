@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto'
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, unlinkSync } from 'fs'
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, unlinkSync, writeFileSync } from 'fs'
 import { copyFile } from 'fs/promises'
 import { basename, extname, isAbsolute, join, relative } from 'path'
 import { getDataDir, getDb } from '../db/connection'
@@ -118,14 +118,27 @@ export function getCoverDataUrl(id: string): string | null {
 }
 
 export function getBookPdf(id: string): Uint8Array | null {
-  const r = getDb().prepare('SELECT local_path, pdf_path FROM books WHERE id = ?').get(id) as
+  const db = getDb()
+  const r = db.prepare('SELECT local_path, pdf_path FROM books WHERE id = ?').get(id) as
     | { local_path: string | null; pdf_path: string | null }
     | undefined
-  // Prefer a fast local copy; fall back to the (possibly cloud-streamed) pdf_path.
-  const path = r?.local_path && existsSync(r.local_path) ? r.local_path : r?.pdf_path
-  if (!path || !existsSync(path)) return null
-  getDb().prepare('UPDATE books SET last_opened = ? WHERE id = ?').run(Date.now(), id)
-  return readFileSync(path)
+  db.prepare('UPDATE books SET last_opened = ? WHERE id = ?').run(Date.now(), id)
+  // Fast path: a present local copy.
+  if (r?.local_path && existsSync(r.local_path)) return readFileSync(r.local_path)
+  if (!r?.pdf_path || !existsSync(r.pdf_path)) return null
+  const bytes = readFileSync(r.pdf_path)
+  // Cache-on-open: copy the (possibly cloud-streamed) file to a permanent local
+  // cache so subsequent opens are instant and survive Drive cache eviction.
+  try {
+    const dir = join(getDataDir(), 'pdf-cache')
+    mkdirSync(dir, { recursive: true })
+    const dest = join(dir, `${id}.pdf`)
+    writeFileSync(dest, bytes)
+    db.prepare('UPDATE books SET local_path = ? WHERE id = ?').run(dest, id)
+  } catch {
+    /* best effort — still return the bytes we read */
+  }
+  return bytes
 }
 
 export function setBookLastPage(id: string, page: number): void {
