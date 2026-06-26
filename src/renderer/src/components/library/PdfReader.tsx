@@ -308,35 +308,6 @@ export function PdfReader({ bookId }: { bookId: string }) {
     [numPages]
   )
 
-  // Briefly flash the matched words on a page jumped to from search.
-  const highlightOnPage = useCallback((targetPage: number, terms: string[]) => {
-    if (terms.length === 0) return
-    const fold = (s: string): string =>
-      s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
-    const folded = terms.map(fold)
-    let attempts = 0
-    const run = (): void => {
-      const slot = slotRefs.current[targetPage - 1]
-      const spans = slot?.querySelectorAll<HTMLElement>('.textLayer span')
-      if (!spans || spans.length === 0) {
-        if (attempts++ < 10) window.setTimeout(run, 300)
-        return
-      }
-      const hits: HTMLElement[] = []
-      spans.forEach((sp) => {
-        const txt = fold(sp.textContent ?? '')
-        if (txt && folded.some((t) => txt.includes(t))) {
-          sp.classList.add('pdf-search-hit')
-          hits.push(sp)
-        }
-      })
-      if (hits.length) {
-        window.setTimeout(() => hits.forEach((sp) => sp.classList.remove('pdf-search-hit')), 4000)
-      }
-    }
-    window.setTimeout(run, 350)
-  }, [])
-
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
       const t = e.target as HTMLElement | null
@@ -348,27 +319,50 @@ export function PdfReader({ bookId }: { bookId: string }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [goToPage, currentPage])
 
-  // Jump to a page requested from search, then flash the matched words.
-  // Re-scroll a few times because slot heights settle as pages render in.
+  // Jump to a search result: center the matched word and keep it highlighted.
+  // Retry because slot heights + the text layer settle as the page renders in.
   useEffect(() => {
     if (!pendingPage || loading || !numPages) return
     const p = Math.min(Math.max(1, pendingPage), numPages)
     clearPendingPage()
+    const fold = (s: string): string =>
+      s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+    const folded = searchTerms.map(fold)
     let cancelled = false
     let tries = 0
-    const scrollToTarget = (): void => {
+    const run = (): void => {
       if (cancelled) return
       const slot = slotRefs.current[p - 1]
-      if (slot) slot.scrollIntoView({ block: 'start', behavior: 'auto' })
-      tries += 1
-      if (tries < 6) window.setTimeout(scrollToTarget, 200)
+      if (!slot) {
+        if (tries++ < 14) window.setTimeout(run, 150)
+        return
+      }
+      const spans = slot.querySelectorAll<HTMLElement>('.textLayer span')
+      // Wait for the text layer so we can land on the exact word.
+      if (folded.length && spans.length === 0 && tries++ < 14) {
+        window.setTimeout(run, 150)
+        return
+      }
+      // Clear any previous search highlight, then mark the new matches.
+      document
+        .querySelectorAll<HTMLElement>('.textLayer span.pdf-search-hit')
+        .forEach((el) => el.classList.remove('pdf-search-hit'))
+      const hits: HTMLElement[] = []
+      spans.forEach((sp) => {
+        const txt = fold(sp.textContent ?? '')
+        if (txt && folded.some((t) => txt.includes(t))) {
+          sp.classList.add('pdf-search-hit')
+          hits.push(sp)
+        }
+      })
+      if (hits.length) hits[0].scrollIntoView({ block: 'center', behavior: 'auto' })
+      else slot.scrollIntoView({ block: 'start', behavior: 'auto' })
     }
-    scrollToTarget()
-    highlightOnPage(p, searchTerms)
+    window.setTimeout(run, 200)
     return () => {
       cancelled = true
     }
-  }, [pendingPage, loading, numPages, clearPendingPage, searchTerms, highlightOnPage])
+  }, [pendingPage, loading, numPages, clearPendingPage, searchTerms])
 
   const zoom = (delta: number): void => {
     setFitWidth(false)
