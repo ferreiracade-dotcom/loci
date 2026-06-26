@@ -2611,7 +2611,11 @@ select.field {
   font-size: 13px;
   line-height: 1.5;
   color: var(--text);
-  /* CMOS hanging indent reads better, but a simple list is fine inline */
+}
+.biblio-count {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
 }
 .dash-ok {
   font-size: 13px;

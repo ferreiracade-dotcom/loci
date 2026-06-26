@@ -177,7 +177,7 @@ export interface LociApi {
   addQuote(input: NewQuote): Promise<Quote>
   listQuotes(bookId: string): Promise<Quote[]>
   /** CMOS 18 bibliography entries for every cited book, sorted by author. */
-  buildBibliography(): Promise<string[]>
+  buildBibliography(): Promise<BibliographyEntry[]>
   setQuoteTags(quoteId: string, tags: string[]): Promise<void>
   setQuoteAnnotations(quoteId: string, annotations: Annotation[]): Promise<void>
   deleteQuote(quoteId: string): Promise<void>
@@ -304,6 +304,13 @@ export interface VaultHealth {
   quotes: number
   indexed: number
   brokenLinks: BrokenLink[]
+}
+
+export interface BibliographyEntry {
+  /** CMOS 18 bibliography line (markdown italics for the title). */
+  entry: string
+  /** How many quotes are captured from this source. */
+  quotes: number
 }
 
 export interface ExportOptions {

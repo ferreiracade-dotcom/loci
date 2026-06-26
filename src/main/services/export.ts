@@ -75,7 +75,7 @@ function buildDoc(opts: ExportOptions, md: string): string {
   if (opts.includeBibliography) {
     const entries = buildBibliography()
     if (entries.length) {
-      const items = entries.map((e) => `<li>${inlineItalics(e)}</li>`).join('')
+      const items = entries.map((e) => `<li>${inlineItalics(e.entry)}</li>`).join('')
       biblio = `<h2 class="biblio-h">Bibliography</h2><ol class="biblio">${items}</ol>`
     }
   }

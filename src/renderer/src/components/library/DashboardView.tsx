@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
-import type { VaultHealth } from '@shared/ipc'
+import type { BibliographyEntry, VaultHealth } from '@shared/ipc'
 
 /** Render a bibliography entry with *italics* and [amber placeholders]. */
 function renderEntry(text: string): ReactNode {
@@ -34,7 +34,7 @@ export function DashboardView({ compact = false }: { compact?: boolean }) {
   const openNote = useStore((s) => s.openNote)
   const standaloneNotes = useStore((s) => s.standaloneNotes)
   const [health, setHealth] = useState<VaultHealth | null>(null)
-  const [biblio, setBiblio] = useState<string[]>([])
+  const [biblio, setBiblio] = useState<BibliographyEntry[]>([])
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -50,7 +50,7 @@ export function DashboardView({ compact = false }: { compact?: boolean }) {
   }, [])
 
   const copyBibliography = (): void => {
-    const text = biblio.map((e) => e.replace(/\*/g, '')).join('\n\n')
+    const text = biblio.map((e) => e.entry.replace(/\*/g, '')).join('\n\n')
     void navigator.clipboard.writeText(text).then(() => {
       setCopied(true)
       window.setTimeout(() => setCopied(false), 1500)
@@ -135,9 +135,12 @@ export function DashboardView({ compact = false }: { compact?: boolean }) {
           </div>
         ) : (
           <ol className="biblio-list">
-            {biblio.map((entry, i) => (
+            {biblio.map((b, i) => (
               <li key={i} className="biblio-entry">
-                {renderEntry(entry)}
+                {renderEntry(b.entry)}
+                <span className="biblio-count">
+                  · {b.quotes} quote{b.quotes === 1 ? '' : 's'}
+                </span>
               </li>
             ))}
           </ol>

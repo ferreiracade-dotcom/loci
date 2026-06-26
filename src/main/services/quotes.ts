@@ -73,10 +73,11 @@ function citationFor(b: BookMetaRow, page: number | null): string {
 }
 
 /** CMOS 18 bibliography entries for every book that has at least one quote. */
-export function buildBibliography(): string[] {
+export function buildBibliography(): { entry: string; quotes: number }[] {
   const rows = getDb()
     .prepare(
-      `SELECT b.title, b.author, b.publisher, b.city, b.year
+      `SELECT b.title, b.author, b.publisher, b.city, b.year,
+              (SELECT COUNT(*) FROM quotes q WHERE q.book_id = b.id) AS qn
        FROM books b
        WHERE EXISTS (SELECT 1 FROM quotes q WHERE q.book_id = b.id)`
     )
@@ -86,6 +87,7 @@ export function buildBibliography(): string[] {
     publisher: string | null
     city: string | null
     year: number | null
+    qn: number
   }[]
   const items = rows.map((r) => {
     const authors = parseAuthors(r.author)
@@ -98,10 +100,10 @@ export function buildBibliography(): string[] {
       year: r.year
     }
     const sortKey = (authors[0]?.trim().split(/\s+/).pop() || r.title).toLowerCase()
-    return { entry: formatCitation(src, 'bibliography', null), sortKey }
+    return { entry: formatCitation(src, 'bibliography', null), quotes: r.qn, sortKey }
   })
   items.sort((a, b) => a.sortKey.localeCompare(b.sortKey))
-  return items.map((x) => x.entry)
+  return items.map((x) => ({ entry: x.entry, quotes: x.quotes }))
 }
 
 function bookMeta(bookId: string): BookMetaRow | undefined {
