@@ -187,6 +187,13 @@ const migrations: Migration[] = [
       // (which may live on a streamed cloud drive).
       db.exec(`ALTER TABLE books ADD COLUMN local_path TEXT;`)
     }
+  },
+  {
+    version: 8,
+    name: 'book-series',
+    up: (db) => {
+      db.exec(`ALTER TABLE books ADD COLUMN series TEXT;`)
+    }
   }
 ]
 

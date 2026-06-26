@@ -30,6 +30,7 @@ interface BookRow {
   title: string
   title_sanitized: string
   author: string | null
+  series: string | null
   year: number | null
   publisher: string | null
   city: string | null
@@ -92,6 +93,7 @@ function rowToBook(r: BookRow): Book {
     id: r.id,
     title: r.title,
     author: r.author,
+    series: r.series,
     year: r.year,
     publisher: r.publisher,
     city: r.city,
@@ -359,6 +361,7 @@ export function updateBook(id: string, patch: BookUpdate): void {
   const columns: Record<keyof BookUpdate, string> = {
     title: 'title',
     author: 'author',
+    series: 'series',
     year: 'year',
     publisher: 'publisher',
     city: 'city',

@@ -14,6 +14,7 @@ const STATUSES: { id: ReadingStatus; label: string }[] = [
 type Form = {
   title: string
   author: string
+  series: string
   year: string
   publisher: string
   genre: string
@@ -44,6 +45,7 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
   const [form, setForm] = useState<Form>({
     title: '',
     author: '',
+    series: '',
     year: '',
     publisher: '',
     genre: '',
@@ -52,12 +54,15 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
   const [tagText, setTagText] = useState('')
   const [confirmDelete, setConfirmDelete] = useState(false)
 
-  const bookKey = book ? `${book.id}:${book.author ?? ''}:${book.year ?? ''}:${book.genre ?? ''}` : ''
+  const bookKey = book
+    ? `${book.id}:${book.author ?? ''}:${book.series ?? ''}:${book.year ?? ''}:${book.genre ?? ''}`
+    : ''
   useEffect(() => {
     if (book) {
       setForm({
         title: book.title,
         author: book.author ?? '',
+        series: book.series ?? '',
         year: book.year?.toString() ?? '',
         publisher: book.publisher ?? '',
         genre: book.genre ?? '',
@@ -85,6 +90,7 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
     void updateBook(book.id, {
       title: form.title.trim() || book.title,
       author: form.author.trim() || null,
+      series: form.series.trim() || null,
       year: form.year.trim() ? Number(form.year) : null,
       publisher: form.publisher.trim() || null,
       genre: form.genre.trim() || null,
@@ -161,6 +167,13 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
             <input className="field" value={form.title} onChange={(e) => set('title', e.target.value)} />
             <label className="set-label">Author</label>
             <input className="field" value={form.author} onChange={(e) => set('author', e.target.value)} />
+            <label className="set-label">Series</label>
+            <input
+              className="field"
+              value={form.series}
+              placeholder="e.g. Luther's Works"
+              onChange={(e) => set('series', e.target.value)}
+            />
             <div className="field-grid">
               <div>
                 <label className="set-label">Year</label>

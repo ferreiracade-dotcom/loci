@@ -231,6 +231,7 @@ export interface Book {
   id: string
   title: string
   author: string | null
+  series: string | null
   year: number | null
   publisher: string | null
   city: string | null
@@ -250,6 +251,7 @@ export interface Book {
 export interface BookUpdate {
   title?: string
   author?: string | null
+  series?: string | null
   year?: number | null
   publisher?: string | null
   city?: string | null

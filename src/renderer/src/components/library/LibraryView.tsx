@@ -86,6 +86,7 @@ function BookCard({
         </button>
       </div>
       <div className="book-meta">
+        {book.series && <div className="book-series">{book.series}</div>}
         <div className="book-title">{book.title}</div>
         <div className="book-author">
           {book.author ?? '—'}
@@ -123,6 +124,7 @@ function BookListRow({
         <BookCover id={book.id} hasCover={book.hasCover} title={book.title} />
       </div>
       <div className="row-main">
+        {book.series && <div className="book-series">{book.series}</div>}
         <div className="book-title">{book.title}</div>
         <div className="book-author">
           {book.author ?? '—'}
@@ -236,7 +238,9 @@ export function LibraryView() {
   const searched = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return filtered
-    return filtered.filter((b) => `${b.title} ${b.author ?? ''}`.toLowerCase().includes(q))
+    return filtered.filter((b) =>
+      `${b.title} ${b.author ?? ''} ${b.series ?? ''}`.toLowerCase().includes(q)
+    )
   }, [filtered, query])
 
   const groups = useMemo(() => {
