@@ -118,12 +118,14 @@ export function getCoverDataUrl(id: string): string | null {
 }
 
 export function getBookPdf(id: string): Uint8Array | null {
-  const r = getDb().prepare('SELECT pdf_path FROM books WHERE id = ?').get(id) as
-    | { pdf_path: string | null }
+  const r = getDb().prepare('SELECT local_path, pdf_path FROM books WHERE id = ?').get(id) as
+    | { local_path: string | null; pdf_path: string | null }
     | undefined
-  if (!r?.pdf_path || !existsSync(r.pdf_path)) return null
+  // Prefer a fast local copy; fall back to the (possibly cloud-streamed) pdf_path.
+  const path = r?.local_path && existsSync(r.local_path) ? r.local_path : r?.pdf_path
+  if (!path || !existsSync(path)) return null
   getDb().prepare('UPDATE books SET last_opened = ? WHERE id = ?').run(Date.now(), id)
-  return readFileSync(r.pdf_path)
+  return readFileSync(path)
 }
 
 export function setBookLastPage(id: string, page: number): void {

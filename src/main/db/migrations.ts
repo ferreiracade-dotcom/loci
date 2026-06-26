@@ -178,6 +178,15 @@ const migrations: Migration[] = [
         );
       `)
     }
+  },
+  {
+    version: 7,
+    name: 'book-local-path',
+    up: (db) => {
+      // Optional fast local copy of the PDF, used in preference to pdf_path
+      // (which may live on a streamed cloud drive).
+      db.exec(`ALTER TABLE books ADD COLUMN local_path TEXT;`)
+    }
   }
 ]
 
