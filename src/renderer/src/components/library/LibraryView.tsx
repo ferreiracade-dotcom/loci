@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type MouseEvent } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import {
   Upload,
   FolderInput,
@@ -11,7 +11,9 @@ import {
   Layers,
   Check,
   Image as ImageIcon,
-  Video
+  Video,
+  Search,
+  X
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
@@ -144,6 +146,9 @@ function BookListRow({
   )
 }
 
+// Persists across mounts so the library returns to where you were after a book.
+let libraryScrollTop = 0
+
 export function LibraryView() {
   const books = useStore((s) => s.books)
   const shelves = useStore((s) => s.shelves)
@@ -162,8 +167,15 @@ export function LibraryView() {
   const [shelvesOpen, setShelvesOpen] = useState(false)
   const [groupBy, setGroupBy] = useState('none')
   const [contentTab, setContentTab] = useState<ContentTab>('books')
+  const [query, setQuery] = useState('')
   const [dropShelf, setDropShelf] = useState<string | null>(null)
   const [menu, setMenu] = useState<{ x: number; y: number; bookId: string } | null>(null)
+  const bodyRef = useRef<HTMLDivElement>(null)
+
+  // Restore the library scroll position when returning from a book / re-render.
+  useLayoutEffect(() => {
+    if (bodyRef.current) bodyRef.current.scrollTop = libraryScrollTop
+  }, [])
 
   useEffect(() => {
     void api.getSession('libraryGroup').then((v) => {
@@ -221,6 +233,12 @@ export function LibraryView() {
     [books, activeShelf]
   )
 
+  const searched = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return filtered
+    return filtered.filter((b) => `${b.title} ${b.author ?? ''}`.toLowerCase().includes(q))
+  }, [filtered, query])
+
   const groups = useMemo(() => {
     if (groupBy === 'none') return null
     const map = new Map<string, Book[]>()
@@ -229,7 +247,7 @@ export function LibraryView() {
       if (arr) arr.push(b)
       else map.set(k, [b])
     }
-    for (const b of filtered) {
+    for (const b of searched) {
       if (groupBy === 'author') add(b.author?.trim() || 'Unknown author', b)
       else if (groupBy === 'genre') add(b.genre?.trim() || 'No genre', b)
       else if (groupBy === 'status') add(STATUS_LABEL[b.status], b)
@@ -247,7 +265,7 @@ export function LibraryView() {
     return [...map.entries()]
       .map(([key, items]) => ({ key, items }))
       .sort((a, b) => a.key.localeCompare(b.key))
-  }, [groupBy, filtered, shelves])
+  }, [groupBy, searched, shelves])
 
   async function doImport(kind: 'source' | 'files'): Promise<void> {
     const res = kind === 'source' ? await importFromSource() : await importFiles()
@@ -332,6 +350,19 @@ export function LibraryView() {
                   <RefreshCw size={14} className="spin" /> Working…
                 </span>
               )}
+              <div className="lib-search">
+                <Search size={14} />
+                <input
+                  value={query}
+                  placeholder="Search books…"
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+                {query && (
+                  <button title="Clear" onClick={() => setQuery('')}>
+                    <X size={13} />
+                  </button>
+                )}
+              </div>
             </>
           )}
         </div>
@@ -436,15 +467,29 @@ export function LibraryView() {
         </button>
       </div>
 
-      <div className="library-body">
-        {filtered.length === 0 ? (
+      <div
+        className="library-body"
+        ref={bodyRef}
+        onScroll={(e) => {
+          libraryScrollTop = e.currentTarget.scrollTop
+        }}
+      >
+        {searched.length === 0 ? (
           <EmptyState
             icon={BookOpen}
-            title={books.length === 0 ? 'Your library is empty' : 'No books on this shelf'}
+            title={
+              query.trim()
+                ? 'No books match'
+                : books.length === 0
+                  ? 'Your library is empty'
+                  : 'No books on this shelf'
+            }
             subtitle={
-              books.length === 0
-                ? 'Import PDFs from your source folder, or choose files above.'
-                : 'Try another shelf, or import more books.'
+              query.trim()
+                ? `Nothing matches “${query.trim()}”.`
+                : books.length === 0
+                  ? 'Import PDFs from your source folder, or choose files above.'
+                  : 'Try another shelf, or import more books.'
             }
           />
         ) : groups ? (
@@ -457,7 +502,7 @@ export function LibraryView() {
             </section>
           ))
         ) : (
-          renderItems(filtered)
+          renderItems(searched)
         )}
       </div>
         </>

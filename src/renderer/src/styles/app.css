@@ -1170,6 +1170,35 @@ select.field {
   gap: 6px;
   color: var(--muted);
 }
+.lib-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 4px 8px;
+  color: var(--muted);
+}
+.lib-search input {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  width: 170px;
+}
+.lib-search button {
+  display: inline-flex;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+}
+.lib-search button:hover {
+  color: var(--accent);
+}
 .drive-status {
   display: inline-flex;
   align-items: center;
