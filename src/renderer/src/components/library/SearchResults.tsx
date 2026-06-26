@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BookOpen, FileText, ChevronRight, ChevronDown } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
@@ -60,6 +60,21 @@ export function SearchResults({ onHit }: { onHit: (h: SearchHit, index: number) 
   const activeHit = useStore((s) => s.activeHit)
   const books = useStore((s) => s.books)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
+  const activeChildRef = useRef<HTMLButtonElement | null>(null)
+
+  // Auto-expand the group of a newly active hit (once); it stays collapsible.
+  useEffect(() => {
+    if (activeHit == null) return
+    const h = results[activeHit]
+    if (!h) return
+    const key = h.bookId ? `b:${h.bookId}` : 'notes'
+    setExpanded((prev) => (prev.has(key) ? prev : new Set(prev).add(key)))
+  }, [activeHit, results])
+
+  // When the active hit's group is open, scroll the highlighted hit into view.
+  useEffect(() => {
+    activeChildRef.current?.scrollIntoView({ block: 'nearest' })
+  }, [activeHit, expanded])
 
   // Group hits by book (note hits collect under one "Notes" group), in order.
   const groups: Group[] = []
@@ -97,7 +112,7 @@ export function SearchResults({ onHit }: { onHit: (h: SearchHit, index: number) 
   return (
     <div className="search-results">
       {groups.map((g) => {
-        const open = expanded.has(g.key) || g.items.some((x) => x.i === activeHit)
+        const open = expanded.has(g.key)
         return (
           <div className="hit-group" key={g.key}>
             <button className="hit-group-head" onClick={() => toggle(g.key)}>
@@ -111,6 +126,7 @@ export function SearchResults({ onHit }: { onHit: (h: SearchHit, index: number) 
                 {g.items.map(({ h, i }) => (
                   <button
                     key={i}
+                    ref={i === activeHit ? activeChildRef : null}
                     className={`hit-child${i === activeHit ? ' active' : ''}`}
                     onClick={() => onHit(h, i)}
                   >
