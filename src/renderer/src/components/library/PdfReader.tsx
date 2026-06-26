@@ -324,7 +324,6 @@ export function PdfReader({ bookId }: { bookId: string }) {
   useEffect(() => {
     if (!pendingPage || loading || !numPages) return
     const p = Math.min(Math.max(1, pendingPage), numPages)
-    clearPendingPage()
     const fold = (s: string): string =>
       s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
     const folded = searchTerms.map(fold)
@@ -335,6 +334,7 @@ export function PdfReader({ bookId }: { bookId: string }) {
       const slot = slotRefs.current[p - 1]
       if (!slot) {
         if (tries++ < 14) window.setTimeout(run, 150)
+        else clearPendingPage()
         return
       }
       const spans = slot.querySelectorAll<HTMLElement>('.textLayer span')
@@ -357,6 +357,8 @@ export function PdfReader({ bookId }: { bookId: string }) {
       })
       if (hits.length) hits[0].scrollIntoView({ block: 'center', behavior: 'auto' })
       else slot.scrollIntoView({ block: 'start', behavior: 'auto' })
+      // Clear only after we've landed, so the re-render doesn't cancel the scroll.
+      clearPendingPage()
     }
     window.setTimeout(run, 200)
     return () => {
