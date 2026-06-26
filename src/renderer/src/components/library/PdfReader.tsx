@@ -320,33 +320,33 @@ export function PdfReader({ bookId }: { bookId: string }) {
   }, [goToPage, currentPage])
 
   // Jump to a search result: center the matched word and keep it highlighted.
-  // Retry because slot heights + the text layer settle as the page renders in.
+  // The page renders lazily and can be slow, so we scroll it in, then observe its
+  // text layer and act when it appears — however long that takes — rather than
+  // polling against a fixed deadline that slow pages can miss.
   useEffect(() => {
     if (!pendingPage || loading || !numPages) return
     const p = Math.min(Math.max(1, pendingPage), numPages)
     const fold = (s: string): string =>
       s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
     const folded = searchTerms.map(fold)
+
     let cancelled = false
-    let tries = 0
-    const run = (): void => {
+    let observer: MutationObserver | null = null
+    let settleTimer: ReturnType<typeof setTimeout> | null = null
+    let giveUpTimer: ReturnType<typeof setTimeout> | null = null
+    let slotTries = 0
+
+    const cleanup = (): void => {
+      observer?.disconnect()
+      observer = null
+      if (settleTimer) clearTimeout(settleTimer)
+      if (giveUpTimer) clearTimeout(giveUpTimer)
+    }
+
+    const land = (slot: HTMLElement): void => {
       if (cancelled) return
-      const slot = slotRefs.current[p - 1]
-      if (!slot) {
-        if (tries++ < 14) window.setTimeout(run, 150)
-        else clearPendingPage()
-        return
-      }
-      // Bring the page into view first so its (lazily rendered) text layer
-      // actually renders — otherwise the first jump finds no words to highlight.
-      if (tries === 0) slot.scrollIntoView({ block: 'start', behavior: 'auto' })
+      cleanup()
       const spans = slot.querySelectorAll<HTMLElement>('.textLayer span')
-      // Wait for the text layer so we can land on the exact word.
-      if (folded.length && spans.length === 0 && tries++ < 14) {
-        window.setTimeout(run, 150)
-        return
-      }
-      // Clear any previous search highlight, then mark the new matches.
       document
         .querySelectorAll<HTMLElement>('.textLayer span.pdf-search-hit')
         .forEach((el) => el.classList.remove('pdf-search-hit'))
@@ -360,12 +360,39 @@ export function PdfReader({ bookId }: { bookId: string }) {
       })
       if (hits.length) hits[0].scrollIntoView({ block: 'center', behavior: 'auto' })
       else slot.scrollIntoView({ block: 'start', behavior: 'auto' })
-      // Clear only after we've landed, so the re-render doesn't cancel the scroll.
       clearPendingPage()
     }
-    window.setTimeout(run, 200)
+
+    const start = (): void => {
+      if (cancelled) return
+      const slot = slotRefs.current[p - 1]
+      if (!slot) {
+        if (slotTries++ < 20) window.setTimeout(start, 150)
+        else clearPendingPage()
+        return
+      }
+      // Scroll the page in so its text layer renders.
+      slot.scrollIntoView({ block: 'start', behavior: 'auto' })
+      const hasSpans = (): boolean => slot.querySelectorAll('.textLayer span').length > 0
+      if (!folded.length || hasSpans()) {
+        land(slot)
+        return
+      }
+      // Wait for the text layer; settle 80ms after the last addition so the layer
+      // is fully rendered before we scan it, with a 15s safety net.
+      observer = new MutationObserver(() => {
+        if (!hasSpans()) return
+        if (settleTimer) clearTimeout(settleTimer)
+        settleTimer = setTimeout(() => land(slot), 80)
+      })
+      observer.observe(slot, { childList: true, subtree: true })
+      giveUpTimer = setTimeout(() => land(slot), 15000)
+    }
+
+    window.setTimeout(start, 150)
     return () => {
       cancelled = true
+      cleanup()
     }
   }, [pendingPage, loading, numPages, clearPendingPage, searchTerms])
 
