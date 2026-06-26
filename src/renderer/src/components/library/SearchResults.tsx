@@ -105,7 +105,11 @@ export function SearchResults({ onHit }: { onHit: (h: SearchHit, index: number) 
 
   const childLabel = (h: SearchHit): string => {
     if (h.kind === 'note') return h.title || 'Note'
-    if (h.page != null) return `p. ${h.page}`
+    if (h.page != null) {
+      // Show the book's printed page (PDF page minus its front-matter offset).
+      const book = books.find((b) => b.id === h.bookId)
+      return `p. ${h.page - (book?.pageOffset ?? 0)}`
+    }
     return h.kind === 'quote' ? 'Quote' : '—'
   }
 

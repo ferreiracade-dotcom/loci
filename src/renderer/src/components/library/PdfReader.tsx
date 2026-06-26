@@ -337,6 +337,9 @@ export function PdfReader({ bookId }: { bookId: string }) {
         else clearPendingPage()
         return
       }
+      // Bring the page into view first so its (lazily rendered) text layer
+      // actually renders — otherwise the first jump finds no words to highlight.
+      if (tries === 0) slot.scrollIntoView({ block: 'start', behavior: 'auto' })
       const spans = slot.querySelectorAll<HTMLElement>('.textLayer span')
       // Wait for the text layer so we can land on the exact word.
       if (folded.length && spans.length === 0 && tries++ < 14) {
