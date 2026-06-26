@@ -26,6 +26,7 @@ export const Channels = {
   setBookShelves: 'library:setBookShelves',
   setBookTags: 'library:setBookTags',
   getCover: 'library:getCover',
+  setBookCover: 'library:setBookCover',
   refetchMetadata: 'library:refetchMetadata',
   listShelves: 'library:listShelves',
   createShelf: 'library:createShelf',
@@ -165,6 +166,8 @@ export interface LociApi {
   setBookShelves(id: string, shelfIds: string[]): Promise<void>
   setBookTags(id: string, tags: string[]): Promise<void>
   getCover(id: string): Promise<string | null>
+  /** Pick an image file and set it as the book's cover; returns the new cover data URL. */
+  setBookCover(id: string): Promise<string | null>
   refetchMetadata(id: string): Promise<Book | null>
   listShelves(): Promise<Shelf[]>
   createShelf(name: string): Promise<Shelf>

@@ -1,5 +1,14 @@
 import { randomUUID } from 'crypto'
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, unlinkSync, writeFileSync } from 'fs'
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+  unlinkSync,
+  writeFileSync
+} from 'fs'
 import { copyFile } from 'fs/promises'
 import { basename, extname, isAbsolute, join, relative } from 'path'
 import { getDataDir, getDb } from '../db/connection'
@@ -115,6 +124,26 @@ export function getCoverDataUrl(id: string): string | null {
   const buf = readFileSync(r.cover_path)
   const mime = extname(r.cover_path).toLowerCase() === '.png' ? 'image/png' : 'image/jpeg'
   return `data:${mime};base64,${buf.toString('base64')}`
+}
+
+/** Set a book's cover from a chosen image file; returns the new cover data URL. */
+export function setBookCover(id: string, srcPath: string): string | null {
+  if (!existsSync(srcPath)) return null
+  const ext = extname(srcPath).toLowerCase() || '.jpg'
+  const dest = join(coversDir(), `${id}${ext}`)
+  const prev = getDb().prepare('SELECT cover_path FROM books WHERE id = ?').get(id) as
+    | { cover_path: string | null }
+    | undefined
+  if (prev?.cover_path && prev.cover_path !== dest && existsSync(prev.cover_path)) {
+    try {
+      unlinkSync(prev.cover_path)
+    } catch {
+      /* best effort */
+    }
+  }
+  copyFileSync(srcPath, dest)
+  getDb().prepare('UPDATE books SET cover_path = ? WHERE id = ?').run(dest, id)
+  return getCoverDataUrl(id)
 }
 
 export function getBookPdf(id: string): Uint8Array | null {

@@ -152,6 +152,17 @@ export function registerIpc(): void {
     library.setBookTags(id, tags)
   )
   ipcMain.handle(Channels.getCover, (_e, id: string) => library.getCoverDataUrl(id))
+  ipcMain.handle(Channels.setBookCover, async (e, id: string) => {
+    const win = BrowserWindow.fromWebContents(e.sender)
+    const opts: OpenDialogOptions = {
+      title: 'Choose cover image',
+      properties: ['openFile'],
+      filters: [{ name: 'Images', extensions: ['jpg', 'jpeg', 'png', 'webp'] }]
+    }
+    const res = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts)
+    if (res.canceled || !res.filePaths[0]) return null
+    return library.setBookCover(id, res.filePaths[0])
+  })
   ipcMain.handle(Channels.refetchMetadata, (_e, id: string) => library.refetchMetadata(id))
   ipcMain.handle(Channels.listShelves, () => library.listShelves())
   ipcMain.handle(Channels.createShelf, (_e, name: string) => library.createShelf(name))

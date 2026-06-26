@@ -28,6 +28,7 @@ const api: LociApi = {
   setBookShelves: (id, shelfIds) => ipcRenderer.invoke(Channels.setBookShelves, id, shelfIds),
   setBookTags: (id, tags) => ipcRenderer.invoke(Channels.setBookTags, id, tags),
   getCover: (id) => ipcRenderer.invoke(Channels.getCover, id),
+  setBookCover: (id) => ipcRenderer.invoke(Channels.setBookCover, id),
   refetchMetadata: (id) => ipcRenderer.invoke(Channels.refetchMetadata, id),
   listShelves: () => ipcRenderer.invoke(Channels.listShelves),
   createShelf: (name) => ipcRenderer.invoke(Channels.createShelf, name),

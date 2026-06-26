@@ -979,6 +979,18 @@ select.field {
   display: flex;
   gap: 14px;
 }
+.bi-cover-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 0 0 96px;
+}
+.bi-setcover {
+  width: 96px;
+  justify-content: center;
+  padding: 5px 4px;
+  font-size: 11px;
+}
 .bi-cover {
   width: 96px;
   height: 134px;

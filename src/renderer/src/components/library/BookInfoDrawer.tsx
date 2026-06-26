@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { X, RefreshCw, Trash2, BookOpen } from 'lucide-react'
+import { X, RefreshCw, Trash2, BookOpen, Image as ImageIcon } from 'lucide-react'
 import { useStore } from '../../store/useStore'
+import { api } from '../../lib/api'
 import { BookCover } from './BookCover'
 import type { ReadingStatus } from '@shared/ipc'
 
@@ -28,7 +29,17 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
   const deleteBook = useStore((s) => s.deleteBook)
   const refetchMetadata = useStore((s) => s.refetchMetadata)
   const openBook = useStore((s) => s.openBook)
+  const refreshLibrary = useStore((s) => s.refreshLibrary)
   const libraryBusy = useStore((s) => s.libraryBusy)
+  const [coverKey, setCoverKey] = useState(0)
+
+  const changeCover = async (): Promise<void> => {
+    const url = await api.setBookCover(bookId)
+    if (url) {
+      await refreshLibrary()
+      setCoverKey((k) => k + 1)
+    }
+  }
 
   const [form, setForm] = useState<Form>({
     title: '',
@@ -113,8 +124,13 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
 
         <div className="drawer-body">
           <div className="bi-top">
-            <div className="bi-cover">
-              <BookCover id={book.id} hasCover={book.hasCover} title={book.title} />
+            <div className="bi-cover-col">
+              <div className="bi-cover">
+                <BookCover key={coverKey} id={book.id} hasCover={book.hasCover} title={book.title} />
+              </div>
+              <button className="btn btn-sm bi-setcover" onClick={() => void changeCover()}>
+                <ImageIcon size={13} /> Set cover…
+              </button>
             </div>
             <div className="bi-status">
               <div className="set-label">Reading status</div>
