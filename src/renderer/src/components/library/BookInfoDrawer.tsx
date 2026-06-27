@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { X, RefreshCw, Trash2, BookOpen, Image as ImageIcon } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
@@ -58,6 +58,9 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
   })
   const [tagText, setTagText] = useState('')
   const [confirmDelete, setConfirmDelete] = useState(false)
+  // True only when a press *starts* on the backdrop, so a text-selection drag
+  // that merely ends on the backdrop doesn't close the drawer.
+  const pressedOnOverlay = useRef(false)
 
   // Existing series across the library, for the Series typeahead.
   const seriesOptions = useMemo(
@@ -154,7 +157,15 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
   }
 
   return (
-    <div className="drawer-overlay" onClick={onClose}>
+    <div
+      className="drawer-overlay"
+      onMouseDown={(e) => {
+        pressedOnOverlay.current = e.target === e.currentTarget
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget && pressedOnOverlay.current) onClose()
+      }}
+    >
       <div className="drawer wide" onClick={(e) => e.stopPropagation()}>
         <div className="drawer-head">
           <h2 className="drawer-title">Book info</h2>
