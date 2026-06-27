@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { X, RefreshCw, Trash2, BookOpen, Image as ImageIcon } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
@@ -23,6 +23,7 @@ type Form = {
 
 export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: () => void }) {
   const book = useStore((s) => s.books.find((b) => b.id === bookId))
+  const allBooks = useStore((s) => s.books)
   const shelves = useStore((s) => s.shelves)
   const updateBook = useStore((s) => s.updateBook)
   const setBookShelves = useStore((s) => s.setBookShelves)
@@ -53,6 +54,15 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
   })
   const [tagText, setTagText] = useState('')
   const [confirmDelete, setConfirmDelete] = useState(false)
+
+  // Existing series across the library, for the Series typeahead.
+  const seriesOptions = useMemo(
+    () =>
+      [...new Set(allBooks.map((b) => b.series).filter((s): s is string => !!s && s.trim() !== ''))].sort(
+        (a, b) => a.localeCompare(b)
+      ),
+    [allBooks]
+  )
 
   const bookKey = book
     ? `${book.id}:${book.author ?? ''}:${book.series ?? ''}:${book.year ?? ''}:${book.genre ?? ''}`
@@ -172,8 +182,15 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
               className="field"
               value={form.series}
               placeholder="e.g. Luther's Works"
+              list="bi-series-options"
+              autoComplete="off"
               onChange={(e) => set('series', e.target.value)}
             />
+            <datalist id="bi-series-options">
+              {seriesOptions.map((s) => (
+                <option key={s} value={s} />
+              ))}
+            </datalist>
             <div className="field-grid">
               <div>
                 <label className="set-label">Year</label>
