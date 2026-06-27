@@ -1091,14 +1091,14 @@ select.field {
   margin: 0;
   letter-spacing: 0.04em;
   color: var(--text);
-  /* A crisp outline in the theme's base colour — the readable partner of --text —
-     gives the themed text a "border" so it stays legible over the painting
+  /* A thin outline in the theme's base colour — the readable partner of --text —
+     gives the themed text a subtle "border" so it stays legible over the painting
      without laying any tint on the painting itself. */
   text-shadow:
-    -1px -1px 0 var(--base),
-    1px -1px 0 var(--base),
-    -1px 1px 0 var(--base),
-    1px 1px 0 var(--base),
+    -0.5px -0.5px 0 var(--base),
+    0.5px -0.5px 0 var(--base),
+    -0.5px 0.5px 0 var(--base),
+    0.5px 0.5px 0 var(--base),
     0 2px 18px rgba(0, 0, 0, 0.4);
 }
 .welcome-sub {
@@ -1109,19 +1109,19 @@ select.field {
   color: var(--text);
   opacity: 0.95;
   text-shadow:
-    -1px -1px 0 var(--base),
-    1px -1px 0 var(--base),
-    -1px 1px 0 var(--base),
-    1px 1px 0 var(--base),
+    -0.5px -0.5px 0 var(--base),
+    0.5px -0.5px 0 var(--base),
+    -0.5px 0.5px 0 var(--base),
+    0.5px 0.5px 0 var(--base),
     0 1px 12px rgba(0, 0, 0, 0.4);
 }
 .welcome-enter {
   margin-top: 12px;
   padding: 11px 30px;
   font-size: 15px;
-  /* Themed accent fill with a base-colour border + lift, so the button sits
-     clearly on the painting. */
-  border: 1.5px solid var(--base);
+  /* Themed accent fill with a thin base-colour border + lift, so the button
+     sits clearly on the painting. */
+  border: 1px solid var(--base);
   box-shadow: 0 3px 16px rgba(0, 0, 0, 0.45);
 }
 .welcome-credit {
