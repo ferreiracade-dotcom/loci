@@ -185,12 +185,28 @@ function getPrimaryIndex(): Map<string, string> | null {
 function findInPrimary(pdfPath: string | null, localPath: string | null): string | null {
   const idx = getPrimaryIndex()
   if (!idx) return null
-  for (const cand of [localPath, pdfPath]) {
-    if (!cand) continue
-    const hit = idx.get(normName(cand))
+  const keys = [localPath, pdfPath].filter((c): c is string => !!c).map(normName)
+  // 1. Exact normalized-name match.
+  for (const k of keys) {
+    const hit = idx.get(k)
     if (hit && existsSync(hit)) return hit
   }
-  return null
+  // 2. Prefix match — tolerates long file names truncated by the filesystem
+  //    (the stored and on-disk names share a long common prefix). Min length
+  //    guards against short, ambiguous names.
+  let best: string | null = null
+  let bestLen = 0
+  for (const [ek, ep] of idx) {
+    if (ek.length < 24) continue
+    for (const k of keys) {
+      if (k.length < 24) continue
+      if ((k.startsWith(ek) || ek.startsWith(k)) && Math.min(k.length, ek.length) > bestLen) {
+        bestLen = Math.min(k.length, ek.length)
+        best = ep
+      }
+    }
+  }
+  return best && existsSync(best) ? best : null
 }
 
 export function getBookPdf(id: string): Uint8Array | null {
