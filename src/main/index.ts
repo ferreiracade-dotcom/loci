@@ -5,7 +5,7 @@ import { closeDb, getDb } from './db/connection'
 import { registerIpc } from './ipc'
 import { backupSnapshot } from './services/backup'
 import { enrichPending } from './services/library'
-import { applyRelinkMap } from './services/relink'
+import { applyRelinkMap, applyTitleClean } from './services/relink'
 import { Channels } from '../shared/ipc'
 
 function createWindow(): void {
@@ -73,6 +73,7 @@ function createWindow(): void {
 app.whenReady().then(() => {
   getDb() // open DB + run migrations before the window loads
   applyRelinkMap() // one-time library-consolidation relink, if pending
+  applyTitleClean() // one-time: strip trailing author from titles, if pending
   registerIpc()
   createWindow()
 
