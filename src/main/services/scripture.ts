@@ -2,11 +2,19 @@ import { getDb } from '../db/connection'
 import { getApiBibleKey, getEsvKey } from './config'
 import { bookByCode, parseReference, refLabel } from '../../shared/scriptureRef'
 import type {
+  ScriptureAudioTrack,
   ScriptureProvider,
   ScripturePassage,
   ScriptureTranslation,
   ScriptureVerse
 } from '../../shared/ipc'
+
+/** Normalized result of fetching/caching a single chapter. */
+interface LoadedChapter {
+  verses: ScriptureVerse[]
+  /** Narrated readings, when the provider offers audio (free-use only so far). */
+  audio?: ScriptureAudioTrack[]
+}
 
 // Bible reader data layer. Translations are resolved through a small registry; each routes
 // to a provider adapter. Public-domain/CC chapters are cached in SQLite (offline-capable);
@@ -103,6 +111,27 @@ interface FuContentItem {
 }
 interface FuChapterResponse {
   chapter?: { content?: FuContentItem[] }
+  /** Map of reader id → MP3 URL for this chapter, e.g. { david: "https://…/david.mp3" }. */
+  thisChapterAudioLinks?: Record<string, string>
+}
+
+// BSB ships several narrators; prefer a sensible order and pretty labels.
+const FU_READER_ORDER = ['david', 'hays', 'souer']
+function audioLabel(reader: string): string {
+  return reader.charAt(0).toUpperCase() + reader.slice(1)
+}
+
+function fuAudioTracks(links: Record<string, string> | undefined): ScriptureAudioTrack[] {
+  if (!links) return []
+  const readers = Object.keys(links)
+  readers.sort((a, b) => {
+    const ia = FU_READER_ORDER.indexOf(a)
+    const ib = FU_READER_ORDER.indexOf(b)
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.localeCompare(b)
+  })
+  return readers
+    .filter((r) => typeof links[r] === 'string' && links[r])
+    .map((r) => ({ reader: r, label: audioLabel(r), url: links[r] }))
 }
 
 // Map our canonical 1-66 order to the provider's book id, per translation (cached in memory).
@@ -139,7 +168,7 @@ function flattenVerse(content: FuVerseContent[] | undefined): string {
   return parts.join(' ').replace(/\s+/g, ' ').trim()
 }
 
-async function fuChapter(translationId: string, code: string, chapter: number): Promise<ScriptureVerse[]> {
+async function fuChapter(translationId: string, code: string, chapter: number): Promise<LoadedChapter> {
   const bookId = await fuBookId(translationId, code)
   const res = await fetch(`${FU_BASE}/api/${translationId}/${bookId}/${chapter}.json`)
   if (!res.ok) throw new Error(`Free Use Bible API ${res.status}`)
@@ -151,7 +180,8 @@ async function fuChapter(translationId: string, code: string, chapter: number): 
       if (text) verses.push({ verse: item.number, text })
     }
   }
-  return verses
+  const audio = fuAudioTracks(data.thisChapterAudioLinks)
+  return audio.length ? { verses, audio } : { verses }
 }
 
 // API.Bible and ESV text endpoints return a chapter as plain text with inline verse
@@ -217,7 +247,7 @@ async function resolveApiBible(key: string): Promise<RegEntry[]> {
   return out
 }
 
-async function apiBibleChapter(bibleId: string, code: string, chapter: number): Promise<ScriptureVerse[]> {
+async function apiBibleChapter(bibleId: string, code: string, chapter: number): Promise<LoadedChapter> {
   const key = getApiBibleKey()
   if (!key) throw new Error('API.Bible key missing')
   const params =
@@ -228,7 +258,7 @@ async function apiBibleChapter(bibleId: string, code: string, chapter: number): 
   })
   if (!res.ok) throw new Error(`API.Bible ${res.status}`)
   const data = (await res.json()) as AbChapterResponse
-  return parseBracketVerses(data.data?.content ?? '')
+  return { verses: parseBracketVerses(data.data?.content ?? '') }
 }
 
 // ---- Crossway ESV API (api.esv.org) — session-only per their caching terms ----
@@ -237,7 +267,7 @@ interface EsvResponse {
   passages?: string[]
 }
 
-async function esvChapter(code: string, chapter: number): Promise<ScriptureVerse[]> {
+async function esvChapter(code: string, chapter: number): Promise<LoadedChapter> {
   const key = getEsvKey()
   if (!key) throw new Error('ESV key missing')
   const def = bookByCode(code)
@@ -251,10 +281,10 @@ async function esvChapter(code: string, chapter: number): Promise<ScriptureVerse
   })
   if (!res.ok) throw new Error(`ESV API ${res.status}`)
   const data = (await res.json()) as EsvResponse
-  return parseBracketVerses((data.passages ?? []).join('\n'))
+  return { verses: parseBracketVerses((data.passages ?? []).join('\n')) }
 }
 
-async function fetchChapter(entry: RegEntry, code: string, chapter: number): Promise<ScriptureVerse[]> {
+async function fetchChapter(entry: RegEntry, code: string, chapter: number): Promise<LoadedChapter> {
   switch (entry.provider) {
     case 'free-use':
       return fuChapter(entry.providerId, code, chapter)
@@ -267,31 +297,33 @@ async function fetchChapter(entry: RegEntry, code: string, chapter: number): Pro
 
 // ---- caching ----
 
-function readCache(translation: string, book: string, chapter: number): ScriptureVerse[] | null {
+function readCache(translation: string, book: string, chapter: number): LoadedChapter | null {
   const row = getDb()
     .prepare('SELECT json FROM scripture_cache WHERE translation = ? AND book = ? AND chapter = ?')
     .get(translation, book, chapter) as { json: string } | undefined
   if (!row) return null
   try {
-    return JSON.parse(row.json) as ScriptureVerse[]
+    const parsed = JSON.parse(row.json) as ScriptureVerse[] | LoadedChapter
+    // Legacy entries stored a bare verse array; newer ones store { verses, audio }.
+    return Array.isArray(parsed) ? { verses: parsed } : parsed
   } catch {
     return null
   }
 }
 
-function writeCache(translation: string, book: string, chapter: number, verses: ScriptureVerse[]): void {
+function writeCache(translation: string, book: string, chapter: number, loaded: LoadedChapter): void {
   getDb()
     .prepare(
       `INSERT OR REPLACE INTO scripture_cache (translation, book, chapter, json, fetched_at)
        VALUES (?, ?, ?, ?, ?)`
     )
-    .run(translation, book, chapter, JSON.stringify(verses), Date.now())
+    .run(translation, book, chapter, JSON.stringify(loaded), Date.now())
 }
 
 // Session-only cache for copyrighted translations (never persisted, per ABS/Crossway terms).
-const sessionCache = new Map<string, ScriptureVerse[]>()
+const sessionCache = new Map<string, LoadedChapter>()
 
-async function loadChapter(entry: RegEntry, code: string, chapter: number): Promise<ScriptureVerse[]> {
+async function loadChapter(entry: RegEntry, code: string, chapter: number): Promise<LoadedChapter> {
   const key = `${entry.id}:${code}:${chapter}`
   if (entry.cachePolicy === 'full') {
     const cached = readCache(entry.id, code, chapter)
@@ -300,10 +332,10 @@ async function loadChapter(entry: RegEntry, code: string, chapter: number): Prom
     const s = sessionCache.get(key)
     if (s) return s
   }
-  const verses = await fetchChapter(entry, code, chapter)
-  if (entry.cachePolicy === 'full') writeCache(entry.id, code, chapter, verses)
-  else sessionCache.set(key, verses)
-  return verses
+  const loaded = await fetchChapter(entry, code, chapter)
+  if (entry.cachePolicy === 'full') writeCache(entry.id, code, chapter, loaded)
+  else sessionCache.set(key, loaded)
+  return loaded
 }
 
 // ---- public API ----
@@ -319,7 +351,7 @@ export async function getChapter(
   const def = bookByCode(book)
   if (!entry || !def) return null
   if (chapter < 1 || chapter > def.chapters) return null
-  const verses = await loadChapter(entry, def.code, chapter)
+  const { verses, audio } = await loadChapter(entry, def.code, chapter)
   return {
     translation: entry.id,
     translationName: entry.name,
@@ -329,7 +361,8 @@ export async function getChapter(
     chapter,
     verses,
     highlight: [],
-    copyright: entry.copyright
+    copyright: entry.copyright,
+    audio
   }
 }
 

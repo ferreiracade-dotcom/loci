@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Search, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Search, PanelLeftClose, PanelLeftOpen, Columns2 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { BOOKS, parseReference } from '@shared/scriptureRef'
 import { ScriptureReader } from './ScriptureReader'
+import { Divider } from '../Divider'
 
 export function ScriptureView() {
   const translations = useStore((s) => s.scriptureTranslations)
@@ -12,11 +13,22 @@ export function ScriptureView() {
   const loadScripture = useStore((s) => s.loadScripture)
   const setTranslation = useStore((s) => s.setScriptureTranslation)
   const navigate = useStore((s) => s.navigateScripture)
+  const compareOpen = useStore((s) => s.scriptureCompareOpen)
+  const compareTranslation = useStore((s) => s.scriptureCompareTranslation)
+  const toggleCompare = useStore((s) => s.toggleScriptureCompare)
+  const setCompareTranslation = useStore((s) => s.setCompareTranslation)
 
   const [refInput, setRefInput] = useState('')
   const [refError, setRefError] = useState(false)
   const [expanded, setExpanded] = useState<string | null>(null)
   const [navCollapsed, setNavCollapsed] = useState(false)
+  const [ratio, setRatio] = useState(0.5)
+  const mainRef = useRef<HTMLDivElement>(null)
+
+  const onCompareDrag = (dx: number): void => {
+    const w = mainRef.current?.clientWidth ?? 1
+    setRatio((r) => Math.min(0.8, Math.max(0.2, r + dx / w)))
+  }
 
   // Load translations + restore the last passage on first mount.
   useEffect(() => {
@@ -96,12 +108,26 @@ export function ScriptureView() {
           <button className="rail-btn" title="Show books" onClick={() => toggleNav(false)}>
             <PanelLeftOpen size={16} />
           </button>
+          <button
+            className={`rail-btn${compareOpen ? ' active' : ''}`}
+            title={compareOpen ? 'Close compare' : 'Compare translations'}
+            onClick={toggleCompare}
+          >
+            <Columns2 size={16} />
+          </button>
         </div>
       ) : (
         <div className="sv-nav">
           <div className="sv-nav-top">
             <div className="sv-nav-bar">
               <span className="sv-nav-title">Bible</span>
+              <button
+                className={`icon-btn${compareOpen ? ' active' : ''}`}
+                title={compareOpen ? 'Close compare' : 'Compare translations'}
+                onClick={toggleCompare}
+              >
+                <Columns2 size={15} />
+              </button>
               <button className="icon-btn" title="Hide books" onClick={() => toggleNav(true)}>
                 <PanelLeftClose size={15} />
               </button>
@@ -136,17 +162,47 @@ export function ScriptureView() {
         </div>
       )}
 
-      <div className="sv-main">
+      <div className="sv-main" ref={mainRef}>
         {passage && translation ? (
-          <ScriptureReader
-            translation={translation}
-            book={passage.book}
-            chapter={passage.chapter}
-            highlight={passage.highlight}
-            onNavigate={navigate}
-            translations={translations}
-            onTranslationChange={setTranslation}
-          />
+          compareOpen ? (
+            <div className="sv-compare">
+              <div className="sv-compare-col" style={{ flex: `${ratio} 1 0%` }}>
+                <ScriptureReader
+                  translation={translation}
+                  book={passage.book}
+                  chapter={passage.chapter}
+                  highlight={passage.highlight}
+                  onNavigate={navigate}
+                  translations={translations}
+                  onTranslationChange={setTranslation}
+                  compact
+                />
+              </div>
+              <Divider onDrag={onCompareDrag} onDragEnd={() => undefined} />
+              <div className="sv-compare-col" style={{ flex: `${1 - ratio} 1 0%` }}>
+                <ScriptureReader
+                  translation={compareTranslation || translation}
+                  book={passage.book}
+                  chapter={passage.chapter}
+                  highlight={passage.highlight}
+                  onNavigate={navigate}
+                  translations={translations}
+                  onTranslationChange={setCompareTranslation}
+                  compact
+                />
+              </div>
+            </div>
+          ) : (
+            <ScriptureReader
+              translation={translation}
+              book={passage.book}
+              chapter={passage.chapter}
+              highlight={passage.highlight}
+              onNavigate={navigate}
+              translations={translations}
+              onTranslationChange={setTranslation}
+            />
+          )
         ) : (
           <div className="sr-loading">Loading Bible…</div>
         )}

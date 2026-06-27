@@ -9,7 +9,8 @@ import {
   BookMarked,
   FileText,
   Link2,
-  Tags
+  Tags,
+  Highlighter
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { RailItem } from './IconRail'
@@ -28,6 +29,7 @@ export const LEFT_VIEWS: RailItem[] = [
 /** Right notes-panel tabs (spec §3). */
 export const RIGHT_TABS: RailItem[] = [
   { id: 'book-notes', label: 'Book Notes', icon: BookMarked },
+  { id: 'scripture-highlights', label: 'Scripture', icon: Highlighter },
   { id: 'standalone-notes', label: 'Standalone Notes', icon: FileText },
   { id: 'backlinks', label: 'Backlinks', icon: Link2 },
   { id: 'tags', label: 'Tags', icon: Tags }

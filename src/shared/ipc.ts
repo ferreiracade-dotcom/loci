@@ -62,6 +62,10 @@ export const Channels = {
   hasApiBibleKey: 'scripture:hasApiBibleKey',
   setEsvKey: 'scripture:setEsvKey',
   hasEsvKey: 'scripture:hasEsvKey',
+  addScriptureHighlight: 'scripture:addHighlight',
+  listScriptureHighlights: 'scripture:listHighlights',
+  listScriptureQuotes: 'scripture:listQuotes',
+  listScriptureQuoteBooks: 'scripture:listQuoteBooks',
 
   // main → renderer events
   importProgress: 'library:importProgress',
@@ -227,6 +231,18 @@ export interface LociApi {
   hasApiBibleKey(): Promise<boolean>
   setEsvKey(key: string): Promise<boolean>
   hasEsvKey(): Promise<boolean>
+  /** Save a verse-range highlight as a citeable Scripture quote (BSB/public-domain only). */
+  addScriptureHighlight(input: NewScriptureHighlight): Promise<Quote>
+  /** Existing highlights for a chapter, for re-highlighting on return. */
+  listScriptureHighlights(
+    translation: string,
+    book: string,
+    chapter: number
+  ): Promise<ScriptureHighlight[]>
+  /** Saved Scripture quotes for a book (all chapters), ordered by chapter then verse. */
+  listScriptureQuotes(translation: string, book: string): Promise<Quote[]>
+  /** Books (for a translation) that have at least one saved Scripture quote. */
+  listScriptureQuoteBooks(translation: string): Promise<ScriptureQuoteBook[]>
 
   /** Subscribe to import progress; returns an unsubscribe function. */
   onImportProgress(cb: (p: ImportProgress) => void): () => void
@@ -411,6 +427,16 @@ export interface ScriptureVerse {
   text: string
 }
 
+/** A narrated reading of a chapter (e.g. BSB offers several readers). */
+export interface ScriptureAudioTrack {
+  /** Provider's reader id, e.g. "david". */
+  reader: string
+  /** Display label, e.g. "David". */
+  label: string
+  /** Direct MP3 URL. */
+  url: string
+}
+
 /** A chapter (for the reader) or a referenced slice (for hover/click). */
 export interface ScripturePassage {
   translation: string
@@ -425,6 +451,38 @@ export interface ScripturePassage {
   /** Verse numbers to highlight (from the original reference); [] for a plain chapter. */
   highlight: number[]
   copyright: string | null
+  /** Narrated readings of this chapter, when the provider offers audio (e.g. BSB). */
+  audio?: ScriptureAudioTrack[]
+}
+
+/** Request to highlight a verse range as a citeable Scripture quote. */
+export interface NewScriptureHighlight {
+  /** Translation id (also used as the citation abbreviation; BSB/public-domain only). */
+  translation: string
+  /** USFM book code, e.g. "JHN". */
+  book: string
+  chapter: number
+  verseStart: number
+  verseEnd?: number
+  /** Verse text to store (clean, no verse numbers). */
+  text: string
+  color?: string
+}
+
+/** A saved Scripture highlight, used to re-mark verses when a chapter reopens. */
+export interface ScriptureHighlight {
+  id: string
+  verseStart: number
+  verseEnd: number
+  color: string
+}
+
+/** A book with saved Scripture quotes, for the highlights panel's book selector. */
+export interface ScriptureQuoteBook {
+  /** USFM book code, e.g. "JHN". */
+  book: string
+  name: string
+  count: number
 }
 
 export interface Quote {
@@ -441,4 +499,6 @@ export interface Quote {
   notePath: string | null
   usedIn: string[]
   createdAt: number
+  /** For Scripture quotes (book_id null): the chapter, for grouping in the panel. */
+  scriptureChapter?: number
 }

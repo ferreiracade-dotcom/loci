@@ -136,3 +136,30 @@ export function formatCitation(
 export function hasPlaceholders(citation: string): boolean {
   return /\[[^\]]+\]/.test(citation)
 }
+
+// ---------- Scripture references ----------
+// CMOS 18 cites Scripture in the notes / in text (e.g. "John 3:16 (ESV)") and does not
+// list Bible editions in the bibliography, so these are kept separate from the book engine.
+
+export interface ScriptureCiteRef {
+  bookName: string
+  chapter: number
+  verseStart: number
+  verseEnd?: number | null
+  /** Translation abbreviation, e.g. "BSB". */
+  abbr: string
+}
+
+/** "John 3:16" or "John 3:16–18". */
+export function scriptureLabel(r: ScriptureCiteRef): string {
+  const v =
+    r.verseEnd != null && r.verseEnd !== r.verseStart
+      ? `${r.verseStart}–${r.verseEnd}`
+      : `${r.verseStart}`
+  return `${r.bookName} ${r.chapter}:${v}`
+}
+
+/** "John 3:16 (BSB)" — the attribution shown under a scripture quote. */
+export function scriptureCitation(r: ScriptureCiteRef): string {
+  return `${scriptureLabel(r)} (${r.abbr})`
+}

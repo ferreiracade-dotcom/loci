@@ -8,6 +8,7 @@ import { LEFT_VIEWS, RIGHT_TABS, CENTER_EMPTY } from './navigation'
 import { LibraryView } from './library/LibraryView'
 import { PdfReader } from './library/PdfReader'
 import { QuotesPanel } from './library/QuotesPanel'
+import { ScriptureHighlightsPanel } from './library/ScriptureHighlightsPanel'
 import { NotesView } from './library/NotesView'
 import { BacklinksPanel } from './library/BacklinksPanel'
 import { StandaloneNotesPanel } from './library/StandaloneNotesPanel'
@@ -177,6 +178,8 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
             <div className="notes-body">
               {layout.activeRightTab === 'book-notes' ? (
                 <QuotesPanel />
+              ) : layout.activeRightTab === 'scripture-highlights' ? (
+                <ScriptureHighlightsPanel />
               ) : layout.activeRightTab === 'standalone-notes' ? (
                 <StandaloneNotesPanel />
               ) : layout.activeRightTab === 'backlinks' ? (

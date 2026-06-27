@@ -60,13 +60,13 @@ function AutoTextarea({
   return <textarea ref={ref} value={value} {...rest} />
 }
 
-interface CardHandlers {
+export interface CardHandlers {
   onSetTags: (id: string, tags: string[]) => void
   onSetAnnotations: (id: string, annotations: Annotation[]) => void
   onDelete: (id: string) => void
 }
 
-function QuoteCard({
+export function QuoteCard({
   q,
   book,
   style,

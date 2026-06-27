@@ -225,6 +225,27 @@ const migrations: Migration[] = [
         );
       `)
     }
+  },
+  {
+    version: 11,
+    name: 'scripture-cache-audio',
+    up: (db) => {
+      // The cached chapter JSON gained an { verses, audio } shape (chapter narrations).
+      // Clear the cache once so existing bare-array entries re-fetch with their audio links.
+      db.exec(`DELETE FROM scripture_cache;`)
+    }
+  },
+  {
+    version: 12,
+    name: 'scripture-quotes',
+    up: (db) => {
+      // Scripture highlights are quotes with no book_id: they carry the canonical
+      // reference (e.g. "JHN 3:16-18") and the translation (BSB/public-domain only).
+      db.exec(`
+        ALTER TABLE quotes ADD COLUMN scripture_ref TEXT;
+        ALTER TABLE quotes ADD COLUMN scripture_translation TEXT;
+      `)
+    }
   }
 ]
 

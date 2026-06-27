@@ -68,6 +68,13 @@ const api: LociApi = {
   hasApiBibleKey: () => ipcRenderer.invoke(Channels.hasApiBibleKey),
   setEsvKey: (key) => ipcRenderer.invoke(Channels.setEsvKey, key),
   hasEsvKey: () => ipcRenderer.invoke(Channels.hasEsvKey),
+  addScriptureHighlight: (input) => ipcRenderer.invoke(Channels.addScriptureHighlight, input),
+  listScriptureHighlights: (translation, book, chapter) =>
+    ipcRenderer.invoke(Channels.listScriptureHighlights, translation, book, chapter),
+  listScriptureQuotes: (translation, book) =>
+    ipcRenderer.invoke(Channels.listScriptureQuotes, translation, book),
+  listScriptureQuoteBooks: (translation) =>
+    ipcRenderer.invoke(Channels.listScriptureQuoteBooks, translation),
 
   onImportProgress: (cb) => {
     const listener = (_e: IpcRendererEvent, p: ImportProgress): void => cb(p)

@@ -4,8 +4,23 @@ import { dirname, join } from 'path'
 import { getDb } from '../db/connection'
 import { readConfig } from './config'
 import * as search from './search'
-import { formatCitation, parseAuthors, type CitationSource } from '../../shared/citation'
-import type { Annotation, NewQuote, Quote } from '../../shared/ipc'
+import {
+  formatCitation,
+  parseAuthors,
+  scriptureCitation,
+  type CitationSource,
+  type ScriptureCiteRef
+} from '../../shared/citation'
+import { bookByCode } from '../../shared/scriptureRef'
+import { sanitizeName } from './library'
+import type {
+  Annotation,
+  NewQuote,
+  NewScriptureHighlight,
+  Quote,
+  ScriptureHighlight,
+  ScriptureQuoteBook
+} from '../../shared/ipc'
 
 interface BookMetaRow {
   title: string
@@ -27,6 +42,25 @@ interface QuoteRow {
   used_in: string
   created: number
   annotation: string
+  scripture_ref: string | null
+  scripture_translation: string | null
+}
+
+/** Parse a stored canonical ref like "JHN 3:16-18" into its parts. */
+function parseScriptureRef(
+  ref: string,
+  abbr: string
+): ScriptureCiteRef | null {
+  const m = ref.match(/^(\S+)\s+(\d+):(\d+)(?:-(\d+))?$/)
+  if (!m) return null
+  const def = bookByCode(m[1])
+  return {
+    bookName: def?.name ?? m[1],
+    chapter: Number(m[2]),
+    verseStart: Number(m[3]),
+    verseEnd: m[4] ? Number(m[4]) : null,
+    abbr
+  }
 }
 
 interface SidecarQuote {
@@ -200,6 +234,15 @@ function rowToQuote(r: QuoteRow): Quote {
   } catch {
     usedIn = []
   }
+  let citation = b ? citationFor(b, r.page) : ''
+  let scriptureChapter: number | undefined
+  if (r.scripture_ref) {
+    const sref = parseScriptureRef(r.scripture_ref, r.scripture_translation ?? '')
+    if (sref) {
+      citation = scriptureCitation(sref)
+      scriptureChapter = sref.chapter
+    }
+  }
   return {
     id: r.id,
     bookId: r.book_id ?? '',
@@ -208,10 +251,11 @@ function rowToQuote(r: QuoteRow): Quote {
     color: r.color,
     tags,
     annotations: parseAnnotations(r.annotation ?? ''),
-    citation: b ? citationFor(b, r.page) : '',
+    citation,
     notePath: r.note_path,
     usedIn,
-    createdAt: r.created
+    createdAt: r.created,
+    scriptureChapter
   }
 }
 
@@ -224,7 +268,8 @@ function reindexQuote(quoteId: string): void {
   const content = [q.text, ...q.annotations.map((a) => a.text), q.tags.map((t) => `#${t}`).join(' ')]
     .filter(Boolean)
     .join('\n')
-  search.indexQuote({ id: q.id, bookId: q.bookId || null, content, page: q.page, title: b?.title ?? '' })
+  const title = b?.title ?? (row.scripture_ref ? q.citation : '')
+  search.indexQuote({ id: q.id, bookId: q.bookId || null, content, page: q.page, title })
 }
 
 export function addQuote(input: NewQuote): Quote {
@@ -272,6 +317,159 @@ export function listQuotes(bookId: string): Quote[] {
     .prepare('SELECT * FROM quotes WHERE book_id = ? ORDER BY page IS NULL, page, created')
     .all(bookId) as QuoteRow[]
   return rows.map(rowToQuote)
+}
+
+// Scripture highlights live in one note per translation+book, with `## Chapter N` sections —
+// the location-anchored analog of a book's auto-note.
+function scriptureNoteRel(translation: string, bookName: string): string {
+  return `notes/scripture/${sanitizeName(translation)}/${sanitizeName(bookName)}.md`
+}
+
+function ensureScriptureNote(vault: string, translation: string, bookName: string): string {
+  const rel = scriptureNoteRel(translation, bookName)
+  const abs = join(vault, rel)
+  if (!existsSync(abs)) {
+    mkdirSync(dirname(abs), { recursive: true })
+    const fm =
+      `---\n` +
+      `title: ${translation} — ${bookName}\n` +
+      `type: scripture-note\n` +
+      `translation: ${translation}\n` +
+      `---\n\n# ${translation} — ${bookName}\n`
+    writeFileSync(abs, fm, 'utf-8')
+  }
+  return rel
+}
+
+/** Insert (or replace) a quote block under its `## Chapter N` section, keeping chapters ordered. */
+function upsertScriptureBlock(
+  vault: string,
+  rel: string,
+  chapter: number,
+  id: string,
+  block: string
+): void {
+  const abs = join(vault, rel)
+  let txt = existsSync(abs) ? readFileSync(abs, 'utf-8') : ''
+  // Replace in place if this quote already has a block anywhere in the note.
+  const reBlock = new RegExp(`<!-- quote:${id} -->[\\s\\S]*?<!-- /quote:${id} -->`)
+  if (reBlock.test(txt)) {
+    writeFileSync(abs, txt.replace(reBlock, block), 'utf-8')
+    return
+  }
+  const lines = txt.split('\n')
+  const heads: { idx: number; n: number }[] = []
+  lines.forEach((ln, i) => {
+    const m = ln.match(/^##\s+Chapter\s+(\d+)\s*$/)
+    if (m) heads.push({ idx: i, n: Number(m[1]) })
+  })
+  const section = heads.find((h) => h.n === chapter)
+  if (section) {
+    // Append at the end of this chapter's section (before the next `## ` or EOF).
+    const laterIdxs = heads.filter((h) => h.idx > section.idx).map((h) => h.idx)
+    const end = laterIdxs.length ? Math.min(...laterIdxs) : lines.length
+    lines.splice(end, 0, '', block, '')
+  } else {
+    // New chapter heading, inserted in numeric order.
+    const after = heads.find((h) => h.n > chapter)
+    const chunk = ['', `## Chapter ${chapter}`, '', block, '']
+    if (after) lines.splice(after.idx, 0, ...chunk)
+    else lines.push(...chunk)
+  }
+  writeFileSync(abs, lines.join('\n'), 'utf-8')
+}
+
+/**
+ * Save a verse-range highlight as a citeable Scripture quote (no book_id). The verse text is
+ * stored and auto-homed into the per-book scripture note under its chapter section — the
+ * location-anchored analog of a PDF highlight. Restricted by the caller to public-domain
+ * translations (BSB), so storing the text is licence-safe.
+ */
+export function addScriptureQuote(input: NewScriptureHighlight): Quote {
+  const vault = readConfig().vaultPath
+  if (!vault) throw new Error('No vault')
+  const def = bookByCode(input.book)
+  const bookName = def?.name ?? input.book
+  const id = randomUUID()
+  const color = input.color ?? 'amber'
+  const end = input.verseEnd && input.verseEnd !== input.verseStart ? input.verseEnd : null
+  const ref = `${input.book} ${input.chapter}:${input.verseStart}${end ? `-${end}` : ''}`
+  const citation = scriptureCitation({
+    bookName,
+    chapter: input.chapter,
+    verseStart: input.verseStart,
+    verseEnd: end,
+    abbr: input.translation
+  })
+
+  const rel = ensureScriptureNote(vault, input.translation, bookName)
+  upsertScriptureBlock(vault, rel, input.chapter, id, buildBlock(id, input.text, citation, []))
+
+  getDb()
+    .prepare(
+      `INSERT INTO quotes
+         (id, book_id, text, page, color, note_path, used_in, created, scripture_ref, scripture_translation)
+       VALUES (?, NULL, ?, NULL, ?, ?, ?, ?, ?, ?)`
+    )
+    .run(id, input.text, color, rel, JSON.stringify([rel]), Date.now(), ref, input.translation)
+
+  reindexQuote(id)
+  const row = getDb().prepare('SELECT * FROM quotes WHERE id = ?').get(id) as QuoteRow
+  return rowToQuote(row)
+}
+
+/** All saved Scripture quotes for a book, ordered by chapter then verse (for the panel). */
+export function listScriptureQuotes(translation: string, book: string): Quote[] {
+  const rows = getDb()
+    .prepare('SELECT * FROM quotes WHERE scripture_translation = ? AND scripture_ref LIKE ?')
+    .all(translation, `${book} %`) as QuoteRow[]
+  const keyed = rows.map((r) => {
+    const m = (r.scripture_ref ?? '').match(/\s(\d+):(\d+)/)
+    return { r, ch: m ? Number(m[1]) : 0, vs: m ? Number(m[2]) : 0 }
+  })
+  keyed.sort((a, b) => a.ch - b.ch || a.vs - b.vs || a.r.created - b.r.created)
+  return keyed.map((x) => rowToQuote(x.r))
+}
+
+/** Books (for a translation) that have at least one saved Scripture quote. */
+export function listScriptureQuoteBooks(translation: string): ScriptureQuoteBook[] {
+  const rows = getDb()
+    .prepare('SELECT scripture_ref FROM quotes WHERE scripture_translation = ? AND scripture_ref IS NOT NULL')
+    .all(translation) as { scripture_ref: string }[]
+  const counts = new Map<string, number>()
+  for (const r of rows) {
+    const code = r.scripture_ref.split(' ')[0]
+    if (code) counts.set(code, (counts.get(code) ?? 0) + 1)
+  }
+  return [...counts.entries()]
+    .map(([book, count]) => ({ book, name: bookByCode(book)?.name ?? book, count }))
+    .sort((a, b) => (bookByCode(a.book)?.order ?? 0) - (bookByCode(b.book)?.order ?? 0))
+}
+
+/** Existing scripture highlights for a chapter, so the reader can re-mark verses. */
+export function listScriptureHighlights(
+  translation: string,
+  book: string,
+  chapter: number
+): ScriptureHighlight[] {
+  const rows = getDb()
+    .prepare(
+      `SELECT id, color, scripture_ref FROM quotes
+       WHERE scripture_translation = ? AND scripture_ref LIKE ?`
+    )
+    .all(translation, `${book} ${chapter}:%`) as {
+    id: string
+    color: string
+    scripture_ref: string
+  }[]
+  const out: ScriptureHighlight[] = []
+  for (const r of rows) {
+    const m = r.scripture_ref.match(/:(\d+)(?:-(\d+))?$/)
+    if (!m) continue
+    const verseStart = Number(m[1])
+    out.push({ id: r.id, verseStart, verseEnd: m[2] ? Number(m[2]) : verseStart, color: r.color })
+  }
+  return out
 }
 
 function updateSidecarTags(quoteId: string, bookId: string | null, tags: string[]): void {

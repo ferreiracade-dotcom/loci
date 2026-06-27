@@ -12,6 +12,7 @@ import type {
   ImportProgress,
   ImportResult,
   NewQuote,
+  NewScriptureHighlight,
   NoteSummary,
   PanelLayout,
   PublicConfig,
@@ -49,6 +50,8 @@ interface Store {
   activeNotePath: string | null
   /** A second note shown side-by-side in the Notes view, or null. */
   splitNotePath: string | null
+  /** A standalone note opened for editing in the right Notes sidebar, or null. */
+  sidebarNotePath: string | null
   /** Filter the standalone-notes list to a single tag, or null for all. */
   notesTagFilter: string | null
   /** Target page to jump to when (re)opening a book from search; consumed by the reader. */
@@ -73,6 +76,10 @@ interface Store {
   scripturePassage: { book: string; chapter: number; highlight: number[] } | null
   /** When true, the Bible reader is shown as a split beside the open note. */
   scriptureSplitOpen: boolean
+  /** When true, a second translation column is shown beside the reader (compare view). */
+  scriptureCompareOpen: boolean
+  /** Second translation id for the compare column. */
+  scriptureCompareTranslation: string
 
   init: () => Promise<void>
   enter: () => void
@@ -101,6 +108,8 @@ interface Store {
   closeSplitNote: () => void
   closeLeftNote: () => void
   deleteNote: (path: string) => Promise<void>
+  openSidebarNote: (path: string) => void
+  closeSidebarNote: () => void
   navigateLink: (name: string) => Promise<void>
   loadQuotes: (bookId: string) => Promise<void>
   addQuote: (input: NewQuote) => Promise<void>
@@ -134,6 +143,9 @@ interface Store {
   /** Resolve a reference string and open it — as a split beside an open note, else the view. */
   openScripture: (ref: string) => Promise<void>
   closeScriptureSplit: () => void
+  toggleScriptureCompare: () => void
+  setCompareTranslation: (id: string) => void
+  addScriptureHighlight: (input: NewScriptureHighlight) => Promise<void>
 }
 
 function foldTokens(query: string): string[] {
@@ -205,6 +217,7 @@ export const useStore = create<Store>((set, get) => {
     standaloneNotes: [],
     activeNotePath: null,
     splitNotePath: null,
+    sidebarNotePath: null,
     notesTagFilter: null,
     pendingPage: null,
     indexing: null,
@@ -219,6 +232,8 @@ export const useStore = create<Store>((set, get) => {
     scriptureTranslation: '',
     scripturePassage: null,
     scriptureSplitOpen: false,
+    scriptureCompareOpen: false,
+    scriptureCompareTranslation: '',
 
     init: async () => {
       if (!listenersBound) {
@@ -386,11 +401,22 @@ export const useStore = create<Store>((set, get) => {
 
     deleteNote: async (path) => {
       await api.deleteNote(path)
-      const patch: { activeNotePath?: null; splitNotePath?: null } = {}
+      const patch: { activeNotePath?: null; splitNotePath?: null; sidebarNotePath?: null } = {}
       if (get().activeNotePath === path) patch.activeNotePath = null
       if (get().splitNotePath === path) patch.splitNotePath = null
+      if (get().sidebarNotePath === path) patch.sidebarNotePath = null
       if (Object.keys(patch).length) set(patch)
       await get().loadStandaloneNotes()
+    },
+
+    openSidebarNote: (path) => {
+      set({ sidebarNotePath: path })
+      void api.setSession('sidebarNote', path)
+    },
+
+    closeSidebarNote: () => {
+      set({ sidebarNotePath: null })
+      void api.setSession('sidebarNote', '')
     },
 
     navigateLink: async (name) => {
@@ -575,7 +601,23 @@ export const useStore = create<Store>((set, get) => {
         }
         if (!passage) passage = { book: 'JHN', chapter: 1, highlight: [] }
       }
-      set({ scriptureTranslations: translations, scriptureTranslation: translation, scripturePassage: passage })
+      // Restore the compare column (second translation + open flag) from the session.
+      let compareOpen = get().scriptureCompareOpen
+      let compareTranslation = get().scriptureCompareTranslation
+      if (!compareTranslation) {
+        const lastCompare = (await api.getSession('lastScriptureCompare')) ?? ''
+        compareTranslation = translations.some((t) => t.id === lastCompare)
+          ? lastCompare
+          : (translations.find((t) => t.id !== translation)?.id ?? translation)
+      }
+      if (!compareOpen) compareOpen = (await api.getSession('scriptureCompareOpen')) === '1'
+      set({
+        scriptureTranslations: translations,
+        scriptureTranslation: translation,
+        scripturePassage: passage,
+        scriptureCompareOpen: compareOpen,
+        scriptureCompareTranslation: compareTranslation
+      })
     },
 
     setScriptureTranslation: (id) => {
@@ -606,6 +648,29 @@ export const useStore = create<Store>((set, get) => {
       else get().saveLayout({ activeLeftView: 'scripture' })
     },
 
-    closeScriptureSplit: () => set({ scriptureSplitOpen: false })
+    closeScriptureSplit: () => set({ scriptureSplitOpen: false }),
+
+    toggleScriptureCompare: () => {
+      const next = !get().scriptureCompareOpen
+      // On first open, default the second column to a translation other than the primary.
+      let compare = get().scriptureCompareTranslation
+      if (next && !compare) {
+        const { scriptureTranslations: ts, scriptureTranslation: primary } = get()
+        compare = ts.find((t) => t.id !== primary)?.id ?? primary
+      }
+      set({ scriptureCompareOpen: next, scriptureCompareTranslation: compare })
+      void api.setSession('scriptureCompareOpen', next ? '1' : '')
+    },
+
+    setCompareTranslation: (id) => {
+      set({ scriptureCompareTranslation: id })
+      void api.setSession('lastScriptureCompare', id)
+    },
+
+    addScriptureHighlight: async (input) => {
+      await api.addScriptureHighlight(input)
+      // Surface the inserted blockquote in the open sidebar note editor.
+      set({ noteReloadToken: get().noteReloadToken + 1 })
+    }
   }
 })

@@ -9,6 +9,7 @@ import type {
   ImportProgress,
   IndexedPage,
   NewQuote,
+  NewScriptureHighlight,
   NoteType,
   PanelLayout,
   PublicConfig,
@@ -238,4 +239,18 @@ export function registerIpc(): void {
     return ok
   })
   ipcMain.handle(Channels.hasEsvKey, () => hasEsvKey())
+  ipcMain.handle(Channels.addScriptureHighlight, (_e, input: NewScriptureHighlight) =>
+    quotes.addScriptureQuote(input)
+  )
+  ipcMain.handle(
+    Channels.listScriptureHighlights,
+    (_e, translation: string, book: string, chapter: number) =>
+      quotes.listScriptureHighlights(translation, book, chapter)
+  )
+  ipcMain.handle(Channels.listScriptureQuotes, (_e, translation: string, book: string) =>
+    quotes.listScriptureQuotes(translation, book)
+  )
+  ipcMain.handle(Channels.listScriptureQuoteBooks, (_e, translation: string) =>
+    quotes.listScriptureQuoteBooks(translation)
+  )
 }
