@@ -16,6 +16,13 @@ import { getDataDir, getDb } from '../db/connection'
 import { readConfig } from './config'
 import { downloadCover, fetchBookMeta } from './metadata'
 import * as search from './search'
+import {
+  moveSidecar,
+  readSidecar,
+  removeSidecars,
+  writeSidecarForBook,
+  type SidecarData
+} from './sidecar'
 import type {
   Book,
   BookUpdate,
@@ -187,6 +194,7 @@ export function setBookCover(id: string, srcPath: string): string | null {
   }
   copyFileSync(srcPath, dest)
   getDb().prepare('UPDATE books SET cover_path = ? WHERE id = ?').run(dest, id)
+  writeSidecarForBook(id)
   return getCoverDataUrl(id)
 }
 
@@ -310,8 +318,16 @@ async function importOneLocal(sourcePath: string): Promise<ImportOutcome> {
       .get(sourcePath, sourcePath)
     if (dupe) return 'skipped'
 
-    const id = randomUUID()
-    const title = titleFromFilename(sourcePath)
+    // A Loci sidecar beside the PDF makes the catalog rebuildable: reuse its id
+    // (so notes/quotes stay linked across machines) and its saved metadata.
+    const side: SidecarData | null = readSidecar(sourcePath)
+
+    let id: string = randomUUID()
+    if (side?.id && typeof side.id === 'string') {
+      const taken = getDb().prepare('SELECT 1 FROM books WHERE id = ?').get(side.id)
+      if (!taken) id = side.id
+    }
+    const title = side?.title?.trim() || titleFromFilename(sourcePath)
     const sanitized = sanitizeName(title)
 
     let pdfPath: string
@@ -327,12 +343,41 @@ async function importOneLocal(sourcePath: string): Promise<ImportOutcome> {
       pdfPath = dest
     }
 
+    const status =
+      side?.status === 'reading' || side?.status === 'finished' ? side.status : 'unread'
     getDb()
       .prepare(
-        `INSERT INTO books (id, title, title_sanitized, pdf_path, source_path, date_added, status)
-         VALUES (?, ?, ?, ?, ?, ?, 'unread')`
+        `INSERT INTO books
+           (id, title, title_sanitized, author, series, series_number, series_abbr, year,
+            publisher, city, page_offset, pdf_path, source_path, date_added, status, meta_fetched)
+         VALUES
+           (@id, @title, @san, @author, @series, @num, @abbr, @year, @publisher, @city,
+            @offset, @pdf, @source, @added, @status, @fetched)`
       )
-      .run(id, title, sanitized, pdfPath, sourcePath, Date.now())
+      .run({
+        id,
+        title,
+        san: sanitized,
+        author: side?.author ?? null,
+        series: side?.series ?? null,
+        num: side?.seriesNumber ?? null,
+        abbr: side?.seriesAbbr ?? null,
+        year: side?.year ?? null,
+        publisher: side?.publisher ?? null,
+        city: side?.city ?? null,
+        offset: side?.pageOffset ?? 0,
+        pdf: pdfPath,
+        source: sourcePath,
+        added: Date.now(),
+        status,
+        // Sidecar metadata is authoritative — don't re-hit Google Books for it.
+        fetched: side ? 1 : 0
+      })
+
+    if (side) {
+      if (side.tags?.length) setBookTags(id, side.tags)
+      if (side.coverPath && existsSync(side.coverPath)) setBookCover(id, side.coverPath)
+    }
     return 'imported'
   } catch {
     return 'failed'
@@ -543,20 +588,33 @@ export function updateBook(id: string, patch: BookUpdate): void {
         params.__source = newSource
         params.__san = base
         invalidatePrimaryIndex()
+        // Keep the sidecar folders' names in step with the renamed PDFs.
+        moveSidecar(before.pdf_path, newPdf)
+        moveSidecar(before.local_path, newLocal)
       }
     }
   }
 
   if (sets.length === 0) return
   db.prepare(`UPDATE books SET ${sets.join(', ')} WHERE id = @id`).run(params)
+  // Refresh the metadata sidecar to reflect the change.
+  writeSidecarForBook(id)
 }
 
 export function deleteBook(id: string): void {
-  const r = getDb().prepare('SELECT cover_path, pdf_path, source_path FROM books WHERE id = ?').get(id) as
-    | { cover_path: string | null; pdf_path: string | null; source_path: string | null }
+  const r = getDb()
+    .prepare('SELECT cover_path, pdf_path, local_path, source_path FROM books WHERE id = ?')
+    .get(id) as
+    | {
+        cover_path: string | null
+        pdf_path: string | null
+        local_path: string | null
+        source_path: string | null
+      }
     | undefined
   getDb().prepare('DELETE FROM books WHERE id = ?').run(id)
   search.removeBook(id)
+  if (r) removeSidecars(r.local_path, r.pdf_path)
   // Remove the cover, and the cached PDF — but never the user's in-place source file.
   if (r?.cover_path && existsSync(r.cover_path)) {
     try {
@@ -604,6 +662,7 @@ export function setBookTags(id: string, tagNames: string[]): void {
       insJoin.run(id, tagId)
     }
   })()
+  writeSidecarForBook(id)
 }
 
 export async function refetchMetadata(id: string): Promise<Book | null> {

@@ -1,12 +1,35 @@
 import { app, BrowserWindow, Menu, shell } from 'electron'
 import type { MenuItemConstructorOptions } from 'electron'
+import { existsSync, unlinkSync } from 'fs'
 import { join } from 'path'
-import { closeDb, getDb } from './db/connection'
+import { closeDb, getDataDir, getDb } from './db/connection'
 import { registerIpc } from './ipc'
 import { backupSnapshot } from './services/backup'
 import { enrichPending } from './services/library'
 import { applyRelinkMap, applyTitleClean } from './services/relink'
+import { rebuildAllSidecars } from './services/sidecar'
 import { Channels } from '../shared/ipc'
+
+/** One-time whole-library sidecar write, triggered by a flag file, run off the boot path. */
+function maybeRebuildSidecars(): void {
+  const flag = join(getDataDir(), 'sidecar-rebuild.flag')
+  if (!existsSync(flag)) return
+  setTimeout(() => {
+    try {
+      const n = rebuildAllSidecars((done, total) => {
+        if (done === total) console.log(`[sidecar] wrote sidecars for ${total} books`)
+      })
+      console.log(`[sidecar] rebuild complete (${n} books)`)
+    } catch (e) {
+      console.error('[sidecar] rebuild failed', e)
+    }
+    try {
+      unlinkSync(flag)
+    } catch {
+      /* best effort */
+    }
+  }, 1500)
+}
 
 function createWindow(): void {
   const win = new BrowserWindow({
@@ -76,6 +99,7 @@ app.whenReady().then(() => {
   applyTitleClean() // one-time: strip trailing author from titles, if pending
   registerIpc()
   createWindow()
+  maybeRebuildSidecars() // one-time whole-library sidecar write, if pending
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
