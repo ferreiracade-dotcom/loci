@@ -36,6 +36,17 @@ function seriesLabel(b: Book): string {
   return b.seriesNumber ? `${b.series} ${b.seriesNumber}` : b.series
 }
 
+/** Order books within a series by their number (numeric), unnumbered last. */
+function bySeriesNumber(a: Book, b: Book): number {
+  const na = parseFloat(a.seriesNumber ?? '')
+  const nb = parseFloat(b.seriesNumber ?? '')
+  const aHas = !Number.isNaN(na)
+  const bHas = !Number.isNaN(nb)
+  if (aHas && bHas) return na - nb || a.title.localeCompare(b.title)
+  if (aHas !== bHas) return aHas ? -1 : 1
+  return a.title.localeCompare(b.title)
+}
+
 type ContentTab = 'books' | 'images' | 'videos'
 const CONTENT_TABS: { id: ContentTab; label: string; icon: typeof BookOpen }[] = [
   { id: 'books', label: 'Books', icon: BookOpen },
@@ -293,7 +304,10 @@ export function LibraryView() {
       }
     }
     return [...map.entries()]
-      .map(([key, items]) => ({ key, items }))
+      .map(([key, items]) => ({
+        key,
+        items: groupBy === 'series' ? [...items].sort(bySeriesNumber) : items
+      }))
       .sort((a, b) => a.key.localeCompare(b.key))
   }, [groupBy, searched, shelves])
 
