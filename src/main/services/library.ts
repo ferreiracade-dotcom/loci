@@ -20,6 +20,7 @@ import type {
   BookUpdate,
   ImportProgress,
   ImportResult,
+  PdfSource,
   ReadingStatus,
   Shelf,
   Tag
@@ -40,6 +41,7 @@ interface BookRow {
   status: string
   cover_path: string | null
   pdf_path: string | null
+  local_path: string | null
   source_path: string | null
   page_offset: number
   quote_count: number
@@ -77,6 +79,14 @@ function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms))
 }
 
+/** Where this book will be read from, without actually opening it. */
+function bookPdfSource(localPath: string | null, pdfPath: string | null): PdfSource {
+  if (localPath && existsSync(localPath)) return 'local'
+  if (findInPrimary(pdfPath, localPath)) return 'local'
+  if (pdfPath && existsSync(pdfPath)) return 'drive'
+  return 'missing'
+}
+
 function rowToBook(r: BookRow): Book {
   const db = getDb()
   const shelfIds = (
@@ -104,6 +114,7 @@ function rowToBook(r: BookRow): Book {
     genre: r.genre,
     status: r.status as ReadingStatus,
     hasCover: !!r.cover_path && existsSync(r.cover_path),
+    pdfSource: bookPdfSource(r.local_path, r.pdf_path),
     pageOffset: r.page_offset,
     quoteCount: r.quote_count,
     lastPage: r.last_page,

@@ -13,6 +13,9 @@ import {
   Image as ImageIcon,
   Video,
   Search,
+  Cloud,
+  HardDrive,
+  CloudOff,
   X
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
@@ -23,7 +26,18 @@ import { BookCover } from './BookCover'
 import { BookInfoDrawer } from './BookInfoDrawer'
 import { ShelvesManager } from './ShelvesManager'
 import { DriveStatus } from './DriveStatus'
-import type { Book, ReadingStatus } from '@shared/ipc'
+import type { Book, PdfSource, ReadingStatus } from '@shared/ipc'
+
+const SOURCE_META: Record<PdfSource, string> = {
+  local: 'On this PC — opens locally',
+  drive: 'Streams from Google Drive',
+  missing: 'File not found locally or on Drive'
+}
+function SourceIcon({ source, size = 12 }: { source: PdfSource; size?: number }): JSX.Element {
+  if (source === 'drive') return <Cloud size={size} />
+  if (source === 'missing') return <CloudOff size={size} />
+  return <HardDrive size={size} />
+}
 
 const STATUS_LABEL: Record<ReadingStatus, string> = {
   unread: 'Unread',
@@ -92,6 +106,9 @@ function BookCard({
       <div className="cover" style={{ height: Math.round(size * 1.4) }}>
         <BookCover id={book.id} hasCover={book.hasCover} title={book.title} />
         <span className={`status-badge ${book.status}`}>{STATUS_LABEL[book.status]}</span>
+        <span className={`src-badge ${book.pdfSource}`} title={SOURCE_META[book.pdfSource]}>
+          <SourceIcon source={book.pdfSource} />
+        </span>
         <button
           className="card-info"
           title="Book info"
@@ -150,6 +167,9 @@ function BookListRow({
         </div>
       </div>
       {book.quoteCount > 0 && <span className="row-quotes">{book.quoteCount} quotes</span>}
+      <span className={`src-ico ${book.pdfSource}`} title={SOURCE_META[book.pdfSource]}>
+        <SourceIcon source={book.pdfSource} size={15} />
+      </span>
       <span className={`status-badge ${book.status} row-status`}>{STATUS_LABEL[book.status]}</span>
       <button
         className="row-info"

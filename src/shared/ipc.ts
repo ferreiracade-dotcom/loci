@@ -217,6 +217,9 @@ export interface ImportProgress {
 
 export type ReadingStatus = 'unread' | 'reading' | 'finished'
 
+/** Where a book's PDF will be read from when opened. */
+export type PdfSource = 'local' | 'drive' | 'missing'
+
 export interface Shelf {
   id: string
   name: string
@@ -242,6 +245,7 @@ export interface Book {
   genre: string | null
   status: ReadingStatus
   hasCover: boolean
+  pdfSource: PdfSource
   pageOffset: number
   quoteCount: number
   lastPage: number

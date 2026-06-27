@@ -1,11 +1,27 @@
 import { useEffect, useMemo, useState } from 'react'
-import { X, Plus, RefreshCw, Trash2, BookOpen, Image as ImageIcon } from 'lucide-react'
+import {
+  X,
+  Plus,
+  RefreshCw,
+  Trash2,
+  BookOpen,
+  Image as ImageIcon,
+  Cloud,
+  HardDrive,
+  CloudOff
+} from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { splitAuthors, joinAuthors } from '../../lib/authors'
 import { DrawerOverlay } from '../DrawerOverlay'
 import { BookCover } from './BookCover'
-import type { ReadingStatus } from '@shared/ipc'
+import type { PdfSource, ReadingStatus } from '@shared/ipc'
+
+const SOURCE_LABEL: Record<PdfSource, string> = {
+  local: 'Reads from this PC',
+  drive: 'Streams from Google Drive',
+  missing: 'File not found'
+}
 
 const STATUSES: { id: ReadingStatus; label: string }[] = [
   { id: 'unread', label: 'Unread' },
@@ -207,6 +223,16 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
               >
                 <RefreshCw size={14} className={libraryBusy ? 'spin' : ''} /> Refetch metadata
               </button>
+              <div className={`bi-source ${book.pdfSource}`} title={SOURCE_LABEL[book.pdfSource]}>
+                {book.pdfSource === 'drive' ? (
+                  <Cloud size={14} />
+                ) : book.pdfSource === 'missing' ? (
+                  <CloudOff size={14} />
+                ) : (
+                  <HardDrive size={14} />
+                )}
+                <span>{SOURCE_LABEL[book.pdfSource]}</span>
+              </div>
             </div>
           </div>
 
