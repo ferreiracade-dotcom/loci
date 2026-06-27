@@ -46,7 +46,7 @@ const CONTENT_TABS: { id: ContentTab; label: string; icon: typeof BookOpen }[] =
 const GROUP_OPTIONS: { id: string; label: string }[] = [
   { id: 'none', label: 'No grouping' },
   { id: 'author', label: 'Author' },
-  { id: 'genre', label: 'Genre' },
+  { id: 'series', label: 'Series' },
   { id: 'shelf', label: 'Shelf' },
   { id: 'tag', label: 'Tag' },
   { id: 'status', label: 'Status' }
@@ -135,7 +135,6 @@ function BookListRow({
         <div className="book-author">
           {book.author ?? '—'}
           {book.year ? ` · ${book.year}` : ''}
-          {book.genre ? ` · ${book.genre}` : ''}
         </div>
       </div>
       {book.quoteCount > 0 && <span className="row-quotes">{book.quoteCount} quotes</span>}
@@ -187,7 +186,11 @@ export function LibraryView() {
 
   useEffect(() => {
     void api.getSession('libraryGroup').then((v) => {
-      if (v) setGroupBy(v)
+      // 'genre' grouping was removed in favour of 'series'; migrate any saved value.
+      if (v === 'genre') {
+        setGroupBy('series')
+        void api.setSession('libraryGroup', 'series')
+      } else if (v) setGroupBy(v)
     })
     void api.getSession('libraryTab').then((v) => {
       if (v === 'images' || v === 'videos') setContentTab(v)
@@ -276,7 +279,7 @@ export function LibraryView() {
     }
     for (const b of searched) {
       if (groupBy === 'author') add(b.author?.trim() || 'Unknown author', b)
-      else if (groupBy === 'genre') add(b.genre?.trim() || 'No genre', b)
+      else if (groupBy === 'series') add(b.series?.trim() || 'No series', b)
       else if (groupBy === 'status') add(STATUS_LABEL[b.status], b)
       else if (groupBy === 'shelf') {
         const names = b.shelfIds

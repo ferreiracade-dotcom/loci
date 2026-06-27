@@ -20,7 +20,6 @@ type Form = {
   seriesAbbr: string
   year: string
   publisher: string
-  genre: string
   pageOffset: string
 }
 
@@ -54,7 +53,6 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
     seriesAbbr: '',
     year: '',
     publisher: '',
-    genre: '',
     pageOffset: '0'
   })
   const [tagText, setTagText] = useState('')
@@ -94,7 +92,7 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
     })
 
   const bookKey = book
-    ? `${book.id}:${book.author ?? ''}:${book.series ?? ''}:${book.seriesNumber ?? ''}:${book.seriesAbbr ?? ''}:${book.year ?? ''}:${book.genre ?? ''}`
+    ? `${book.id}:${book.author ?? ''}:${book.series ?? ''}:${book.seriesNumber ?? ''}:${book.seriesAbbr ?? ''}:${book.year ?? ''}`
     : ''
   useEffect(() => {
     if (book) {
@@ -106,7 +104,6 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
         seriesAbbr: book.seriesAbbr ?? '',
         year: book.year?.toString() ?? '',
         publisher: book.publisher ?? '',
-        genre: book.genre ?? '',
         pageOffset: book.pageOffset.toString()
       })
       setTagText(book.tags.join(', '))
@@ -136,7 +133,6 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
       seriesAbbr: form.seriesAbbr.trim() || null,
       year: form.year.trim() ? Number(form.year) : null,
       publisher: form.publisher.trim() || null,
-      genre: form.genre.trim() || null,
       pageOffset: Number(form.pageOffset) || 0
     })
   }
@@ -281,8 +277,6 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
               value={form.publisher}
               onChange={(e) => set('publisher', e.target.value)}
             />
-            <label className="set-label">Genre</label>
-            <input className="field" value={form.genre} onChange={(e) => set('genre', e.target.value)} />
             <button className="btn btn-primary btn-sm bi-save" onClick={saveMeta}>
               Save details
             </button>
