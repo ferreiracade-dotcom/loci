@@ -80,32 +80,64 @@ export function Settings({ onClose }: { onClose: () => void }) {
         <div className="drawer-body">
           <section className="set-section">
             <h3 className="set-h">Folders</h3>
-            <div className="set-row">
-              <div>
-                <div className="set-label">Vault</div>
-                <div className="set-path">{config.vaultPath ?? 'Not set'}</div>
+            <p className="set-help set-intro">
+              The three folders below are the <strong>Vault</strong> (the master copy, synced to
+              the cloud through Google Drive), the <strong>PDF source</strong> (where new books
+              are imported from), and the <strong>Local backup</strong> (an on-disk snapshot).
+              Opening a book reads a fast local copy cached on this PC automatically — that isn’t
+              a folder you set here.
+            </p>
+
+            <div className="set-folder">
+              <div className="set-row">
+                <div>
+                  <div className="set-label">Vault — cloud sync &amp; backup</div>
+                  <div className="set-path">{config.vaultPath ?? 'Not set'}</div>
+                </div>
+                <button className="btn btn-sm" onClick={() => void relocateVault()}>
+                  <FolderOpen size={14} /> Change
+                </button>
               </div>
-              <button className="btn btn-sm" onClick={() => void relocateVault()}>
-                <FolderOpen size={14} /> Change
-              </button>
+              <p className="set-help">
+                The master copy of everything Loci creates — notes, highlights, reading progress,
+                and imported PDFs. Because it lives inside Google Drive, Drive mirrors it across
+                your machines and keeps the off-machine copy. The search index is rebuilt from
+                here, so this folder is the source of truth.
+              </p>
             </div>
-            <div className="set-row">
-              <div>
-                <div className="set-label">PDF source</div>
-                <div className="set-path">{config.pdfSourcePath ?? 'Not set'}</div>
+
+            <div className="set-folder">
+              <div className="set-row">
+                <div>
+                  <div className="set-label">PDF source — import pool</div>
+                  <div className="set-path">{config.pdfSourcePath ?? 'Not set'}</div>
+                </div>
+                <button className="btn btn-sm" onClick={() => void changeFolder('pdfSourcePath')}>
+                  <FolderOpen size={14} /> Change
+                </button>
               </div>
-              <button className="btn btn-sm" onClick={() => void changeFolder('pdfSourcePath')}>
-                <FolderOpen size={14} /> Change
-              </button>
+              <p className="set-help">
+                The folder Loci scans when you click <strong>Import from source</strong> to add
+                new books. It’s only the intake pool — once a book is imported it’s read from its
+                own local copy, not from here.
+              </p>
             </div>
-            <div className="set-row">
-              <div>
-                <div className="set-label">Local backup</div>
-                <div className="set-path">{config.backupPath ?? 'Not set'}</div>
+
+            <div className="set-folder">
+              <div className="set-row">
+                <div>
+                  <div className="set-label">Local backup — snapshot</div>
+                  <div className="set-path">{config.backupPath ?? 'Not set'}</div>
+                </div>
+                <button className="btn btn-sm" onClick={() => void changeFolder('backupPath')}>
+                  <FolderOpen size={14} /> Change
+                </button>
               </div>
-              <button className="btn btn-sm" onClick={() => void changeFolder('backupPath')}>
-                <FolderOpen size={14} /> Change
-              </button>
+              <p className="set-help">
+                A full snapshot of the Vault, rewritten to <code>…\vault-snapshot</code> every
+                time you close Loci. Keep it on a different drive from the cloud Vault, so one bad
+                sync or accidental deletion can’t wipe everything.
+              </p>
             </div>
           </section>
 

@@ -590,6 +590,29 @@ select.field {
   flex-direction: column;
   gap: 10px;
 }
+.set-folder {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.set-help {
+  margin: 0 2px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+.set-help strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.set-help code {
+  font-family: var(--font-ui);
+  color: var(--accent);
+  font-size: 11.5px;
+}
+.set-intro {
+  margin-bottom: 4px;
+}
 .set-h {
   font-size: 11px;
   text-transform: uppercase;
