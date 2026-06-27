@@ -5,12 +5,13 @@ import {
   mkdirSync,
   readFileSync,
   readdirSync,
+  renameSync,
   statSync,
   unlinkSync,
   writeFileSync
 } from 'fs'
 import { copyFile } from 'fs/promises'
-import { basename, extname, isAbsolute, join, relative } from 'path'
+import { basename, dirname, extname, isAbsolute, join, relative } from 'path'
 import { getDataDir, getDb } from '../db/connection'
 import { readConfig } from './config'
 import { downloadCover, fetchBookMeta } from './metadata'
@@ -57,6 +58,32 @@ const INVALID_FILENAME = /[:/\\?*"<>|]/g
 export function sanitizeName(name: string): string {
   const cleaned = name.replace(INVALID_FILENAME, '-').replace(/\s+/g, ' ').trim().slice(0, 180)
   return cleaned || 'untitled'
+}
+
+/** Build the on-disk file base ("Title - Author") so the author shows in the file name. */
+function fileBaseFor(title: string, author: string | null): string {
+  const t = title.trim()
+  const a = (author ?? '').trim()
+  if (!a) return sanitizeName(t)
+  const norm = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]/g, '')
+  // Don't double up when the title already ends with the author name.
+  if (norm(t).endsWith(norm(a))) return sanitizeName(t)
+  return sanitizeName(`${t} - ${a}`)
+}
+
+/** Rename a file to <base><ext> in its own directory; returns the resulting path. */
+function renameFileToBase(oldPath: string | null, base: string): string | null {
+  if (!oldPath || !existsSync(oldPath)) return oldPath
+  try {
+    const ext = extname(oldPath) || '.pdf'
+    const dest = join(dirname(oldPath), `${base}${ext}`)
+    if (dest === oldPath) return oldPath
+    if (existsSync(dest)) return oldPath // never clobber a different file
+    renameSync(oldPath, dest)
+    return dest
+  } catch {
+    return oldPath
+  }
 }
 
 function titleFromFilename(file: string): string {
@@ -172,6 +199,11 @@ function normName(file: string): string {
   return basename(file, extname(file))
     .toLowerCase()
     .replace(/[^a-z0-9]/g, '')
+}
+
+function invalidatePrimaryIndex(): void {
+  primaryIndex = null
+  primaryIndexRoot = null
 }
 
 function getPrimaryIndex(): Map<string, string> | null {
@@ -461,10 +493,62 @@ export function updateBook(id: string, patch: BookUpdate): void {
     sets.push(`${columns[key]} = @${key}`)
     params[key] = patch[key] ?? null
   }
+
+  const db = getDb()
+
+  // When the title or author changes, rename the underlying files (local + Drive)
+  // to "Title - Author" so the file name reflects the metadata and stays easy to
+  // locate across machines. Best-effort: never deletes or clobbers another file.
+  if ('title' in patch || 'author' in patch) {
+    const before = db
+      .prepare('SELECT title, author, pdf_path, local_path, source_path FROM books WHERE id = ?')
+      .get(id) as
+      | {
+          title: string
+          author: string | null
+          pdf_path: string | null
+          local_path: string | null
+          source_path: string | null
+        }
+      | undefined
+    if (before) {
+      const newTitle = ('title' in patch ? patch.title : before.title) || before.title
+      const newAuthor = 'author' in patch ? patch.author ?? null : before.author
+      const base = fileBaseFor(newTitle, newAuthor)
+      const cacheDir = join(getDataDir(), 'pdf-cache')
+      // Leave the id-named cache copy alone; rename real, named files in place.
+      const rn = (p: string | null): string | null =>
+        p && !isInside(p, cacheDir) ? renameFileToBase(p, base) : p
+      const newPdf = rn(before.pdf_path)
+      const newLocal = rn(before.local_path)
+      const newSource =
+        before.source_path && before.source_path === before.pdf_path
+          ? newPdf
+          : before.source_path && before.source_path === before.local_path
+            ? newLocal
+            : rn(before.source_path)
+      if (
+        newPdf !== before.pdf_path ||
+        newLocal !== before.local_path ||
+        newSource !== before.source_path
+      ) {
+        sets.push(
+          'pdf_path = @__pdf',
+          'local_path = @__local',
+          'source_path = @__source',
+          'title_sanitized = @__san'
+        )
+        params.__pdf = newPdf
+        params.__local = newLocal
+        params.__source = newSource
+        params.__san = base
+        invalidatePrimaryIndex()
+      }
+    }
+  }
+
   if (sets.length === 0) return
-  getDb()
-    .prepare(`UPDATE books SET ${sets.join(', ')} WHERE id = @id`)
-    .run(params)
+  db.prepare(`UPDATE books SET ${sets.join(', ')} WHERE id = @id`).run(params)
 }
 
 export function deleteBook(id: string): void {
