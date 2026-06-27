@@ -40,7 +40,6 @@ export function WelcomeScreen() {
         backgroundImage: bg ? `url("${bg}")` : undefined
       }}
     >
-      <div className="welcome-scrim" />
       <div className="welcome-content">
         <h1 className="welcome-brand">Loci</h1>
         <p className="welcome-sub">The Commonplace</p>

@@ -15,6 +15,8 @@ type Form = {
   title: string
   author: string
   series: string
+  seriesNumber: string
+  seriesAbbr: string
   year: string
   publisher: string
   genre: string
@@ -47,6 +49,8 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
     title: '',
     author: '',
     series: '',
+    seriesNumber: '',
+    seriesAbbr: '',
     year: '',
     publisher: '',
     genre: '',
@@ -63,9 +67,26 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
       ),
     [allBooks]
   )
+  // Remember each series' abbreviation so picking a known series fills it in.
+  const seriesAbbrMap = useMemo(() => {
+    const m = new Map<string, string>()
+    for (const b of allBooks) {
+      if (b.series?.trim() && b.seriesAbbr?.trim() && !m.has(b.series.trim().toLowerCase())) {
+        m.set(b.series.trim().toLowerCase(), b.seriesAbbr.trim())
+      }
+    }
+    return m
+  }, [allBooks])
+
+  const onSeriesChange = (v: string): void =>
+    setForm((f) => {
+      const known = seriesAbbrMap.get(v.trim().toLowerCase())
+      // Auto-fill the abbreviation from a known series, unless one's already typed.
+      return { ...f, series: v, seriesAbbr: f.seriesAbbr.trim() ? f.seriesAbbr : known ?? f.seriesAbbr }
+    })
 
   const bookKey = book
-    ? `${book.id}:${book.author ?? ''}:${book.series ?? ''}:${book.year ?? ''}:${book.genre ?? ''}`
+    ? `${book.id}:${book.author ?? ''}:${book.series ?? ''}:${book.seriesNumber ?? ''}:${book.seriesAbbr ?? ''}:${book.year ?? ''}:${book.genre ?? ''}`
     : ''
   useEffect(() => {
     if (book) {
@@ -73,6 +94,8 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
         title: book.title,
         author: book.author ?? '',
         series: book.series ?? '',
+        seriesNumber: book.seriesNumber ?? '',
+        seriesAbbr: book.seriesAbbr ?? '',
         year: book.year?.toString() ?? '',
         publisher: book.publisher ?? '',
         genre: book.genre ?? '',
@@ -101,6 +124,8 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
       title: form.title.trim() || book.title,
       author: form.author.trim() || null,
       series: form.series.trim() || null,
+      seriesNumber: form.seriesNumber.trim() || null,
+      seriesAbbr: form.seriesAbbr.trim() || null,
       year: form.year.trim() ? Number(form.year) : null,
       publisher: form.publisher.trim() || null,
       genre: form.genre.trim() || null,
@@ -181,16 +206,37 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
             <input
               className="field"
               value={form.series}
-              placeholder="e.g. Luther's Works"
+              placeholder="e.g. Ante-Nicene Fathers"
               list="bi-series-options"
               autoComplete="off"
-              onChange={(e) => set('series', e.target.value)}
+              onChange={(e) => onSeriesChange(e.target.value)}
             />
             <datalist id="bi-series-options">
               {seriesOptions.map((s) => (
                 <option key={s} value={s} />
               ))}
             </datalist>
+            <div className="field-grid">
+              <div>
+                <label className="set-label">Number in series</label>
+                <input
+                  className="field"
+                  value={form.seriesNumber}
+                  placeholder="e.g. 1"
+                  onChange={(e) => set('seriesNumber', e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="set-label">Abbreviation</label>
+                <input
+                  className="field"
+                  value={form.seriesAbbr}
+                  placeholder="e.g. ANF"
+                  autoComplete="off"
+                  onChange={(e) => set('seriesAbbr', e.target.value)}
+                />
+              </div>
+            </div>
             <div className="field-grid">
               <div>
                 <label className="set-label">Year</label>

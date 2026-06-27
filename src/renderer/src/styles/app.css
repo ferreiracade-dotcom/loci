@@ -1075,17 +1075,6 @@ select.field {
   align-items: center;
   justify-content: center;
 }
-.welcome-scrim {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(
-      ellipse at center,
-      rgba(var(--base-rgb), 0.3),
-      rgba(var(--base-rgb), 0.82) 78%
-    ),
-    linear-gradient(to top, rgba(var(--base-rgb), 0.92), rgba(var(--base-rgb), 0.15));
-}
 .welcome-content {
   position: relative;
   z-index: 1;
@@ -1102,7 +1091,8 @@ select.field {
   margin: 0;
   letter-spacing: 0.04em;
   color: var(--text);
-  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.7);
+  /* No scrim over the painting, so the text carries its own legibility. */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 2px 30px rgba(0, 0, 0, 0.85);
 }
 .welcome-sub {
   font-family: var(--font-read);
@@ -1110,8 +1100,8 @@ select.field {
   max-width: 430px;
   margin: 0;
   color: var(--text);
-  opacity: 0.86;
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.8);
+  opacity: 0.92;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 1px 14px rgba(0, 0, 0, 0.9);
 }
 .welcome-enter {
   margin-top: 12px;
@@ -1125,7 +1115,8 @@ select.field {
   z-index: 1;
   font-size: 11px;
   color: var(--text);
-  opacity: 0.5;
+  opacity: 0.62;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
 }
 
 /* ---------- Appearance settings ---------- */

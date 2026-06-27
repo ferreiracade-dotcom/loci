@@ -31,6 +31,8 @@ interface BookRow {
   title_sanitized: string
   author: string | null
   series: string | null
+  series_number: string | null
+  series_abbr: string | null
   year: number | null
   publisher: string | null
   city: string | null
@@ -94,6 +96,8 @@ function rowToBook(r: BookRow): Book {
     title: r.title,
     author: r.author,
     series: r.series,
+    seriesNumber: r.series_number,
+    seriesAbbr: r.series_abbr,
     year: r.year,
     publisher: r.publisher,
     city: r.city,
@@ -362,6 +366,8 @@ export function updateBook(id: string, patch: BookUpdate): void {
     title: 'title',
     author: 'author',
     series: 'series',
+    seriesNumber: 'series_number',
+    seriesAbbr: 'series_abbr',
     year: 'year',
     publisher: 'publisher',
     city: 'city',

@@ -30,6 +30,12 @@ const STATUS_LABEL: Record<ReadingStatus, string> = {
   finished: 'Finished'
 }
 
+/** "Ante-Nicene Fathers 1" — series with its position appended, when set. */
+function seriesLabel(b: Book): string {
+  if (!b.series) return ''
+  return b.seriesNumber ? `${b.series} ${b.seriesNumber}` : b.series
+}
+
 type ContentTab = 'books' | 'images' | 'videos'
 const CONTENT_TABS: { id: ContentTab; label: string; icon: typeof BookOpen }[] = [
   { id: 'books', label: 'Books', icon: BookOpen },
@@ -86,7 +92,7 @@ function BookCard({
         </button>
       </div>
       <div className="book-meta">
-        {book.series && <div className="book-series">{book.series}</div>}
+        {book.series && <div className="book-series">{seriesLabel(book)}</div>}
         <div className="book-title">{book.title}</div>
         <div className="book-author">
           {book.author ?? '—'}
@@ -124,7 +130,7 @@ function BookListRow({
         <BookCover id={book.id} hasCover={book.hasCover} title={book.title} />
       </div>
       <div className="row-main">
-        {book.series && <div className="book-series">{book.series}</div>}
+        {book.series && <div className="book-series">{seriesLabel(book)}</div>}
         <div className="book-title">{book.title}</div>
         <div className="book-author">
           {book.author ?? '—'}
@@ -238,9 +244,26 @@ export function LibraryView() {
   const searched = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return filtered
-    return filtered.filter((b) =>
-      `${b.title} ${b.author ?? ''} ${b.series ?? ''}`.toLowerCase().includes(q)
-    )
+    const terms = q.split(/\s+/).filter(Boolean)
+    return filtered.filter((b) => {
+      const series = b.series ?? ''
+      const num = b.seriesNumber ?? ''
+      const abbr = b.seriesAbbr ?? ''
+      // Include "<series> <n>" and "<abbr> <n>" as contiguous strings so a query
+      // like "ANF 1" or "Ante-Nicene Fathers 1" matches the right volume.
+      const hay = [
+        b.title,
+        b.author ?? '',
+        series,
+        abbr,
+        num,
+        series && num ? `${series} ${num}` : '',
+        abbr && num ? `${abbr} ${num}` : ''
+      ]
+        .join(' ')
+        .toLowerCase()
+      return terms.every((t) => hay.includes(t))
+    })
   }, [filtered, query])
 
   const groups = useMemo(() => {

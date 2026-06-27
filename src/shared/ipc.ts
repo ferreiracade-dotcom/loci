@@ -232,6 +232,8 @@ export interface Book {
   title: string
   author: string | null
   series: string | null
+  seriesNumber: string | null
+  seriesAbbr: string | null
   year: number | null
   publisher: string | null
   city: string | null
@@ -252,6 +254,8 @@ export interface BookUpdate {
   title?: string
   author?: string | null
   series?: string | null
+  seriesNumber?: string | null
+  seriesAbbr?: string | null
   year?: number | null
   publisher?: string | null
   city?: string | null

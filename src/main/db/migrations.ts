@@ -194,6 +194,18 @@ const migrations: Migration[] = [
     up: (db) => {
       db.exec(`ALTER TABLE books ADD COLUMN series TEXT;`)
     }
+  },
+  {
+    version: 9,
+    name: 'series-number-abbr',
+    up: (db) => {
+      // Position within the series (e.g. "1") and a short abbreviation (e.g. "ANF"),
+      // both searchable so "Ante-Nicene Fathers 1" and "ANF 1" find the same book.
+      db.exec(`
+        ALTER TABLE books ADD COLUMN series_number TEXT;
+        ALTER TABLE books ADD COLUMN series_abbr TEXT;
+      `)
+    }
   }
 ]
 
