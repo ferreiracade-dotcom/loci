@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { X, Plus, Trash2 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
+import { DrawerOverlay } from '../DrawerOverlay'
 import type { Shelf } from '@shared/ipc'
 
 function ShelfRow({ shelf }: { shelf: Shelf }) {
@@ -68,9 +69,8 @@ export function ShelvesManager({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="drawer-overlay" onClick={onClose}>
-      <div className="drawer" onClick={(e) => e.stopPropagation()}>
-        <div className="drawer-head">
+    <DrawerOverlay onClose={onClose}>
+      <div className="drawer-head">
           <h2 className="drawer-title">Shelves</h2>
           <button className="icon-btn" title="Close" onClick={onClose}>
             <X size={16} />
@@ -98,7 +98,6 @@ export function ShelvesManager({ onClose }: { onClose: () => void }) {
           </div>
           <p className="folder-hint">Rename inline; deleting a shelf keeps the books themselves.</p>
         </div>
-      </div>
-    </div>
+    </DrawerOverlay>
   )
 }

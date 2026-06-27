@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { X, FolderOpen, KeyRound, ShieldCheck, Image as ImageIcon } from 'lucide-react'
 import { useStore } from '../store/useStore'
 import { api } from '../lib/api'
+import { DrawerOverlay } from './DrawerOverlay'
 import { THEME_PRESETS } from '../lib/theme'
 import type { AiMode, ThemePalette } from '@shared/ipc'
 
@@ -68,9 +69,8 @@ export function Settings({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="drawer-overlay" onClick={onClose}>
-      <div className="drawer" onClick={(e) => e.stopPropagation()}>
-        <div className="drawer-head">
+    <DrawerOverlay onClose={onClose}>
+      <div className="drawer-head">
           <h2 className="drawer-title">Settings</h2>
           <button className="icon-btn" title="Close" onClick={onClose}>
             <X size={16} />
@@ -228,7 +228,6 @@ export function Settings({ onClose }: { onClose: () => void }) {
             </p>
           </section>
         </div>
-      </div>
-    </div>
+    </DrawerOverlay>
   )
 }

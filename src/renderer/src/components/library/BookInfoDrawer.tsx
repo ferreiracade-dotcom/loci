@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { X, RefreshCw, Trash2, BookOpen, Image as ImageIcon } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
+import { DrawerOverlay } from '../DrawerOverlay'
 import { BookCover } from './BookCover'
 import type { ReadingStatus } from '@shared/ipc'
 
@@ -58,11 +59,15 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
   })
   const [tagText, setTagText] = useState('')
   const [confirmDelete, setConfirmDelete] = useState(false)
-  // True only when a press *starts* on the backdrop, so a text-selection drag
-  // that merely ends on the backdrop doesn't close the drawer.
-  const pressedOnOverlay = useRef(false)
 
-  // Existing series across the library, for the Series typeahead.
+  // Existing authors / series across the library, for the typeaheads.
+  const authorOptions = useMemo(
+    () =>
+      [...new Set(allBooks.map((b) => b.author).filter((s): s is string => !!s && s.trim() !== ''))].sort(
+        (a, b) => a.localeCompare(b)
+      ),
+    [allBooks]
+  )
   const seriesOptions = useMemo(
     () =>
       [...new Set(allBooks.map((b) => b.series).filter((s): s is string => !!s && s.trim() !== ''))].sort(
@@ -157,17 +162,8 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
   }
 
   return (
-    <div
-      className="drawer-overlay"
-      onMouseDown={(e) => {
-        pressedOnOverlay.current = e.target === e.currentTarget
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget && pressedOnOverlay.current) onClose()
-      }}
-    >
-      <div className="drawer wide" onClick={(e) => e.stopPropagation()}>
-        <div className="drawer-head">
+    <DrawerOverlay onClose={onClose} className="drawer wide">
+      <div className="drawer-head">
           <h2 className="drawer-title">Book info</h2>
           <button className="icon-btn" title="Close" onClick={onClose}>
             <X size={16} />
@@ -212,7 +208,18 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
             <label className="set-label">Title</label>
             <input className="field" value={form.title} onChange={(e) => set('title', e.target.value)} />
             <label className="set-label">Author</label>
-            <input className="field" value={form.author} onChange={(e) => set('author', e.target.value)} />
+            <input
+              className="field"
+              value={form.author}
+              list="bi-author-options"
+              autoComplete="off"
+              onChange={(e) => set('author', e.target.value)}
+            />
+            <datalist id="bi-author-options">
+              {authorOptions.map((a) => (
+                <option key={a} value={a} />
+              ))}
+            </datalist>
             <label className="set-label">Series</label>
             <input
               className="field"
@@ -345,7 +352,6 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
             )}
           </section>
         </div>
-      </div>
-    </div>
+    </DrawerOverlay>
   )
 }

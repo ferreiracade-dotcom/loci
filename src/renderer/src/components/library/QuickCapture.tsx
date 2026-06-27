@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
+import { DrawerOverlay } from '../DrawerOverlay'
 
 export function QuickCapture({ onClose }: { onClose: () => void }) {
   const loadStandaloneNotes = useStore((s) => s.loadStandaloneNotes)
@@ -33,9 +34,8 @@ export function QuickCapture({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="drawer-overlay" onClick={onClose}>
-      <div className="drawer" onClick={(e) => e.stopPropagation()}>
-        <div className="drawer-head">
+    <DrawerOverlay onClose={onClose}>
+      <div className="drawer-head">
           <h2 className="drawer-title">Quick capture</h2>
           <button className="icon-btn" title="Close" onClick={onClose}>
             <X size={16} />
@@ -71,7 +71,6 @@ export function QuickCapture({ onClose }: { onClose: () => void }) {
           </div>
           <p className="folder-hint">Saved to /vault/notes/standalone/.</p>
         </div>
-      </div>
-    </div>
+    </DrawerOverlay>
   )
 }
