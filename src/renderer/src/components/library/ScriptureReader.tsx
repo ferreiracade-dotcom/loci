@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 import { api } from '../../lib/api'
 import { bookByCode, bookByOrder } from '@shared/scriptureRef'
-import type { ScripturePassage } from '@shared/ipc'
+import type { ScripturePassage, ScriptureTranslation } from '@shared/ipc'
 
 interface Props {
   translation: string
@@ -11,6 +11,9 @@ interface Props {
   highlight: number[]
   /** Navigate the reader (prev/next chapter, or a verse jump). */
   onNavigate: (book: string, chapter: number, highlight?: number[]) => void
+  /** When provided, the header shows a translation switcher (used when the nav is hidden). */
+  translations?: ScriptureTranslation[]
+  onTranslationChange?: (id: string) => void
   /** Slim header for the split pane beside a note. */
   compact?: boolean
 }
@@ -42,6 +45,8 @@ export function ScriptureReader({
   chapter,
   highlight,
   onNavigate,
+  translations,
+  onTranslationChange,
   compact = false
 }: Props) {
   const [passage, setPassage] = useState<ScripturePassage | null>(null)
@@ -99,7 +104,22 @@ export function ScriptureReader({
           <ChevronLeft size={16} />
         </button>
         <span className="sr-title">{title}</span>
-        <span className="sr-abbr">{passage?.translation ?? translation}</span>
+        {translations && translations.length > 1 && onTranslationChange ? (
+          <select
+            className="sr-translation"
+            title="Translation"
+            value={translation}
+            onChange={(e) => onTranslationChange(e.target.value)}
+          >
+            {translations.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.abbr}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <span className="sr-abbr">{passage?.translation ?? translation}</span>
+        )}
         <button
           className="icon-btn"
           title="Next chapter"

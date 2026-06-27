@@ -273,25 +273,42 @@ const ScriptureRef = Extension.create<ScriptureOpts>({
     const opts = this.options
     let pop: HTMLDivElement | null = null
     let token = 0
+    let hideTimer: ReturnType<typeof setTimeout> | null = null
 
+    const cancelHide = (): void => {
+      if (hideTimer) {
+        clearTimeout(hideTimer)
+        hideTimer = null
+      }
+    }
     const hide = (): void => {
+      cancelHide()
       pop?.remove()
       pop = null
     }
+    // Grace period so the cursor can cross the gap from the reference into the popover.
+    const scheduleHide = (): void => {
+      cancelHide()
+      hideTimer = setTimeout(hide, 220)
+    }
     const show = (el: HTMLElement, raw: string): void => {
       const translation = opts.getTranslation()
+      const key = `${translation}:${raw}`
+      cancelHide()
+      if (pop && pop.dataset.key === key) return // already showing this reference
       const rect = el.getBoundingClientRect()
       if (!pop) {
         pop = document.createElement('div')
         pop.className = 'scripture-pop'
-        pop.addEventListener('mouseleave', hide)
+        pop.addEventListener('mouseenter', cancelHide)
+        pop.addEventListener('mouseleave', scheduleHide)
         document.body.appendChild(pop)
       }
+      pop.dataset.key = key
       pop.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - 380))}px`
-      pop.style.top = `${rect.bottom + 6}px`
+      pop.style.top = `${rect.bottom + 4}px`
       pop.innerHTML = '<div class="scripture-pop-loading">Loading…</div>'
       const mine = ++token
-      const key = `${translation}:${raw}`
       const render = (p: ScripturePassage | null): void => {
         if (!pop || mine !== token) return
         if (!p || p.verses.length === 0) {
@@ -366,9 +383,8 @@ const ScriptureRef = Extension.create<ScriptureOpts>({
               return false
             },
             mouseout(_view, event) {
-              const to = event.relatedTarget as HTMLElement | null
-              if (pop && to && pop.contains(to)) return false // moved into the popover
-              if ((event.target as HTMLElement).closest?.('.tt-scripture')) hide()
+              // Delay the hide; the popover's mouseenter cancels it if the cursor lands there.
+              if ((event.target as HTMLElement).closest?.('.tt-scripture')) scheduleHide()
               return false
             }
           }

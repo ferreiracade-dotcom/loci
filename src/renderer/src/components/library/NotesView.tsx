@@ -31,6 +31,8 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
   const scriptureSplitOpen = useStore((s) => s.scriptureSplitOpen)
   const scripturePassage = useStore((s) => s.scripturePassage)
   const scriptureTranslation = useStore((s) => s.scriptureTranslation)
+  const scriptureTranslations = useStore((s) => s.scriptureTranslations)
+  const setScriptureTranslation = useStore((s) => s.setScriptureTranslation)
   const closeScriptureSplit = useStore((s) => s.closeScriptureSplit)
   const navigateScripture = useStore((s) => s.navigateScripture)
 
@@ -244,6 +246,8 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
                     chapter={scripturePassage.chapter}
                     highlight={scripturePassage.highlight}
                     onNavigate={navigateScripture}
+                    translations={scriptureTranslations}
+                    onTranslationChange={setScriptureTranslation}
                     compact
                   />
                 </div>
