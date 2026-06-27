@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { X, RefreshCw, Trash2, BookOpen, Image as ImageIcon } from 'lucide-react'
+import { X, Plus, RefreshCw, Trash2, BookOpen, Image as ImageIcon } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
+import { splitAuthors, joinAuthors } from '../../lib/authors'
 import { DrawerOverlay } from '../DrawerOverlay'
 import { BookCover } from './BookCover'
 import type { ReadingStatus } from '@shared/ipc'
@@ -14,7 +15,7 @@ const STATUSES: { id: ReadingStatus; label: string }[] = [
 
 type Form = {
   title: string
-  author: string
+  authors: string[]
   series: string
   seriesNumber: string
   seriesAbbr: string
@@ -47,7 +48,7 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
 
   const [form, setForm] = useState<Form>({
     title: '',
-    author: '',
+    authors: [''],
     series: '',
     seriesNumber: '',
     seriesAbbr: '',
@@ -60,10 +61,7 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
 
   // Existing authors / series across the library, for the typeaheads.
   const authorOptions = useMemo(
-    () =>
-      [...new Set(allBooks.map((b) => b.author).filter((s): s is string => !!s && s.trim() !== ''))].sort(
-        (a, b) => a.localeCompare(b)
-      ),
+    () => [...new Set(allBooks.flatMap((b) => splitAuthors(b.author)))].sort((a, b) => a.localeCompare(b)),
     [allBooks]
   )
   const seriesOptions = useMemo(
@@ -98,7 +96,7 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
     if (book) {
       setForm({
         title: book.title,
-        author: book.author ?? '',
+        authors: splitAuthors(book.author).length ? splitAuthors(book.author) : [''],
         series: book.series ?? '',
         seriesNumber: book.seriesNumber ?? '',
         seriesAbbr: book.seriesAbbr ?? '',
@@ -124,10 +122,23 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
 
   const set = (k: keyof Form, v: string): void => setForm((f) => ({ ...f, [k]: v }))
 
+  const setAuthorAt = (i: number, v: string): void =>
+    setForm((f) => {
+      const authors = [...f.authors]
+      authors[i] = v
+      return { ...f, authors }
+    })
+  const addAuthor = (): void => setForm((f) => ({ ...f, authors: [...f.authors, ''] }))
+  const removeAuthor = (i: number): void =>
+    setForm((f) => {
+      const authors = f.authors.filter((_, j) => j !== i)
+      return { ...f, authors: authors.length ? authors : [''] }
+    })
+
   const saveMeta = (): void => {
     void updateBook(book.id, {
       title: form.title.trim() || book.title,
-      author: form.author.trim() || null,
+      author: joinAuthors(form.authors) || null,
       series: form.series.trim() || null,
       seriesNumber: form.seriesNumber.trim() || null,
       seriesAbbr: form.seriesAbbr.trim() || null,
@@ -203,14 +214,33 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
             <h3 className="set-h">Details</h3>
             <label className="set-label">Title</label>
             <input className="field" value={form.title} onChange={(e) => set('title', e.target.value)} />
-            <label className="set-label">Author</label>
-            <input
-              className="field"
-              value={form.author}
-              list="bi-author-options"
-              autoComplete="off"
-              onChange={(e) => set('author', e.target.value)}
-            />
+            <label className="set-label">Authors</label>
+            <div className="author-list">
+              {form.authors.map((a, i) => (
+                <div className="author-row" key={i}>
+                  <input
+                    className="field"
+                    value={a}
+                    list="bi-author-options"
+                    autoComplete="off"
+                    placeholder="Author name"
+                    onChange={(e) => setAuthorAt(i, e.target.value)}
+                  />
+                  {form.authors.length > 1 && (
+                    <button
+                      className="icon-btn author-del"
+                      title="Remove author"
+                      onClick={() => removeAuthor(i)}
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            <button className="btn btn-sm author-add" onClick={addAuthor}>
+              <Plus size={13} /> Add author
+            </button>
             <datalist id="bi-author-options">
               {authorOptions.map((a) => (
                 <option key={a} value={a} />

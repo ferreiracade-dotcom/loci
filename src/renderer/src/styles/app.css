@@ -613,6 +613,25 @@ select.field {
 .set-intro {
   margin-bottom: 4px;
 }
+.author-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.author-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.author-row .field {
+  flex: 1;
+}
+.author-del {
+  flex: 0 0 auto;
+}
+.author-add {
+  align-self: flex-start;
+}
 .set-h {
   font-size: 11px;
   text-transform: uppercase;

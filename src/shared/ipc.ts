@@ -105,6 +105,8 @@ export interface PublicConfig {
   vaultPath: string | null
   pdfSourcePath: string | null
   backupPath: string | null
+  /** Optional local folder searched first when opening a book (fast local reads). */
+  primaryLibraryPath: string | null
   scriptureTranslation: string
   aiMode: AiMode
   rateCard: RateCard

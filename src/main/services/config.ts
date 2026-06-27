@@ -11,6 +11,8 @@ export interface LociConfig {
   vaultPath: string | null
   pdfSourcePath: string | null
   backupPath: string | null
+  /** Optional local folder searched first when opening a book (fast local reads). */
+  primaryLibraryPath: string | null
   scriptureTranslation: string
   aiMode: AiMode
   rateCard: RateCard
@@ -25,6 +27,7 @@ const defaults: LociConfig = {
   vaultPath: null,
   pdfSourcePath: null,
   backupPath: null,
+  primaryLibraryPath: null,
   scriptureTranslation: 'WEB',
   aiMode: 'copy-api',
   rateCard: { sonnetInput: 3, sonnetOutput: 15, haikuInput: 0.8, haikuOutput: 4 },

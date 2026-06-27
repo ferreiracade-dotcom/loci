@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
+import { splitAuthors } from '../../lib/authors'
 import { EmptyState } from '../EmptyState'
 import { BookCover } from './BookCover'
 import { BookInfoDrawer } from './BookInfoDrawer'
@@ -289,8 +290,11 @@ export function LibraryView() {
       else map.set(k, [b])
     }
     for (const b of searched) {
-      if (groupBy === 'author') add(b.author?.trim() || 'Unknown author', b)
-      else if (groupBy === 'series') add(b.series?.trim() || 'No series', b)
+      if (groupBy === 'author') {
+        const names = splitAuthors(b.author)
+        if (names.length === 0) add('Unknown author', b)
+        else names.forEach((n) => add(n, b))
+      } else if (groupBy === 'series') add(b.series?.trim() || 'No series', b)
       else if (groupBy === 'status') add(STATUS_LABEL[b.status], b)
       else if (groupBy === 'shelf') {
         const names = b.shelfIds

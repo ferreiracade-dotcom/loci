@@ -152,14 +152,67 @@ export function setBookCover(id: string, srcPath: string): string | null {
   return getCoverDataUrl(id)
 }
 
+// In-memory index of the primary library folder, keyed by normalized file name,
+// so opening a book can find its local copy by name (portable across machines).
+let primaryIndex: Map<string, string> | null = null
+let primaryIndexRoot: string | null = null
+
+function normName(file: string): string {
+  return basename(file, extname(file))
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+}
+
+function getPrimaryIndex(): Map<string, string> | null {
+  const root = readConfig().primaryLibraryPath
+  if (!root || !existsSync(root)) {
+    primaryIndex = null
+    primaryIndexRoot = null
+    return null
+  }
+  if (primaryIndex && primaryIndexRoot === root) return primaryIndex
+  const map = new Map<string, string>()
+  for (const f of walkPdfs(root, '')) {
+    const key = normName(f)
+    if (!map.has(key)) map.set(key, f)
+  }
+  primaryIndex = map
+  primaryIndexRoot = root
+  return map
+}
+
+/** Locate a book's PDF in the primary library folder by (normalized) file name. */
+function findInPrimary(pdfPath: string | null, localPath: string | null): string | null {
+  const idx = getPrimaryIndex()
+  if (!idx) return null
+  for (const cand of [localPath, pdfPath]) {
+    if (!cand) continue
+    const hit = idx.get(normName(cand))
+    if (hit && existsSync(hit)) return hit
+  }
+  return null
+}
+
 export function getBookPdf(id: string): Uint8Array | null {
   const db = getDb()
   const r = db.prepare('SELECT local_path, pdf_path FROM books WHERE id = ?').get(id) as
     | { local_path: string | null; pdf_path: string | null }
     | undefined
   db.prepare('UPDATE books SET last_opened = ? WHERE id = ?').run(Date.now(), id)
-  // Fast path: a present local copy.
+  // 1. Fast path: a present local copy.
   if (r?.local_path && existsSync(r.local_path)) return readFileSync(r.local_path)
+  // 2. Primary library folder (if set): find the file by name and adopt it as the
+  //    local copy, so subsequent opens take the fast path above.
+  const primary = findInPrimary(r?.pdf_path ?? null, r?.local_path ?? null)
+  if (primary) {
+    try {
+      db.prepare('UPDATE books SET local_path = ? WHERE id = ?').run(primary, id)
+    } catch {
+      /* best effort */
+    }
+    return readFileSync(primary)
+  }
+  // 3. Fall back to the Drive/vault copy (and cache it locally on first open).
   if (!r?.pdf_path || !existsSync(r.pdf_path)) return null
   const bytes = readFileSync(r.pdf_path)
   // Cache-on-open: copy the (possibly cloud-streamed) file to a permanent local

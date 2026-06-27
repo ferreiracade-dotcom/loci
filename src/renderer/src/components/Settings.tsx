@@ -4,7 +4,7 @@ import { useStore } from '../store/useStore'
 import { api } from '../lib/api'
 import { DrawerOverlay } from './DrawerOverlay'
 import { THEME_PRESETS } from '../lib/theme'
-import type { AiMode, ThemePalette } from '@shared/ipc'
+import type { AiMode, PublicConfig, ThemePalette } from '@shared/ipc'
 
 function themesMatch(a: ThemePalette, b: ThemePalette): boolean {
   return (Object.keys(a) as (keyof ThemePalette)[]).every(
@@ -47,10 +47,16 @@ export function Settings({ onClose }: { onClose: () => void }) {
 
   if (!config) return null
 
-  async function changeFolder(field: 'pdfSourcePath' | 'backupPath'): Promise<void> {
+  async function changeFolder(
+    field: 'pdfSourcePath' | 'backupPath' | 'primaryLibraryPath'
+  ): Promise<void> {
     const p = await api.chooseFolder('Choose a folder')
     if (!p) return
-    await api.setConfig(field === 'pdfSourcePath' ? { pdfSourcePath: p } : { backupPath: p })
+    await api.setConfig({ [field]: p } as Partial<PublicConfig>)
+    await refreshConfig()
+  }
+  async function clearPrimaryLibrary(): Promise<void> {
+    await api.setConfig({ primaryLibraryPath: null })
     await refreshConfig()
   }
   async function setTranslation(value: string): Promise<void> {
@@ -81,11 +87,11 @@ export function Settings({ onClose }: { onClose: () => void }) {
           <section className="set-section">
             <h3 className="set-h">Folders</h3>
             <p className="set-help set-intro">
-              The three folders below are the <strong>Vault</strong> (the master copy, synced to
-              the cloud through Google Drive), the <strong>PDF source</strong> (where new books
-              are imported from), and the <strong>Local backup</strong> (an on-disk snapshot).
-              Opening a book reads a fast local copy cached on this PC automatically — that isn’t
-              a folder you set here.
+              The folders below are the <strong>Vault</strong> (the master copy, synced to the
+              cloud through Google Drive), an optional <strong>Primary library</strong> (a local
+              folder to read books from for speed), the <strong>PDF source</strong> (where new
+              books are imported from), and the <strong>Local backup</strong> (an on-disk
+              snapshot).
             </p>
 
             <div className="set-folder">
@@ -103,6 +109,37 @@ export function Settings({ onClose }: { onClose: () => void }) {
                 and imported PDFs. Because it lives inside Google Drive, Drive mirrors it across
                 your machines and keeps the off-machine copy. The search index is rebuilt from
                 here, so this folder is the source of truth.
+              </p>
+            </div>
+
+            <div className="set-folder">
+              <div className="set-row">
+                <div>
+                  <div className="set-label">Primary library — fast local reads (optional)</div>
+                  <div className="set-path">
+                    {config.primaryLibraryPath ?? 'Not set — books stream from Drive'}
+                  </div>
+                </div>
+                <div className="bg-actions">
+                  <button
+                    className="btn btn-sm"
+                    onClick={() => void changeFolder('primaryLibraryPath')}
+                  >
+                    <FolderOpen size={14} /> Change
+                  </button>
+                  {config.primaryLibraryPath && (
+                    <button className="btn btn-sm" onClick={() => void clearPrimaryLibrary()}>
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+              <p className="set-help">
+                When set, Loci looks here first (matched by file name) when you open a book, so
+                books on this machine load instantly. Leave it blank on a device that doesn’t hold
+                your library — e.g. your phone — and Loci streams the book from the Google Drive
+                Vault instead. If a file can’t be found here for any reason, it falls back to Drive
+                automatically.
               </p>
             </div>
 
