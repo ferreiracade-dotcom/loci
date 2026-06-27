@@ -55,7 +55,10 @@ export interface SidecarData {
 }
 
 function pdfBase(pdfPath: string): string {
-  return basename(pdfPath, extname(pdfPath))
+  // Trim trailing/leading whitespace and trailing dots — Windows can't create a
+  // directory whose name ends in a space or dot, and some PDFs carry a stray
+  // " .pdf". Read and write both trim, so the folder still matches on import.
+  return basename(pdfPath, extname(pdfPath)).trim().replace(/[. ]+$/, '')
 }
 
 function isCache(p: string): boolean {

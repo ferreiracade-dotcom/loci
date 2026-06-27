@@ -72,7 +72,7 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
         <IconRail
           items={LEFT_VIEWS}
           activeId={layout.activeLeftView}
-          onSelect={(id) => saveLayout({ activeLeftView: id, leftCollapsed: false })}
+          onSelect={(id) => saveLayout({ activeLeftView: id })}
           onExpand={() => saveLayout({ leftCollapsed: false })}
           expandSide="left"
           footer={
