@@ -12,21 +12,23 @@ function themesMatch(a: ThemePalette, b: ThemePalette): boolean {
   )
 }
 
-const TRANSLATIONS = [
-  { id: 'WEB', label: 'World English Bible' },
-  { id: 'KJV', label: 'King James Version' },
-  { id: 'ASV', label: 'American Standard Version' },
-  { id: 'LUTHER1545', label: 'Luther 1545 (German)' },
-  { id: 'VULGATE', label: 'Latin Vulgate' }
-]
-
 export function Settings({ onClose }: { onClose: () => void }) {
   const config = useStore((s) => s.config)
   const refreshConfig = useStore((s) => s.refreshConfig)
   const relocateVault = useStore((s) => s.relocateVault)
   const setTheme = useStore((s) => s.setTheme)
+  const scriptureTranslations = useStore((s) => s.scriptureTranslations)
+  const scriptureTranslation = useStore((s) => s.scriptureTranslation)
+  const loadScripture = useStore((s) => s.loadScripture)
+  const setScriptureTranslation = useStore((s) => s.setScriptureTranslation)
   const [apiKey, setApiKey] = useState('')
+  const [apiBibleKey, setApiBibleKeyInput] = useState('')
+  const [esvKey, setEsvKeyInput] = useState('')
   const [note, setNote] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (scriptureTranslations.length === 0) void loadScripture()
+  }, [scriptureTranslations.length, loadScripture])
 
   async function pickBackground(): Promise<void> {
     await api.pickWelcomeBackground()
@@ -59,10 +61,6 @@ export function Settings({ onClose }: { onClose: () => void }) {
     await api.setConfig({ primaryLibraryPath: null })
     await refreshConfig()
   }
-  async function setTranslation(value: string): Promise<void> {
-    await api.setConfig({ scriptureTranslation: value })
-    await refreshConfig()
-  }
   async function setAiMode(value: AiMode): Promise<void> {
     await api.setConfig({ aiMode: value })
     await refreshConfig()
@@ -72,6 +70,20 @@ export function Settings({ onClose }: { onClose: () => void }) {
     setApiKey('')
     await refreshConfig()
     setNote('API key saved.')
+  }
+  async function saveApiBibleKey(): Promise<void> {
+    await api.setApiBibleKey(apiBibleKey)
+    setApiBibleKeyInput('')
+    await refreshConfig()
+    await loadScripture()
+    setNote('API.Bible key saved.')
+  }
+  async function saveEsvKey(): Promise<void> {
+    await api.setEsvKey(esvKey)
+    setEsvKeyInput('')
+    await refreshConfig()
+    await loadScripture()
+    setNote('ESV key saved.')
   }
 
   return (
@@ -230,15 +242,93 @@ export function Settings({ onClose }: { onClose: () => void }) {
             <select
               id="translation"
               className="field"
-              value={config.scriptureTranslation}
-              onChange={(e) => void setTranslation(e.target.value)}
+              value={scriptureTranslation}
+              onChange={(e) => setScriptureTranslation(e.target.value)}
             >
-              {TRANSLATIONS.map((t) => (
+              {scriptureTranslations.map((t) => (
                 <option key={t.id} value={t.id}>
-                  {t.label}
+                  {t.abbr} — {t.name}
                 </option>
               ))}
             </select>
+            <p className="set-help">
+              BSB (Berean Standard Bible) is built in and needs no key. Add the keys below to
+              unlock copyrighted translations — they appear here automatically.
+            </p>
+
+            <div className="set-label appearance-bg-label">API.Bible key — NKJV, NASB</div>
+            <div className="set-row">
+              <div className="api-status">
+                {config.hasApiBibleKey ? (
+                  <>
+                    <ShieldCheck size={14} className="ok" /> Key set
+                  </>
+                ) : (
+                  <>
+                    <KeyRound size={14} /> No key
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="api-key-row">
+              <input
+                className="field"
+                type="password"
+                placeholder="Paste API.Bible key…"
+                value={apiBibleKey}
+                onChange={(e) => {
+                  setApiBibleKeyInput(e.target.value)
+                  setNote(null)
+                }}
+              />
+              <button
+                className="btn btn-sm"
+                disabled={!apiBibleKey.trim()}
+                onClick={() => void saveApiBibleKey()}
+              >
+                Save
+              </button>
+            </div>
+            <p className="set-help">
+              Free at <code>scripture.api.bible</code>. The Starter plan is non-commercial and lets
+              you pick up to 3 copyrighted versions; whichever of NKJV/NASB your key carries will
+              light up. Copyrighted text is fetched live, not stored to disk.
+            </p>
+
+            <div className="set-label appearance-bg-label">ESV key — Crossway</div>
+            <div className="set-row">
+              <div className="api-status">
+                {config.hasEsvKey ? (
+                  <>
+                    <ShieldCheck size={14} className="ok" /> Key set
+                  </>
+                ) : (
+                  <>
+                    <KeyRound size={14} /> No key
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="api-key-row">
+              <input
+                className="field"
+                type="password"
+                placeholder="Paste ESV API key…"
+                value={esvKey}
+                onChange={(e) => {
+                  setEsvKeyInput(e.target.value)
+                  setNote(null)
+                }}
+              />
+              <button className="btn btn-sm" disabled={!esvKey.trim()} onClick={() => void saveEsvKey()}>
+                Save
+              </button>
+            </div>
+            <p className="set-help">
+              Free for non-commercial use at <code>api.esv.org</code>. Crossway's terms cap local
+              caching, so ESV is fetched live and not saved to disk.
+            </p>
+            {note && <div className="field-ok">{note}</div>}
           </section>
 
           <section className="set-section">

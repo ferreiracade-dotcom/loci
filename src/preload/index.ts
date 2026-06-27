@@ -59,6 +59,16 @@ const api: LociApi = {
   unindexedBooks: () => ipcRenderer.invoke(Channels.unindexedBooks),
   exportNotePdf: (opts) => ipcRenderer.invoke(Channels.exportNotePdf, opts),
 
+  listScriptureTranslations: () => ipcRenderer.invoke(Channels.listScriptureTranslations),
+  getScriptureChapter: (translation, book, chapter) =>
+    ipcRenderer.invoke(Channels.getScriptureChapter, translation, book, chapter),
+  getScripturePassage: (translation, ref) =>
+    ipcRenderer.invoke(Channels.getScripturePassage, translation, ref),
+  setApiBibleKey: (key) => ipcRenderer.invoke(Channels.setApiBibleKey, key),
+  hasApiBibleKey: () => ipcRenderer.invoke(Channels.hasApiBibleKey),
+  setEsvKey: (key) => ipcRenderer.invoke(Channels.setEsvKey, key),
+  hasEsvKey: () => ipcRenderer.invoke(Channels.hasEsvKey),
+
   onImportProgress: (cb) => {
     const listener = (_e: IpcRendererEvent, p: ImportProgress): void => cb(p)
     ipcRenderer.on(Channels.importProgress, listener)

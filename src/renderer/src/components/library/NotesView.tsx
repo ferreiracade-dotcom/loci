@@ -11,6 +11,7 @@ import {
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { RichNoteEditor as NoteEditor } from './RichNoteEditor'
+import { ScriptureReader } from './ScriptureReader'
 import { Divider } from '../Divider'
 import { EmptyState } from '../EmptyState'
 
@@ -27,6 +28,11 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
   const closeLeftNote = useStore((s) => s.closeLeftNote)
   const createNote = useStore((s) => s.createNote)
   const deleteNote = useStore((s) => s.deleteNote)
+  const scriptureSplitOpen = useStore((s) => s.scriptureSplitOpen)
+  const scripturePassage = useStore((s) => s.scripturePassage)
+  const scriptureTranslation = useStore((s) => s.scriptureTranslation)
+  const closeScriptureSplit = useStore((s) => s.closeScriptureSplit)
+  const navigateScripture = useStore((s) => s.navigateScripture)
 
   const [creating, setCreating] = useState(false)
   const [title, setTitle] = useState('')
@@ -81,7 +87,8 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
   const shown = tagFilter ? notes.filter((n) => n.tags.includes(tagFilter)) : notes
   const leftTitle = notes.find((n) => n.path === activeNotePath)?.title ?? 'Note'
   const splitTitle = notes.find((n) => n.path === splitNotePath)?.title ?? 'Note'
-  const showSplit = !!splitNotePath && !compact
+  const showScriptureSplit = scriptureSplitOpen && !!scripturePassage && !compact
+  const showSplit = !!splitNotePath && !compact && !showScriptureSplit
 
   return (
     <div className={`notes-view${compact ? ' compact' : ''}`}>
@@ -218,7 +225,30 @@ export function NotesView({ compact = false }: { compact?: boolean }) {
       <div className="notes-edit-col">
         {activeNotePath ? (
           <div className="notes-edit-split" ref={splitRef}>
-            {showSplit ? (
+            {showScriptureSplit && scripturePassage ? (
+              <>
+                <div className="notes-pane" style={{ flex: `${ratio} 1 0%` }}>
+                  <NoteEditor key={activeNotePath} path={activeNotePath} />
+                </div>
+                <Divider onDrag={onSplitDrag} onDragEnd={() => undefined} />
+                <div className="notes-split-pane" style={{ flex: `${1 - ratio} 1 0%` }}>
+                  <div className="split-head">
+                    <span className="split-title">Bible</span>
+                    <button className="icon-btn" title="Close Bible" onClick={closeScriptureSplit}>
+                      <X size={14} />
+                    </button>
+                  </div>
+                  <ScriptureReader
+                    translation={scriptureTranslation}
+                    book={scripturePassage.book}
+                    chapter={scripturePassage.chapter}
+                    highlight={scripturePassage.highlight}
+                    onNavigate={navigateScripture}
+                    compact
+                  />
+                </div>
+              </>
+            ) : showSplit ? (
               <>
                 <div className="notes-pane" style={{ flex: `${ratio} 1 0%` }}>
                   <div className="split-head">

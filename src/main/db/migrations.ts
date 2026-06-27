@@ -206,6 +206,25 @@ const migrations: Migration[] = [
         ALTER TABLE books ADD COLUMN series_abbr TEXT;
       `)
     }
+  },
+  {
+    version: 10,
+    name: 'scripture-cache',
+    up: (db) => {
+      // Local cache of fetched Bible chapters, keyed by translation+book+chapter. Only
+      // freely-licensed translations (public domain / CC) are written here; copyrighted
+      // ones (NKJV/NASB via API.Bible, ESV via Crossway) are session-only per their terms.
+      db.exec(`
+        CREATE TABLE scripture_cache (
+          translation TEXT    NOT NULL,
+          book        TEXT    NOT NULL,
+          chapter     INTEGER NOT NULL,
+          json        TEXT    NOT NULL,
+          fetched_at  INTEGER NOT NULL,
+          PRIMARY KEY (translation, book, chapter)
+        );
+      `)
+    }
   }
 ]
 

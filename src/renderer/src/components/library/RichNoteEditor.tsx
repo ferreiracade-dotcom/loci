@@ -27,6 +27,8 @@ import {
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
+import { findReferences } from '@shared/scriptureRef'
+import type { ScripturePassage } from '@shared/ipc'
 
 // ---------- frontmatter ----------
 
@@ -252,6 +254,130 @@ const WikiSuggest = Extension.create<{ getNames: () => string[] }>({
   }
 })
 
+// ---------- Scripture references (hover preview + click to open) ----------
+
+interface ScriptureOpts {
+  getTranslation: () => string
+  onOpen: (raw: string) => void
+}
+
+// Module-level cache so re-hovering the same reference doesn't refetch.
+const scripCache = new Map<string, ScripturePassage | null>()
+
+const ScriptureRef = Extension.create<ScriptureOpts>({
+  name: 'scriptureRef',
+  addOptions() {
+    return { getTranslation: () => '', onOpen: () => undefined }
+  },
+  addProseMirrorPlugins() {
+    const opts = this.options
+    let pop: HTMLDivElement | null = null
+    let token = 0
+
+    const hide = (): void => {
+      pop?.remove()
+      pop = null
+    }
+    const show = (el: HTMLElement, raw: string): void => {
+      const translation = opts.getTranslation()
+      const rect = el.getBoundingClientRect()
+      if (!pop) {
+        pop = document.createElement('div')
+        pop.className = 'scripture-pop'
+        pop.addEventListener('mouseleave', hide)
+        document.body.appendChild(pop)
+      }
+      pop.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - 380))}px`
+      pop.style.top = `${rect.bottom + 6}px`
+      pop.innerHTML = '<div class="scripture-pop-loading">Loading…</div>'
+      const mine = ++token
+      const key = `${translation}:${raw}`
+      const render = (p: ScripturePassage | null): void => {
+        if (!pop || mine !== token) return
+        if (!p || p.verses.length === 0) {
+          pop.innerHTML = '<div class="scripture-pop-empty">No verse text found.</div>'
+          return
+        }
+        pop.innerHTML = ''
+        const head = document.createElement('div')
+        head.className = 'scripture-pop-ref'
+        const refSpan = document.createElement('span')
+        refSpan.textContent = p.reference
+        const abbr = document.createElement('span')
+        abbr.className = 'scripture-pop-abbr'
+        abbr.textContent = p.translation
+        head.append(refSpan, abbr)
+        const body = document.createElement('div')
+        body.className = 'scripture-pop-text'
+        for (const v of p.verses) {
+          const num = document.createElement('span')
+          num.className = 'sv-num'
+          num.textContent = String(v.verse)
+          body.append(num, document.createTextNode(`${v.text} `))
+        }
+        pop.append(head, body)
+      }
+      const cached = scripCache.get(key)
+      if (cached !== undefined) {
+        render(cached)
+      } else {
+        void api.getScripturePassage(translation, raw).then((p) => {
+          scripCache.set(key, p)
+          render(p)
+        })
+      }
+    }
+
+    return [
+      new Plugin({
+        key: new PluginKey('scriptureRef'),
+        props: {
+          decorations(state) {
+            const decos: Decoration[] = []
+            state.doc.descendants((node, pos) => {
+              if (!node.isText || !node.text) return
+              for (const ref of findReferences(node.text)) {
+                const from = pos + ref.index
+                decos.push(
+                  Decoration.inline(from, from + ref.length, {
+                    class: 'tt-scripture',
+                    'data-ref': ref.raw
+                  })
+                )
+              }
+            })
+            return DecorationSet.create(state.doc, decos)
+          },
+          handleClick(_view, _pos, event) {
+            const el = (event.target as HTMLElement).closest?.('.tt-scripture') as HTMLElement | null
+            if (el) {
+              const raw = el.getAttribute('data-ref')
+              if (raw) {
+                opts.onOpen(raw)
+                return true
+              }
+            }
+            return false
+          },
+          handleDOMEvents: {
+            mouseover(_view, event) {
+              const el = (event.target as HTMLElement).closest?.('.tt-scripture') as HTMLElement | null
+              if (el) show(el, el.getAttribute('data-ref') ?? '')
+              return false
+            },
+            mouseout(_view, event) {
+              const to = event.relatedTarget as HTMLElement | null
+              if (pop && to && pop.contains(to)) return false // moved into the popover
+              if ((event.target as HTMLElement).closest?.('.tt-scripture')) hide()
+              return false
+            }
+          }
+        }
+      })
+    ]
+  }
+})
+
 // ---------- component ----------
 
 export function RichNoteEditor({ path }: { path: string }) {
@@ -260,6 +386,8 @@ export function RichNoteEditor({ path }: { path: string }) {
   const navigateLink = useStore((s) => s.navigateLink)
   const createNote = useStore((s) => s.createNote)
   const loadStandaloneNotes = useStore((s) => s.loadStandaloneNotes)
+  const scriptureTranslation = useStore((s) => s.scriptureTranslation)
+  const openScripture = useStore((s) => s.openScripture)
 
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
   const [exporting, setExporting] = useState(false)
@@ -273,6 +401,10 @@ export function RichNoteEditor({ path }: { path: string }) {
 
   const validRef = useRef<(n: string) => boolean>(() => false)
   const openRef = useRef<(n: string) => void>(() => undefined)
+  const scrTransRef = useRef<string>('')
+  const openScrRef = useRef<(raw: string) => void>(() => undefined)
+  scrTransRef.current = scriptureTranslation
+  openScrRef.current = (raw) => void openScripture(raw)
   const namesRef = useRef<string[]>([])
   namesRef.current = [...books.map((b) => b.title), ...notes.map((n) => n.title)]
   validRef.current = (name) => {
@@ -315,7 +447,11 @@ export function RichNoteEditor({ path }: { path: string }) {
         isValid: (n) => validRef.current(n),
         onOpen: (n) => openRef.current(n)
       }),
-      WikiSuggest.configure({ getNames: () => namesRef.current })
+      WikiSuggest.configure({ getNames: () => namesRef.current }),
+      ScriptureRef.configure({
+        getTranslation: () => scrTransRef.current,
+        onOpen: (raw) => openScrRef.current(raw)
+      })
     ],
     onUpdate: ({ editor }) => {
       if (loadingRef.current) return

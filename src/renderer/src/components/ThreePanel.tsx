@@ -14,6 +14,7 @@ import { StandaloneNotesPanel } from './library/StandaloneNotesPanel'
 import { TagsPanel } from './library/TagsPanel'
 import { SearchView } from './library/SearchView'
 import { DashboardView } from './library/DashboardView'
+import { ScriptureView } from './library/ScriptureView'
 import { clamp } from '../lib/util'
 
 const RAIL = 48
@@ -61,6 +62,8 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
         return <NotesView compact={compact} />
       case 'dashboard':
         return <DashboardView compact={compact} />
+      case 'scripture':
+        return <ScriptureView />
       default:
         return <EmptyState icon={empty.icon} title={empty.title} subtitle={empty.subtitle} />
     }

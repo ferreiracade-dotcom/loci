@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { api } from '../lib/api'
 import { applyTheme } from '../lib/theme'
 import { extractAndIndexBook } from '../lib/pdfIndex'
+import { parseReference } from '@shared/scriptureRef'
 import { DEFAULT_THEME } from '@shared/ipc'
 import type {
   Annotation,
@@ -16,6 +17,7 @@ import type {
   PublicConfig,
   NoteType,
   Quote,
+  ScriptureTranslation,
   SearchHit,
   SearchKind,
   SearchScope,
@@ -62,6 +64,15 @@ interface Store {
   searchTag: string
   /** Index of the result the user last opened, highlighted in the results panel. */
   activeHit: number | null
+
+  // --- Scripture (Phase 8) ---
+  scriptureTranslations: ScriptureTranslation[]
+  /** Selected translation id (mirrors config.scriptureTranslation). */
+  scriptureTranslation: string
+  /** The passage shown in the Bible reader, or null until first opened. */
+  scripturePassage: { book: string; chapter: number; highlight: number[] } | null
+  /** When true, the Bible reader is shown as a split beside the open note. */
+  scriptureSplitOpen: boolean
 
   init: () => Promise<void>
   enter: () => void
@@ -116,6 +127,13 @@ interface Store {
   setSearchShelf: (s: string) => void
   setSearchTag: (t: string) => void
   setActiveHit: (i: number | null) => void
+
+  loadScripture: () => Promise<void>
+  setScriptureTranslation: (id: string) => void
+  navigateScripture: (book: string, chapter: number, highlight?: number[]) => void
+  /** Resolve a reference string and open it — as a split beside an open note, else the view. */
+  openScripture: (ref: string) => Promise<void>
+  closeScriptureSplit: () => void
 }
 
 function foldTokens(query: string): string[] {
@@ -197,6 +215,10 @@ export const useStore = create<Store>((set, get) => {
     searchShelf: '',
     searchTag: '',
     activeHit: null,
+    scriptureTranslations: [],
+    scriptureTranslation: '',
+    scripturePassage: null,
+    scriptureSplitOpen: false,
 
     init: async () => {
       if (!listenersBound) {
@@ -532,6 +554,58 @@ export const useStore = create<Store>((set, get) => {
     setSearchKind: (k) => set({ searchKind: k }),
     setSearchShelf: (s) => set({ searchShelf: s }),
     setSearchTag: (t) => set({ searchTag: t }),
-    setActiveHit: (i) => set({ activeHit: i })
+    setActiveHit: (i) => set({ activeHit: i }),
+
+    loadScripture: async () => {
+      const translations = await api.listScriptureTranslations()
+      const want = get().config?.scriptureTranslation ?? ''
+      const translation = translations.some((t) => t.id === want)
+        ? want
+        : (translations[0]?.id ?? '')
+      let passage = get().scripturePassage
+      if (!passage) {
+        const last = await api.getSession('lastScripture')
+        if (last) {
+          try {
+            const p = JSON.parse(last) as { book?: string; chapter?: number }
+            if (p.book && p.chapter) passage = { book: p.book, chapter: p.chapter, highlight: [] }
+          } catch {
+            /* ignore malformed session value */
+          }
+        }
+        if (!passage) passage = { book: 'JHN', chapter: 1, highlight: [] }
+      }
+      set({ scriptureTranslations: translations, scriptureTranslation: translation, scripturePassage: passage })
+    },
+
+    setScriptureTranslation: (id) => {
+      set({ scriptureTranslation: id })
+      const cfg = get().config
+      if (cfg) set({ config: { ...cfg, scriptureTranslation: id } })
+      void api.setConfig({ scriptureTranslation: id })
+    },
+
+    navigateScripture: (book, chapter, highlight = []) => {
+      set({ scripturePassage: { book, chapter, highlight } })
+      void api.setSession('lastScripture', JSON.stringify({ book, chapter }))
+    },
+
+    openScripture: async (refStr) => {
+      const ref = parseReference(refStr)
+      if (!ref) return
+      if (get().scriptureTranslations.length === 0) await get().loadScripture()
+      const start = ref.verseStart
+      const highlight =
+        start != null
+          ? Array.from({ length: (ref.verseEnd ?? start) - start + 1 }, (_, i) => start + i)
+          : []
+      set({ scripturePassage: { book: ref.book, chapter: ref.chapter, highlight } })
+      void api.setSession('lastScripture', JSON.stringify({ book: ref.book, chapter: ref.chapter }))
+      // Beside an open note, show the Bible as a split; otherwise jump to the Scripture view.
+      if (get().activeNotePath) set({ scriptureSplitOpen: true })
+      else get().saveLayout({ activeLeftView: 'scripture' })
+    },
+
+    closeScriptureSplit: () => set({ scriptureSplitOpen: false })
   }
 })

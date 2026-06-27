@@ -20,6 +20,10 @@ export interface LociConfig {
   welcomeBackground: string | null
   /** base64 of the safeStorage-encrypted API key; never sent to the renderer. */
   apiKeyEncrypted: string | null
+  /** safeStorage-encrypted API.Bible key (NKJV/NASB etc.); never sent to the renderer. */
+  apiBibleKeyEncrypted: string | null
+  /** safeStorage-encrypted Crossway ESV key; never sent to the renderer. */
+  esvKeyEncrypted: string | null
 }
 
 const defaults: LociConfig = {
@@ -28,12 +32,14 @@ const defaults: LociConfig = {
   pdfSourcePath: null,
   backupPath: null,
   primaryLibraryPath: null,
-  scriptureTranslation: 'WEB',
+  scriptureTranslation: 'BSB',
   aiMode: 'copy-api',
   rateCard: { sonnetInput: 3, sonnetOutput: 15, haikuInput: 0.8, haikuOutput: 4 },
   theme: DEFAULT_THEME,
   welcomeBackground: null,
-  apiKeyEncrypted: null
+  apiKeyEncrypted: null,
+  apiBibleKeyEncrypted: null,
+  esvKeyEncrypted: null
 }
 
 function configPath(): string {
@@ -72,28 +78,72 @@ export function writeConfig(patch: Partial<LociConfig>): LociConfig {
 
 /** Strip secrets before handing config to the renderer. */
 export function toPublicConfig(cfg: LociConfig = readConfig()): PublicConfig {
-  const { apiKeyEncrypted, ...rest } = cfg
-  return { ...rest, hasApiKey: !!apiKeyEncrypted }
+  const { apiKeyEncrypted, apiBibleKeyEncrypted, esvKeyEncrypted, ...rest } = cfg
+  return {
+    ...rest,
+    hasApiKey: !!apiKeyEncrypted,
+    hasApiBibleKey: !!apiBibleKeyEncrypted,
+    hasEsvKey: !!esvKeyEncrypted
+  }
 }
 
-export function setApiKey(key: string): boolean {
+type SecretField = 'apiKeyEncrypted' | 'apiBibleKeyEncrypted' | 'esvKeyEncrypted'
+
+/** Encrypt and store a secret (or clear it when blank). Reused by every API key. */
+function setSecret(field: SecretField, key: string): boolean {
   const trimmed = key.trim()
   if (!trimmed) {
-    writeConfig({ apiKeyEncrypted: null })
+    writeConfig({ [field]: null })
     return true
   }
   if (safeStorage.isEncryptionAvailable()) {
-    const enc = safeStorage.encryptString(trimmed)
-    writeConfig({ apiKeyEncrypted: enc.toString('base64') })
+    writeConfig({ [field]: safeStorage.encryptString(trimmed).toString('base64') })
   } else {
     // Fallback when OS encryption is unavailable (documented as weaker).
-    writeConfig({ apiKeyEncrypted: Buffer.from(trimmed, 'utf-8').toString('base64') })
+    writeConfig({ [field]: Buffer.from(trimmed, 'utf-8').toString('base64') })
   }
   return true
 }
 
+/** Decrypt a stored secret for use inside the main process only. */
+function getSecret(field: SecretField): string | null {
+  const enc = readConfig()[field]
+  if (!enc) return null
+  try {
+    const buf = Buffer.from(enc, 'base64')
+    return safeStorage.isEncryptionAvailable()
+      ? safeStorage.decryptString(buf)
+      : buf.toString('utf-8')
+  } catch {
+    return null
+  }
+}
+
+export function setApiKey(key: string): boolean {
+  return setSecret('apiKeyEncrypted', key)
+}
 export function hasApiKey(): boolean {
   return !!readConfig().apiKeyEncrypted
+}
+
+export function setApiBibleKey(key: string): boolean {
+  return setSecret('apiBibleKeyEncrypted', key)
+}
+export function hasApiBibleKey(): boolean {
+  return !!readConfig().apiBibleKeyEncrypted
+}
+export function getApiBibleKey(): string | null {
+  return getSecret('apiBibleKeyEncrypted')
+}
+
+export function setEsvKey(key: string): boolean {
+  return setSecret('esvKeyEncrypted', key)
+}
+export function hasEsvKey(): boolean {
+  return !!readConfig().esvKeyEncrypted
+}
+export function getEsvKey(): string | null {
+  return getSecret('esvKeyEncrypted')
 }
 
 function backgroundsDir(): string {

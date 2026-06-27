@@ -55,6 +55,14 @@ export const Channels = {
   unindexedBooks: 'search:unindexed',
   exportNotePdf: 'export:notePdf',
 
+  listScriptureTranslations: 'scripture:listTranslations',
+  getScriptureChapter: 'scripture:getChapter',
+  getScripturePassage: 'scripture:getPassage',
+  setApiBibleKey: 'scripture:setApiBibleKey',
+  hasApiBibleKey: 'scripture:hasApiBibleKey',
+  setEsvKey: 'scripture:setEsvKey',
+  hasEsvKey: 'scripture:hasEsvKey',
+
   // main → renderer events
   importProgress: 'library:importProgress',
   libraryChanged: 'library:libraryChanged'
@@ -111,6 +119,10 @@ export interface PublicConfig {
   aiMode: AiMode
   rateCard: RateCard
   hasApiKey: boolean
+  /** Whether an API.Bible key is configured (unlocks NKJV/NASB etc.). */
+  hasApiBibleKey: boolean
+  /** Whether a Crossway ESV API key is configured (unlocks ESV). */
+  hasEsvKey: boolean
   theme: ThemePalette
   /** Absolute path to a user-chosen unlock background, or null for the bundled default. */
   welcomeBackground: string | null
@@ -200,6 +212,21 @@ export interface LociApi {
   unindexedBooks(): Promise<{ id: string; title: string }[]>
   /** Render a note to a styled academic PDF; returns the saved path or null if cancelled. */
   exportNotePdf(opts: ExportOptions): Promise<string | null>
+
+  /** Translations available given configured keys (BSB always; NKJV/NASB/ESV with keys). */
+  listScriptureTranslations(): Promise<ScriptureTranslation[]>
+  /** A whole chapter for the reader (all verses, no highlight). */
+  getScriptureChapter(
+    translation: string,
+    book: string,
+    chapter: number
+  ): Promise<ScripturePassage | null>
+  /** Resolve a reference string (e.g. "Rom 3:28") to just its verse(s), for hover/click. */
+  getScripturePassage(translation: string, ref: string): Promise<ScripturePassage | null>
+  setApiBibleKey(key: string): Promise<boolean>
+  hasApiBibleKey(): Promise<boolean>
+  setEsvKey(key: string): Promise<boolean>
+  hasEsvKey(): Promise<boolean>
 
   /** Subscribe to import progress; returns an unsubscribe function. */
   onImportProgress(cb: (p: ImportProgress) => void): () => void
@@ -364,6 +391,40 @@ export interface SearchHit {
 export interface IndexedPage {
   page: number
   text: string
+}
+
+export type ScriptureProvider = 'free-use' | 'api-bible' | 'esv'
+
+/** A translation offered in the Bible reader's dropdown. */
+export interface ScriptureTranslation {
+  /** Stable Loci id, e.g. "BSB", "NKJV", "ESV". */
+  id: string
+  name: string
+  abbr: string
+  provider: ScriptureProvider
+  /** Attribution/copyright line to display while reading. */
+  copyright: string | null
+}
+
+export interface ScriptureVerse {
+  verse: number
+  text: string
+}
+
+/** A chapter (for the reader) or a referenced slice (for hover/click). */
+export interface ScripturePassage {
+  translation: string
+  translationName: string
+  /** Human label, e.g. "Romans 3" or "Romans 3:28-30". */
+  reference: string
+  /** USFM book code. */
+  book: string
+  bookName: string
+  chapter: number
+  verses: ScriptureVerse[]
+  /** Verse numbers to highlight (from the original reference); [] for a plain chapter. */
+  highlight: number[]
+  copyright: string | null
 }
 
 export interface Quote {

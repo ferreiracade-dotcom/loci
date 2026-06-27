@@ -20,12 +20,17 @@ import * as quotes from '../services/quotes'
 import * as notes from '../services/notes'
 import * as search from '../services/search'
 import * as exporter from '../services/export'
+import * as scripture from '../services/scripture'
 import {
   getWelcomeBackgroundDataUrl,
+  hasApiBibleKey,
   hasApiKey,
+  hasEsvKey,
   readConfig,
   resetWelcomeBackground,
+  setApiBibleKey,
   setApiKey,
+  setEsvKey,
   setWelcomeBackgroundFromFile,
   toPublicConfig,
   writeConfig
@@ -212,4 +217,25 @@ export function registerIpc(): void {
     search.indexBookText(bookId, title, pages)
   )
   ipcMain.handle(Channels.unindexedBooks, () => search.unindexedBooks())
+
+  // --- Scripture (Phase 8) ---
+  ipcMain.handle(Channels.listScriptureTranslations, () => scripture.listTranslations())
+  ipcMain.handle(Channels.getScriptureChapter, (_e, translation: string, book: string, chapter: number) =>
+    scripture.getChapter(translation, book, chapter)
+  )
+  ipcMain.handle(Channels.getScripturePassage, (_e, translation: string, ref: string) =>
+    scripture.getPassage(translation, ref)
+  )
+  ipcMain.handle(Channels.setApiBibleKey, (_e, key: string) => {
+    const ok = setApiBibleKey(key)
+    scripture.invalidateRegistry()
+    return ok
+  })
+  ipcMain.handle(Channels.hasApiBibleKey, () => hasApiBibleKey())
+  ipcMain.handle(Channels.setEsvKey, (_e, key: string) => {
+    const ok = setEsvKey(key)
+    scripture.invalidateRegistry()
+    return ok
+  })
+  ipcMain.handle(Channels.hasEsvKey, () => hasEsvKey())
 }
