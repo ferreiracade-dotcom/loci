@@ -343,16 +343,31 @@ async function importOneLocal(sourcePath: string): Promise<ImportOutcome> {
       pdfPath = dest
     }
 
+    // Local-first: keep a working copy in the local cache so the book is available offline
+    // the moment it's imported (not only after its first open), mirroring notes/highlights.
+    // Best effort — if it fails, getBookPdf still caches it locally on first open.
+    let localPath: string | null = null
+    try {
+      const localDir = join(getDataDir(), 'pdf-cache')
+      mkdirSync(localDir, { recursive: true })
+      const localDest = join(localDir, `${id}.pdf`)
+      await copyFile(sourcePath, localDest)
+      localPath = localDest
+    } catch {
+      /* fall back to cache-on-open */
+    }
+
     const status =
       side?.status === 'reading' || side?.status === 'finished' ? side.status : 'unread'
     getDb()
       .prepare(
         `INSERT INTO books
            (id, title, title_sanitized, author, series, series_number, series_abbr, year,
-            publisher, city, page_offset, pdf_path, source_path, date_added, status, meta_fetched)
+            publisher, city, page_offset, pdf_path, local_path, source_path, date_added, status,
+            meta_fetched)
          VALUES
            (@id, @title, @san, @author, @series, @num, @abbr, @year, @publisher, @city,
-            @offset, @pdf, @source, @added, @status, @fetched)`
+            @offset, @pdf, @local, @source, @added, @status, @fetched)`
       )
       .run({
         id,
@@ -367,6 +382,7 @@ async function importOneLocal(sourcePath: string): Promise<ImportOutcome> {
         city: side?.city ?? null,
         offset: side?.pageOffset ?? 0,
         pdf: pdfPath,
+        local: localPath,
         source: sourcePath,
         added: Date.now(),
         status,
