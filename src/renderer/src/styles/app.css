@@ -280,6 +280,45 @@ select.field {
   color: var(--accent);
   border-color: var(--gold);
 }
+.tab-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Reference panel: live Bible + embedded PDF */
+.ref-bible,
+.ref-pdf {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ref-bible .sv-goto {
+  margin: 8px;
+  flex: 0 0 auto;
+}
+.ref-bible .scripture-reader {
+  flex: 1;
+  min-height: 0;
+}
+.ref-pdf-head {
+  flex: 0 0 auto;
+  padding: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.ref-pdf-stage {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+}
+.ref-pdf-stage .reader {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
 .notes-body {
   flex: 1;
   display: flex;
@@ -3458,6 +3497,9 @@ select.field {
   font-size: 18px;
   line-height: 1.85;
   color: var(--text);
+  /* Re-enable selection so verses can be highlighted; the app body is user-select: none. */
+  user-select: text;
+  -webkit-user-select: text;
 }
 .sv-num {
   font-family: var(--font-ui);

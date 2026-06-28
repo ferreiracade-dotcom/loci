@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { getDb } from '../db/connection'
-import { readConfig } from './config'
+import { localVaultDir } from './config'
 import * as search from './search'
 import {
   formatCitation,
@@ -273,7 +273,7 @@ function reindexQuote(quoteId: string): void {
 }
 
 export function addQuote(input: NewQuote): Quote {
-  const vault = readConfig().vaultPath
+  const vault = localVaultDir()
   const b = bookMeta(input.bookId)
   if (!vault || !b) throw new Error('Book or vault not found')
 
@@ -386,7 +386,7 @@ function upsertScriptureBlock(
  * translations (BSB), so storing the text is licence-safe.
  */
 export function addScriptureQuote(input: NewScriptureHighlight): Quote {
-  const vault = readConfig().vaultPath
+  const vault = localVaultDir()
   if (!vault) throw new Error('No vault')
   const def = bookByCode(input.book)
   const bookName = def?.name ?? input.book
@@ -473,7 +473,7 @@ export function listScriptureHighlights(
 }
 
 function updateSidecarTags(quoteId: string, bookId: string | null, tags: string[]): void {
-  const vault = readConfig().vaultPath
+  const vault = localVaultDir()
   if (!vault || !bookId) return
   const b = bookMeta(bookId)
   if (!b) return
@@ -509,7 +509,7 @@ export function setQuoteTags(quoteId: string, tagNames: string[]): void {
 }
 
 export function setQuoteAnnotations(quoteId: string, annotations: Annotation[]): void {
-  const vault = readConfig().vaultPath
+  const vault = localVaultDir()
   const r = getDb().prepare('SELECT * FROM quotes WHERE id = ?').get(quoteId) as QuoteRow | undefined
   if (!r) return
   getDb()
@@ -537,7 +537,7 @@ export function setQuoteAnnotations(quoteId: string, annotations: Annotation[]):
 }
 
 export function deleteQuote(quoteId: string): void {
-  const vault = readConfig().vaultPath
+  const vault = localVaultDir()
   const r = getDb().prepare('SELECT * FROM quotes WHERE id = ?').get(quoteId) as QuoteRow | undefined
   if (!r) return
   if (vault) {

@@ -1,7 +1,8 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, unlinkSync, writeFileSync } from 'fs'
 import { basename, dirname, join, relative } from 'path'
 import { getDb } from '../db/connection'
-import { readConfig } from './config'
+import { localVaultDir } from './config'
+import { removeFromDrive } from './vaultsync'
 import { sanitizeName } from './library'
 import * as search from './search'
 import type { BookNote, LinkTarget, NoteSummary, NoteType, VaultHealth } from '../../shared/ipc'
@@ -68,7 +69,7 @@ function escapeRegex(s: string): string {
 
 /** Read the book's source note, creating it (with frontmatter) if it doesn't exist. */
 export function getBookNote(bookId: string): BookNote | null {
-  const vault = readConfig().vaultPath
+  const vault = localVaultDir()
   const b = getDb()
     .prepare('SELECT title, title_sanitized, author FROM books WHERE id = ?')
     .get(bookId) as BookMetaRow | undefined
@@ -90,7 +91,7 @@ export function getBookNote(bookId: string): BookNote | null {
 }
 
 export function saveNote(relPath: string, content: string): void {
-  const vault = readConfig().vaultPath
+  const vault = localVaultDir()
   if (!vault) return
   const abs = join(vault, relPath)
   if (!abs.startsWith(vault)) return // guard against traversal
@@ -100,7 +101,7 @@ export function saveNote(relPath: string, content: string): void {
 }
 
 export function readNote(relPath: string): string {
-  const vault = readConfig().vaultPath
+  const vault = localVaultDir()
   if (!vault) return ''
   const abs = join(vault, relPath)
   return existsSync(abs) ? readFileSync(abs, 'utf-8') : ''
@@ -113,7 +114,7 @@ function standaloneDir(vault: string): string {
 }
 
 export function listStandaloneNotes(): NoteSummary[] {
-  const vault = readConfig().vaultPath
+  const vault = localVaultDir()
   if (!vault) return []
   const dir = standaloneDir(vault)
   if (!existsSync(dir)) return []
@@ -133,7 +134,7 @@ export function listStandaloneNotes(): NoteSummary[] {
 }
 
 export function createStandaloneNote(title: string, type: NoteType = 'note'): NoteSummary {
-  const vault = readConfig().vaultPath
+  const vault = localVaultDir()
   if (!vault) throw new Error('No vault')
   const clean = (title || 'Untitled').trim()
   const safeType: NoteType = NOTE_TYPES.includes(type) ? type : 'note'
@@ -151,15 +152,15 @@ export function createStandaloneNote(title: string, type: NoteType = 'note'): No
 }
 
 export function deleteNote(relPath: string): void {
-  const vault = readConfig().vaultPath
-  if (!vault) return
+  const vault = localVaultDir()
   const abs = join(vault, relPath)
-  if (!abs.startsWith(vault) || !existsSync(abs)) return
+  if (!abs.startsWith(vault)) return // traversal guard
   try {
-    unlinkSync(abs)
+    if (existsSync(abs)) unlinkSync(abs)
   } catch {
     /* best effort */
   }
+  removeFromDrive(relPath) // also drop the Drive copy so it isn't resurrected by the mirror
   search.removeNote(relPath)
 }
 
@@ -189,7 +190,7 @@ function walkMd(dir: string): string[] {
 
 /** Notes that reference `target` via [[target]] / [[target|alias]] / [[target#sec]]. */
 export function backlinks(target: string): NoteSummary[] {
-  const vault = readConfig().vaultPath
+  const vault = localVaultDir()
   if (!vault || !target.trim()) return []
   const re = new RegExp(`\\[\\[\\s*${escapeRegex(target.trim())}\\s*(\\||#|\\]\\])`, 'i')
   const out: NoteSummary[] = []
@@ -215,7 +216,7 @@ export function backlinks(target: string): NoteSummary[] {
 /** Scan the vault for stats and unresolved [[wiki-links]]. */
 export function vaultHealth(): VaultHealth {
   const db = getDb()
-  const vault = readConfig().vaultPath
+  const vault = localVaultDir()
   const books = (db.prepare('SELECT COUNT(*) AS n FROM books').get() as { n: number }).n
   const indexed = (db.prepare('SELECT COUNT(*) AS n FROM books WHERE indexed = 1').get() as { n: number }).n
   const quotes = (db.prepare('SELECT COUNT(*) AS n FROM quotes').get() as { n: number }).n

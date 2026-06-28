@@ -12,7 +12,8 @@ import { ScriptureHighlightsPanel } from './library/ScriptureHighlightsPanel'
 import { NotesView } from './library/NotesView'
 import { BacklinksPanel } from './library/BacklinksPanel'
 import { StandaloneNotesPanel } from './library/StandaloneNotesPanel'
-import { TagsPanel } from './library/TagsPanel'
+import { ReferencePdfPanel } from './library/ReferencePdfPanel'
+import { ReferenceBiblePanel } from './library/ReferenceBiblePanel'
 import { SearchView } from './library/SearchView'
 import { DashboardView } from './library/DashboardView'
 import { ScriptureView } from './library/ScriptureView'
@@ -34,16 +35,34 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const persistLayout = useStore((s) => s.persistLayout)
   const ref = useRef<HTMLDivElement>(null)
 
+  // Normalize the active right tab (a removed tab, e.g. legacy 'tags', falls back).
+  const rightTabId = RIGHT_TABS.some((t) => t.id === layout.activeRightTab)
+    ? layout.activeRightTab
+    : 'book-notes'
+  // The PDF/Bible references want more room, so the panel may grow wider when they're active.
+  const readerTab = rightTabId === 'reference-pdf' || rightTabId === 'reference-bible'
+  const notesMax = readerTab ? 820 : NOTES_MAX
+
   const leftSlot = layout.leftCollapsed ? RAIL : layout.leftWidth
   const rightSlot = layout.notesCollapsed ? RAIL : layout.notesWidth
   const containerW = (): number => ref.current?.clientWidth ?? 1280
+
+  // Switch reference source; auto-widen the panel the first time a reader source is chosen.
+  const selectRightTab = (id: string, expand = false): void => {
+    const patch: Parameters<typeof saveLayout>[0] = { activeRightTab: id }
+    if (expand) patch.notesCollapsed = false
+    if ((id === 'reference-pdf' || id === 'reference-bible') && layout.notesWidth < 460) {
+      patch.notesWidth = 560
+    }
+    saveLayout(patch)
+  }
 
   const onLeftDrag = (dx: number): void => {
     const maxLeft = Math.min(LEFT_MAX, containerW() - rightSlot - CENTER_MIN - DIVIDER_ALLOWANCE)
     setLayoutLocal({ leftWidth: clamp(layout.leftWidth + dx, LEFT_MIN, maxLeft) })
   }
   const onRightDrag = (dx: number): void => {
-    const maxNotes = Math.min(NOTES_MAX, containerW() - leftSlot - CENTER_MIN - DIVIDER_ALLOWANCE)
+    const maxNotes = Math.min(notesMax, containerW() - leftSlot - CENTER_MIN - DIVIDER_ALLOWANCE)
     setLayoutLocal({ notesWidth: clamp(layout.notesWidth - dx, NOTES_MIN, maxNotes) })
   }
   const onSplitDrag = (dx: number): void => {
@@ -145,8 +164,8 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
       {layout.notesCollapsed ? (
         <IconRail
           items={RIGHT_TABS}
-          activeId={layout.activeRightTab}
-          onSelect={(id) => saveLayout({ activeRightTab: id, notesCollapsed: false })}
+          activeId={rightTabId}
+          onSelect={(id) => selectRightTab(id, true)}
           onExpand={() => saveLayout({ notesCollapsed: false })}
           expandSide="right"
         />
@@ -157,40 +176,47 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
             <div className="sidebar-head">
               <button
                 className="icon-btn"
-                title="Collapse notes panel"
+                title="Collapse reference panel"
                 onClick={() => saveLayout({ notesCollapsed: true })}
               >
                 <PanelRightClose size={16} />
               </button>
-              <span className="brand-word small">Notes</span>
+              <span className="brand-word small">Reference</span>
             </div>
             <div className="tabs">
-              {RIGHT_TABS.map((t) => (
-                <button
-                  key={t.id}
-                  className={`tab${t.id === layout.activeRightTab ? ' active' : ''}`}
-                  onClick={() => saveLayout({ activeRightTab: t.id })}
-                >
-                  {t.label}
-                </button>
-              ))}
+              {RIGHT_TABS.map((t) => {
+                const Icon = t.icon
+                return (
+                  <button
+                    key={t.id}
+                    className={`tab tab-icon${t.id === rightTabId ? ' active' : ''}`}
+                    title={t.label}
+                    onClick={() => selectRightTab(t.id)}
+                  >
+                    <Icon size={14} />
+                    <span>{t.label}</span>
+                  </button>
+                )
+              })}
             </div>
             <div className="notes-body">
-              {layout.activeRightTab === 'book-notes' ? (
+              {rightTabId === 'book-notes' ? (
                 <QuotesPanel />
-              ) : layout.activeRightTab === 'scripture-highlights' ? (
+              ) : rightTabId === 'scripture-highlights' ? (
                 <ScriptureHighlightsPanel />
-              ) : layout.activeRightTab === 'standalone-notes' ? (
+              ) : rightTabId === 'standalone-notes' ? (
                 <StandaloneNotesPanel />
-              ) : layout.activeRightTab === 'backlinks' ? (
+              ) : rightTabId === 'backlinks' ? (
                 <BacklinksPanel />
-              ) : layout.activeRightTab === 'tags' ? (
-                <TagsPanel />
+              ) : rightTabId === 'reference-pdf' ? (
+                <ReferencePdfPanel />
+              ) : rightTabId === 'reference-bible' ? (
+                <ReferenceBiblePanel />
               ) : (
                 <EmptyState
                   icon={activeTab.icon}
                   title="Nothing here yet"
-                  subtitle="Open a book to capture quotes, or pick another tab."
+                  subtitle="Pick a reference source above."
                 />
               )}
             </div>

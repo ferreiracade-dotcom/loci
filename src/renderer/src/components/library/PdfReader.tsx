@@ -44,7 +44,7 @@ async function indexBookPages(
 
 const GAP = 16
 
-export function PdfReader({ bookId }: { bookId: string }) {
+export function PdfReader({ bookId, embedded = false }: { bookId: string; embedded?: boolean }) {
   const book = useStore((s) => s.books.find((b) => b.id === bookId))
   const closeBook = useStore((s) => s.closeBook)
   const addQuote = useStore((s) => s.addQuote)
@@ -472,9 +472,11 @@ export function PdfReader({ bookId }: { bookId: string }) {
   return (
     <div className="reader">
       <div className="reader-toolbar">
-        <button className="btn btn-sm" onClick={closeBook}>
-          <X size={14} /> Library
-        </button>
+        {!embedded && (
+          <button className="btn btn-sm" onClick={closeBook}>
+            <X size={14} /> Library
+          </button>
+        )}
         <div className="reader-title" title={book?.title}>
           {book?.title ?? 'Document'}
         </div>

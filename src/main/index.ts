@@ -8,6 +8,7 @@ import { backupSnapshot } from './services/backup'
 import { enrichPending } from './services/library'
 import { applyRelinkMap, applyTitleClean } from './services/relink'
 import { rebuildAllSidecars } from './services/sidecar'
+import { syncVault } from './services/vaultsync'
 import { Channels } from '../shared/ipc'
 
 /** One-time whole-library sidecar write, triggered by a flag file, run off the boot path. */
@@ -95,11 +96,25 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   getDb() // open DB + run migrations before the window loads
+  try {
+    syncVault() // seed the local notes/highlights vault from Drive + back up (best-effort)
+  } catch {
+    /* Drive may be offline — local vault still works */
+  }
   applyRelinkMap() // one-time library-consolidation relink, if pending
   applyTitleClean() // one-time: strip trailing author from titles, if pending
   registerIpc()
   createWindow()
   maybeRebuildSidecars() // one-time whole-library sidecar write, if pending
+
+  // Keep the Drive backup fresh during long sessions (best-effort, skips when offline).
+  setInterval(() => {
+    try {
+      syncVault()
+    } catch {
+      /* best effort */
+    }
+  }, 180_000)
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
@@ -107,7 +122,12 @@ app.whenReady().then(() => {
 })
 
 app.on('window-all-closed', () => {
-  // Local backup snapshot on close (spec §2), then release the DB and quit.
+  // Final notes/highlights backup to Drive, local snapshot, then release the DB and quit.
+  try {
+    syncVault()
+  } catch {
+    /* best effort */
+  }
   backupSnapshot()
   closeDb()
   if (process.platform !== 'darwin') app.quit()

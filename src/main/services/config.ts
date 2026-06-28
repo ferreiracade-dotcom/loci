@@ -46,6 +46,15 @@ function configPath(): string {
   return join(getDataDir(), 'config.json')
 }
 
+/**
+ * Local working copy of the notes/highlights vault — always available offline, mirrored to
+ * the Drive vault (config.vaultPath) by the sync routine. Notes/highlights are read and
+ * written here first (local-first), the same way a book prefers its local PDF over Drive.
+ */
+export function localVaultDir(): string {
+  return join(getDataDir(), 'vault')
+}
+
 export function readConfig(): LociConfig {
   const p = configPath()
   if (!existsSync(p)) return { ...defaults }
