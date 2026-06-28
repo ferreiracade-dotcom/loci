@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Search, PanelLeftClose, PanelLeftOpen, Columns2 } from 'lucide-react'
+import { Search, PanelLeftClose, PanelLeftOpen, Columns2, Replace } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import type { Pane } from '../../store/useStore'
 import { api } from '../../lib/api'
@@ -11,7 +11,15 @@ import { ScriptureReader } from './ScriptureReader'
  * full-center ScriptureView) plus the ScriptureReader. Navigation and translation changes
  * update *this* pane only; "Compare" opens a second Bible pane beside it.
  */
-export function BiblePane({ pane, onClose }: { pane: Pane; onClose?: () => void }) {
+export function BiblePane({
+  pane,
+  onClose,
+  onReplace
+}: {
+  pane: Pane
+  onClose?: () => void
+  onReplace?: () => void
+}) {
   const translations = useStore((s) => s.scriptureTranslations)
   const defaultTranslation = useStore((s) => s.scriptureTranslation)
   const loadScripture = useStore((s) => s.loadScripture)
@@ -128,6 +136,11 @@ export function BiblePane({ pane, onClose }: { pane: Pane; onClose?: () => void 
               <Columns2 size={16} />
             </button>
           )}
+          {onReplace && (
+            <button className="rail-btn" title="Change content" onClick={onReplace}>
+              <Replace size={16} />
+            </button>
+          )}
         </div>
       ) : (
         <div className="sv-nav">
@@ -137,6 +150,11 @@ export function BiblePane({ pane, onClose }: { pane: Pane; onClose?: () => void 
               {canCompare && (
                 <button className="icon-btn" title="Compare translations" onClick={openCompare}>
                   <Columns2 size={15} />
+                </button>
+              )}
+              {onReplace && (
+                <button className="icon-btn" title="Change content" onClick={onReplace}>
+                  <Replace size={15} />
                 </button>
               )}
               <button className="icon-btn" title="Hide books" onClick={() => toggleNav(true)}>

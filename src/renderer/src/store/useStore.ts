@@ -31,7 +31,8 @@ import type {
 export type Phase = 'loading' | 'wizard' | 'welcome' | 'ready'
 
 // --- Center workspace (Phase 8.7 Stage 3) ---
-export type PaneKind = 'note' | 'bible' | 'pdf'
+// 'empty' is a not-yet-filled pane that shows the content picker.
+export type PaneKind = 'note' | 'bible' | 'pdf' | 'empty'
 
 /** One slot in the center workspace. Only the fields for its `kind` are set. */
 export interface Pane {
@@ -86,7 +87,10 @@ function reflectPanes(panes: Pane[], activeId: string | null): Partial<Store> {
 }
 
 function persistWorkspace(panes: Pane[], activePaneId: string | null, paneRatio: number): void {
-  void api.setSession('workspace', JSON.stringify({ panes, activePaneId, paneRatio }))
+  // Don't persist not-yet-filled (empty) panes — they'd restore as blank pickers.
+  const keep = panes.filter((p) => p.kind !== 'empty')
+  const active = keep.some((p) => p.id === activePaneId) ? activePaneId : (keep[0]?.id ?? null)
+  void api.setSession('workspace', JSON.stringify({ panes: keep, activePaneId: active, paneRatio }))
 }
 
 interface Store {
@@ -223,6 +227,12 @@ interface Store {
   focusPane: (id: string) => void
   setPaneRatio: (r: number) => void
   setPaneContent: (id: string, content: PaneContent) => void
+  /** Append an empty second pane (the content picker), if there's room. */
+  addPane: () => void
+  /** Reset a pane to the content picker without closing it. */
+  setPaneEmpty: (id: string) => void
+  /** Create a note and place it into a specific pane (used by the picker). */
+  createNoteInPane: (id: string, title: string, type?: NoteType) => Promise<void>
 }
 
 function foldTokens(query: string): string[] {
@@ -880,6 +890,28 @@ export const useStore = create<Store>((set, get) => {
       const next = panes.map((p) => (p.id === id ? { ...paneFromContent(content), id } : p))
       set({ panes: next, activePaneId: id, ...reflectPanes(next, id) })
       persistWorkspace(next, id, get().paneRatio)
+    },
+
+    addPane: () => {
+      const { panes } = get()
+      if (panes.length >= 2) return
+      const np: Pane = { id: crypto.randomUUID(), kind: 'empty' }
+      const next = [...panes, np]
+      set({ panes: next, activePaneId: np.id, ...reflectPanes(next, np.id) })
+      persistWorkspace(next, np.id, get().paneRatio)
+    },
+
+    setPaneEmpty: (id) => {
+      const { panes } = get()
+      const next = panes.map((p) => (p.id === id ? { id, kind: 'empty' as const } : p))
+      set({ panes: next, activePaneId: id, ...reflectPanes(next, id) })
+      persistWorkspace(next, id, get().paneRatio)
+    },
+
+    createNoteInPane: async (id, title, type) => {
+      const note = await api.createNote(title, type)
+      await get().loadStandaloneNotes()
+      get().setPaneContent(id, { kind: 'note', notePath: note.path })
     }
   }
 })

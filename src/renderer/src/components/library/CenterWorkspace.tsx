@@ -13,6 +13,7 @@ export function CenterWorkspace() {
   const focusPane = useStore((s) => s.focusPane)
   const closePane = useStore((s) => s.closePane)
   const setPaneRatio = useStore((s) => s.setPaneRatio)
+  const addPane = useStore((s) => s.addPane)
   const ref = useRef<HTMLDivElement>(null)
 
   const onDrag = (dx: number): void => {
@@ -44,6 +45,11 @@ export function CenterWorkspace() {
           </div>
         </Fragment>
       ))}
+      {panes.length === 1 && (
+        <button className="ws-add" title="Open a second pane" onClick={addPane}>
+          <Columns2 size={18} />
+        </button>
+      )}
     </div>
   )
 }
