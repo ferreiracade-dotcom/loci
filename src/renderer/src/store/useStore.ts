@@ -146,6 +146,7 @@ interface Store {
   toggleScriptureCompare: () => void
   setCompareTranslation: (id: string) => void
   addScriptureHighlight: (input: NewScriptureHighlight) => Promise<void>
+  deleteScriptureHighlight: (id: string) => Promise<void>
 }
 
 function foldTokens(query: string): string[] {
@@ -669,7 +670,13 @@ export const useStore = create<Store>((set, get) => {
 
     addScriptureHighlight: async (input) => {
       await api.addScriptureHighlight(input)
-      // Surface the inserted blockquote in the open sidebar note editor.
+      // Bump the shared token so the reader re-marks verses and panels reload.
+      set({ noteReloadToken: get().noteReloadToken + 1 })
+    },
+
+    deleteScriptureHighlight: async (id) => {
+      await api.deleteQuote(id)
+      // Bump the shared token so the reader drops the verse mark and panels reload.
       set({ noteReloadToken: get().noteReloadToken + 1 })
     }
   }

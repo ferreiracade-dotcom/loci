@@ -76,6 +76,7 @@ export function ScriptureReader({
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const addScriptureHighlight = useStore((s) => s.addScriptureHighlight)
+  const noteReloadToken = useStore((s) => s.noteReloadToken)
 
   // Highlighting is allowed only on public-domain providers (their text is licence-safe
   // to store); copyrighted translations show no popover and no saved marks.
@@ -130,10 +131,11 @@ export function ScriptureReader({
     }
   }, [canHighlight, translation, book, chapter])
 
+  // Re-mark on chapter load and whenever a highlight is added/removed anywhere (token bump).
   useEffect(() => {
     setHlSel(null)
     void refreshQuoted()
-  }, [refreshQuoted, passage])
+  }, [refreshQuoted, passage, noteReloadToken])
 
   const verseOf = (node: Node | null): number | null => {
     const el = node && node.nodeType === 1 ? (node as Element) : (node?.parentElement ?? null)

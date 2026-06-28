@@ -16,6 +16,7 @@ export function ScriptureHighlightsPanel() {
   const passage = useStore((s) => s.scripturePassage)
   const noteReloadToken = useStore((s) => s.noteReloadToken)
   const navigateScripture = useStore((s) => s.navigateScripture)
+  const deleteScriptureHighlight = useStore((s) => s.deleteScriptureHighlight)
 
   const [book, setBook] = useState<string>(passage?.book ?? '')
   const [books, setBooks] = useState<ScriptureQuoteBook[]>([])
@@ -56,11 +57,9 @@ export function ScriptureHighlightsPanel() {
       setQuotes((qs) => qs.map((q) => (q.id === id ? { ...q, annotations } : q)))
       void api.setQuoteAnnotations(id, annotations)
     },
-    onDelete: (id) =>
-      void api
-        .deleteQuote(id)
-        .then(reload)
-        .then(reloadBooks)
+    // Delete via the store so the reader un-marks the verses too (shared token bump);
+    // the noteReloadToken effects below also reload this panel's list + book counts.
+    onDelete: (id) => void deleteScriptureHighlight(id)
   }
 
   if (books.length === 0) {
