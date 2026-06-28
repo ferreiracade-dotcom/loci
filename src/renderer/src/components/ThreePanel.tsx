@@ -6,7 +6,7 @@ import { IconRail } from './IconRail'
 import { EmptyState } from './EmptyState'
 import { LEFT_VIEWS, RIGHT_TABS, CENTER_EMPTY } from './navigation'
 import { LibraryView } from './library/LibraryView'
-import { PdfReader } from './library/PdfReader'
+import { CenterWorkspace } from './library/CenterWorkspace'
 import { QuotesPanel } from './library/QuotesPanel'
 import { ScriptureHighlightsPanel } from './library/ScriptureHighlightsPanel'
 import { NotesView } from './library/NotesView'
@@ -16,7 +16,6 @@ import { ReferencePdfPanel } from './library/ReferencePdfPanel'
 import { ReferenceBiblePanel } from './library/ReferenceBiblePanel'
 import { SearchView } from './library/SearchView'
 import { DashboardView } from './library/DashboardView'
-import { ScriptureView } from './library/ScriptureView'
 import { clamp } from '../lib/util'
 
 const RAIL = 48
@@ -29,11 +28,17 @@ const DIVIDER_ALLOWANCE = 14
 
 export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const layout = useStore((s) => s.layout)!
-  const openBookId = useStore((s) => s.openBookId)
   const setLayoutLocal = useStore((s) => s.setLayoutLocal)
   const saveLayout = useStore((s) => s.saveLayout)
   const persistLayout = useStore((s) => s.persistLayout)
+  const showScripture = useStore((s) => s.showScripture)
   const ref = useRef<HTMLDivElement>(null)
+
+  // The left rail mostly just switches the active view; "Scripture" opens/focuses a Bible pane.
+  const selectLeftView = (id: string): void => {
+    if (id === 'scripture') void showScripture()
+    else saveLayout({ activeLeftView: id })
+  }
 
   // Normalize the active right tab (a removed tab, e.g. legacy 'tags', falls back).
   const rightTabId = RIGHT_TABS.some((t) => t.id === layout.activeRightTab)
@@ -65,27 +70,27 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
     const maxNotes = Math.min(notesMax, containerW() - leftSlot - CENTER_MIN - DIVIDER_ALLOWANCE)
     setLayoutLocal({ notesWidth: clamp(layout.notesWidth - dx, NOTES_MIN, maxNotes) })
   }
-  const onSplitDrag = (dx: number): void => {
-    setLayoutLocal({ resultsWidth: clamp(layout.resultsWidth + dx, 240, 640) })
-  }
 
   const empty = CENTER_EMPTY[layout.activeLeftView] ?? CENTER_EMPTY.library
   const activeTab = RIGHT_TABS.find((t) => t.id === layout.activeRightTab) ?? RIGHT_TABS[0]
 
-  const viewPanel = (compact: boolean) => {
+  // Library/Search/Dashboard are full-center navigators; Notes is the notes-list navigator.
+  // Scripture, books and notes open as panes, so everything else ('reading') is the workspace.
+  const centerNode = (): React.ReactNode => {
     switch (layout.activeLeftView) {
       case 'library':
         return <LibraryView />
       case 'search':
-        return <SearchView compact={compact} />
+        return <SearchView />
       case 'notes':
-        return <NotesView compact={compact} />
+        return <NotesView />
       case 'dashboard':
-        return <DashboardView compact={compact} />
-      case 'scripture':
-        return <ScriptureView />
-      default:
+        return <DashboardView />
+      case 'graph':
+      case 'pages':
         return <EmptyState icon={empty.icon} title={empty.title} subtitle={empty.subtitle} />
+      default:
+        return <CenterWorkspace />
     }
   }
 
@@ -95,7 +100,7 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
         <IconRail
           items={LEFT_VIEWS}
           activeId={layout.activeLeftView}
-          onSelect={(id) => saveLayout({ activeLeftView: id })}
+          onSelect={(id) => selectLeftView(id)}
           onExpand={() => saveLayout({ leftCollapsed: false })}
           expandSide="left"
           footer={
@@ -124,7 +129,7 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
                   <button
                     key={v.id}
                     className={`nav-item${v.id === layout.activeLeftView ? ' active' : ''}`}
-                    onClick={() => saveLayout({ activeLeftView: v.id })}
+                    onClick={() => selectLeftView(v.id)}
                   >
                     <Icon size={16} />
                     <span>{v.label}</span>
@@ -143,23 +148,7 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
         </>
       )}
 
-      <main className="center">
-        {openBookId ? (
-          layout.activeLeftView === 'library' ? (
-            <PdfReader bookId={openBookId} />
-          ) : (
-            <div className="reader-split">
-              <div className="reader-split-list" style={{ width: layout.resultsWidth }}>
-                {viewPanel(true)}
-              </div>
-              <Divider onDrag={onSplitDrag} onDragEnd={persistLayout} />
-              <PdfReader bookId={openBookId} />
-            </div>
-          )
-        ) : (
-          viewPanel(false)
-        )}
-      </main>
+      <main className="center">{centerNode()}</main>
 
       {layout.notesCollapsed ? (
         <IconRail

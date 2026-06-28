@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Loader2, X } from 'lucide-react'
 import { api } from '../../lib/api'
 import { useStore } from '../../store/useStore'
 import { bookByCode, bookByOrder } from '@shared/scriptureRef'
@@ -18,6 +18,8 @@ interface Props {
   onTranslationChange?: (id: string) => void
   /** Slim header for the split pane beside a note. */
   compact?: boolean
+  /** When provided (center-pane mode), a close button is shown in the header. */
+  onClose?: () => void
 }
 
 interface Adjacent {
@@ -66,7 +68,8 @@ export function ScriptureReader({
   onNavigate,
   translations,
   onTranslationChange,
-  compact = false
+  compact = false,
+  onClose
 }: Props) {
   const [passage, setPassage] = useState<ScripturePassage | null>(null)
   const [loading, setLoading] = useState(true)
@@ -235,6 +238,11 @@ export function ScriptureReader({
         >
           <ChevronRight size={16} />
         </button>
+        {onClose && (
+          <button className="icon-btn" title="Close pane" onClick={onClose}>
+            <X size={16} />
+          </button>
+        )}
       </div>
 
       {passage?.audio && passage.audio.length > 0 && (

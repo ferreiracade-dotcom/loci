@@ -30,6 +30,65 @@ import type {
 
 export type Phase = 'loading' | 'wizard' | 'welcome' | 'ready'
 
+// --- Center workspace (Phase 8.7 Stage 3) ---
+export type PaneKind = 'note' | 'bible' | 'pdf'
+
+/** One slot in the center workspace. Only the fields for its `kind` are set. */
+export interface Pane {
+  id: string
+  kind: PaneKind
+  notePath?: string
+  bookId?: string
+  book?: string
+  chapter?: number
+  highlight?: number[]
+  translation?: string
+}
+
+/** Content to place into a pane. */
+export type PaneContent =
+  | { kind: 'note'; notePath: string }
+  | { kind: 'pdf'; bookId: string }
+  | { kind: 'bible'; book: string; chapter: number; highlight?: number[]; translation?: string }
+
+function paneFromContent(c: PaneContent): Pane {
+  return { id: crypto.randomUUID(), ...c }
+}
+
+/**
+ * Legacy "active context" fields derived from the focused pane, so peripheral consumers
+ * (QuotesPanel, BacklinksPanel, ScriptureHighlightsPanel, ReferenceBiblePanel, …) keep
+ * reporting what's focused in the center without being rewritten. Scripture fields are only
+ * included when a Bible pane is present, so closing/focusing other panes never clobbers them.
+ */
+function reflectPanes(panes: Pane[], activeId: string | null): Partial<Store> {
+  const active = panes.find((p) => p.id === activeId)
+  const pdf = active?.kind === 'pdf' ? active : panes.find((p) => p.kind === 'pdf')
+  const notePanes = panes.filter((p) => p.kind === 'note')
+  const activeNote = active?.kind === 'note' ? active : notePanes[0]
+  const otherNote = notePanes.find((p) => p.id !== activeNote?.id)
+  const biblePanes = panes.filter((p) => p.kind === 'bible')
+  const activeBible = active?.kind === 'bible' ? active : biblePanes[0]
+  const patch: Partial<Store> = {
+    openBookId: pdf?.bookId ?? null,
+    activeNotePath: activeNote?.notePath ?? null,
+    splitNotePath: otherNote?.notePath ?? null
+  }
+  if (activeBible?.book && activeBible.chapter != null) {
+    patch.scripturePassage = {
+      book: activeBible.book,
+      chapter: activeBible.chapter,
+      highlight: activeBible.highlight ?? []
+    }
+    if (activeBible.translation) patch.scriptureTranslation = activeBible.translation
+  }
+  return patch
+}
+
+function persistWorkspace(panes: Pane[], activePaneId: string | null, paneRatio: number): void {
+  void api.setSession('workspace', JSON.stringify({ panes, activePaneId, paneRatio }))
+}
+
 interface Store {
   phase: Phase
   appState: AppState | null
@@ -80,6 +139,14 @@ interface Store {
   scriptureCompareOpen: boolean
   /** Second translation id for the compare column. */
   scriptureCompareTranslation: string
+
+  // --- Center workspace (Phase 8.7 Stage 3) ---
+  /** Up to two typed panes (note/bible/pdf) shown in the center; the source of truth. */
+  panes: Pane[]
+  /** Focused pane — receives "open" actions and feeds the derived context fields. */
+  activePaneId: string | null
+  /** Split ratio between the two panes (0.2–0.8). */
+  paneRatio: number
 
   init: () => Promise<void>
   enter: () => void
@@ -140,13 +207,22 @@ interface Store {
   loadScripture: () => Promise<void>
   setScriptureTranslation: (id: string) => void
   navigateScripture: (book: string, chapter: number, highlight?: number[]) => void
-  /** Resolve a reference string and open it — as a split beside an open note, else the view. */
+  /** Open/focus the Bible as a center pane (left-rail "Scripture" entry). */
+  showScripture: () => Promise<void>
+  /** Resolve a reference string and open it in a Bible pane beside the current pane. */
   openScripture: (ref: string) => Promise<void>
   closeScriptureSplit: () => void
   toggleScriptureCompare: () => void
   setCompareTranslation: (id: string) => void
   addScriptureHighlight: (input: NewScriptureHighlight) => Promise<void>
   deleteScriptureHighlight: (id: string) => Promise<void>
+
+  // --- Center workspace ---
+  openInPane: (content: PaneContent, opts?: { split?: boolean }) => void
+  closePane: (id: string) => void
+  focusPane: (id: string) => void
+  setPaneRatio: (r: number) => void
+  setPaneContent: (id: string, content: PaneContent) => void
 }
 
 function foldTokens(query: string): string[] {
@@ -235,6 +311,9 @@ export const useStore = create<Store>((set, get) => {
     scriptureSplitOpen: false,
     scriptureCompareOpen: false,
     scriptureCompareTranslation: '',
+    panes: [],
+    activePaneId: null,
+    paneRatio: 0.5,
 
     init: async () => {
       if (!listenersBound) {
@@ -249,19 +328,61 @@ export const useStore = create<Store>((set, get) => {
       }
       const data = await loadAll()
       applyTheme(data.config.theme)
-      // Restore the book that was open at last quit, scrolled to its last page.
-      let openBookId: string | null = null
-      let pendingPage: number | null = null
-      const lastOpen = await api.getSession('lastOpenBook')
-      if (lastOpen) {
-        const b = data.books.find((x) => x.id === lastOpen)
-        if (b) {
-          openBookId = b.id
-          pendingPage = b.lastPage > 1 ? b.lastPage : null
+      // Restore the center workspace (panes) saved at last quit.
+      let panes: Pane[] = []
+      let activePaneId: string | null = null
+      let paneRatio = 0.5
+      const ws = await api.getSession('workspace')
+      if (ws) {
+        try {
+          const parsed = JSON.parse(ws) as {
+            panes?: Pane[]
+            activePaneId?: string | null
+            paneRatio?: number
+          }
+          if (Array.isArray(parsed.panes)) {
+            // Drop PDF panes whose book no longer exists; keep note/bible panes (checked lazily).
+            panes = parsed.panes
+              .filter((p) => (p.kind === 'pdf' ? data.books.some((b) => b.id === p.bookId) : true))
+              .slice(0, 2)
+            activePaneId = panes.some((p) => p.id === parsed.activePaneId)
+              ? (parsed.activePaneId ?? null)
+              : (panes[0]?.id ?? null)
+            if (typeof parsed.paneRatio === 'number') paneRatio = parsed.paneRatio
+          }
+        } catch {
+          /* ignore malformed value */
         }
       }
-      set({ appState, ...data, openBookId, pendingPage, phase: 'welcome' })
-      if (openBookId) void get().loadQuotes(openBookId)
+      // Back-compat: no saved workspace but a last open book → restore it as a PDF pane.
+      if (panes.length === 0) {
+        const lastOpen = await api.getSession('lastOpenBook')
+        const b = lastOpen ? data.books.find((x) => x.id === lastOpen) : undefined
+        if (b) {
+          panes = [{ id: crypto.randomUUID(), kind: 'pdf', bookId: b.id }]
+          activePaneId = panes[0].id
+        }
+      }
+      const reflected = reflectPanes(panes, activePaneId)
+      const pdfPane = panes.find((p) => p.kind === 'pdf')
+      const pdfBook = pdfPane ? data.books.find((b) => b.id === pdfPane.bookId) : undefined
+      const pendingPage = pdfBook && pdfBook.lastPage > 1 ? pdfBook.lastPage : null
+      // Show the workspace if it has content, so restored panes aren't hidden behind a navigator.
+      const layout = panes.length
+        ? { ...data.layout, activeLeftView: 'reading' }
+        : data.layout
+      set({
+        appState,
+        ...data,
+        layout,
+        panes,
+        activePaneId,
+        paneRatio,
+        ...reflected,
+        pendingPage,
+        phase: 'welcome'
+      })
+      if (reflected.openBookId) void get().loadQuotes(reflected.openBookId)
     },
 
     enter: () => set({ phase: 'ready' }),
@@ -323,21 +444,21 @@ export const useStore = create<Store>((set, get) => {
     setActiveShelf: (shelfId) => set({ activeShelf: shelfId }),
 
     openBook: (id) => {
-      set({ openBookId: id, quotes: [], activeNotePath: null, pendingPage: null })
-      get().saveLayout({ activeLeftView: 'library' })
+      get().openInPane({ kind: 'pdf', bookId: id })
+      set({ quotes: [], pendingPage: null })
+      get().saveLayout({ activeLeftView: 'reading' })
       void api.setSession('lastOpenBook', id)
       void get().loadQuotes(id)
     },
 
     openBookAt: (id, page) => {
+      get().openInPane({ kind: 'pdf', bookId: id })
       set({
-        openBookId: id,
         quotes: [],
-        activeNotePath: null,
         pendingPage: page,
         books: get().books.map((b) => (b.id === id ? { ...b, lastPage: page } : b))
       })
-      get().saveLayout({ activeLeftView: 'search' })
+      get().saveLayout({ activeLeftView: 'reading' })
       void api.setBookLastPage(id, page)
       void api.setSession('lastOpenBook', id)
       void get().loadQuotes(id)
@@ -346,7 +467,9 @@ export const useStore = create<Store>((set, get) => {
     clearPendingPage: () => set({ pendingPage: null }),
 
     closeBook: () => {
-      set({ openBookId: null, quotes: [] })
+      const pdf = get().panes.find((p) => p.kind === 'pdf')
+      if (pdf) get().closePane(pdf.id)
+      set({ quotes: [] })
       void api.setSession('lastOpenBook', '')
     },
 
@@ -357,56 +480,49 @@ export const useStore = create<Store>((set, get) => {
     createNote: async (title, type) => {
       const note = await api.createNote(title, type)
       await get().loadStandaloneNotes()
-      set({ activeNotePath: note.path })
-      get().saveLayout({ activeLeftView: 'notes' })
+      get().openInPane({ kind: 'note', notePath: note.path })
+      get().saveLayout({ activeLeftView: 'reading' })
     },
 
     openNote: (path) => {
-      // Keep any open book; the Notes view opens beside it in the split.
-      set({ activeNotePath: path })
-      get().saveLayout({ activeLeftView: 'notes' })
+      get().openInPane({ kind: 'note', notePath: path })
+      get().saveLayout({ activeLeftView: 'reading' })
     },
 
     openNoteInLeft: (path) => {
-      const { activeNotePath, splitNotePath } = get()
-      if (path === activeNotePath) return
-      if (path === splitNotePath) {
-        // It's already in the right pane — swap the two panes.
-        set({ activeNotePath: path, splitNotePath: activeNotePath })
-      } else if (activeNotePath && !splitNotePath) {
-        // Preserve the current note by moving it into the right pane.
-        set({ activeNotePath: path, splitNotePath: activeNotePath })
-      } else {
-        set({ activeNotePath: path })
-      }
-      get().saveLayout({ activeLeftView: 'notes' })
+      // Open in the active pane (no split).
+      get().openInPane({ kind: 'note', notePath: path })
+      get().saveLayout({ activeLeftView: 'reading' })
     },
 
     openNoteInSplit: (path) => {
-      const { activeNotePath } = get()
-      // Nothing to split against (or same note) — just open it normally.
-      if (!activeNotePath || activeNotePath === path) {
-        get().openNote(path)
-        return
-      }
-      set({ splitNotePath: path })
-      get().saveLayout({ activeLeftView: 'notes' })
+      get().openInPane({ kind: 'note', notePath: path }, { split: true })
+      get().saveLayout({ activeLeftView: 'reading' })
     },
 
-    closeSplitNote: () => set({ splitNotePath: null }),
+    closeSplitNote: () => {
+      const notes = get().panes.filter((p) => p.kind === 'note')
+      if (notes[1]) get().closePane(notes[1].id)
+    },
 
     setNotesTagFilter: (tag) => set({ notesTagFilter: tag }),
 
-    // Close Note 1 (left): Note 2 (right), if any, is promoted to Note 1.
-    closeLeftNote: () => set({ activeNotePath: get().splitNotePath, splitNotePath: null }),
+    // Close the first note pane (the other, if any, remains).
+    closeLeftNote: () => {
+      const notes = get().panes.filter((p) => p.kind === 'note')
+      if (notes[0]) get().closePane(notes[0].id)
+    },
 
     deleteNote: async (path) => {
       await api.deleteNote(path)
-      const patch: { activeNotePath?: null; splitNotePath?: null; sidebarNotePath?: null } = {}
-      if (get().activeNotePath === path) patch.activeNotePath = null
-      if (get().splitNotePath === path) patch.splitNotePath = null
-      if (get().sidebarNotePath === path) patch.sidebarNotePath = null
-      if (Object.keys(patch).length) set(patch)
+      // Close any center pane showing this note; clear the sidebar note if it matches.
+      for (const p of get().panes.filter((p) => p.kind === 'note' && p.notePath === path)) {
+        get().closePane(p.id)
+      }
+      if (get().sidebarNotePath === path) {
+        set({ sidebarNotePath: null })
+        void api.setSession('sidebarNote', '')
+      }
       await get().loadStandaloneNotes()
     },
 
@@ -628,9 +744,39 @@ export const useStore = create<Store>((set, get) => {
       void api.setConfig({ scriptureTranslation: id })
     },
 
+    // Route a passage into a Bible pane: reuse the existing Bible pane if there is one,
+    // otherwise open one (beside a single pane, or replacing the focused pane when full).
     navigateScripture: (book, chapter, highlight = []) => {
-      set({ scripturePassage: { book, chapter, highlight } })
+      const { panes, scriptureTranslation } = get()
+      const bible = panes.find((p) => p.kind === 'bible')
+      if (bible) {
+        get().setPaneContent(bible.id, {
+          kind: 'bible',
+          book,
+          chapter,
+          highlight,
+          translation: bible.translation || scriptureTranslation
+        })
+      } else {
+        get().openInPane(
+          { kind: 'bible', book, chapter, highlight, translation: scriptureTranslation },
+          { split: panes.length === 1 }
+        )
+      }
+      get().saveLayout({ activeLeftView: 'reading' })
       void api.setSession('lastScripture', JSON.stringify({ book, chapter }))
+    },
+
+    showScripture: async () => {
+      if (get().scriptureTranslations.length === 0) await get().loadScripture()
+      const bible = get().panes.find((p) => p.kind === 'bible')
+      if (bible) {
+        get().focusPane(bible.id)
+        get().saveLayout({ activeLeftView: 'reading' })
+      } else {
+        const p = get().scripturePassage ?? { book: 'JHN', chapter: 1, highlight: [] }
+        get().navigateScripture(p.book, p.chapter, p.highlight)
+      }
     },
 
     openScripture: async (refStr) => {
@@ -642,11 +788,7 @@ export const useStore = create<Store>((set, get) => {
         start != null
           ? Array.from({ length: (ref.verseEnd ?? start) - start + 1 }, (_, i) => start + i)
           : []
-      set({ scripturePassage: { book: ref.book, chapter: ref.chapter, highlight } })
-      void api.setSession('lastScripture', JSON.stringify({ book: ref.book, chapter: ref.chapter }))
-      // Beside an open note, show the Bible as a split; otherwise jump to the Scripture view.
-      if (get().activeNotePath) set({ scriptureSplitOpen: true })
-      else get().saveLayout({ activeLeftView: 'scripture' })
+      get().navigateScripture(ref.book, ref.chapter, highlight)
     },
 
     closeScriptureSplit: () => set({ scriptureSplitOpen: false }),
@@ -678,6 +820,66 @@ export const useStore = create<Store>((set, get) => {
       await api.deleteQuote(id)
       // Bump the shared token so the reader drops the verse mark and panels reload.
       set({ noteReloadToken: get().noteReloadToken + 1 })
+    },
+
+    openInPane: (content, opts) => {
+      const { panes, activePaneId } = get()
+      let next: Pane[]
+      let activeId: string
+      if (opts?.split) {
+        if (panes.length >= 2) {
+          // Both panes full — replace the one that isn't focused.
+          const keep = activePaneId ?? panes[0].id
+          const target = panes.find((p) => p.id !== keep) ?? panes[1]
+          const np = { ...paneFromContent(content), id: target.id }
+          next = panes.map((p) => (p.id === target.id ? np : p))
+          activeId = target.id
+        } else {
+          const np = paneFromContent(content)
+          next = [...panes, np]
+          activeId = np.id
+        }
+      } else if (panes.length === 0) {
+        const np = paneFromContent(content)
+        next = [np]
+        activeId = np.id
+      } else {
+        // Replace the focused pane's content in place.
+        const target = panes.find((p) => p.id === activePaneId) ?? panes[0]
+        const np = { ...paneFromContent(content), id: target.id }
+        next = panes.map((p) => (p.id === target.id ? np : p))
+        activeId = target.id
+      }
+      set({ panes: next, activePaneId: activeId, ...reflectPanes(next, activeId) })
+      persistWorkspace(next, activeId, get().paneRatio)
+    },
+
+    closePane: (id) => {
+      const { panes, activePaneId } = get()
+      const next = panes.filter((p) => p.id !== id)
+      const activeId = activePaneId === id ? (next[0]?.id ?? null) : activePaneId
+      set({ panes: next, activePaneId: activeId, ...reflectPanes(next, activeId) })
+      persistWorkspace(next, activeId, get().paneRatio)
+    },
+
+    focusPane: (id) => {
+      const { panes, activePaneId } = get()
+      if (id === activePaneId || !panes.some((p) => p.id === id)) return
+      set({ activePaneId: id, ...reflectPanes(panes, id) })
+      persistWorkspace(panes, id, get().paneRatio)
+    },
+
+    setPaneRatio: (r) => {
+      const ratio = Math.min(0.8, Math.max(0.2, r))
+      set({ paneRatio: ratio })
+      persistWorkspace(get().panes, get().activePaneId, ratio)
+    },
+
+    setPaneContent: (id, content) => {
+      const { panes } = get()
+      const next = panes.map((p) => (p.id === id ? { ...paneFromContent(content), id } : p))
+      set({ panes: next, activePaneId: id, ...reflectPanes(next, id) })
+      persistWorkspace(next, id, get().paneRatio)
     }
   }
 })

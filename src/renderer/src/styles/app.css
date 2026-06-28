@@ -177,6 +177,115 @@ select.field {
   display: flex;
 }
 
+/* Center workspace — up to two typed panes (note / Bible / PDF) */
+.center-workspace {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+}
+.ws-pane {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+}
+.pane-frame {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.pane-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+  flex: 0 0 auto;
+  color: var(--muted);
+}
+.pane-frame.active .pane-head {
+  color: var(--text);
+}
+.pane-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-ui);
+  font-size: 12px;
+}
+.pane-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex: 0 0 auto;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 5px;
+  padding: 2px 8px 2px 5px;
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  cursor: pointer;
+}
+.pane-back:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+.pane-body {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+.pane-body .reader,
+.pane-body .note-editor,
+.pane-body .scripture-reader {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+/* Accent the focused pane only when two panes are open. */
+.center-workspace .ws-pane:not(:only-child) .pane-frame.active .pane-head {
+  box-shadow: inset 0 2px 0 var(--accent);
+}
+/* Bible panes have no pane-head, so accent the frame itself. */
+.center-workspace .ws-pane:not(:only-child) .pane-frame.headerless.active {
+  box-shadow: inset 0 2px 0 var(--accent);
+}
+
+/* Notes-list navigator (full-center) */
+.notes-nav {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.notes-nav-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  font-family: var(--font-ui);
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.notes-nav-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px;
+}
+
 .sidebar {
   background: var(--sidebar);
   display: flex;
