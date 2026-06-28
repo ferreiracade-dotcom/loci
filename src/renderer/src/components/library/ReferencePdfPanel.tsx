@@ -2,11 +2,18 @@ import { useEffect, useState } from 'react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { PdfReader } from './PdfReader'
+import { OpenInCenterButton } from './OpenInCenterButton'
 
 /** A PDF in the reference panel, with its own picker — independent of the center. */
 export function ReferencePdfPanel() {
   const books = useStore((s) => s.books)
   const [bookId, setBookId] = useState<string | null>(null)
+
+  // Clear the reference PDF once it's promoted to the center (avoids showing it twice).
+  const clear = (): void => {
+    setBookId(null)
+    void api.setSession('refPdf', '')
+  }
 
   // Restore the last reference PDF, if it still exists.
   useEffect(() => {
@@ -40,6 +47,7 @@ export function ReferencePdfPanel() {
             </option>
           ))}
         </select>
+        <OpenInCenterButton content={bookId ? { kind: 'pdf', bookId } : null} onDone={clear} />
       </div>
       {bookId ? (
         <div className="ref-pdf-stage">

@@ -32,6 +32,8 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const saveLayout = useStore((s) => s.saveLayout)
   const persistLayout = useStore((s) => s.persistLayout)
   const showScripture = useStore((s) => s.showScripture)
+  const panes = useStore((s) => s.panes)
+  const activePaneId = useStore((s) => s.activePaneId)
   const ref = useRef<HTMLDivElement>(null)
 
   // The left rail mostly just switches the active view; "Scripture" opens/focuses a Bible pane.
@@ -39,6 +41,18 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
     if (id === 'scripture') void showScripture()
     else saveLayout({ activeLeftView: id })
   }
+
+  // In the workspace, light up the rail item matching the focused pane (Bible→Scripture,
+  // note→Notes); books have no rail entry, so they leave the rail unlit.
+  const focusedPane = panes.find((p) => p.id === activePaneId)
+  const railActiveId =
+    layout.activeLeftView === 'reading' && focusedPane
+      ? focusedPane.kind === 'bible'
+        ? 'scripture'
+        : focusedPane.kind === 'note'
+          ? 'notes'
+          : layout.activeLeftView
+      : layout.activeLeftView
 
   // Normalize the active right tab (a removed tab, e.g. legacy 'tags', falls back).
   const rightTabId = RIGHT_TABS.some((t) => t.id === layout.activeRightTab)
@@ -99,7 +113,7 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
       {layout.leftCollapsed ? (
         <IconRail
           items={LEFT_VIEWS}
-          activeId={layout.activeLeftView}
+          activeId={railActiveId}
           onSelect={(id) => selectLeftView(id)}
           onExpand={() => saveLayout({ leftCollapsed: false })}
           expandSide="left"
@@ -128,7 +142,7 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
                 return (
                   <button
                     key={v.id}
-                    className={`nav-item${v.id === layout.activeLeftView ? ' active' : ''}`}
+                    className={`nav-item${v.id === railActiveId ? ' active' : ''}`}
                     onClick={() => selectLeftView(v.id)}
                   >
                     <Icon size={16} />

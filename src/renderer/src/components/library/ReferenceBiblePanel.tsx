@@ -4,6 +4,7 @@ import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { parseReference } from '@shared/scriptureRef'
 import { ScriptureReader } from './ScriptureReader'
+import { OpenInCenterButton } from './OpenInCenterButton'
 
 /**
  * A live Bible in the reference panel — independent of the center Scripture view. Its own
@@ -84,17 +85,20 @@ export function ReferenceBiblePanel() {
 
   return (
     <div className="ref-bible">
-      <form className={`sv-goto${refError ? ' error' : ''}`} onSubmit={goToRef}>
-        <Search size={14} className="sv-goto-icon" />
-        <input
-          value={refInput}
-          placeholder="Go to reference (e.g. Rom 3:28)"
-          onChange={(e) => {
-            setRefInput(e.target.value)
-            setRefError(false)
-          }}
-        />
-      </form>
+      <div className="ref-bible-head">
+        <form className={`sv-goto${refError ? ' error' : ''}`} onSubmit={goToRef}>
+          <Search size={14} className="sv-goto-icon" />
+          <input
+            value={refInput}
+            placeholder="Go to reference (e.g. Rom 3:28)"
+            onChange={(e) => {
+              setRefInput(e.target.value)
+              setRefError(false)
+            }}
+          />
+        </form>
+        <OpenInCenterButton content={{ kind: 'bible', book, chapter, highlight, translation }} />
+      </div>
       <ScriptureReader
         translation={translation}
         book={book}

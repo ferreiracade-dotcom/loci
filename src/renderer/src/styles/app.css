@@ -524,6 +524,17 @@ select.field {
   margin: 8px;
   flex: 0 0 auto;
 }
+.ref-bible-head {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin: 8px;
+}
+.ref-bible-head .sv-goto {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
 .ref-bible .scripture-reader {
   flex: 1;
   min-height: 0;
@@ -532,6 +543,80 @@ select.field {
   flex: 0 0 auto;
   padding: 8px;
   border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.ref-pdf-head .book-select {
+  flex: 1;
+  min-width: 0;
+}
+.ref-promote-wrap {
+  position: relative;
+  flex: 0 0 auto;
+}
+.ref-promote {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 6px 9px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ref-promote:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.ref-promote:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ref-promote-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 30;
+  min-width: 210px;
+  max-width: 280px;
+  background: var(--panel);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 5px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.rpm-label {
+  font-size: 11px;
+  color: var(--muted);
+  padding: 4px 8px 2px;
+}
+.rpm-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  padding: 7px 8px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rpm-item:hover {
+  background: var(--accent-12);
+  border-color: var(--accent);
 }
 .ref-pdf-stage {
   flex: 1;
