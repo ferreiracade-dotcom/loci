@@ -1,16 +1,20 @@
 import { useState } from 'react'
 import { FileText, BookOpen, ScrollText, Plus } from 'lucide-react'
 import { useStore } from '../../store/useStore'
+import type { PaneContent } from '../../store/useStore'
 
 /**
- * The empty-pane content picker. Search standalone notes and library books, open the Bible,
- * or type a new name to create a note — all placed into this pane (`paneId`).
+ * The content picker. Search standalone notes and library books, open the Bible, or type a new
+ * name to create a note. With `paneId` it fills that pane; without one (an empty workspace) it
+ * opens into a fresh pane.
  */
-export function PanePicker({ paneId }: { paneId: string }) {
+export function PanePicker({ paneId, heading }: { paneId?: string; heading?: string }) {
   const notes = useStore((s) => s.standaloneNotes)
   const books = useStore((s) => s.books)
   const setPaneContent = useStore((s) => s.setPaneContent)
   const createNoteInPane = useStore((s) => s.createNoteInPane)
+  const openInPane = useStore((s) => s.openInPane)
+  const createNote = useStore((s) => s.createNote)
   const scripturePassage = useStore((s) => s.scripturePassage)
   const scriptureTranslation = useStore((s) => s.scriptureTranslation)
 
@@ -20,9 +24,14 @@ export function PanePicker({ paneId }: { paneId: string }) {
   const noteHits = ql ? notes.filter((n) => n.title.toLowerCase().includes(ql)) : notes
   const bookHits = ql ? books.filter((b) => b.title.toLowerCase().includes(ql)) : books
 
+  // Fill the target pane, or open into a fresh pane when there's no target.
+  const place = (content: PaneContent): void => {
+    if (paneId) setPaneContent(paneId, content)
+    else openInPane(content)
+  }
   const openBible = (): void => {
     const p = scripturePassage ?? { book: 'JHN', chapter: 1, highlight: [] }
-    setPaneContent(paneId, {
+    place({
       kind: 'bible',
       book: p.book,
       chapter: p.chapter,
@@ -31,12 +40,15 @@ export function PanePicker({ paneId }: { paneId: string }) {
     })
   }
   const newNote = (): void => {
-    if (query) void createNoteInPane(paneId, query)
+    if (!query) return
+    if (paneId) void createNoteInPane(paneId, query)
+    else void createNote(query)
   }
 
   return (
     <div className="pane-picker">
       <div className="pp-box">
+        {heading && <div className="pp-heading">{heading}</div>}
         <input
           className="pp-search"
           autoFocus
@@ -65,7 +77,7 @@ export function PanePicker({ paneId }: { paneId: string }) {
             <button
               key={n.path}
               className="pp-item"
-              onClick={() => setPaneContent(paneId, { kind: 'note', notePath: n.path })}
+              onClick={() => place({ kind: 'note', notePath: n.path })}
             >
               <FileText size={14} />
               <span className="pp-item-title">{n.title}</span>
@@ -76,7 +88,7 @@ export function PanePicker({ paneId }: { paneId: string }) {
             <button
               key={b.id}
               className="pp-item"
-              onClick={() => setPaneContent(paneId, { kind: 'pdf', bookId: b.id })}
+              onClick={() => place({ kind: 'pdf', bookId: b.id })}
             >
               <BookOpen size={14} />
               <span className="pp-item-title">{b.title}</span>

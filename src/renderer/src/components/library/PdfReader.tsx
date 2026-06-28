@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
+import { TextLayerBuilder } from 'pdfjs-dist/web/pdf_viewer.mjs'
 import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Maximize2, X, Highlighter } from 'lucide-react'
@@ -59,8 +60,13 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
   const slotRefs = useRef<(HTMLDivElement | null)[]>([])
   const renderedRef = useRef<Set<number>>(new Set())
   const tasksRef = useRef<Map<number, RenderHandle>>(new Map())
+  // Official pdf.js text-layer builders per page; cancel() deregisters their selection listener.
+  const textBuildersRef = useRef<Map<number, TextLayerBuilder>>(new Map())
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const didInitialScroll = useRef(false)
+  // True while the user is dragging a selection — pauses lazy load/unload so text
+  // layers aren't torn down mid-drag (which makes the selection jump).
+  const selectingRef = useRef(false)
 
   const [numPages, setNumPages] = useState(0)
   const [base, setBase] = useState<{ w: number; h: number } | null>(null)
@@ -127,6 +133,14 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
         }
       })
       tasksRef.current.clear()
+      textBuildersRef.current.forEach((b) => {
+        try {
+          b.cancel()
+        } catch {
+          /* noop */
+        }
+      })
+      textBuildersRef.current.clear()
       renderedRef.current.clear()
       if (docRef.current) {
         void docRef.current.destroy()
@@ -171,6 +185,12 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
         canvas.style.height = '100%'
         const ctx = canvas.getContext('2d')
         if (!ctx) return
+        // Drop any previous text layer for this page (deregisters its selection listener).
+        const prevBuilder = textBuildersRef.current.get(pageNum)
+        if (prevBuilder) {
+          prevBuilder.cancel()
+          textBuildersRef.current.delete(pageNum)
+        }
         slot.replaceChildren(canvas)
         const task = pg.render({
           canvasContext: ctx,
@@ -181,25 +201,18 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
         await task.promise.catch(() => {})
         if (!renderedRef.current.has(pageNum)) return
 
-        // Selectable text layer over the canvas.
-        const textDiv = document.createElement('div')
-        textDiv.className = 'textLayer'
-        textDiv.style.setProperty('--scale-factor', String(viewport.scale))
-        slot.appendChild(textDiv)
-        const textContent = await pg.getTextContent()
+        // Official pdf.js text layer — handles selection (including the endOfContent backstop
+        // that anchors to the drag start) the way the Firefox PDF reader does.
+        const builder = new TextLayerBuilder({ pdfPage: pg })
+        builder.div.style.setProperty('--scale-factor', String(viewport.scale))
+        slot.appendChild(builder.div)
+        textBuildersRef.current.set(pageNum, builder)
+        await builder.render(viewport).catch(() => {})
         if (!renderedRef.current.has(pageNum)) {
-          textDiv.remove()
-          return
+          builder.cancel()
+          textBuildersRef.current.delete(pageNum)
+          builder.div.remove()
         }
-        const textLayer = new pdfjsLib.TextLayer({
-          textContentSource: textContent,
-          container: textDiv,
-          viewport
-        })
-        await textLayer.render()
-        const eoc = document.createElement('div')
-        eoc.className = 'endOfContent'
-        textDiv.appendChild(eoc)
       } catch {
         /* ignore */
       }
@@ -223,6 +236,14 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
       }
     })
     tasksRef.current.clear()
+    textBuildersRef.current.forEach((b) => {
+      try {
+        b.cancel()
+      } catch {
+        /* noop */
+      }
+    })
+    textBuildersRef.current.clear()
     slotRefs.current.forEach((s) => s?.replaceChildren())
 
     let raf = 0
@@ -239,7 +260,7 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
         if (visible && !renderedRef.current.has(pageNum)) {
           renderedRef.current.add(pageNum)
           void renderPage(pageNum, slot)
-        } else if (!visible && renderedRef.current.has(pageNum)) {
+        } else if (!visible && renderedRef.current.has(pageNum) && !selectingRef.current) {
           renderedRef.current.delete(pageNum)
           const t = tasksRef.current.get(pageNum)
           if (t) {
@@ -249,6 +270,11 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
               /* noop */
             }
             tasksRef.current.delete(pageNum)
+          }
+          const b = textBuildersRef.current.get(pageNum)
+          if (b) {
+            b.cancel()
+            textBuildersRef.current.delete(pageNum)
           }
           slot.replaceChildren()
         }
@@ -318,6 +344,16 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [goToPage, currentPage])
+
+  // Safety net: clear the selecting flag even if the mouse is released outside the stage,
+  // so lazy load/unload resumes.
+  useEffect(() => {
+    const onUp = (): void => {
+      selectingRef.current = false
+    }
+    document.addEventListener('mouseup', onUp)
+    return () => document.removeEventListener('mouseup', onUp)
+  }, [])
 
   // Jump to a search result: center the matched word and keep it highlighted.
   // The page renders lazily and can be slow, so we scroll it in, then observe its
@@ -401,22 +437,18 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
     setManualScale((s) => Math.max(0.4, Math.min(3, (fitWidth ? effScale : s) + delta)))
   }
 
-  const setSelecting = (on: boolean): void => {
-    stageRef.current?.querySelectorAll('.textLayer').forEach((tl) => tl.classList.toggle('selecting', on))
-  }
-
-  const onStageMouseDown = (e: MouseEvent): void => {
+  const onStageMouseDown = (): void => {
     setSel(null)
-    setSelecting(false)
-    // Only the page under the cursor gets the endOfContent backstop, so a drag
-    // can't bleed selection across pages in the continuous scroll.
-    ;(e.target as Element).closest?.('.textLayer')?.classList.add('selecting')
+    // Pause lazy load/unload so text layers aren't torn down mid-drag.
+    selectingRef.current = true
   }
 
   const onStageMouseUp = (): void => {
-    setSelecting(false)
+    selectingRef.current = false
     const s = window.getSelection()
-    const text = s?.toString().replace(/\s+/g, ' ').trim() ?? ''
+    // Normalize the same way pdf.js does on copy, so quotes with ligatures (ﬁ→fi), Greek, or
+    // German diacritics (decomposed → composed) and soft hyphens are captured cleanly.
+    const text = s ? pdfjsLib.normalizeUnicode(s.toString()).replace(/\s+/g, ' ').trim() : ''
     const stage = stageRef.current
     if (!text || !s || s.rangeCount === 0 || !stage) {
       setSel(null)

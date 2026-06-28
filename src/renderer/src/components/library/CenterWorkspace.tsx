@@ -2,8 +2,8 @@ import { Fragment, useRef } from 'react'
 import { Columns2 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { Divider } from '../Divider'
-import { EmptyState } from '../EmptyState'
 import { PaneFrame } from './PaneFrame'
+import { PanePicker } from './PanePicker'
 
 /** The center workspace: up to two typed panes (note/Bible/PDF) with a draggable divider. */
 export function CenterWorkspace() {
@@ -23,11 +23,9 @@ export function CenterWorkspace() {
 
   if (panes.length === 0) {
     return (
-      <EmptyState
-        icon={Columns2}
-        title="Nothing open"
-        subtitle="Open a book, a note, or Scripture from the left rail to start working here."
-      />
+      <div className="center-workspace">
+        <PanePicker heading="Open a note, a book, or the Bible" />
+      </div>
     )
   }
 
