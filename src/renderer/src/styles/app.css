@@ -1971,6 +1971,12 @@ select.field {
 }
 .reader-msg.error {
   color: #d98a76;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  max-width: 360px;
 }
 
 /* PDF.js text layer (selectable text over the canvas) */
@@ -3277,6 +3283,23 @@ select.field {
   font-size: 13px;
   color: var(--muted);
   padding: 6px 2px;
+}
+.set-toggle {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  cursor: pointer;
+}
+.set-toggle input {
+  margin-top: 3px;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.set-toggle .set-help {
+  margin-top: 4px;
 }
 .broken-list {
   display: flex;

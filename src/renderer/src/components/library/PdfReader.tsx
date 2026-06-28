@@ -49,11 +49,15 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
   const book = useStore((s) => s.books.find((b) => b.id === bookId))
   const closeBook = useStore((s) => s.closeBook)
   const addQuote = useStore((s) => s.addQuote)
+  const relinkBook = useStore((s) => s.relinkBook)
   const pendingPage = useStore((s) => s.pendingPage)
   const clearPendingPage = useStore((s) => s.clearPendingPage)
   const searchTerms = useStore((s) => s.searchTerms)
   const [sel, setSel] = useState<Selection | null>(null)
   const [savedMsg, setSavedMsg] = useState(false)
+  // Bumped to re-attempt the load after reconnecting a missing file.
+  const [reloadKey, setReloadKey] = useState(0)
+  const [relinking, setRelinking] = useState(false)
 
   const stageRef = useRef<HTMLDivElement>(null)
   const docRef = useRef<PDFDocumentProxy | null>(null)
@@ -147,7 +151,7 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
         docRef.current = null
       }
     }
-  }, [bookId])
+  }, [bookId, reloadKey])
 
   // Track the container width for fit-width.
   useEffect(() => {
@@ -432,6 +436,17 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
     }
   }, [pendingPage, loading, numPages, clearPendingPage, searchTerms])
 
+  // Reconnect a missing/offline book to a file on disk, then re-attempt the load.
+  const relink = async (): Promise<void> => {
+    setRelinking(true)
+    try {
+      const updated = await relinkBook(bookId)
+      if (updated) setReloadKey((k) => k + 1)
+    } finally {
+      setRelinking(false)
+    }
+  }
+
   const zoom = (delta: number): void => {
     setFitWidth(false)
     setManualScale((s) => Math.max(0.4, Math.min(3, (fitWidth ? effScale : s) + delta)))
@@ -544,7 +559,14 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
       </div>
       <div className="reader-stage" ref={stageRef} onMouseDown={onStageMouseDown} onMouseUp={onStageMouseUp}>
         {loading && <div className="reader-msg">Opening…</div>}
-        {error && <div className="reader-msg error">{error}</div>}
+        {error && (
+          <div className="reader-msg error">
+            <div>{error}</div>
+            <button className="btn btn-sm" disabled={relinking} onClick={() => void relink()}>
+              {relinking ? 'Locating…' : 'Locate file…'}
+            </button>
+          </div>
+        )}
         {!loading && !error && base && pagesEl}
         {sel && (
           <button

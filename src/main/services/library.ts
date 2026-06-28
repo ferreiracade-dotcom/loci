@@ -302,6 +302,92 @@ export function setBookLastPage(id: string, page: number): void {
     .run(Math.max(1, Math.round(page)), id)
 }
 
+/**
+ * Make the whole library offline-ready: for every book without a present local copy, adopt
+ * a primary-library hit or copy the Drive vault copy into the local cache. Reading from a
+ * Drive (Stream) placeholder hydrates it, so this also pulls cloud-only books down. Books
+ * whose file can't be located (moved/deleted, or Drive offline) are reported as `missing`
+ * and can be reconnected one-by-one with relinkBookToFile.
+ */
+export async function backfillLocalCopies(onChanged?: () => void): Promise<{
+  connected: number
+  alreadyLocal: number
+  missing: number
+}> {
+  const db = getDb()
+  const rows = db.prepare('SELECT id, pdf_path, local_path FROM books').all() as {
+    id: string
+    pdf_path: string | null
+    local_path: string | null
+  }[]
+  const res = { connected: 0, alreadyLocal: 0, missing: 0 }
+  const localDir = join(getDataDir(), 'pdf-cache')
+  mkdirSync(localDir, { recursive: true })
+  const setLocal = db.prepare('UPDATE books SET local_path = ? WHERE id = ?')
+  let done = 0
+  for (const r of rows) {
+    if (r.local_path && existsSync(r.local_path)) {
+      res.alreadyLocal++
+    } else {
+      const primary = findInPrimary(r.pdf_path, r.local_path)
+      if (primary) {
+        try {
+          setLocal.run(primary, r.id)
+        } catch {
+          /* best effort */
+        }
+        res.alreadyLocal++
+      } else if (r.pdf_path && existsSync(r.pdf_path)) {
+        try {
+          const dest = join(localDir, `${r.id}.pdf`)
+          await copyFile(r.pdf_path, dest)
+          setLocal.run(dest, r.id)
+          res.connected++
+        } catch {
+          res.missing++
+        }
+      } else {
+        res.missing++
+      }
+    }
+    if (++done % 5 === 0) onChanged?.()
+  }
+  invalidatePrimaryIndex()
+  onChanged?.()
+  return res
+}
+
+/** Reconnect a book to a chosen PDF on disk: copy it into the local cache and set local_path. */
+export function relinkBookToFile(id: string, srcPath: string): Book | null {
+  if (!existsSync(srcPath)) return null
+  const db = getDb()
+  const r = db.prepare('SELECT pdf_path FROM books WHERE id = ?').get(id) as
+    | { pdf_path: string | null }
+    | undefined
+  if (!r) return null
+  const localDir = join(getDataDir(), 'pdf-cache')
+  mkdirSync(localDir, { recursive: true })
+  const dest = join(localDir, `${id}.pdf`)
+  try {
+    copyFileSync(srcPath, dest)
+  } catch {
+    return null
+  }
+  // Record the local copy; if the book had no usable Drive copy, remember the chosen source too.
+  if (r.pdf_path && existsSync(r.pdf_path)) {
+    db.prepare('UPDATE books SET local_path = ? WHERE id = ?').run(dest, id)
+  } else {
+    db.prepare('UPDATE books SET local_path = ?, source_path = COALESCE(source_path, ?) WHERE id = ?').run(
+      dest,
+      srcPath,
+      id
+    )
+  }
+  writeSidecarForBook(id)
+  const row = db.prepare('SELECT * FROM books WHERE id = ?').get(id) as BookRow | undefined
+  return row ? rowToBook(row) : null
+}
+
 // ---------- Import (fast, local-only) ----------
 
 type ImportOutcome = 'imported' | 'skipped' | 'failed'
@@ -343,18 +429,20 @@ async function importOneLocal(sourcePath: string): Promise<ImportOutcome> {
       pdfPath = dest
     }
 
-    // Local-first: keep a working copy in the local cache so the book is available offline
-    // the moment it's imported (not only after its first open), mirroring notes/highlights.
-    // Best effort — if it fails, getBookPdf still caches it locally on first open.
+    // When "keep a local copy" is on, write a working copy to the local cache now so the book
+    // is available offline immediately. Off → no local copy (getBookPdf caches it on first open).
+    // Best effort — a failure here just falls back to cache-on-open.
     let localPath: string | null = null
-    try {
-      const localDir = join(getDataDir(), 'pdf-cache')
-      mkdirSync(localDir, { recursive: true })
-      const localDest = join(localDir, `${id}.pdf`)
-      await copyFile(sourcePath, localDest)
-      localPath = localDest
-    } catch {
-      /* fall back to cache-on-open */
+    if (cfg.keepLocalCopies) {
+      try {
+        const localDir = join(getDataDir(), 'pdf-cache')
+        mkdirSync(localDir, { recursive: true })
+        const localDest = join(localDir, `${id}.pdf`)
+        await copyFile(sourcePath, localDest)
+        localPath = localDest
+      } catch {
+        /* fall back to cache-on-open */
+      }
     }
 
     const status =

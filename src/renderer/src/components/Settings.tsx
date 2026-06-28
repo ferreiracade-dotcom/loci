@@ -21,10 +21,13 @@ export function Settings({ onClose }: { onClose: () => void }) {
   const scriptureTranslation = useStore((s) => s.scriptureTranslation)
   const loadScripture = useStore((s) => s.loadScripture)
   const setScriptureTranslation = useStore((s) => s.setScriptureTranslation)
+  const backfillLocal = useStore((s) => s.backfillLocal)
   const [apiKey, setApiKey] = useState('')
   const [apiBibleKey, setApiBibleKeyInput] = useState('')
   const [esvKey, setEsvKeyInput] = useState('')
   const [note, setNote] = useState<string | null>(null)
+  const [backfilling, setBackfilling] = useState(false)
+  const [storageMsg, setStorageMsg] = useState<string | null>(null)
 
   useEffect(() => {
     if (scriptureTranslations.length === 0) void loadScripture()
@@ -64,6 +67,23 @@ export function Settings({ onClose }: { onClose: () => void }) {
   async function setAiMode(value: AiMode): Promise<void> {
     await api.setConfig({ aiMode: value })
     await refreshConfig()
+  }
+  // Turning "keep local copies" on also downloads every Drive-only book to disk.
+  async function setKeepLocal(value: boolean): Promise<void> {
+    setStorageMsg(null)
+    await api.setConfig({ keepLocalCopies: value })
+    await refreshConfig()
+    if (!value) return
+    setBackfilling(true)
+    try {
+      const r = await backfillLocal()
+      const parts = [`${r.connected} downloaded to this machine`]
+      if (r.alreadyLocal) parts.push(`${r.alreadyLocal} already local`)
+      if (r.missing) parts.push(`${r.missing} couldn’t be located`)
+      setStorageMsg(parts.join(' · '))
+    } finally {
+      setBackfilling(false)
+    }
   }
   async function saveApiKey(): Promise<void> {
     await api.setApiKey(apiKey)
@@ -188,6 +208,29 @@ export function Settings({ onClose }: { onClose: () => void }) {
                 sync or accidental deletion can’t wipe everything.
               </p>
             </div>
+          </section>
+
+          <section className="set-section">
+            <h3 className="set-h">Storage</h3>
+            <label className="set-toggle">
+              <input
+                type="checkbox"
+                checked={!!config.keepLocalCopies}
+                disabled={backfilling}
+                onChange={(e) => void setKeepLocal(e.target.checked)}
+              />
+              <div>
+                <div className="set-label">Keep a local copy of books</div>
+                <p className="set-help">
+                  <strong>On:</strong> imported PDFs are saved to this machine and the Drive vault,
+                  and turning this on now downloads your Drive-only books to disk so the whole
+                  library works offline. <strong>Off:</strong> books live on Drive and are cached
+                  only when you open them — lighter on disk, good for a phone or a small drive.
+                </p>
+              </div>
+            </label>
+            {backfilling && <div className="field-ok">Downloading books to this machine…</div>}
+            {storageMsg && <div className="field-ok">{storageMsg}</div>}
           </section>
 
           <section className="set-section">

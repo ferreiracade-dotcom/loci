@@ -13,6 +13,8 @@ export interface LociConfig {
   backupPath: string | null
   /** Optional local folder searched first when opening a book (fast local reads). */
   primaryLibraryPath: string | null
+  /** When true, imports save a local copy too and Drive-only books are pulled to disk. */
+  keepLocalCopies: boolean
   scriptureTranslation: string
   aiMode: AiMode
   rateCard: RateCard
@@ -32,6 +34,7 @@ const defaults: LociConfig = {
   pdfSourcePath: null,
   backupPath: null,
   primaryLibraryPath: null,
+  keepLocalCopies: false,
   scriptureTranslation: 'BSB',
   aiMode: 'copy-api',
   rateCard: { sonnetInput: 3, sonnetOutput: 15, haikuInput: 0.8, haikuOutput: 4 },

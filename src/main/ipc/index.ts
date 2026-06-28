@@ -181,6 +181,22 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.setBookLastPage, (_e, id: string, page: number) =>
     library.setBookLastPage(id, page)
   )
+  ipcMain.handle(Channels.backfillLocal, (e) =>
+    library.backfillLocalCopies(() => e.sender.send(Channels.libraryChanged))
+  )
+  ipcMain.handle(Channels.relinkBook, async (e, id: string) => {
+    const win = BrowserWindow.fromWebContents(e.sender)
+    const opts: OpenDialogOptions = {
+      title: 'Locate this book’s PDF',
+      properties: ['openFile'],
+      filters: [{ name: 'PDF', extensions: ['pdf'] }]
+    }
+    const res = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts)
+    if (res.canceled || !res.filePaths[0]) return null
+    const book = library.relinkBookToFile(id, res.filePaths[0])
+    if (book) e.sender.send(Channels.libraryChanged)
+    return book
+  })
 
   // --- Quotes (Phase 2b) ---
   ipcMain.handle(Channels.addQuote, (_e, input: NewQuote) => quotes.addQuote(input))

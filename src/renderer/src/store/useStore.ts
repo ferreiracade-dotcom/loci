@@ -7,6 +7,7 @@ import { DEFAULT_THEME } from '@shared/ipc'
 import type {
   Annotation,
   AppState,
+  BackfillResult,
   Book,
   BookUpdate,
   ImportProgress,
@@ -191,6 +192,8 @@ interface Store {
   importFiles: () => Promise<ImportResult>
   updateBook: (id: string, patch: BookUpdate) => Promise<void>
   deleteBook: (id: string) => Promise<void>
+  backfillLocal: () => Promise<BackfillResult>
+  relinkBook: (id: string) => Promise<Book | null>
   setBookShelves: (id: string, shelfIds: string[]) => Promise<void>
   setBookTags: (id: string, tags: string[]) => Promise<void>
   setQuoteAnnotations: (quoteId: string, annotations: Annotation[]) => Promise<void>
@@ -626,6 +629,18 @@ export const useStore = create<Store>((set, get) => {
     deleteBook: async (id) => {
       await api.deleteBook(id)
       await get().refreshLibrary()
+    },
+
+    backfillLocal: async () => {
+      const res = await api.backfillLocal()
+      await get().refreshLibrary()
+      return res
+    },
+
+    relinkBook: async (id) => {
+      const book = await api.relinkBook(id)
+      if (book) await get().refreshLibrary()
+      return book
     },
 
     setBookShelves: async (id, shelfIds) => {

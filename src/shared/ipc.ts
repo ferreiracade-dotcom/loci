@@ -35,6 +35,8 @@ export const Channels = {
   listTags: 'library:listTags',
   getBookPdf: 'library:getBookPdf',
   setBookLastPage: 'library:setBookLastPage',
+  backfillLocal: 'library:backfillLocal',
+  relinkBook: 'library:relinkBook',
   addQuote: 'quotes:add',
   listQuotes: 'quotes:list',
   buildBibliography: 'quotes:bibliography',
@@ -119,6 +121,8 @@ export interface PublicConfig {
   backupPath: string | null
   /** Optional local folder searched first when opening a book (fast local reads). */
   primaryLibraryPath: string | null
+  /** When on, imports keep a local copy and Drive-only books are downloaded to disk. */
+  keepLocalCopies: boolean
   scriptureTranslation: string
   aiMode: AiMode
   rateCard: RateCard
@@ -154,6 +158,16 @@ export interface PanelLayout {
   activeRightTab: string
   coverSize: number
   libraryView: LibraryView
+}
+
+/** Result of making the library available offline (copying Drive-only books to the local cache). */
+export interface BackfillResult {
+  /** Books copied from the Drive vault into the local cache. */
+  connected: number
+  /** Books that already had a usable local copy. */
+  alreadyLocal: number
+  /** Books whose file couldn't be located (e.g. moved/deleted, or Drive offline). */
+  missing: number
 }
 
 /** The typed bridge exposed on `window.loci`. */
@@ -195,6 +209,10 @@ export interface LociApi {
   /** Raw PDF bytes for a book (also marks it opened), or null if the file is missing. */
   getBookPdf(id: string): Promise<Uint8Array | null>
   setBookLastPage(id: string, page: number): Promise<void>
+  /** Copy every Drive-only book into the local cache so the whole library is offline-ready. */
+  backfillLocal(): Promise<BackfillResult>
+  /** Point a book at a chosen PDF on disk (copies it local); returns the updated book. */
+  relinkBook(id: string): Promise<Book | null>
   addQuote(input: NewQuote): Promise<Quote>
   listQuotes(bookId: string): Promise<Quote[]>
   /** CMOS 18 bibliography entries for every cited book, sorted by author. */
