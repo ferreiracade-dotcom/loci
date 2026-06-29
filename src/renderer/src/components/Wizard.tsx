@@ -8,18 +8,26 @@ interface FolderRowProps {
   hint: string
   value: string | null
   onPick: () => void
+  onClear?: () => void
   warn?: string
 }
 
-function FolderRow({ label, hint, value, onPick, warn }: FolderRowProps) {
+function FolderRow({ label, hint, value, onPick, onClear, warn }: FolderRowProps) {
   return (
     <div className="folder-row">
       <div className="folder-row-head">
         <span className="folder-label">{label}</span>
-        <button className="btn btn-sm" onClick={onPick}>
-          <FolderOpen size={14} />
-          {value ? 'Change' : 'Choose…'}
-        </button>
+        <div className="folder-row-actions">
+          {value && onClear && (
+            <button className="btn btn-sm btn-ghost" onClick={onClear}>
+              Clear
+            </button>
+          )}
+          <button className="btn btn-sm" onClick={onPick}>
+            <FolderOpen size={14} />
+            {value ? 'Change' : 'Choose…'}
+          </button>
+        </div>
       </div>
       <p className="folder-hint">{hint}</p>
       {value && <div className="folder-path">{value}</div>}
@@ -28,7 +36,7 @@ function FolderRow({ label, hint, value, onPick, warn }: FolderRowProps) {
   )
 }
 
-const STEP_TITLES = ['Vault folder', 'PDF source', 'Local backup']
+const STEP_TITLES = ['Vault', 'Import', 'Local books', 'Backup']
 const LAST_STEP = STEP_TITLES.length - 1
 
 export function Wizard() {
@@ -36,6 +44,8 @@ export function Wizard() {
   const [step, setStep] = useState(0)
   const [vaultPath, setVaultPath] = useState<string | null>(null)
   const [pdfSourcePath, setPdfSourcePath] = useState<string | null>(null)
+  const [primaryLibraryPath, setPrimaryLibraryPath] = useState<string | null>(null)
+  const [keepLocalCopies, setKeepLocalCopies] = useState(false)
   const [backupPath, setBackupPath] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
@@ -48,7 +58,8 @@ export function Wizard() {
   const canAdvance =
     (step === 0 && !!vaultPath) ||
     (step === 1 && !!pdfSourcePath) ||
-    (step === 2 && !!backupPath && !backupSameAsVault)
+    step === 2 || // Local books is optional
+    (step === 3 && !!backupPath && !backupSameAsVault)
   const canFinish = !!vaultPath && !!pdfSourcePath && !!backupPath && !backupSameAsVault
 
   async function finish(): Promise<void> {
@@ -57,7 +68,9 @@ export function Wizard() {
     await completeWizard({
       vaultPath: vaultPath as string,
       pdfSourcePath: pdfSourcePath as string,
-      backupPath: backupPath as string
+      backupPath: backupPath as string,
+      primaryLibraryPath,
+      keepLocalCopies
     })
   }
 
@@ -89,20 +102,48 @@ export function Wizard() {
           {step === 0 && (
             <FolderRow
               label="Vault folder"
-              hint="Where your notes, PDFs, and pages live. A Google Drive for Desktop synced folder is recommended."
+              hint="Where your notes, highlights, and pages live and sync. A Google Drive for Desktop folder is recommended so your study follows you across machines."
               value={vaultPath}
               onPick={() => pick(setVaultPath)}
             />
           )}
           {step === 1 && (
             <FolderRow
-              label="PDF source folder"
-              hint="Loci imports PDFs from here. PDFs already inside your vault are referenced in place; others are cached into the vault."
+              label="PDF import folder"
+              hint="Drop PDFs here and Loci imports them. They’re added to your Drive vault; whether a copy also stays on this device is set on the next step."
               value={pdfSourcePath}
               onPick={() => pick(setPdfSourcePath)}
             />
           )}
           {step === 2 && (
+            <div className="wizard-stack">
+              <label className="set-toggle">
+                <input
+                  type="checkbox"
+                  checked={keepLocalCopies}
+                  onChange={(e) => setKeepLocalCopies(e.target.checked)}
+                />
+                <div>
+                  <div className="set-label">Keep a local copy of books on this device</div>
+                  <p className="set-help">
+                    <strong>On:</strong> imported PDFs are saved both to this machine and the Drive
+                    vault, and Drive-only books download to disk so your whole library works offline.{' '}
+                    <strong>Off:</strong> books live on Drive and are cached only when you open them —
+                    lighter on disk, good for a phone or a small drive. You can change this anytime in
+                    Settings.
+                  </p>
+                </div>
+              </label>
+              <FolderRow
+                label="Existing local PDF folder (optional)"
+                hint="Already keep PDFs on this PC? Point Loci at that folder and it reads those files directly — fast, no copying — instead of pulling from Drive."
+                value={primaryLibraryPath}
+                onPick={() => pick(setPrimaryLibraryPath)}
+                onClear={() => setPrimaryLibraryPath(null)}
+              />
+            </div>
+          )}
+          {step === 3 && (
             <FolderRow
               label="Local backup folder"
               hint="A separate folder (not your vault, not Drive) for the local backup snapshot."

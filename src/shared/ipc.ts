@@ -146,6 +146,10 @@ export interface WizardData {
   vaultPath: string
   pdfSourcePath: string
   backupPath: string
+  /** Optional existing local PDF folder read first when opening a book; null if none. */
+  primaryLibraryPath: string | null
+  /** Keep a local copy of books on this device (local-first); false streams from Drive. */
+  keepLocalCopies: boolean
 }
 
 export interface PanelLayout {

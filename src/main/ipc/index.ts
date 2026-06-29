@@ -73,7 +73,9 @@ export function registerIpc(): void {
       setupComplete: true,
       vaultPath: data.vaultPath,
       pdfSourcePath: data.pdfSourcePath,
-      backupPath: data.backupPath
+      backupPath: data.backupPath,
+      primaryLibraryPath: data.primaryLibraryPath,
+      keepLocalCopies: data.keepLocalCopies
     })
     return appState()
   })

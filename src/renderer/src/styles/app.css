@@ -905,6 +905,26 @@ select.field {
   align-items: center;
   justify-content: space-between;
 }
+.folder-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+}
+.btn-ghost:hover {
+  color: var(--text);
+  background: var(--card);
+}
+/* Vertical stack for multi-control wizard steps */
+.wizard-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
 .folder-label,
 .set-label {
   font-size: 13px;
