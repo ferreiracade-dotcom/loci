@@ -5,7 +5,7 @@ import { join } from 'path'
 import { closeDb, getDataDir, getDb } from './db/connection'
 import { registerIpc } from './ipc'
 import { backupSnapshot } from './services/backup'
-import { enrichPending } from './services/library'
+import { enrichPending, syncLibrary } from './services/library'
 import { applyRelinkMap, applyTitleClean } from './services/relink'
 import { rebuildAllSidecars } from './services/sidecar'
 import { syncVault } from './services/vaultsync'
@@ -52,15 +52,28 @@ function createWindow(): void {
 
   win.on('ready-to-show', () => win.show())
 
-  // Resume any metadata enrichment left pending from a previous session.
+  // On load: reconcile the catalog with the local + Drive book folders (auto-add new books,
+  // mirror the two sides, prune stale rows), tell the renderer what changed, then resume any
+  // metadata enrichment left pending from a previous session.
   win.webContents.once('did-finish-load', () => {
     const send = (channel: string, payload?: unknown): void => {
       if (!win.isDestroyed()) win.webContents.send(channel, payload)
     }
-    void enrichPending(
-      (p) => send(Channels.importProgress, p),
-      () => send(Channels.libraryChanged)
-    )
+    void (async () => {
+      try {
+        const result = await syncLibrary(
+          (p) => send(Channels.importProgress, p),
+          () => send(Channels.libraryChanged)
+        )
+        send(Channels.librarySynced, result)
+      } catch (e) {
+        console.error('[sync] startup library sync failed', e)
+      }
+      await enrichPending(
+        (p) => send(Channels.importProgress, p),
+        () => send(Channels.libraryChanged)
+      )
+    })()
   })
 
   // Open external links in the system browser, never in-app.

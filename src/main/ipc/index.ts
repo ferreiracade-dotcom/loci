@@ -38,7 +38,6 @@ import {
 } from '../services/config'
 import { getLayout, getSession, setLayout, setSession } from '../services/state'
 import { scaffoldVault, vaultExists } from '../services/vault'
-
 function appState(): AppState {
   const cfg = readConfig()
   return {
@@ -72,7 +71,6 @@ export function registerIpc(): void {
     writeConfig({
       setupComplete: true,
       vaultPath: data.vaultPath,
-      pdfSourcePath: data.pdfSourcePath,
       backupPath: data.backupPath,
       primaryLibraryPath: data.primaryLibraryPath,
       keepLocalCopies: data.keepLocalCopies

@@ -36,14 +36,13 @@ function FolderRow({ label, hint, value, onPick, onClear, warn }: FolderRowProps
   )
 }
 
-const STEP_TITLES = ['Vault', 'Import', 'Local books', 'Backup']
+const STEP_TITLES = ['Vault', 'Local books', 'Backup']
 const LAST_STEP = STEP_TITLES.length - 1
 
 export function Wizard() {
   const completeWizard = useStore((s) => s.completeWizard)
   const [step, setStep] = useState(0)
   const [vaultPath, setVaultPath] = useState<string | null>(null)
-  const [pdfSourcePath, setPdfSourcePath] = useState<string | null>(null)
   const [primaryLibraryPath, setPrimaryLibraryPath] = useState<string | null>(null)
   const [keepLocalCopies, setKeepLocalCopies] = useState(false)
   const [backupPath, setBackupPath] = useState<string | null>(null)
@@ -57,17 +56,15 @@ export function Wizard() {
   const backupSameAsVault = !!backupPath && backupPath === vaultPath
   const canAdvance =
     (step === 0 && !!vaultPath) ||
-    (step === 1 && !!pdfSourcePath) ||
-    step === 2 || // Local books is optional
-    (step === 3 && !!backupPath && !backupSameAsVault)
-  const canFinish = !!vaultPath && !!pdfSourcePath && !!backupPath && !backupSameAsVault
+    step === 1 || // Local books is optional
+    (step === 2 && !!backupPath && !backupSameAsVault)
+  const canFinish = !!vaultPath && !!backupPath && !backupSameAsVault
 
   async function finish(): Promise<void> {
     if (!canFinish || busy) return
     setBusy(true)
     await completeWizard({
       vaultPath: vaultPath as string,
-      pdfSourcePath: pdfSourcePath as string,
       backupPath: backupPath as string,
       primaryLibraryPath,
       keepLocalCopies
@@ -102,20 +99,12 @@ export function Wizard() {
           {step === 0 && (
             <FolderRow
               label="Vault folder"
-              hint="Where your notes, highlights, and pages live and sync. A Google Drive for Desktop folder is recommended so your study follows you across machines."
+              hint="Where your notes, highlights, pages, and books live and sync. A Google Drive for Desktop folder is recommended so your study follows you across machines. Drop a PDF into the vault’s Books folder and Loci adds it automatically."
               value={vaultPath}
               onPick={() => pick(setVaultPath)}
             />
           )}
           {step === 1 && (
-            <FolderRow
-              label="PDF import folder"
-              hint="Drop PDFs here and Loci imports them. They’re added to your Drive vault; whether a copy also stays on this device is set on the next step."
-              value={pdfSourcePath}
-              onPick={() => pick(setPdfSourcePath)}
-            />
-          )}
-          {step === 2 && (
             <div className="wizard-stack">
               <label className="set-toggle">
                 <input
@@ -136,14 +125,14 @@ export function Wizard() {
               </label>
               <FolderRow
                 label="Existing local PDF folder (optional)"
-                hint="Already keep PDFs on this PC? Point Loci at that folder and it reads those files directly — fast, no copying — instead of pulling from Drive."
+                hint="Already keep PDFs on this PC? Point Loci at that folder and it reads those files directly — fast, no copying. Books here are added automatically and mirrored to your Drive vault."
                 value={primaryLibraryPath}
                 onPick={() => pick(setPrimaryLibraryPath)}
                 onClear={() => setPrimaryLibraryPath(null)}
               />
             </div>
           )}
-          {step === 3 && (
+          {step === 2 && (
             <FolderRow
               label="Local backup folder"
               hint="A separate folder (not your vault, not Drive) for the local backup snapshot."

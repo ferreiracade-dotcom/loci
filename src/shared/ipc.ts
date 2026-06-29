@@ -71,7 +71,8 @@ export const Channels = {
 
   // main → renderer events
   importProgress: 'library:importProgress',
-  libraryChanged: 'library:libraryChanged'
+  libraryChanged: 'library:libraryChanged',
+  librarySynced: 'library:librarySynced'
 } as const
 
 export type ChannelName = (typeof Channels)[keyof typeof Channels]
@@ -144,7 +145,6 @@ export interface AppState {
 
 export interface WizardData {
   vaultPath: string
-  pdfSourcePath: string
   backupPath: string
   /** Optional existing local PDF folder read first when opening a book; null if none. */
   primaryLibraryPath: string | null
@@ -270,6 +270,8 @@ export interface LociApi {
   onImportProgress(cb: (p: ImportProgress) => void): () => void
   /** Fired when the book/shelf data changes in the background; returns unsubscribe. */
   onLibraryChanged(cb: () => void): () => void
+  /** Fired when the startup folder sync finishes, with a summary of what changed. */
+  onLibrarySynced(cb: (r: SyncResult) => void): () => void
 }
 
 export type ImportPhase = 'importing' | 'enriching' | 'done'
@@ -339,6 +341,18 @@ export interface ImportResult {
   imported: number
   skipped: number
   failed: number
+  titles: string[]
+}
+
+/** Result of a folder-driven library sync (vault + local library reconciliation). */
+export interface SyncResult {
+  /** Books newly added to the catalog this sync. */
+  added: number
+  /** Stale catalog rows removed (their Drive PDF was gone). */
+  removed: number
+  /** Total books in the catalog after the sync. */
+  total: number
+  /** Titles of the newly added books (for the summary toast). */
   titles: string[]
 }
 

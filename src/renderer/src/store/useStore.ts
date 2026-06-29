@@ -105,6 +105,8 @@ interface Store {
   tags: Tag[]
   activeShelf: string | null
   libraryBusy: boolean
+  /** Transient status line (e.g. a startup library-sync summary), shown by the Shell. */
+  toast: string | null
   importProgress: ImportProgress | null
   openBookId: string | null
   quotes: Quote[]
@@ -167,6 +169,7 @@ interface Store {
   persistLayout: () => void
 
   setActiveShelf: (shelfId: string | null) => void
+  setToast: (msg: string | null) => void
   openBook: (id: string) => void
   openBookAt: (id: string, page: number) => void
   clearPendingPage: () => void
@@ -300,6 +303,7 @@ export const useStore = create<Store>((set, get) => {
     tags: [],
     activeShelf: null,
     libraryBusy: false,
+    toast: null,
     importProgress: null,
     openBookId: null,
     quotes: [],
@@ -333,6 +337,20 @@ export const useStore = create<Store>((set, get) => {
         listenersBound = true
         api.onImportProgress((p) => set({ importProgress: p.phase === 'done' ? null : p }))
         api.onLibraryChanged(() => scheduleRefresh())
+        api.onLibrarySynced((r) => {
+          void get().refreshLibrary()
+          if (r.added === 0 && r.removed === 0) return // nothing to announce on a no-op sync
+          const parts: string[] = []
+          if (r.added > 0) {
+            const shown = r.titles.slice(0, 3).join(', ')
+            const more = r.titles.length > 3 ? ` +${r.titles.length - 3} more` : ''
+            parts.push(
+              `Added ${r.added} book${r.added === 1 ? '' : 's'}${shown ? `: ${shown}${more}` : ''}`
+            )
+          }
+          if (r.removed > 0) parts.push(`removed ${r.removed}`)
+          set({ toast: `${parts.join(' · ')} · ${r.total} in library` })
+        })
       }
       const appState = await api.getAppState()
       if (!appState.setupComplete) {
@@ -455,6 +473,8 @@ export const useStore = create<Store>((set, get) => {
     },
 
     setActiveShelf: (shelfId) => set({ activeShelf: shelfId }),
+
+    setToast: (msg) => set({ toast: msg }),
 
     openBook: (id) => {
       get().openInPane({ kind: 'pdf', bookId: id })

@@ -10,8 +10,18 @@ export function Shell() {
   const appState = useStore((s) => s.appState)
   const relocateVault = useStore((s) => s.relocateVault)
   const indexing = useStore((s) => s.indexing)
+  const toast = useStore((s) => s.toast)
+  const setToast = useStore((s) => s.setToast)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [quickOpen, setQuickOpen] = useState(false)
+
+  // Clear the status toast a few seconds after it appears (it may have been set during the
+  // welcome screen, before the Shell mounted — so the timer starts here, when it's first shown).
+  useEffect(() => {
+    if (!toast) return
+    const t = window.setTimeout(() => setToast(null), 6000)
+    return () => window.clearTimeout(t)
+  }, [toast, setToast])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
@@ -47,6 +57,7 @@ export function Shell() {
           <RefreshCw size={13} className="spin" /> Indexing {indexing.done}/{indexing.total}
         </div>
       )}
+      {toast && <div className="toast toast-shell">{toast}</div>}
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto'
 import {
+  appendFileSync,
   copyFileSync,
   existsSync,
   mkdirSync,
@@ -31,6 +32,7 @@ import type {
   PdfSource,
   ReadingStatus,
   Shelf,
+  SyncResult,
   Tag
 } from '../../shared/ipc'
 
@@ -111,6 +113,15 @@ function isInside(child: string, parent: string): boolean {
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms))
+}
+
+/** Append a line to the import log so skipped/failed files are diagnosable after the fact. */
+function logImport(line: string): void {
+  try {
+    appendFileSync(join(getDataDir(), 'import-log.txt'), `${new Date().toISOString()} ${line}\n`)
+  } catch {
+    /* best effort */
+  }
 }
 
 /** Where this book will be read from, without actually opening it. */
@@ -223,7 +234,7 @@ function getPrimaryIndex(): Map<string, string> | null {
   }
   if (primaryIndex && primaryIndexRoot === root) return primaryIndex
   const map = new Map<string, string>()
-  for (const f of walkPdfs(root, '')) {
+  for (const f of walkPdfs(root, NO_EXCLUDES)) {
     const key = normName(f)
     if (!map.has(key)) map.set(key, f)
   }
@@ -395,9 +406,15 @@ type ImportOutcome = 'imported' | 'skipped' | 'failed'
 async function importOneLocal(sourcePath: string): Promise<ImportOutcome> {
   try {
     const cfg = readConfig()
-    if (!cfg.vaultPath) return 'failed'
+    if (!cfg.vaultPath) {
+      logImport(`FAIL ${sourcePath} :: no vault configured`)
+      return 'failed'
+    }
     if (extname(sourcePath).toLowerCase() !== '.pdf') return 'skipped'
-    if (!existsSync(sourcePath)) return 'failed'
+    if (!existsSync(sourcePath)) {
+      logImport(`FAIL ${sourcePath} :: file not found`)
+      return 'failed'
+    }
 
     const dupe = getDb()
       .prepare('SELECT id FROM books WHERE source_path = ? OR pdf_path = ?')
@@ -410,8 +427,13 @@ async function importOneLocal(sourcePath: string): Promise<ImportOutcome> {
 
     let id: string = randomUUID()
     if (side?.id && typeof side.id === 'string') {
-      const taken = getDb().prepare('SELECT 1 FROM books WHERE id = ?').get(side.id)
-      if (!taken) id = side.id
+      // Same book already catalogued (a copy in both the vault and the local library,
+      // or in pdfs/Books and pdfs/cache) — adopt its id once, never duplicate it.
+      if (getDb().prepare('SELECT 1 FROM books WHERE id = ?').get(side.id)) {
+        logImport(`skip (already catalogued, id ${side.id}) ${sourcePath}`)
+        return 'skipped'
+      }
+      id = side.id
     }
     const title = side?.title?.trim() || titleFromFilename(sourcePath)
     const sanitized = sanitizeName(title)
@@ -421,27 +443,41 @@ async function importOneLocal(sourcePath: string): Promise<ImportOutcome> {
       // Already in the vault — reference in place; never duplicate (or hydrate Drive).
       pdfPath = sourcePath
     } else {
-      const cacheDir = join(cfg.vaultPath, 'pdfs', 'cache')
-      mkdirSync(cacheDir, { recursive: true })
-      let dest = join(cacheDir, `${sanitized}.pdf`)
-      if (existsSync(dest)) dest = join(cacheDir, `${sanitized}-${id.slice(0, 8)}.pdf`)
+      // A book added from outside the vault (e.g. dropped in the local library folder): copy it
+      // up to the Drive vault's Books folder under a canonical "Title - Author" name, so the two
+      // folders stay mirrored and the book is rebuildable from its sidecar.
+      const booksDir = join(cfg.vaultPath, 'pdfs', 'Books')
+      mkdirSync(booksDir, { recursive: true })
+      const base = fileBaseFor(title, side?.author ?? null)
+      let dest = join(booksDir, `${base}.pdf`)
+      if (existsSync(dest)) dest = join(booksDir, `${base}-${id.slice(0, 8)}.pdf`)
       await copyFile(sourcePath, dest)
       pdfPath = dest
     }
 
-    // When "keep a local copy" is on, write a working copy to the local cache now so the book
-    // is available offline immediately. Off → no local copy (getBookPdf caches it on first open).
+    // When "keep a local copy" is on, make the book available offline — but reuse a copy that
+    // already exists in the local library folder (e.g. D:\Theology\PDF) instead of re-downloading
+    // from Drive. Only genuinely Drive-only books are pulled down, into the local library folder
+    // when one is set (so it stays your single offline library), else the app's private cache.
     // Best effort — a failure here just falls back to cache-on-open.
     let localPath: string | null = null
     if (cfg.keepLocalCopies) {
-      try {
-        const localDir = join(getDataDir(), 'pdf-cache')
-        mkdirSync(localDir, { recursive: true })
-        const localDest = join(localDir, `${id}.pdf`)
-        await copyFile(sourcePath, localDest)
-        localPath = localDest
-      } catch {
-        /* fall back to cache-on-open */
+      const existing = findInPrimary(pdfPath, sourcePath)
+      if (existing) {
+        localPath = existing
+      } else {
+        try {
+          const intoLibrary = !!cfg.primaryLibraryPath && existsSync(cfg.primaryLibraryPath)
+          const dir = intoLibrary
+            ? (cfg.primaryLibraryPath as string)
+            : join(getDataDir(), 'pdf-cache')
+          mkdirSync(dir, { recursive: true })
+          const dest = intoLibrary ? join(dir, basename(sourcePath)) : join(dir, `${id}.pdf`)
+          if (!existsSync(dest)) await copyFile(sourcePath, dest)
+          localPath = dest
+        } catch {
+          /* fall back to cache-on-open */
+        }
       }
     }
 
@@ -482,8 +518,12 @@ async function importOneLocal(sourcePath: string): Promise<ImportOutcome> {
       if (side.tags?.length) setBookTags(id, side.tags)
       if (side.coverPath && existsSync(side.coverPath)) setBookCover(id, side.coverPath)
     }
+    // Ensure a metadata sidecar sits beside the PDF so the catalog stays rebuildable and a book
+    // uploaded from the local folder gets its metadata home on Drive.
+    writeSidecarForBook(id)
     return 'imported'
-  } catch {
+  } catch (e) {
+    logImport(`FAIL ${sourcePath} :: ${(e as Error)?.message ?? String(e)}`)
     return 'failed'
   }
 }
@@ -508,7 +548,9 @@ export async function quickImport(
   return result
 }
 
-function walkPdfs(dir: string, excludeDir: string): string[] {
+const NO_EXCLUDES: ReadonlySet<string> = new Set()
+
+function walkPdfs(dir: string, excludes: ReadonlySet<string>): string[] {
   const out: string[] = []
   let entries: string[]
   try {
@@ -518,7 +560,7 @@ function walkPdfs(dir: string, excludeDir: string): string[] {
   }
   for (const name of entries) {
     const full = join(dir, name)
-    if (full === excludeDir) continue
+    if (excludes.has(full)) continue
     if (name.startsWith('.')) continue
     let isDir = false
     try {
@@ -527,7 +569,7 @@ function walkPdfs(dir: string, excludeDir: string): string[] {
       continue
     }
     if (isDir) {
-      out.push(...walkPdfs(full, excludeDir))
+      out.push(...walkPdfs(full, excludes))
     } else if (name.toLowerCase().endsWith('.pdf')) {
       out.push(full)
     }
@@ -535,11 +577,109 @@ function walkPdfs(dir: string, excludeDir: string): string[] {
   return out
 }
 
+/**
+ * Every PDF the library should be (re)built from: the vault's own named PDF folders
+ * (`<vault>/pdfs/**`), minus the import `cache` (duplicate working copies) and the
+ * `Loci Metadata` sidecar tree. Each book carries a sidecar with its original id + metadata,
+ * so the catalog is rebuildable with notes/quotes still linked. Books are referenced in place;
+ * "keep local copies" then pulls each down to the local cache for offline reading. Importing
+ * from a separate local folder is intentionally *not* done here — matching the same book across
+ * differently-named local/Drive copies is unreliable and is what created duplicates before.
+ */
 export function collectSourcePdfs(): string[] {
   const cfg = readConfig()
-  if (!cfg.pdfSourcePath || !existsSync(cfg.pdfSourcePath)) return []
-  const exclude = cfg.vaultPath ? join(cfg.vaultPath, 'pdfs', 'cache') : ''
-  return walkPdfs(cfg.pdfSourcePath, exclude)
+  if (!cfg.vaultPath) return []
+  const root = join(cfg.vaultPath, 'pdfs')
+  if (!existsSync(root)) return []
+  const excludes = new Set([join(root, 'cache'), join(root, 'Loci Metadata')])
+  return walkPdfs(root, excludes)
+}
+
+/**
+ * Reconcile the catalog with the two book folders — the Drive vault's `pdfs/Books` and the local
+ * library folder — so books added to either place show up automatically and the folders mirror
+ * each other:
+ *  - Pass A: every Drive book is catalogued (source of truth; carries the sidecar id) and its
+ *    local copy is resolved local-first (reuse the local file, download only what's Drive-only).
+ *  - Pass B: a local file with no same-size copy on Drive is a new local book — it's uploaded to
+ *    the vault and catalogued. Matching is by byte size (identical copies share a size, read from
+ *    a Drive placeholder without downloading), so the same book is never catalogued twice.
+ *  - Pass C: catalog rows whose Drive PDF has gone missing are pruned (stale/quarantined entries),
+ *    but only while the vault is mounted, so an offline Drive can never trigger a mass delete.
+ */
+export async function syncLibrary(
+  onProgress?: (p: ImportProgress) => void,
+  onChanged?: () => void
+): Promise<SyncResult> {
+  const cfg = readConfig()
+  const titles: string[] = []
+  let removed = 0
+  if (!cfg.vaultPath) return { added: 0, removed: 0, total: listBooks().length, titles }
+
+  const booksDir = join(cfg.vaultPath, 'pdfs', 'Books')
+  const vaultFiles = existsSync(booksDir) ? walkPdfs(booksDir, NO_EXCLUDES) : []
+  const localFiles =
+    cfg.primaryLibraryPath && existsSync(cfg.primaryLibraryPath)
+      ? walkPdfs(cfg.primaryLibraryPath, NO_EXCLUDES)
+      : []
+
+  // Byte sizes already on Drive — to tell whether a local file is a copy of a book the vault
+  // already has (so we never upload a duplicate). statSync reads size without downloading.
+  const vaultSizes = new Set<number>()
+  for (const f of vaultFiles) {
+    try {
+      vaultSizes.add(statSync(f).size)
+    } catch {
+      /* skip unreadable */
+    }
+  }
+
+  const total = vaultFiles.length + localFiles.length
+  let done = 0
+  const tick = (): void => {
+    if (++done % 5 === 0) {
+      onProgress?.({ phase: 'importing', done, total })
+      onChanged?.()
+    }
+  }
+
+  // Pass A — every Drive book (referenced in place, local-first copy).
+  for (const vf of vaultFiles) {
+    if ((await importOneLocal(vf)) === 'imported') titles.push(titleFromFilename(vf))
+    tick()
+  }
+  // Pass B — local-only books (no same-size copy on Drive) → uploaded + catalogued.
+  for (const lf of localFiles) {
+    let size: number
+    try {
+      size = statSync(lf).size
+    } catch {
+      continue
+    }
+    if (vaultSizes.has(size)) continue
+    if ((await importOneLocal(lf)) === 'imported') titles.push(titleFromFilename(lf))
+    tick()
+  }
+  // Pass C — prune entries whose Drive PDF is gone (vault-mounted only). Delete just the catalog
+  // row + search index; never the sidecar files (those can be shared by same-named books).
+  if (existsSync(cfg.vaultPath)) {
+    const rows = getDb().prepare('SELECT id, pdf_path FROM books').all() as {
+      id: string
+      pdf_path: string | null
+    }[]
+    const del = getDb().prepare('DELETE FROM books WHERE id = ?')
+    for (const r of rows) {
+      if (r.pdf_path && !existsSync(r.pdf_path)) {
+        del.run(r.id)
+        search.removeBook(r.id)
+        removed++
+      }
+    }
+  }
+
+  onProgress?.({ phase: 'done', done: 0, total: 0 })
+  onChanged?.()
+  return { added: titles.length, removed, total: listBooks().length, titles }
 }
 
 // ---------- Enrichment (slow, network, throttled, background) ----------

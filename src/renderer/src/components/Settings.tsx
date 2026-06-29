@@ -53,7 +53,7 @@ export function Settings({ onClose }: { onClose: () => void }) {
   if (!config) return null
 
   async function changeFolder(
-    field: 'pdfSourcePath' | 'backupPath' | 'primaryLibraryPath'
+    field: 'backupPath' | 'primaryLibraryPath'
   ): Promise<void> {
     const p = await api.chooseFolder('Choose a folder')
     if (!p) return
@@ -121,9 +121,9 @@ export function Settings({ onClose }: { onClose: () => void }) {
             <p className="set-help set-intro">
               The folders below are the <strong>Vault</strong> (the master copy, synced to the
               cloud through Google Drive), an optional <strong>Primary library</strong> (a local
-              folder to read books from for speed), the <strong>PDF source</strong> (where new
-              books are imported from), and the <strong>Local backup</strong> (an on-disk
-              snapshot).
+              folder to read books from for speed), and the <strong>Local backup</strong> (an
+              on-disk snapshot). Drop a PDF into the Vault or your local library and Loci adds it
+              automatically and mirrors it to the other side — no import folder needed.
             </p>
 
             <div className="set-folder">
@@ -172,23 +172,6 @@ export function Settings({ onClose }: { onClose: () => void }) {
                 your library — e.g. your phone — and Loci streams the book from the Google Drive
                 Vault instead. If a file can’t be found here for any reason, it falls back to Drive
                 automatically.
-              </p>
-            </div>
-
-            <div className="set-folder">
-              <div className="set-row">
-                <div>
-                  <div className="set-label">PDF source — import pool</div>
-                  <div className="set-path">{config.pdfSourcePath ?? 'Not set'}</div>
-                </div>
-                <button className="btn btn-sm" onClick={() => void changeFolder('pdfSourcePath')}>
-                  <FolderOpen size={14} /> Change
-                </button>
-              </div>
-              <p className="set-help">
-                The folder Loci scans when you click <strong>Import from source</strong> to add
-                new books. It’s only the intake pool — once a book is imported it’s read from its
-                own local copy, not from here.
               </p>
             </div>
 

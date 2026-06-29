@@ -1,6 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import {
-  Upload,
   FolderInput,
   LayoutGrid,
   List as ListIcon,
@@ -195,7 +194,6 @@ export function LibraryView() {
   const saveLayout = useStore((s) => s.saveLayout)
   const activeShelf = useStore((s) => s.activeShelf)
   const setActiveShelf = useStore((s) => s.setActiveShelf)
-  const importFromSource = useStore((s) => s.importFromSource)
   const importFiles = useStore((s) => s.importFiles)
   const libraryBusy = useStore((s) => s.libraryBusy)
   const importProgress = useStore((s) => s.importProgress)
@@ -335,8 +333,8 @@ export function LibraryView() {
       .sort((a, b) => a.key.localeCompare(b.key))
   }, [groupBy, searched, shelves])
 
-  async function doImport(kind: 'source' | 'files'): Promise<void> {
-    const res = kind === 'source' ? await importFromSource() : await importFiles()
+  async function doImportFiles(): Promise<void> {
+    const res = await importFiles()
     const tail = res.imported > 0 ? ' · fetching metadata in background…' : ''
     setToast(
       `Imported ${res.imported} · skipped ${res.skipped}${res.failed ? ` · failed ${res.failed}` : ''}${tail}`
@@ -402,16 +400,10 @@ export function LibraryView() {
               <button
                 className="btn btn-sm"
                 disabled={libraryBusy}
-                onClick={() => void doImport('source')}
+                title="Books in your local and Drive folders are added automatically — use this to import PDFs from elsewhere"
+                onClick={() => void doImportFiles()}
               >
-                <Upload size={14} /> Import from source
-              </button>
-              <button
-                className="btn btn-sm"
-                disabled={libraryBusy}
-                onClick={() => void doImport('files')}
-              >
-                <FolderInput size={14} /> Choose files…
+                <FolderInput size={14} /> Add PDFs…
               </button>
               {libraryBusy && (
                 <span className="muted-inline">
@@ -556,8 +548,8 @@ export function LibraryView() {
               query.trim()
                 ? `Nothing matches “${query.trim()}”.`
                 : books.length === 0
-                  ? 'Import PDFs from your source folder, or choose files above.'
-                  : 'Try another shelf, or import more books.'
+                  ? 'Add PDFs to your local library or Drive folder and they appear here automatically — or use “Add PDFs…” above.'
+                  : 'Try another shelf, or add more books.'
             }
           />
         ) : groups ? (

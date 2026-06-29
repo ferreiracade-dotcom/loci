@@ -1,7 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { IpcRendererEvent } from 'electron'
 import { Channels } from '../shared/ipc'
-import type { ImportProgress, LociApi } from '../shared/ipc'
+import type { ImportProgress, LociApi, SyncResult } from '../shared/ipc'
 
 const api: LociApi = {
   getAppState: () => ipcRenderer.invoke(Channels.getAppState),
@@ -87,6 +87,11 @@ const api: LociApi = {
     const listener = (): void => cb()
     ipcRenderer.on(Channels.libraryChanged, listener)
     return () => ipcRenderer.removeListener(Channels.libraryChanged, listener)
+  },
+  onLibrarySynced: (cb) => {
+    const listener = (_e: IpcRendererEvent, r: SyncResult): void => cb(r)
+    ipcRenderer.on(Channels.librarySynced, listener)
+    return () => ipcRenderer.removeListener(Channels.librarySynced, listener)
   }
 }
 
