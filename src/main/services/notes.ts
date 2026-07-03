@@ -7,7 +7,7 @@ import { sanitizeName } from './library'
 import * as search from './search'
 import type { BookNote, LinkTarget, NoteSummary, NoteType, VaultHealth } from '../../shared/ipc'
 
-const NOTE_TYPES: NoteType[] = ['note', 'page', 'chapter', 'topic', 'book-note']
+const NOTE_TYPES: NoteType[] = ['note', 'page', 'chapter', 'topic', 'book-note', 'project']
 
 function typeFromContent(content: string): NoteType {
   const fm = content.match(/^---\n([\s\S]*?)\n---/)

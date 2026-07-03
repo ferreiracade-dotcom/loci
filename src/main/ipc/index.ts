@@ -233,6 +233,17 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.indexBookText, (_e, bookId: string, title: string, pages: IndexedPage[]) =>
     search.indexBookText(bookId, title, pages)
   )
+  ipcMain.handle(
+    Channels.indexScriptureChapter,
+    (
+      _e,
+      translation: string,
+      book: string,
+      chapter: number,
+      title: string,
+      verses: { verse: number; text: string }[]
+    ) => search.indexScriptureChapter(translation, book, chapter, title, verses)
+  )
   ipcMain.handle(Channels.unindexedBooks, () => search.unindexedBooks())
 
   // --- Scripture (Phase 8) ---

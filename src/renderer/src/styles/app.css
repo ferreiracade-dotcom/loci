@@ -196,6 +196,10 @@ select.field {
   display: flex;
   flex-direction: column;
 }
+.pane-frame.drag-over {
+  box-shadow: inset 0 0 0 2px var(--accent);
+  background: var(--accent-12);
+}
 .pane-head {
   display: flex;
   align-items: center;
@@ -374,6 +378,32 @@ select.field {
   font-size: 12.5px;
   padding: 12px 6px;
 }
+.pp-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.pp-row .pp-item {
+  flex: 1;
+  min-width: 0;
+}
+.pp-remove {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+.pp-remove:hover {
+  color: var(--danger, #d9534f);
+  background: var(--accent-12);
+}
 
 /* Notes-list navigator (full-center) */
 .notes-nav {
@@ -529,6 +559,16 @@ select.field {
   gap: 6px;
   align-items: center;
   margin: 8px;
+}
+.ref-drag-handle {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  color: var(--muted);
+  cursor: grab;
+}
+.ref-drag-handle:active {
+  cursor: grabbing;
 }
 .ref-bible-head .sv-goto {
   margin: 0;
@@ -1951,6 +1991,29 @@ select.field {
   background: var(--border-strong);
   margin: 0 4px;
 }
+.reader-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 3px 8px;
+  color: var(--muted);
+}
+.reader-search-input {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 12px;
+  outline: none;
+  width: 140px;
+}
+.reader-search-count {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
 .icon-btn.active {
   color: var(--accent);
   background: var(--accent-12);
@@ -3208,6 +3271,32 @@ select.field {
   font-size: 11px;
   color: var(--muted);
   padding-right: 4px;
+}
+.nt-make-project {
+  width: auto !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  padding: 0 8px !important;
+  color: var(--muted);
+  background: none;
+  border: 1px dashed var(--border-strong);
+  border-radius: 999px;
+}
+.nt-make-project:hover {
+  color: var(--accent);
+  border-color: var(--gold);
+}
+.nt-project-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  padding: 0 8px;
+  color: var(--accent);
+  background: var(--accent-12);
+  border-radius: 999px;
 }
 .note-cm {
   flex: 1;

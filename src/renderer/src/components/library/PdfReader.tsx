@@ -3,9 +3,21 @@ import * as pdfjsLib from 'pdfjs-dist'
 import { TextLayerBuilder } from 'pdfjs-dist/web/pdf_viewer.mjs'
 import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Maximize2, X, Highlighter } from 'lucide-react'
-import { useStore } from '../../store/useStore'
+import {
+  ChevronLeft,
+  ChevronRight,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  X,
+  Highlighter,
+  Search as SearchIcon,
+  ChevronUp,
+  ChevronDown
+} from 'lucide-react'
+import { useStore, foldTokens } from '../../store/useStore'
 import { api } from '../../lib/api'
+import type { SearchHit } from '@shared/ipc'
 
 interface Selection {
   text: string
@@ -53,8 +65,14 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
   const pendingPage = useStore((s) => s.pendingPage)
   const clearPendingPage = useStore((s) => s.clearPendingPage)
   const searchTerms = useStore((s) => s.searchTerms)
+  const jumpToBookPage = useStore((s) => s.jumpToBookPage)
   const [sel, setSel] = useState<Selection | null>(null)
   const [savedMsg, setSavedMsg] = useState(false)
+  // In-book search (this book's indexed pages only) — a small Ctrl+F-style box in the toolbar.
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchHits, setSearchHits] = useState<SearchHit[]>([])
+  const [hitIndex, setHitIndex] = useState(0)
   // Bumped to re-attempt the load after reconnecting a missing file.
   const [reloadKey, setReloadKey] = useState(0)
   const [relinking, setRelinking] = useState(false)
@@ -436,6 +454,46 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
     }
   }, [pendingPage, loading, numPages, clearPendingPage, searchTerms])
 
+  // In-book search: query this book's indexed pages only, in page order (not FTS relevance —
+  // Prev/Next through a book reads naturally top-to-bottom, like a browser's find-in-page).
+  useEffect(() => {
+    if (!searchOpen || !searchQuery.trim()) {
+      setSearchHits([])
+      return
+    }
+    let cancelled = false
+    const t = setTimeout(() => {
+      void api.search(searchQuery, { kind: 'page', bookId }).then((hits) => {
+        if (cancelled) return
+        const sorted = [...hits].sort((a, b) => (a.page ?? 0) - (b.page ?? 0))
+        setSearchHits(sorted)
+        setHitIndex(0)
+        if (sorted.length) jumpToBookPage(sorted[0].page ?? 1, foldTokens(searchQuery))
+      })
+    }, 300)
+    return () => {
+      cancelled = true
+      clearTimeout(t)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, searchOpen, bookId])
+
+  const stepHit = (dir: 1 | -1): void => {
+    if (!searchHits.length) return
+    const next = (hitIndex + dir + searchHits.length) % searchHits.length
+    setHitIndex(next)
+    jumpToBookPage(searchHits[next].page ?? 1, foldTokens(searchQuery))
+  }
+
+  const closeSearch = (): void => {
+    setSearchOpen(false)
+    setSearchQuery('')
+    setSearchHits([])
+    document
+      .querySelectorAll<HTMLElement>('.textLayer span.pdf-search-hit')
+      .forEach((el) => el.classList.remove('pdf-search-hit'))
+  }
+
   // Reconnect a missing/offline book to a file on disk, then re-attempt the load.
   const relink = async (): Promise<void> => {
     setRelinking(true)
@@ -545,6 +603,51 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
           <button className="icon-btn" title="Next page" onClick={() => goToPage(currentPage + 1)} disabled={currentPage >= numPages}>
             <ChevronRight size={16} />
           </button>
+          <span className="reader-sep" />
+          {searchOpen ? (
+            <span className="reader-search">
+              <SearchIcon size={14} />
+              <input
+                className="reader-search-input"
+                autoFocus
+                placeholder="Search this book…"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') stepHit(e.shiftKey ? -1 : 1)
+                  else if (e.key === 'Escape') closeSearch()
+                }}
+              />
+              {searchQuery.trim() && (
+                <span className="reader-search-count">
+                  {searchHits.length ? `${hitIndex + 1}/${searchHits.length}` : '0/0'}
+                </span>
+              )}
+              <button
+                className="icon-btn"
+                title="Previous match"
+                disabled={!searchHits.length}
+                onClick={() => stepHit(-1)}
+              >
+                <ChevronUp size={14} />
+              </button>
+              <button
+                className="icon-btn"
+                title="Next match"
+                disabled={!searchHits.length}
+                onClick={() => stepHit(1)}
+              >
+                <ChevronDown size={14} />
+              </button>
+              <button className="icon-btn" title="Close search" onClick={closeSearch}>
+                <X size={14} />
+              </button>
+            </span>
+          ) : (
+            <button className="icon-btn" title="Search this book" onClick={() => setSearchOpen(true)}>
+              <SearchIcon size={16} />
+            </button>
+          )}
           <span className="reader-sep" />
           <button className="icon-btn" title="Zoom out" onClick={() => zoom(-0.15)}>
             <ZoomOut size={16} />

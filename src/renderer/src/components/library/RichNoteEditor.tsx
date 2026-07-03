@@ -23,73 +23,14 @@ import {
   Loader2,
   FileDown,
   Plus,
-  Tag as TagIcon
+  Tag as TagIcon,
+  FolderKanban
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { findReferences } from '@shared/scriptureRef'
+import { parseNote, serializeFrontMatter, type FrontMatter } from '../../lib/noteFrontmatter'
 import type { ScripturePassage } from '@shared/ipc'
-
-// ---------- frontmatter ----------
-
-interface FrontMatter {
-  title?: string
-  type?: string
-  tags: string[]
-  /** Other frontmatter lines preserved verbatim. */
-  rest: string[]
-}
-
-function parseTagList(s: string): string[] {
-  const t = s.trim()
-  if (!t) return []
-  if (t.startsWith('[')) {
-    return t
-      .replace(/^\[|\]$/g, '')
-      .split(',')
-      .map((x) => x.trim().replace(/^['"]|['"]$/g, ''))
-      .filter(Boolean)
-  }
-  return t
-    .split(/[\s,]+/)
-    .map((x) => x.replace(/^#/, ''))
-    .filter(Boolean)
-}
-
-function parseNote(raw: string): { fm: FrontMatter; body: string } {
-  const m = raw.match(/^---\n([\s\S]*?)\n---\n?/)
-  if (!m) return { fm: { tags: [], rest: [] }, body: raw }
-  const fm: FrontMatter = { tags: [], rest: [] }
-  for (const line of m[1].split('\n')) {
-    const title = line.match(/^title:\s*(.*)$/)
-    if (title) {
-      fm.title = title[1].trim()
-      continue
-    }
-    const type = line.match(/^type:\s*(.*)$/)
-    if (type) {
-      fm.type = type[1].trim()
-      continue
-    }
-    const tags = line.match(/^tags:\s*(.*)$/)
-    if (tags) {
-      fm.tags = parseTagList(tags[1])
-      continue
-    }
-    if (line.trim()) fm.rest.push(line)
-  }
-  return { fm, body: raw.slice(m[0].length).replace(/^\s+/, '') }
-}
-
-function serializeFrontMatter(fm: FrontMatter): string {
-  const lines = ['---']
-  if (fm.title != null) lines.push(`title: ${fm.title}`)
-  if (fm.type != null) lines.push(`type: ${fm.type}`)
-  lines.push(`tags: [${fm.tags.join(', ')}]`)
-  lines.push(...fm.rest)
-  lines.push('---')
-  return lines.join('\n')
-}
 
 // ---------- wiki-link highlighting ----------
 
@@ -410,8 +351,9 @@ export function RichNoteEditor({ path }: { path: string }) {
   const [tags, setTags] = useState<string[]>([])
   const [addingTag, setAddingTag] = useState(false)
   const [tagText, setTagText] = useState('')
+  const [noteType, setNoteType] = useState<string | undefined>(undefined)
 
-  const fmRef = useRef<FrontMatter>({ tags: [], rest: [] })
+  const fmRef = useRef<FrontMatter>({ tags: [], items: [], rest: [] })
   const loadingRef = useRef(false)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -487,6 +429,7 @@ export function RichNoteEditor({ path }: { path: string }) {
       const { fm, body } = parseNote(raw)
       fmRef.current = fm
       setTags(fm.tags)
+      setNoteType(fm.type)
       // Ensure the note opens with its name as a Heading 1.
       const hasH1 = /^#\s+/.test(body)
       const titled = hasH1 ? body : `# ${fm.title ?? 'Untitled'}\n\n${body}`
@@ -519,6 +462,12 @@ export function RichNoteEditor({ path }: { path: string }) {
     setTagText('')
     setAddingTag(false)
     if (t && !tags.includes(t)) commitTags([...tags, t])
+  }
+
+  const makeProject = (): void => {
+    fmRef.current.type = 'project'
+    setNoteType('project')
+    if (editor) void save(editor)
   }
 
   const exportPdf = useCallback(async () => {
@@ -613,6 +562,19 @@ export function RichNoteEditor({ path }: { path: string }) {
         <button title="Export to PDF (with bibliography)" onClick={() => void exportPdf()} disabled={exporting}>
           {exporting ? <Loader2 size={15} className="spin" /> : <FileDown size={15} />}
         </button>
+        {noteType === 'project' ? (
+          <span className="nt-project-badge" title="This note is a Project — its sources open in the other pane">
+            <FolderKanban size={13} /> Project
+          </span>
+        ) : (
+          <button
+            className="nt-make-project"
+            title="Turn this into a Project note with its own source collection"
+            onClick={makeProject}
+          >
+            <FolderKanban size={14} /> Make Project
+          </button>
+        )}
         <span className="note-status">
           {status === 'saving' && (
             <>

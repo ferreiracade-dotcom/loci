@@ -8,7 +8,8 @@ const KINDS: { id: SearchKind; label: string }[] = [
   { id: 'all', label: 'All' },
   { id: 'page', label: 'Books' },
   { id: 'quote', label: 'Quotes' },
-  { id: 'note', label: 'Notes' }
+  { id: 'note', label: 'Notes' },
+  { id: 'scripture', label: 'Scripture' }
 ]
 
 export function SearchView({ compact = false }: { compact?: boolean }) {
@@ -26,6 +27,7 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
   const runSearch = useStore((s) => s.runSearch)
   const openBookAt = useStore((s) => s.openBookAt)
   const openNote = useStore((s) => s.openNote)
+  const navigateScripture = useStore((s) => s.navigateScripture)
   const setActiveHit = useStore((s) => s.setActiveHit)
   const indexing = useStore((s) => s.indexing)
   const startIndexing = useStore((s) => s.startIndexing)
@@ -47,6 +49,10 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
     setActiveHit(index)
     if ((h.kind === 'page' || h.kind === 'quote') && h.bookId) openBookAt(h.bookId, h.page ?? 1)
     else if (h.kind === 'note' && h.ref) openNote(h.ref)
+    else if (h.kind === 'scripture' && h.ref) {
+      const [book, chapterStr] = h.ref.split(':')
+      if (book && chapterStr) navigateScripture(book, Number(chapterStr))
+    }
   }
 
   return (

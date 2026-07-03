@@ -1,8 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
-import { BookOpen, FileText, ChevronRight, ChevronDown } from 'lucide-react'
+import { BookOpen, FileText, ScrollText, ChevronRight, ChevronDown } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import type { Book, SearchHit } from '@shared/ipc'
+
+/** Group hits by book (page/quote), by chapter ref (scripture), or bundle notes together. */
+function groupKeyFor(h: SearchHit): string {
+  if (h.bookId) return `b:${h.bookId}`
+  if (h.kind === 'scripture' && h.ref) return `s:${h.ref}`
+  return 'notes'
+}
 
 function Snippet({ text }: { text: string }) {
   const parts = text.split(/⟦|⟧/)
@@ -21,8 +28,8 @@ function Snippet({ text }: { text: string }) {
   )
 }
 
-/** Book cover for a group header; a kind icon for the Notes group. */
-function GroupThumb({ bookId, books }: { bookId: string | null; books: Book[] }) {
+/** Book cover for a group header; a kind icon for the Notes/Scripture groups. */
+function GroupThumb({ bookId, kind, books }: { bookId: string | null; kind: string; books: Book[] }) {
   const book = bookId ? books.find((b) => b.id === bookId) : undefined
   const [src, setSrc] = useState<string | null>(null)
 
@@ -43,7 +50,7 @@ function GroupThumb({ bookId, books }: { bookId: string | null; books: Book[] })
   if (src) return <img className="hit-thumb" src={src} alt="" draggable={false} />
   return (
     <div className="hit-thumb hit-thumb-fallback">
-      {bookId ? <BookOpen size={15} /> : <FileText size={15} />}
+      {bookId ? <BookOpen size={15} /> : kind === 'scripture' ? <ScrollText size={15} /> : <FileText size={15} />}
     </div>
   )
 }
@@ -52,12 +59,24 @@ interface Group {
   key: string
   title: string
   bookId: string | null
+  kind: string
   items: { h: SearchHit; i: number }[]
 }
 
-export function SearchResults({ onHit }: { onHit: (h: SearchHit, index: number) => void }) {
-  const results = useStore((s) => s.searchResults)
-  const activeHit = useStore((s) => s.activeHit)
+export function SearchResults({
+  onHit,
+  results: resultsProp,
+  activeHit: activeHitProp
+}: {
+  onHit: (h: SearchHit, index: number) => void
+  /** Defaults to the global search store — pass explicit results for a local, scoped search. */
+  results?: SearchHit[]
+  activeHit?: number | null
+}) {
+  const storeResults = useStore((s) => s.searchResults)
+  const storeActiveHit = useStore((s) => s.activeHit)
+  const results = resultsProp ?? storeResults
+  const activeHit = resultsProp ? (activeHitProp ?? null) : storeActiveHit
   const books = useStore((s) => s.books)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const activeChildRef = useRef<HTMLButtonElement | null>(null)
@@ -67,7 +86,7 @@ export function SearchResults({ onHit }: { onHit: (h: SearchHit, index: number) 
     if (activeHit == null) return
     const h = results[activeHit]
     if (!h) return
-    const key = h.bookId ? `b:${h.bookId}` : 'notes'
+    const key = groupKeyFor(h)
     setExpanded((prev) => (prev.has(key) ? prev : new Set(prev).add(key)))
   }, [activeHit, results])
 
@@ -76,19 +95,19 @@ export function SearchResults({ onHit }: { onHit: (h: SearchHit, index: number) 
     activeChildRef.current?.scrollIntoView({ block: 'nearest' })
   }, [activeHit, expanded])
 
-  // Group hits by book (note hits collect under one "Notes" group), in order.
+  // Group hits by book, by scripture chapter, or bundle notes together, in order.
   const groups: Group[] = []
   const byKey = new Map<string, Group>()
   results.forEach((h, i) => {
-    const key = h.bookId ? `b:${h.bookId}` : 'notes'
+    const key = groupKeyFor(h)
     let g = byKey.get(key)
     if (!g) {
-      g = {
-        key,
-        title: h.bookId ? books.find((b) => b.id === h.bookId)?.title ?? h.title : 'Notes',
-        bookId: h.bookId,
-        items: []
-      }
+      const title = h.bookId
+        ? (books.find((b) => b.id === h.bookId)?.title ?? h.title)
+        : h.kind === 'scripture'
+          ? h.title
+          : 'Notes'
+      g = { key, title, bookId: h.bookId, kind: h.kind, items: [] }
       byKey.set(key, g)
       groups.push(g)
     }
@@ -105,6 +124,7 @@ export function SearchResults({ onHit }: { onHit: (h: SearchHit, index: number) 
 
   const childLabel = (h: SearchHit): string => {
     if (h.kind === 'note') return h.title || 'Note'
+    if (h.kind === 'scripture') return h.page != null ? `v. ${h.page}` : '—'
     if (h.page != null) {
       // Show the book's printed page (PDF page minus its front-matter offset).
       const book = books.find((b) => b.id === h.bookId)
@@ -125,7 +145,7 @@ export function SearchResults({ onHit }: { onHit: (h: SearchHit, index: number) 
               onClick={() => toggle(g.key)}
             >
               {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-              <GroupThumb bookId={g.bookId} books={books} />
+              <GroupThumb bookId={g.bookId} kind={g.kind} books={books} />
               <span className="hit-group-title">{g.title}</span>
               <span className="hit-group-count">{g.items.length}</span>
             </button>

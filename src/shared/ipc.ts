@@ -54,6 +54,7 @@ export const Channels = {
   vaultHealth: 'vault:health',
   search: 'search:query',
   indexBookText: 'search:indexBookText',
+  indexScriptureChapter: 'search:indexScriptureChapter',
   unindexedBooks: 'search:unindexed',
   exportNotePdf: 'export:notePdf',
 
@@ -235,6 +236,15 @@ export interface LociApi {
   vaultHealth(): Promise<VaultHealth>
   search(query: string, scope: SearchScope): Promise<SearchHit[]>
   indexBookText(bookId: string, title: string, pages: IndexedPage[]): Promise<void>
+  /** Index a Bible chapter's verses for search — a no-op unless translation is 'BSB'
+   *  (copyrighted translations are never persisted, enforced on the main-process side too). */
+  indexScriptureChapter(
+    translation: string,
+    book: string,
+    chapter: number,
+    title: string,
+    verses: ScriptureVerse[]
+  ): Promise<void>
   unindexedBooks(): Promise<{ id: string; title: string }[]>
   /** Render a note to a styled academic PDF; returns the saved path or null if cancelled. */
   exportNotePdf(opts: ExportOptions): Promise<string | null>
@@ -375,7 +385,7 @@ export interface Annotation {
   createdAt: number
 }
 
-export type NoteType = 'note' | 'page' | 'chapter' | 'topic' | 'book-note'
+export type NoteType = 'note' | 'page' | 'chapter' | 'topic' | 'book-note' | 'project'
 
 export interface NoteSummary {
   path: string
@@ -383,6 +393,12 @@ export interface NoteSummary {
   type: NoteType
   tags: string[]
 }
+
+/** A source added to a project note's collection (see NoteType 'project'). */
+export type ProjectItem =
+  | { kind: 'book'; id: string }
+  | { kind: 'note'; path: string }
+  | { kind: 'scripture'; book: string; chapter: number }
 
 export interface BrokenLink {
   /** Vault-relative path of the note that contains the broken link. */
@@ -420,17 +436,19 @@ export type LinkTarget =
   | { type: 'note'; path: string }
   | null
 
-export type SearchKind = 'all' | 'page' | 'quote' | 'note'
+export type SearchKind = 'all' | 'page' | 'quote' | 'note' | 'scripture'
 
 export interface SearchScope {
   kind: SearchKind
   bookId?: string | null
   shelfId?: string | null
   tag?: string | null
+  /** Restrict to exactly this set of sources (a project's collection). */
+  items?: ProjectItem[] | null
 }
 
 export interface SearchHit {
-  kind: 'page' | 'quote' | 'note'
+  kind: 'page' | 'quote' | 'note' | 'scripture'
   bookId: string | null
   ref: string | null
   page: number | null

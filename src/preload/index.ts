@@ -58,6 +58,8 @@ const api: LociApi = {
   search: (query, scope) => ipcRenderer.invoke(Channels.search, query, scope),
   indexBookText: (bookId, title, pages) =>
     ipcRenderer.invoke(Channels.indexBookText, bookId, title, pages),
+  indexScriptureChapter: (translation, book, chapter, title, verses) =>
+    ipcRenderer.invoke(Channels.indexScriptureChapter, translation, book, chapter, title, verses),
   unindexedBooks: () => ipcRenderer.invoke(Channels.unindexedBooks),
   exportNotePdf: (opts) => ipcRenderer.invoke(Channels.exportNotePdf, opts),
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { GripVertical } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { PdfReader } from './PdfReader'
@@ -35,6 +36,19 @@ export function ReferencePdfPanel() {
   return (
     <div className="ref-pdf">
       <div className="ref-pdf-head">
+        {bookId && (
+          <span
+            className="ref-drag-handle"
+            draggable
+            title="Drag this book into a project"
+            onDragStart={(e) => {
+              e.dataTransfer.setData('application/x-loci-book', bookId)
+              e.dataTransfer.effectAllowed = 'copy'
+            }}
+          >
+            <GripVertical size={14} />
+          </span>
+        )}
         <select
           className="book-select"
           value={bookId ?? ''}

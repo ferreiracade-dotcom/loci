@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Search } from 'lucide-react'
+import { Search, GripVertical } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { parseReference } from '@shared/scriptureRef'
@@ -86,6 +86,17 @@ export function ReferenceBiblePanel() {
   return (
     <div className="ref-bible">
       <div className="ref-bible-head">
+        <span
+          className="ref-drag-handle"
+          draggable
+          title="Drag this chapter into a project"
+          onDragStart={(e) => {
+            e.dataTransfer.setData('application/x-loci-scripture', `${book}:${chapter}`)
+            e.dataTransfer.effectAllowed = 'copy'
+          }}
+        >
+          <GripVertical size={14} />
+        </span>
         <form className={`sv-goto${refError ? ' error' : ''}`} onSubmit={goToRef}>
           <Search size={14} className="sv-goto-icon" />
           <input

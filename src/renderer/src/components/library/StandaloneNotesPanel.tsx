@@ -98,6 +98,11 @@ export function StandaloneNotesPanel() {
             <button
               key={n.path}
               className="backlink-row"
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData('application/x-loci-note', n.path)
+                e.dataTransfer.effectAllowed = 'copy'
+              }}
               onClick={() => openSidebarNote(n.path)}
             >
               <FileText size={14} />

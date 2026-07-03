@@ -4,6 +4,7 @@ import { applyTheme } from '../lib/theme'
 import { extractAndIndexBook } from '../lib/pdfIndex'
 import { parseReference } from '@shared/scriptureRef'
 import { DEFAULT_THEME } from '@shared/ipc'
+import { parseNote, serializeFrontMatter } from '../lib/noteFrontmatter'
 import type {
   Annotation,
   AppState,
@@ -16,6 +17,7 @@ import type {
   NewScriptureHighlight,
   NoteSummary,
   PanelLayout,
+  ProjectItem,
   PublicConfig,
   NoteType,
   Quote,
@@ -87,6 +89,36 @@ function reflectPanes(panes: Pane[], activeId: string | null): Partial<Store> {
   return patch
 }
 
+/** The note pane (if any) whose note is a Project — independent of which pane has focus, since
+ *  a project's sibling pane (the sources surface) restricts based on this, not on focus. */
+function findProjectPane(panes: Pane[], standaloneNotes: NoteSummary[]): Pane | null {
+  return (
+    panes.find(
+      (p) =>
+        p.kind === 'note' &&
+        standaloneNotes.find((n) => n.path === p.notePath)?.type === 'project'
+    ) ?? null
+  )
+}
+
+function sameProjectItem(a: ProjectItem, b: ProjectItem): boolean {
+  if (a.kind !== b.kind) return false
+  if (a.kind === 'book' && b.kind === 'book') return a.id === b.id
+  if (a.kind === 'note' && b.kind === 'note') return a.path === b.path
+  if (a.kind === 'scripture' && b.kind === 'scripture') {
+    return a.book === b.book && a.chapter === b.chapter
+  }
+  return false
+}
+
+/** Rewrite a project note's `items:` frontmatter line, preserving everything else. */
+async function writeProjectItems(path: string, items: ProjectItem[]): Promise<void> {
+  const raw = await api.readNote(path)
+  const { fm, body } = parseNote(raw)
+  fm.items = items
+  await api.saveNote(path, `${serializeFrontMatter(fm)}\n\n${body}`)
+}
+
 function persistWorkspace(panes: Pane[], activePaneId: string | null, paneRatio: number): void {
   // Don't persist not-yet-filled (empty) panes — they'd restore as blank pickers.
   const keep = panes.filter((p) => p.kind !== 'empty')
@@ -154,6 +186,8 @@ interface Store {
   activePaneId: string | null
   /** Split ratio between the two panes (0.2–0.8). */
   paneRatio: number
+  /** The Project note open in either pane, and its source collection, or null. */
+  activeProject: { path: string; items: ProjectItem[] } | null
 
   init: () => Promise<void>
   enter: () => void
@@ -173,6 +207,8 @@ interface Store {
   openBook: (id: string) => void
   openBookAt: (id: string, page: number) => void
   clearPendingPage: () => void
+  /** Jump the open book to a page and flash-highlight the given terms (in-book search). */
+  jumpToBookPage: (page: number, terms: string[]) => void
   closeBook: () => void
   loadStandaloneNotes: () => Promise<void>
   createNote: (title: string, type?: NoteType) => Promise<void>
@@ -238,10 +274,16 @@ interface Store {
   /** Reset a pane to the content picker without closing it. */
   setPaneEmpty: (id: string) => void
   /** Create a note and place it into a specific pane (used by the picker). */
-  createNoteInPane: (id: string, title: string, type?: NoteType) => Promise<void>
+  createNoteInPane: (id: string, title: string, type?: NoteType) => Promise<NoteSummary>
+
+  // --- Project notes ---
+  /** Recompute `activeProject` from the current panes; a no-op refetch if unchanged. */
+  refreshActiveProject: () => Promise<void>
+  addProjectItem: (item: ProjectItem) => Promise<void>
+  removeProjectItem: (item: ProjectItem) => Promise<void>
 }
 
-function foldTokens(query: string): string[] {
+export function foldTokens(query: string): string[] {
   return (
     query
       .toLowerCase()
@@ -331,6 +373,7 @@ export const useStore = create<Store>((set, get) => {
     panes: [],
     activePaneId: null,
     paneRatio: 0.5,
+    activeProject: null,
 
     init: async () => {
       if (!listenersBound) {
@@ -414,6 +457,7 @@ export const useStore = create<Store>((set, get) => {
         phase: 'welcome'
       })
       if (reflected.openBookId) void get().loadQuotes(reflected.openBookId)
+      void get().refreshActiveProject()
     },
 
     enter: () => set({ phase: 'ready' }),
@@ -498,6 +542,8 @@ export const useStore = create<Store>((set, get) => {
     },
 
     clearPendingPage: () => set({ pendingPage: null }),
+
+    jumpToBookPage: (page, terms) => set({ pendingPage: page, searchTerms: terms }),
 
     closeBook: () => {
       const pdf = get().panes.find((p) => p.kind === 'pdf')
@@ -897,6 +943,7 @@ export const useStore = create<Store>((set, get) => {
       }
       set({ panes: next, activePaneId: activeId, ...reflectPanes(next, activeId) })
       persistWorkspace(next, activeId, get().paneRatio)
+      void get().refreshActiveProject()
     },
 
     closePane: (id) => {
@@ -905,6 +952,7 @@ export const useStore = create<Store>((set, get) => {
       const activeId = activePaneId === id ? (next[0]?.id ?? null) : activePaneId
       set({ panes: next, activePaneId: activeId, ...reflectPanes(next, activeId) })
       persistWorkspace(next, activeId, get().paneRatio)
+      void get().refreshActiveProject()
     },
 
     focusPane: (id) => {
@@ -925,6 +973,7 @@ export const useStore = create<Store>((set, get) => {
       const next = panes.map((p) => (p.id === id ? { ...paneFromContent(content), id } : p))
       set({ panes: next, activePaneId: id, ...reflectPanes(next, id) })
       persistWorkspace(next, id, get().paneRatio)
+      void get().refreshActiveProject()
     },
 
     addPane: () => {
@@ -941,12 +990,48 @@ export const useStore = create<Store>((set, get) => {
       const next = panes.map((p) => (p.id === id ? { id, kind: 'empty' as const } : p))
       set({ panes: next, activePaneId: id, ...reflectPanes(next, id) })
       persistWorkspace(next, id, get().paneRatio)
+      void get().refreshActiveProject()
     },
 
     createNoteInPane: async (id, title, type) => {
       const note = await api.createNote(title, type)
       await get().loadStandaloneNotes()
       get().setPaneContent(id, { kind: 'note', notePath: note.path })
+      return note
+    },
+
+    refreshActiveProject: async () => {
+      const { panes, standaloneNotes, activeProject } = get()
+      const projectPane = findProjectPane(panes, standaloneNotes)
+      if (!projectPane?.notePath) {
+        if (activeProject) set({ activeProject: null })
+        return
+      }
+      // Already tracking this exact project — don't clobber items just added/removed locally.
+      if (activeProject?.path === projectPane.notePath) return
+      const raw = await api.readNote(projectPane.notePath)
+      const { fm } = parseNote(raw)
+      // Guard against a stale response if the workspace changed again while this was in flight.
+      if (findProjectPane(get().panes, get().standaloneNotes)?.notePath !== projectPane.notePath) {
+        return
+      }
+      set({ activeProject: { path: projectPane.notePath, items: fm.items } })
+    },
+
+    addProjectItem: async (item) => {
+      const proj = get().activeProject
+      if (!proj || proj.items.some((i) => sameProjectItem(i, item))) return
+      const items = [...proj.items, item]
+      set({ activeProject: { ...proj, items } })
+      await writeProjectItems(proj.path, items)
+    },
+
+    removeProjectItem: async (item) => {
+      const proj = get().activeProject
+      if (!proj) return
+      const items = proj.items.filter((i) => !sameProjectItem(i, item))
+      set({ activeProject: { ...proj, items } })
+      await writeProjectItems(proj.path, items)
     }
   }
 })

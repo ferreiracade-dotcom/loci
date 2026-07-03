@@ -43,7 +43,16 @@ export function BacklinksPanel() {
         {links.length} backlink{links.length === 1 ? '' : 's'}
       </div>
       {links.map((l) => (
-        <button key={l.path} className="backlink-row" onClick={() => openNote(l.path)}>
+        <button
+          key={l.path}
+          className="backlink-row"
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.setData('application/x-loci-note', l.path)
+            e.dataTransfer.effectAllowed = 'copy'
+          }}
+          onClick={() => openNote(l.path)}
+        >
           <FileText size={14} />
           <span>{l.title}</span>
         </button>

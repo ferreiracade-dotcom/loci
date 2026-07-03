@@ -97,6 +97,11 @@ export function ScriptureReader({
         setPassage(p)
         setLoading(false)
         if (!p) setError('Could not load this chapter.')
+        // Opportunistically index this chapter for search, same as PDFs index on open — only
+        // for the public-domain translation (canHighlight is already this exact distinction).
+        else if (canHighlight) {
+          void api.indexScriptureChapter(translation, book, chapter, p.reference, p.verses)
+        }
       })
       .catch(() => {
         if (!alive) return

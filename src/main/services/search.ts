@@ -8,7 +8,7 @@ function ftsQuery(raw: string): string {
 }
 
 interface HitRow {
-  kind: 'page' | 'quote' | 'note'
+  kind: 'page' | 'quote' | 'note' | 'scripture'
   bookId: string | null
   ref: string | null
   page: number | null
@@ -40,6 +40,34 @@ export function search(query: string, scope: SearchScope): SearchHit[] {
       'search_fts.book_id IN (SELECT bt.book_id FROM book_tags bt JOIN tags t ON t.id = bt.tag_id WHERE t.name = @tag)'
     )
     params.tag = scope.tag
+  }
+  if (scope.items) {
+    // Restrict to exactly this set of sources (a project's collection). Books match on
+    // book_id (covers both indexed pages and quotes saved from that book); notes and scripture
+    // chapters match on ref. An items scope with nothing indexable in it matches no rows.
+    const bookIds = scope.items.filter((i) => i.kind === 'book').map((i) => i.id)
+    const notePaths = scope.items.filter((i) => i.kind === 'note').map((i) => i.path)
+    const scriptureRefs = scope.items
+      .filter((i) => i.kind === 'scripture')
+      .map((i) => `${i.book}:${i.chapter}`)
+    const parts: string[] = []
+    bookIds.forEach((id, i) => (params[`bid${i}`] = id))
+    if (bookIds.length) {
+      parts.push(`search_fts.book_id IN (${bookIds.map((_, i) => `@bid${i}`).join(',')})`)
+    }
+    notePaths.forEach((p, i) => (params[`np${i}`] = p))
+    if (notePaths.length) {
+      parts.push(
+        `(search_fts.kind = 'note' AND search_fts.ref IN (${notePaths.map((_, i) => `@np${i}`).join(',')}))`
+      )
+    }
+    scriptureRefs.forEach((r, i) => (params[`sr${i}`] = r))
+    if (scriptureRefs.length) {
+      parts.push(
+        `(search_fts.kind = 'scripture' AND search_fts.ref IN (${scriptureRefs.map((_, i) => `@sr${i}`).join(',')}))`
+      )
+    }
+    where.push(parts.length ? `(${parts.join(' OR ')})` : '0')
   }
 
   const rows = getDb()
@@ -134,6 +162,31 @@ export function removeBook(bookId: string): void {
   getDb()
     .prepare("DELETE FROM search_fts WHERE book_id = ? AND kind IN ('page', 'quote')")
     .run(bookId)
+}
+
+/**
+ * Index a Bible chapter's verses for search — BSB only, hard-guarded here (not just by caller
+ * discipline), since copyrighted translations (NKJV/NASB/ESV) must never be persisted to disk.
+ * `ref` is "<USFM code>:<chapter>" (e.g. "JHN:3"), matching how project scripture items and
+ * SearchScope.items build their scripture refs.
+ */
+export function indexScriptureChapter(
+  translation: string,
+  book: string,
+  chapter: number,
+  title: string,
+  verses: { verse: number; text: string }[]
+): void {
+  if (translation !== 'BSB') return
+  const db = getDb()
+  const ref = `${book}:${chapter}`
+  db.prepare("DELETE FROM search_fts WHERE kind = 'scripture' AND ref = ?").run(ref)
+  const ins = db.prepare(
+    "INSERT INTO search_fts (content, kind, book_id, ref, page, title) VALUES (?, 'scripture', NULL, ?, ?, ?)"
+  )
+  for (const v of verses) {
+    if (v.text.trim()) ins.run(v.text, ref, v.verse, title)
+  }
 }
 
 export function unindexedBooks(): { id: string; title: string }[] {
