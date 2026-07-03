@@ -219,9 +219,10 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
               <button
                 className="btn btn-sm bi-refetch"
                 disabled={libraryBusy}
+                title="Re-derive title, author, and series from the PDF's file name"
                 onClick={() => void refetchMetadata(book.id)}
               >
-                <RefreshCw size={14} className={libraryBusy ? 'spin' : ''} /> Refetch metadata
+                <RefreshCw size={14} className={libraryBusy ? 'spin' : ''} /> Re-parse from filename
               </button>
               <div className={`bi-source ${book.pdfSource}`} title={SOURCE_LABEL[book.pdfSource]}>
                 {book.pdfSource === 'drive' ? (

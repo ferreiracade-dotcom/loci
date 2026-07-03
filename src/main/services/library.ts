@@ -15,7 +15,6 @@ import { copyFile } from 'fs/promises'
 import { basename, dirname, extname, isAbsolute, join, relative } from 'path'
 import { getDataDir, getDb } from '../db/connection'
 import { readConfig } from './config'
-import { downloadCover, fetchBookMeta } from './metadata'
 import * as search from './search'
 import {
   moveSidecar,
@@ -69,15 +68,76 @@ export function sanitizeName(name: string): string {
   return cleaned || 'untitled'
 }
 
-/** Build the on-disk file base ("Title - Author") so the author shows in the file name. */
-function fileBaseFor(title: string, author: string | null): string {
+/** Build the on-disk file base ("Title (Series N) - Author") from a book's metadata. */
+function fileBaseFor(
+  title: string,
+  author: string | null,
+  series?: string | null,
+  seriesNumber?: string | null
+): string {
   const t = title.trim()
   const a = (author ?? '').trim()
-  if (!a) return sanitizeName(t)
-  const norm = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]/g, '')
+  const s = (series ?? '').trim()
+  const n = (seriesNumber ?? '').trim()
+  const withSeries = s ? `${t} (${s}${n ? ` ${n}` : ''})` : t
+  if (!a) return sanitizeName(withSeries)
+  const norm = (x: string): string => x.toLowerCase().replace(/[^a-z0-9]/g, '')
   // Don't double up when the title already ends with the author name.
-  if (norm(t).endsWith(norm(a))) return sanitizeName(t)
-  return sanitizeName(`${t} - ${a}`)
+  if (norm(withSeries).endsWith(norm(a))) return sanitizeName(withSeries)
+  return sanitizeName(`${withSeries} - ${a}`)
+}
+
+/** Authors are stored as one string joined with " & " (see renderer's lib/authors.ts);
+ *  tolerate "&", ";", or " and " from the file name and normalize to that canonical form
+ *  so a multi-author book still groups/searches as separate authors. */
+function normalizeAuthors(raw: string): string {
+  return raw
+    .split(/\s*[&;]\s*|\s+and\s+/i)
+    .map((a) => a.trim())
+    .filter(Boolean)
+    .join(' & ')
+}
+
+export interface ParsedFilenameMeta {
+  title: string
+  author: string | null
+  series: string | null
+  seriesNumber: string | null
+}
+
+/** A handful of pre-existing excerpt files are named "Quenstedt - Topic" (author first, the
+ *  reverse of the Title - Author convention) — recognized and left unsplit rather than
+ *  mis-parsed as title "Quenstedt", author "Topic". */
+const REVERSED_AUTHOR_PREFIX = /^quenstedt$/i
+
+/**
+ * Parse "Title (Series N) - Author" from a PDF's file name (no extension), per the user's
+ * fixed local naming convention: the *last* " - " separates the author (possibly more than
+ * one, joined by "&"/"and"/";"); a trailing "(Series N)" bracket on the title names its series
+ * and volume number. Files outside the convention (no " - ", or the reversed exception above)
+ * are left as-is: the whole name becomes the title, author/series stay null.
+ */
+export function parseFilenameMeta(base: string): ParsedFilenameMeta {
+  const cleaned = base.replace(/_+/g, ' ').replace(/\s+/g, ' ').trim()
+  const sepIdx = cleaned.lastIndexOf(' - ')
+  if (sepIdx === -1) return { title: cleaned, author: null, series: null, seriesNumber: null }
+  if (REVERSED_AUTHOR_PREFIX.test(cleaned.slice(0, sepIdx).trim())) {
+    return { title: cleaned, author: null, series: null, seriesNumber: null }
+  }
+  const authorRaw = cleaned.slice(sepIdx + 3).trim()
+  const author = authorRaw ? normalizeAuthors(authorRaw) : null
+  let titlePart = cleaned.slice(0, sepIdx).trim()
+  let series: string | null = null
+  let seriesNumber: string | null = null
+  // Series is only recognized as a trailing "(Name N)" bracket — a bare "(Note)" with no
+  // volume number is left alone, since it isn't necessarily series info.
+  const bracketMatch = titlePart.match(/^(.*?)\s*\(([^()]*?)\s+(\d+(?:\.\d+)?)\)\s*$/)
+  if (bracketMatch) {
+    titlePart = bracketMatch[1].trim()
+    series = bracketMatch[2].trim() || null
+    seriesNumber = bracketMatch[3]
+  }
+  return { title: titlePart || cleaned, author, series, seriesNumber }
 }
 
 /** Rename a file to <base><ext> in its own directory; returns the resulting path. */
@@ -109,10 +169,6 @@ function coversDir(): string {
 function isInside(child: string, parent: string): boolean {
   const rel = relative(parent, child)
   return !!rel && !rel.startsWith('..') && !isAbsolute(rel)
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((r) => setTimeout(r, ms))
 }
 
 /** Append a line to the import log so skipped/failed files are diagnosable after the fact. */
@@ -314,11 +370,15 @@ export function setBookLastPage(id: string, page: number): void {
 }
 
 /**
- * Make the whole library offline-ready: for every book without a present local copy, adopt
- * a primary-library hit or copy the Drive vault copy into the local cache. Reading from a
- * Drive (Stream) placeholder hydrates it, so this also pulls cloud-only books down. Books
- * whose file can't be located (moved/deleted, or Drive offline) are reported as `missing`
- * and can be reconnected one-by-one with relinkBookToFile.
+ * Make the whole library offline-ready: for every book without a present local copy, adopt an
+ * existing copy from the local library folder (matched by name OR byte size, so a book already
+ * on disk under a different name is never re-downloaded as a second copy) or, only when it's
+ * genuinely not local, copy the Drive vault copy down — into the local library folder when one
+ * is set (so it becomes your single complete offline library) else the app's private cache.
+ * Reading a Drive (Stream) placeholder hydrates it, so this pulls cloud-only books down. Books
+ * whose file can't be located (moved/deleted, or Drive offline) are reported as `missing` and
+ * can be reconnected one-by-one with relinkBookToFile. Slow (network) and yields between books,
+ * so it's safe to run in the background.
  */
 export async function backfillLocalCopies(onChanged?: () => void): Promise<{
   connected: number
@@ -326,32 +386,60 @@ export async function backfillLocalCopies(onChanged?: () => void): Promise<{
   missing: number
 }> {
   const db = getDb()
+  const cfg = readConfig()
   const rows = db.prepare('SELECT id, pdf_path, local_path FROM books').all() as {
     id: string
     pdf_path: string | null
     local_path: string | null
   }[]
   const res = { connected: 0, alreadyLocal: 0, missing: 0 }
-  const localDir = join(getDataDir(), 'pdf-cache')
-  mkdirSync(localDir, { recursive: true })
+  const libraryDir =
+    cfg.primaryLibraryPath && existsSync(cfg.primaryLibraryPath) ? cfg.primaryLibraryPath : null
+  const cacheDir = join(getDataDir(), 'pdf-cache')
+  mkdirSync(cacheDir, { recursive: true })
+
+  // Index the local library by byte size so a book already present under a different name than
+  // the vault's canonical one is adopted, not downloaded again. (Name matching: findInPrimary.)
+  const bySize = new Map<number, string>()
+  if (libraryDir) {
+    for (const f of walkPdfs(libraryDir, NO_EXCLUDES)) {
+      try {
+        const s = statSync(f).size
+        if (!bySize.has(s)) bySize.set(s, f)
+      } catch {
+        /* skip unreadable */
+      }
+    }
+  }
+
   const setLocal = db.prepare('UPDATE books SET local_path = ? WHERE id = ?')
   let done = 0
   for (const r of rows) {
     if (r.local_path && existsSync(r.local_path)) {
       res.alreadyLocal++
     } else {
-      const primary = findInPrimary(r.pdf_path, r.local_path)
-      if (primary) {
+      let adopt = findInPrimary(r.pdf_path, r.local_path)
+      if (!adopt && libraryDir && r.pdf_path && existsSync(r.pdf_path)) {
         try {
-          setLocal.run(primary, r.id)
+          const hit = bySize.get(statSync(r.pdf_path).size) // vault placeholder size, no download
+          if (hit && existsSync(hit)) adopt = hit
+        } catch {
+          /* skip */
+        }
+      }
+      if (adopt) {
+        try {
+          setLocal.run(adopt, r.id)
         } catch {
           /* best effort */
         }
         res.alreadyLocal++
       } else if (r.pdf_path && existsSync(r.pdf_path)) {
         try {
-          const dest = join(localDir, `${r.id}.pdf`)
-          await copyFile(r.pdf_path, dest)
+          const dest = libraryDir
+            ? join(libraryDir, basename(r.pdf_path))
+            : join(cacheDir, `${r.id}.pdf`)
+          if (!existsSync(dest)) await copyFile(r.pdf_path, dest)
           setLocal.run(dest, r.id)
           res.connected++
         } catch {
@@ -361,7 +449,10 @@ export async function backfillLocalCopies(onChanged?: () => void): Promise<{
         res.missing++
       }
     }
-    if (++done % 5 === 0) onChanged?.()
+    if (++done % 5 === 0) {
+      onChanged?.()
+      await yieldToLoop() // keep the app responsive during the slow background download
+    }
   }
   invalidatePrimaryIndex()
   onChanged?.()
@@ -403,7 +494,10 @@ export function relinkBookToFile(id: string, srcPath: string): Book | null {
 
 type ImportOutcome = 'imported' | 'skipped' | 'failed'
 
-async function importOneLocal(sourcePath: string): Promise<ImportOutcome> {
+async function importOneLocal(
+  sourcePath: string,
+  opts?: { skipDownload?: boolean }
+): Promise<ImportOutcome> {
   try {
     const cfg = readConfig()
     if (!cfg.vaultPath) {
@@ -435,7 +529,13 @@ async function importOneLocal(sourcePath: string): Promise<ImportOutcome> {
       }
       id = side.id
     }
-    const title = side?.title?.trim() || titleFromFilename(sourcePath)
+    // The file name is the source of truth for title/author/series ("Title (Series N) -
+    // Author"); a sidecar's saved values (from prior manual edits) take priority when present.
+    const parsed = parseFilenameMeta(titleFromFilename(sourcePath))
+    const title = side?.title?.trim() || parsed.title
+    const author = side?.author ?? parsed.author
+    const series = side?.series ?? parsed.series
+    const seriesNumber = side?.seriesNumber ?? parsed.seriesNumber
     const sanitized = sanitizeName(title)
 
     let pdfPath: string
@@ -444,11 +544,11 @@ async function importOneLocal(sourcePath: string): Promise<ImportOutcome> {
       pdfPath = sourcePath
     } else {
       // A book added from outside the vault (e.g. dropped in the local library folder): copy it
-      // up to the Drive vault's Books folder under a canonical "Title - Author" name, so the two
-      // folders stay mirrored and the book is rebuildable from its sidecar.
+      // up to the Drive vault's Books folder under a canonical "Title (Series N) - Author" name,
+      // so the two folders stay mirrored and the book is rebuildable from its sidecar.
       const booksDir = join(cfg.vaultPath, 'pdfs', 'Books')
       mkdirSync(booksDir, { recursive: true })
-      const base = fileBaseFor(title, side?.author ?? null)
+      const base = fileBaseFor(title, author, series, seriesNumber)
       let dest = join(booksDir, `${base}.pdf`)
       if (existsSync(dest)) dest = join(booksDir, `${base}-${id.slice(0, 8)}.pdf`)
       await copyFile(sourcePath, dest)
@@ -459,13 +559,15 @@ async function importOneLocal(sourcePath: string): Promise<ImportOutcome> {
     // already exists in the local library folder (e.g. D:\Theology\PDF) instead of re-downloading
     // from Drive. Only genuinely Drive-only books are pulled down, into the local library folder
     // when one is set (so it stays your single offline library), else the app's private cache.
+    // During the startup reconcile (skipDownload) we adopt an existing local copy but never
+    // download inline — that heavy backfill runs in the background so the catalog builds fast.
     // Best effort — a failure here just falls back to cache-on-open.
     let localPath: string | null = null
     if (cfg.keepLocalCopies) {
       const existing = findInPrimary(pdfPath, sourcePath)
       if (existing) {
         localPath = existing
-      } else {
+      } else if (!opts?.skipDownload) {
         try {
           const intoLibrary = !!cfg.primaryLibraryPath && existsSync(cfg.primaryLibraryPath)
           const dir = intoLibrary
@@ -497,9 +599,9 @@ async function importOneLocal(sourcePath: string): Promise<ImportOutcome> {
         id,
         title,
         san: sanitized,
-        author: side?.author ?? null,
-        series: side?.series ?? null,
-        num: side?.seriesNumber ?? null,
+        author,
+        series,
+        num: seriesNumber,
         abbr: side?.seriesAbbr ?? null,
         year: side?.year ?? null,
         publisher: side?.publisher ?? null,
@@ -510,8 +612,9 @@ async function importOneLocal(sourcePath: string): Promise<ImportOutcome> {
         source: sourcePath,
         added: Date.now(),
         status,
-        // Sidecar metadata is authoritative — don't re-hit Google Books for it.
-        fetched: side ? 1 : 0
+        // Title/author/series are already parsed from the file name above — nothing left
+        // to enrich in the background.
+        fetched: 1
       })
 
     if (side) {
@@ -549,6 +652,15 @@ export async function quickImport(
 }
 
 const NO_EXCLUDES: ReadonlySet<string> = new Set()
+
+/**
+ * Yield the main-process event loop so a long reconcile (hundreds of synchronous stat/DB/file
+ * ops) never blocks IPC — otherwise the window stops pumping and Windows marks it "Not
+ * Responding" while the catalog is rebuilt on startup.
+ */
+function yieldToLoop(): Promise<void> {
+  return new Promise((resolve) => setImmediate(resolve))
+}
 
 function walkPdfs(dir: string, excludes: ReadonlySet<string>): string[] {
   const out: string[] = []
@@ -624,17 +736,44 @@ export async function syncLibrary(
       : []
 
   // Byte sizes already on Drive — to tell whether a local file is a copy of a book the vault
-  // already has (so we never upload a duplicate). statSync reads size without downloading.
+  // already has (so we never upload a duplicate). A local file is a copy of a book the vault
+  // already holds if it matches by byte size OR by normalized name — the local library mirrors
+  // the vault under the same "Title - Author.pdf" names, but a file that was re-saved differs in
+  // size while keeping its name, and a renamed copy keeps its size; either signal alone misses
+  // real duplicates, so we treat a match on *either* as "already on Drive". statSync reads size
+  // from a Drive placeholder without downloading.
   const vaultSizes = new Set<number>()
-  for (const f of vaultFiles) {
+  const vaultNames = new Set<string>()
+  for (let i = 0; i < vaultFiles.length; i++) {
+    vaultNames.add(normName(vaultFiles[i]))
     try {
-      vaultSizes.add(statSync(f).size)
+      vaultSizes.add(statSync(vaultFiles[i]).size)
     } catch {
       /* skip unreadable */
     }
+    if (i % 20 === 0) await yieldToLoop()
   }
 
-  const total = vaultFiles.length + localFiles.length
+  // Local files that are genuinely new (match the vault by neither name nor size) — only these
+  // get uploaded. The local library mirrors the vault under the same "Title - Author.pdf" names,
+  // so a re-saved copy (same name, different bytes) and a renamed copy (same bytes) are both still
+  // recognized as existing books and read in place locally (findInPrimary), never re-uploaded.
+  // Filtering here (not mid-loop) keeps the progress total honest: it counts books actually being
+  // added, not every file scanned.
+  const newLocalFiles: string[] = []
+  for (let i = 0; i < localFiles.length; i++) {
+    const lf = localFiles[i]
+    if (vaultNames.has(normName(lf))) continue
+    try {
+      if (vaultSizes.has(statSync(lf).size)) continue
+    } catch {
+      continue // unreadable — don't catalog a file we can't even stat
+    }
+    newLocalFiles.push(lf)
+    if (i % 20 === 0) await yieldToLoop()
+  }
+
+  const total = vaultFiles.length + newLocalFiles.length
   let done = 0
   const tick = (): void => {
     if (++done % 5 === 0) {
@@ -643,22 +782,22 @@ export async function syncLibrary(
     }
   }
 
-  // Pass A — every Drive book (referenced in place, local-first copy).
-  for (const vf of vaultFiles) {
-    if ((await importOneLocal(vf)) === 'imported') titles.push(titleFromFilename(vf))
-    tick()
-  }
-  // Pass B — local-only books (no same-size copy on Drive) → uploaded + catalogued.
-  for (const lf of localFiles) {
-    let size: number
-    try {
-      size = statSync(lf).size
-    } catch {
-      continue
+  // Pass A — every Drive book (referenced in place, local-first copy). Downloads for offline use
+  // are skipped here and done by the background backfill so the catalog builds fast.
+  for (let i = 0; i < vaultFiles.length; i++) {
+    if ((await importOneLocal(vaultFiles[i], { skipDownload: true })) === 'imported') {
+      titles.push(titleFromFilename(vaultFiles[i]))
     }
-    if (vaultSizes.has(size)) continue
-    if ((await importOneLocal(lf)) === 'imported') titles.push(titleFromFilename(lf))
     tick()
+    if (i % 8 === 0) await yieldToLoop() // keep IPC responsive during the rebuild
+  }
+  // Pass B — genuinely-new local books → uploaded to the vault + catalogued.
+  for (let i = 0; i < newLocalFiles.length; i++) {
+    if ((await importOneLocal(newLocalFiles[i], { skipDownload: true })) === 'imported') {
+      titles.push(titleFromFilename(newLocalFiles[i]))
+    }
+    tick()
+    if (i % 8 === 0) await yieldToLoop()
   }
   // Pass C — prune entries whose Drive PDF is gone (vault-mounted only). Delete just the catalog
   // row + search index; never the sidecar files (those can be shared by same-named books).
@@ -668,12 +807,14 @@ export async function syncLibrary(
       pdf_path: string | null
     }[]
     const del = getDb().prepare('DELETE FROM books WHERE id = ?')
-    for (const r of rows) {
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i]
       if (r.pdf_path && !existsSync(r.pdf_path)) {
         del.run(r.id)
         search.removeBook(r.id)
         removed++
       }
+      if (i % 50 === 0) await yieldToLoop()
     }
   }
 
@@ -682,54 +823,49 @@ export async function syncLibrary(
   return { added: titles.length, removed, total: listBooks().length, titles }
 }
 
-// ---------- Enrichment (slow, network, throttled, background) ----------
+// ---------- Enrichment (fast, filename-only, background) ----------
 
-async function pool<T>(
-  items: T[],
-  limit: number,
-  worker: (item: T) => Promise<void>
-): Promise<void> {
-  let cursor = 0
-  const runners = Array.from({ length: Math.min(limit, items.length) }, async () => {
-    while (cursor < items.length) {
-      const item = items[cursor++]
-      await worker(item)
-    }
-  })
-  await Promise.all(runners)
-}
-
-async function enrichOne(id: string, title: string, force = false): Promise<void> {
-  const meta = await fetchBookMeta(title)
-  let coverPath: string | null = null
-  if (meta?.coverUrl) {
-    const dest = join(coversDir(), `${id}.jpg`)
-    if (await downloadCover(meta.coverUrl, dest)) coverPath = dest
-  }
-  if (meta) {
-    const setExpr = force
-      ? 'author=@author, year=@year, publisher=@publisher, genre=@genre'
-      : 'author=COALESCE(author,@author), year=COALESCE(year,@year), publisher=COALESCE(publisher,@publisher), genre=COALESCE(genre,@genre)'
-    getDb()
-      .prepare(
-        `UPDATE books SET ${setExpr}, cover_path=COALESCE(@cover, cover_path), meta_fetched=1 WHERE id=@id`
-      )
-      .run({
-        id,
-        author: meta.author ?? null,
-        year: meta.year ?? null,
-        publisher: meta.publisher ?? null,
-        genre: meta.genre ?? null,
-        cover: coverPath
-      })
-  } else {
+/** Re-derive title/author/series/volume from a book's PDF file name — the source of truth. */
+/** Returns true when a genuine title/author split was found and the row was updated. */
+function enrichOne(id: string): boolean {
+  const row = getDb()
+    .prepare('SELECT pdf_path, series, series_number FROM books WHERE id = ?')
+    .get(id) as
+    | { pdf_path: string | null; series: string | null; series_number: string | null }
+    | undefined
+  if (!row?.pdf_path) {
     getDb().prepare('UPDATE books SET meta_fetched=1 WHERE id=@id').run({ id })
+    return false
   }
+  const parsed = parseFilenameMeta(titleFromFilename(row.pdf_path))
+  // Only a genuine "Title - Author" split (parsed.author present) overwrites the row — a file
+  // that doesn't match the convention is left exactly as it is, just marked processed.
+  if (!parsed.author) {
+    getDb().prepare('UPDATE books SET meta_fetched=1 WHERE id=@id').run({ id })
+    return false
+  }
+  getDb()
+    .prepare(
+      `UPDATE books SET title=@title, title_sanitized=@san, author=@author, series=@series,
+         series_number=@num, meta_fetched=1 WHERE id=@id`
+    )
+    .run({
+      id,
+      title: parsed.title,
+      san: sanitizeName(parsed.title),
+      author: parsed.author,
+      // A file with no "(Series N)" bracket carries no series signal — keep whatever the book
+      // already had rather than blanking out series data that came from elsewhere (a sidecar,
+      // a prior curation pass, or a manual edit).
+      series: parsed.series ?? row.series,
+      num: parsed.seriesNumber ?? row.series_number
+    })
+  return true
 }
 
 let enriching = false
 
-/** Phase B: enrich books that haven't been attempted yet, throttled, in the background. */
+/** Phase B: re-parse books not yet processed by the current file-name convention. */
 export async function enrichPending(
   onProgress: (p: ImportProgress) => void,
   onChanged: () => void
@@ -737,27 +873,52 @@ export async function enrichPending(
   if (enriching) return
   enriching = true
   try {
-    for (;;) {
-      const pending = getDb()
-        .prepare('SELECT id, title FROM books WHERE meta_fetched = 0')
-        .all() as { id: string; title: string }[]
-      if (pending.length === 0) break
-      const total = pending.length
-      let done = 0
-      await pool(pending, 2, async (b) => {
-        await enrichOne(b.id, b.title)
-        await sleep(300) // be gentle on the unauthenticated Google Books rate limit
-        done++
+    const pending = getDb().prepare('SELECT id FROM books WHERE meta_fetched = 0').all() as {
+      id: string
+    }[]
+    const total = pending.length
+    let done = 0
+    for (const b of pending) {
+      enrichOne(b.id)
+      done++
+      if (done % 10 === 0) {
         onProgress({ phase: 'enriching', done, total })
-        if (done % 5 === 0) onChanged()
-      })
-      onChanged()
+        onChanged()
+        await yieldToLoop()
+      }
     }
+    if (total > 0) onChanged()
   } finally {
     enriching = false
     onProgress({ phase: 'done', done: 0, total: 0 })
     onChanged()
   }
+}
+
+/**
+ * One-time: for books that predate file-name-based enrichment and never got a real author
+ * (from a sidecar or the old Google Books lookup), re-derive title/author/series from the PDF
+ * file name. Scoped to `author IS NULL` only — those rows have nothing to lose, so this can
+ * only add data, never overwrite an existing curated title/author/series with a worse guess.
+ * Triggered by a flag file (in-process, single connection — safe for a bulk update, unlike an
+ * external script against a live WAL database), and runs once.
+ */
+export function applyFilenameAuthorMigration(): void {
+  const flag = join(getDataDir(), 'filename-author-migration.flag')
+  if (!existsSync(flag)) return
+  const rows = getDb()
+    .prepare('SELECT id FROM books WHERE author IS NULL')
+    .all() as { id: string }[]
+  let updated = 0
+  for (const r of rows) {
+    if (enrichOne(r.id)) updated++
+  }
+  try {
+    unlinkSync(flag)
+  } catch {
+    /* best effort */
+  }
+  console.log(`[filename-author] derived an author for ${updated}/${rows.length} books`)
 }
 
 // ---------- Mutations ----------
@@ -785,16 +946,20 @@ export function updateBook(id: string, patch: BookUpdate): void {
 
   const db = getDb()
 
-  // When the title or author changes, rename the underlying files (local + Drive)
-  // to "Title - Author" so the file name reflects the metadata and stays easy to
+  // When the title, author, or series changes, rename the underlying files (local + Drive)
+  // to "Title (Series N) - Author" so the file name reflects the metadata and stays easy to
   // locate across machines. Best-effort: never deletes or clobbers another file.
-  if ('title' in patch || 'author' in patch) {
+  if ('title' in patch || 'author' in patch || 'series' in patch || 'seriesNumber' in patch) {
     const before = db
-      .prepare('SELECT title, author, pdf_path, local_path, source_path FROM books WHERE id = ?')
+      .prepare(
+        'SELECT title, author, series, series_number, pdf_path, local_path, source_path FROM books WHERE id = ?'
+      )
       .get(id) as
       | {
           title: string
           author: string | null
+          series: string | null
+          series_number: string | null
           pdf_path: string | null
           local_path: string | null
           source_path: string | null
@@ -803,7 +968,10 @@ export function updateBook(id: string, patch: BookUpdate): void {
     if (before) {
       const newTitle = ('title' in patch ? patch.title : before.title) || before.title
       const newAuthor = 'author' in patch ? patch.author ?? null : before.author
-      const base = fileBaseFor(newTitle, newAuthor)
+      const newSeries = 'series' in patch ? patch.series ?? null : before.series
+      const newSeriesNumber =
+        'seriesNumber' in patch ? patch.seriesNumber ?? null : before.series_number
+      const base = fileBaseFor(newTitle, newAuthor, newSeries, newSeriesNumber)
       const cacheDir = join(getDataDir(), 'pdf-cache')
       // Leave the id-named cache copy alone; rename real, named files in place.
       const rn = (p: string | null): string | null =>
@@ -909,12 +1077,9 @@ export function setBookTags(id: string, tagNames: string[]): void {
   writeSidecarForBook(id)
 }
 
-export async function refetchMetadata(id: string): Promise<Book | null> {
-  const r = getDb().prepare('SELECT title FROM books WHERE id = ?').get(id) as
-    | { title: string }
-    | undefined
-  if (!r) return null
-  await enrichOne(id, r.title, true)
+/** Re-parse a single book's title/author/series from its file name (see enrichOne). */
+export function refetchMetadata(id: string): Book | null {
+  enrichOne(id)
   const row = getDb().prepare('SELECT * FROM books WHERE id = ?').get(id) as BookRow | undefined
   return row ? rowToBook(row) : null
 }

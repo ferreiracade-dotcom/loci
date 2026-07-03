@@ -5,7 +5,13 @@ import { join } from 'path'
 import { closeDb, getDataDir, getDb } from './db/connection'
 import { registerIpc } from './ipc'
 import { backupSnapshot } from './services/backup'
-import { enrichPending, syncLibrary } from './services/library'
+import {
+  applyFilenameAuthorMigration,
+  backfillLocalCopies,
+  enrichPending,
+  syncLibrary
+} from './services/library'
+import { readConfig } from './services/config'
 import { applyRelinkMap, applyTitleClean } from './services/relink'
 import { rebuildAllSidecars } from './services/sidecar'
 import { syncVault } from './services/vaultsync'
@@ -54,26 +60,36 @@ function createWindow(): void {
 
   // On load: reconcile the catalog with the local + Drive book folders (auto-add new books,
   // mirror the two sides, prune stale rows), tell the renderer what changed, then resume any
-  // metadata enrichment left pending from a previous session.
+  // metadata enrichment left pending from a previous session. Deferred a moment so the window
+  // paints and the renderer's initial data IPC completes before the (cooperative) rebuild runs.
   win.webContents.once('did-finish-load', () => {
     const send = (channel: string, payload?: unknown): void => {
       if (!win.isDestroyed()) win.webContents.send(channel, payload)
     }
-    void (async () => {
-      try {
-        const result = await syncLibrary(
+    setTimeout(() => {
+      void (async () => {
+        try {
+          const result = await syncLibrary(
+            (p) => send(Channels.importProgress, p),
+            () => send(Channels.libraryChanged)
+          )
+          send(Channels.librarySynced, result)
+        } catch (e) {
+          console.error('[sync] startup library sync failed', e)
+        }
+        // Pull offline copies down in the background (only when "keep local copies" is on), so the
+        // catalog is usable immediately and books stream from Drive until their local copy lands.
+        if (readConfig().keepLocalCopies) {
+          void backfillLocalCopies(() => send(Channels.libraryChanged)).catch((e) =>
+            console.error('[sync] background backfill failed', e)
+          )
+        }
+        await enrichPending(
           (p) => send(Channels.importProgress, p),
           () => send(Channels.libraryChanged)
         )
-        send(Channels.librarySynced, result)
-      } catch (e) {
-        console.error('[sync] startup library sync failed', e)
-      }
-      await enrichPending(
-        (p) => send(Channels.importProgress, p),
-        () => send(Channels.libraryChanged)
-      )
-    })()
+      })()
+    }, 1500)
   })
 
   // Open external links in the system browser, never in-app.
@@ -116,6 +132,7 @@ app.whenReady().then(() => {
   }
   applyRelinkMap() // one-time library-consolidation relink, if pending
   applyTitleClean() // one-time: strip trailing author from titles, if pending
+  applyFilenameAuthorMigration() // one-time: derive missing authors from file names, if pending
   registerIpc()
   createWindow()
   maybeRebuildSidecars() // one-time whole-library sidecar write, if pending
