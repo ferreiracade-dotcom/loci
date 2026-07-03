@@ -801,20 +801,40 @@ export async function syncLibrary(
   }
   // Pass C — prune entries whose Drive PDF is gone (vault-mounted only). Delete just the catalog
   // row + search index; never the sidecar files (those can be shared by same-named books).
+  // Guard: a Drive-desktop mount that hasn't finished hydrating yet (e.g. right after login/
+  // wake, or Loci launching before Drive) makes `walkPdfs` silently return an incomplete list
+  // (readdirSync failures are swallowed there) while `existsSync(cfg.vaultPath)` still passes
+  // because the mount point itself resolves. Without this check that reads as "these books'
+  // files are gone" and prunes rows that are actually still safely on Drive — losing their id
+  // (and anything linked to it: notes, quotes, highlights, shelves/tags) the moment they get
+  // re-catalogued as "new" on a later launch. If this scan found far fewer vault files than the
+  // catalog expects, treat it as an incomplete scan and skip pruning rather than risk that.
   if (existsSync(cfg.vaultPath)) {
-    const rows = getDb().prepare('SELECT id, pdf_path FROM books').all() as {
-      id: string
-      pdf_path: string | null
-    }[]
-    const del = getDb().prepare('DELETE FROM books WHERE id = ?')
-    for (let i = 0; i < rows.length; i++) {
-      const r = rows[i]
-      if (r.pdf_path && !existsSync(r.pdf_path)) {
-        del.run(r.id)
-        search.removeBook(r.id)
-        removed++
+    const catalogedInVault = (
+      getDb()
+        .prepare('SELECT COUNT(*) c FROM books WHERE pdf_path LIKE ?')
+        .get(`${booksDir}%`) as { c: number }
+    ).c
+    if (catalogedInVault > 20 && vaultFiles.length < catalogedInVault * 0.8) {
+      console.warn(
+        `[sync] skipping stale-row prune: scan found ${vaultFiles.length} vault files but ` +
+          `${catalogedInVault} are catalogued — Drive may still be mounting`
+      )
+    } else {
+      const rows = getDb().prepare('SELECT id, pdf_path FROM books').all() as {
+        id: string
+        pdf_path: string | null
+      }[]
+      const del = getDb().prepare('DELETE FROM books WHERE id = ?')
+      for (let i = 0; i < rows.length; i++) {
+        const r = rows[i]
+        if (r.pdf_path && !existsSync(r.pdf_path)) {
+          del.run(r.id)
+          search.removeBook(r.id)
+          removed++
+        }
+        if (i % 50 === 0) await yieldToLoop()
       }
-      if (i % 50 === 0) await yieldToLoop()
     }
   }
 
