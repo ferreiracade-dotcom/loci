@@ -13,6 +13,9 @@ interface Props {
   highlight: number[]
   /** Navigate the reader (prev/next chapter, or a verse jump). */
   onNavigate: (book: string, chapter: number, highlight?: number[]) => void
+  /** Fired on a plain click (not a drag-selection) on a verse — drives the commentary
+   *  reference sidebar. Omitted for preview-only instances (e.g. PanePicker's chapter peek). */
+  onVerseClick?: (book: string, chapter: number, verse: number) => void
   /** When provided, the header shows a translation switcher (used when the nav is hidden). */
   translations?: ScriptureTranslation[]
   onTranslationChange?: (id: string) => void
@@ -66,6 +69,7 @@ export function ScriptureReader({
   chapter,
   highlight,
   onNavigate,
+  onVerseClick,
   translations,
   onTranslationChange,
   compact = false,
@@ -277,6 +281,13 @@ export function ScriptureReader({
                     data-verse={v.verse}
                     className={`sv${hl.has(v.verse) ? ' hl' : ''}${q ? ' sv-quoted' : ''}`}
                     style={q ? { background: tintOf(q) } : undefined}
+                    onClick={() => {
+                      // A drag-to-select leaves a non-collapsed selection at click time —
+                      // skip firing the lookup so a highlight-selection doesn't also open
+                      // the commentary sidebar for whichever verse the click landed on.
+                      if (window.getSelection()?.isCollapsed === false) return
+                      onVerseClick?.(book, chapter, v.verse)
+                    }}
                   >
                     <span className="sv-num">{v.verse}</span>
                     {v.text}{' '}

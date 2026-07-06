@@ -11,6 +11,7 @@ import type {
   BackfillResult,
   Book,
   BookUpdate,
+  CommentaryMatch,
   ImportProgress,
   ImportResult,
   NewQuote,
@@ -180,6 +181,10 @@ interface Store {
   scriptureCompareOpen: boolean
   /** Second translation id for the compare column. */
   scriptureCompareTranslation: string
+  /** The verse a commentary lookup ran against, or null before any verse has been clicked. */
+  commentaryLookup: { book: string; chapter: number; verse: number } | null
+  /** Results of that lookup, grouped by source in the reference sidebar. */
+  commentaryMatches: CommentaryMatch[]
 
   // --- Center workspace (Phase 8.7 Stage 3) ---
   /** Up to two typed panes (note/bible/pdf) shown in the center; the source of truth. */
@@ -262,6 +267,9 @@ interface Store {
   loadScripture: () => Promise<void>
   setScriptureTranslation: (id: string) => void
   navigateScripture: (book: string, chapter: number, highlight?: number[]) => void
+  /** A verse was clicked in any ScriptureReader instance — runs the commentary lookup and
+   *  switches the reference sidebar to show it. */
+  verseClicked: (book: string, chapter: number, verse: number) => Promise<void>
   /** Open/focus the Bible as a center pane (left-rail "Scripture" entry). */
   showScripture: () => Promise<void>
   /** Resolve a reference string and open it in a Bible pane beside the current pane. */
@@ -381,6 +389,8 @@ export const useStore = create<Store>((set, get) => {
     scriptureSplitOpen: false,
     scriptureCompareOpen: false,
     scriptureCompareTranslation: '',
+    commentaryLookup: null,
+    commentaryMatches: [],
     panes: [],
     activePaneId: null,
     paneRatio: 0.5,
@@ -914,6 +924,18 @@ export const useStore = create<Store>((set, get) => {
       }
       get().saveLayout({ activeLeftView: 'reading' })
       void api.setSession('lastScripture', JSON.stringify({ book, chapter }))
+    },
+
+    verseClicked: async (book, chapter, verse) => {
+      set({ commentaryLookup: { book, chapter, verse }, commentaryMatches: [] })
+      const matches = await api.lookupCommentary(book, chapter, verse)
+      // A later click may have landed while this lookup was in flight — don't overwrite it.
+      const stillCurrent = get().commentaryLookup
+      const stale =
+        stillCurrent?.book !== book || stillCurrent?.chapter !== chapter || stillCurrent?.verse !== verse
+      if (stale) return
+      set({ commentaryMatches: matches })
+      get().saveLayout({ activeRightTab: 'commentary', notesCollapsed: false })
     },
 
     showScripture: async () => {

@@ -26,6 +26,7 @@ export function BiblePane({
   const setPaneContent = useStore((s) => s.setPaneContent)
   const openInPane = useStore((s) => s.openInPane)
   const setScriptureTranslation = useStore((s) => s.setScriptureTranslation)
+  const verseClicked = useStore((s) => s.verseClicked)
 
   const translation = pane.translation || defaultTranslation
   const book = pane.book ?? 'JHN'
@@ -199,6 +200,7 @@ export function BiblePane({
             chapter={chapter}
             highlight={highlight}
             onNavigate={navigate}
+            onVerseClick={verseClicked}
             translations={translations}
             onTranslationChange={pickTranslation}
             compact

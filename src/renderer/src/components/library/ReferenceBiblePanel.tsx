@@ -15,6 +15,7 @@ export function ReferenceBiblePanel() {
   const translations = useStore((s) => s.scriptureTranslations)
   const defaultTranslation = useStore((s) => s.scriptureTranslation)
   const loadScripture = useStore((s) => s.loadScripture)
+  const verseClicked = useStore((s) => s.verseClicked)
 
   const [translation, setTranslation] = useState(defaultTranslation)
   const [book, setBook] = useState('JHN')
@@ -116,6 +117,7 @@ export function ReferenceBiblePanel() {
         chapter={chapter}
         highlight={highlight}
         onNavigate={navigate}
+        onVerseClick={verseClicked}
         translations={translations}
         onTranslationChange={pickTranslation}
         compact

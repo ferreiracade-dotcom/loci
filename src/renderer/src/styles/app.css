@@ -709,6 +709,124 @@ select.field {
   flex: 1;
   min-height: 0;
 }
+
+/* Commentary reference sidebar (verse-click results, grouped by source) */
+.commentary-panel {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
+}
+.commentary-panel-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 13px;
+}
+.commentary-panel-head {
+  font-family: var(--font-title);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  padding: 4px 6px 10px;
+}
+.commentary-group {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.commentary-group-head {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--panel);
+  border: none;
+  color: var(--text);
+  font-family: var(--font-title);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+}
+.commentary-group-head:hover {
+  color: var(--accent);
+}
+.commentary-source-author {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.commentary-group-body {
+  padding: 4px 10px 8px;
+}
+.commentary-excerpt {
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+}
+.commentary-excerpt:first-child {
+  border-top: none;
+}
+.commentary-excerpt-ref {
+  font-family: var(--font-title);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.commentary-excerpt-text {
+  font-family: var(--font-read);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+.commentary-excerpt-text.clamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+.commentary-excerpt-toggle {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+.commentary-view-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  cursor: pointer;
+}
+.commentary-view-pdf:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.commentary-view-pdf:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
 .ref-pdf-head {
   flex: 0 0 auto;
   padding: 8px;

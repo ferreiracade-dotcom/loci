@@ -14,6 +14,7 @@ import { BacklinksPanel } from './library/BacklinksPanel'
 import { StandaloneNotesPanel } from './library/StandaloneNotesPanel'
 import { ReferencePdfPanel } from './library/ReferencePdfPanel'
 import { ReferenceBiblePanel } from './library/ReferenceBiblePanel'
+import { CommentaryPanel } from './library/CommentaryPanel'
 import { SearchView } from './library/SearchView'
 import { DashboardView } from './library/DashboardView'
 import { clamp } from '../lib/util'
@@ -58,8 +59,10 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const rightTabId = RIGHT_TABS.some((t) => t.id === layout.activeRightTab)
     ? layout.activeRightTab
     : 'book-notes'
-  // The PDF/Bible references want more room, so the panel may grow wider when they're active.
-  const readerTab = rightTabId === 'reference-pdf' || rightTabId === 'reference-bible'
+  // The PDF/Bible/Commentary references want more room, so the panel may grow wider when
+  // they're active.
+  const readerTab =
+    rightTabId === 'reference-pdf' || rightTabId === 'reference-bible' || rightTabId === 'commentary'
   const notesMax = readerTab ? 820 : NOTES_MAX
 
   const leftSlot = layout.leftCollapsed ? RAIL : layout.leftWidth
@@ -70,7 +73,10 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const selectRightTab = (id: string, expand = false): void => {
     const patch: Parameters<typeof saveLayout>[0] = { activeRightTab: id }
     if (expand) patch.notesCollapsed = false
-    if ((id === 'reference-pdf' || id === 'reference-bible') && layout.notesWidth < 460) {
+    if (
+      (id === 'reference-pdf' || id === 'reference-bible' || id === 'commentary') &&
+      layout.notesWidth < 460
+    ) {
       patch.notesWidth = 560
     }
     saveLayout(patch)
@@ -215,6 +221,8 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
                 <ReferencePdfPanel />
               ) : rightTabId === 'reference-bible' ? (
                 <ReferenceBiblePanel />
+              ) : rightTabId === 'commentary' ? (
+                <CommentaryPanel />
               ) : (
                 <EmptyState
                   icon={activeTab.icon}

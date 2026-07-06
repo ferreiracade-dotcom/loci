@@ -11,7 +11,8 @@ import {
   Link2,
   Highlighter,
   File,
-  BookOpenText
+  BookOpenText,
+  MessageSquareQuote
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { RailItem } from './IconRail'
@@ -35,7 +36,8 @@ export const RIGHT_TABS: RailItem[] = [
   { id: 'standalone-notes', label: 'Notes', icon: FileText },
   { id: 'backlinks', label: 'Backlinks', icon: Link2 },
   { id: 'reference-pdf', label: 'Books', icon: File },
-  { id: 'reference-bible', label: 'Bible', icon: BookOpenText }
+  { id: 'reference-bible', label: 'Bible', icon: BookOpenText },
+  { id: 'commentary', label: 'Commentary', icon: MessageSquareQuote }
 ]
 
 interface EmptyCopy {
