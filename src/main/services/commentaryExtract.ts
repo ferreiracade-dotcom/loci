@@ -7,6 +7,12 @@ import {
   type ParsedHeader
 } from '../../shared/scriptureRef'
 
+/** "2 TIMOTHY" -> "2 Timothy" — used only to test all-caps running headers against the
+ *  (deliberately case-sensitive) book-name grammar; never used for excerpt-boundary text. */
+function titleCaseWords(s: string): string {
+  return s.replace(/[A-Za-z]+/g, (w) => w[0].toUpperCase() + w.slice(1).toLowerCase())
+}
+
 /** All header shapes profiling will try, in no particular order. */
 export const HEADER_SHAPES: HeaderShape[] = [
   'book-chapter-verse',
@@ -305,7 +311,29 @@ export function chunkDocument(
   let current: ExtractedChunk | null = null
 
   for (let pageIdx = 0; pageIdx < pagesLines.length; pageIdx++) {
-    const lines = stripRunningLines(pagesLines[pageIdx], runningLines)
+    const rawLines = pagesLines[pageIdx]
+    // Running headers/footers often restate "BOOK chapter:verse-verse" as a page guide
+    // (e.g. "2 TIMOTHY 1:2-3") — re-anchor context from it before stripping, so a book
+    // change partway through a source (a single PDF covering two epistles, say) isn't
+    // missed even when the commentary's own excerpt headers never restate the book.
+    for (const edgeLine of [rawLines[0], rawLines[rawLines.length - 1]]) {
+      if (!edgeLine) continue
+      // Running headers are frequently set in small caps/all caps ("2 TIMOTHY 1:2-3"), but
+      // the book-name grammar is deliberately case-sensitive (to reject lowercase prose like
+      // "mark 3 items") and only recognizes mixed-case spellings — title-case just for this
+      // check, since a short, structurally-isolated page header isn't prose.
+      const pageRef = parseCommentaryHeader(
+        titleCaseWords(edgeLine.text),
+        { book: null, chapter: null },
+        'book-chapter-verse'
+      )
+      if (pageRef) {
+        state.book = pageRef.book
+        state.chapter = pageRef.chapterStart
+        break
+      }
+    }
+    const lines = stripRunningLines(rawLines, runningLines)
     for (const line of lines) {
       const chapterOnly = parseChapterOnlyHeader(line.text)
       if (chapterOnly && matchesLearnedHeaderStyle(line, profile)) {
@@ -358,7 +386,11 @@ export async function extractPagesLines(
     require.resolve('pdfjs-dist/legacy/build/pdf.worker.mjs')
   ).href
 
-  const doc = await pdfjsLib.getDocument({ data: pdfBytes, useSystemFonts: true }).promise
+  // library.getBookPdf() returns bytes read via Node's fs, which come back as a Buffer —
+  // a Uint8Array subclass, but pdfjs-dist strictly rejects it ("provide binary data as
+  // Uint8Array, rather than Buffer"). Force a plain Uint8Array.
+  const data = pdfBytes.constructor === Uint8Array ? pdfBytes : new Uint8Array(pdfBytes)
+  const doc = await pdfjsLib.getDocument({ data, useSystemFonts: true }).promise
   const pages: PositionedLine[][] = []
   for (let pageNum = 1; pageNum <= doc.numPages; pageNum++) {
     const page = await doc.getPage(pageNum)

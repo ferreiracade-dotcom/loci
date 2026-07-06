@@ -271,6 +271,37 @@ describe('chunkDocument', () => {
     for (const c of chunks) expect(c.text).not.toContain('COMMENTARY')
   })
 
+  it('re-anchors the book from a running page header when the source covers two books (real: Gerhard "1&2 Timothy")', () => {
+    const wordLabelProfile: SourceProfile = {
+      shape: 'word-label',
+      bodyFontSize: 10,
+      headerFontSize: 8,
+      bodyMarginX: 30,
+      headerMarginX: 30,
+      headerMultiFontRate: 0,
+      bodyMultiFontRate: 0
+    }
+    const pages: PositionedLine[][] = [
+      // Still 1 Timothy — running header says so, in a page-guide style.
+      [
+        line(1, 800, '1 TIMOTHY 1:1-2'),
+        line(1, 700, 'Verse 1.', { fontSize: 8 }),
+        line(1, 690, 'first timothy body text')
+      ],
+      // The book changes; the excerpt headers themselves ("Verse N.") never say so — only
+      // the running header does.
+      [
+        line(2, 800, '2 TIMOTHY 1:2-3'),
+        line(2, 700, 'Verse 2.', { fontSize: 8 }),
+        line(2, 690, 'second timothy body text')
+      ]
+    ]
+    const chunks = chunkDocument(pages, wordLabelProfile, { book: '1TI', chapter: 1 })
+    expect(chunks).toHaveLength(2)
+    expect(chunks[0]).toMatchObject({ book: '1TI', verseStart: 1 })
+    expect(chunks[1]).toMatchObject({ book: '2TI', verseStart: 2 })
+  })
+
   it('drops text before the first header as front matter rather than mis-tagging it', () => {
     const pages: PositionedLine[][] = [
       [
