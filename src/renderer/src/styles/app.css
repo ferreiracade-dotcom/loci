@@ -3356,6 +3356,220 @@ select.field {
   flex-direction: column;
   gap: 0;
 }
+
+/* Commentaries manager (Phase 6) */
+.commentary-mgr-toast {
+  margin-bottom: 10px;
+}
+.commentary-mgr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.commentary-mgr-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.commentary-mgr-info {
+  flex: 1;
+  min-width: 0;
+}
+.commentary-mgr-name {
+  font-family: var(--font-title);
+  font-size: 13px;
+  color: var(--text);
+}
+.commentary-mgr-author {
+  font-size: 11px;
+  color: var(--muted);
+}
+.commentary-mgr-status {
+  font-size: 11px;
+  color: var(--gold);
+  margin-top: 2px;
+}
+.commentary-mgr-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.commentary-mgr-flagged {
+  color: #d98a76;
+  border-color: #d98a76;
+}
+
+.commentary-mgr-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.commentary-pick-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.commentary-pick-controls .field {
+  flex: 1;
+}
+.commentary-pick-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.commentary-pick-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+.commentary-pick-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+.commentary-pick-row:hover {
+  border-color: var(--accent);
+}
+.commentary-pick-title {
+  font-size: 13px;
+  color: var(--text);
+}
+.commentary-pick-author {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.commentary-details-form,
+.commentary-profiling,
+.commentary-indexing {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.commentary-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+.commentary-profile-samples {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 260px;
+  overflow-y: auto;
+  margin: 8px 0;
+}
+.commentary-profile-sample {
+  display: flex;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+}
+.commentary-sample-page {
+  flex: 0 0 auto;
+  color: var(--muted);
+}
+.commentary-sample-header {
+  flex: 0 0 auto;
+  font-family: var(--font-title);
+  color: var(--gold);
+  white-space: nowrap;
+}
+.commentary-sample-snippet {
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.commentary-seed-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.commentary-indexing {
+  align-items: center;
+  padding: 24px 0;
+  text-align: center;
+}
+
+.commentary-review-queue {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.commentary-review-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+.commentary-review-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.commentary-review-ref {
+  font-family: var(--font-title);
+  font-size: 12px;
+  color: var(--gold);
+}
+.commentary-review-page {
+  color: var(--muted);
+  font-weight: 400;
+}
+.commentary-review-reasons {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 11px;
+  color: #d98a76;
+}
+.commentary-review-text {
+  font-family: var(--font-read);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.commentary-review-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.commentary-reassign-fields {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.commentary-reassign-fields select {
+  flex: 2;
+}
+.commentary-reassign-fields input {
+  flex: 1;
+  min-width: 0;
+}
 .mgr-reorder .icon-btn {
   width: 18px;
   height: 14px;

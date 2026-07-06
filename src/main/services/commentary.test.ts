@@ -1,23 +1,35 @@
 import Database from 'better-sqlite3'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { mkdtempSync, rmSync } from 'fs'
+import { tmpdir } from 'os'
+import { join } from 'path'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { runMigrations } from '../db/migrations'
 
 let db: Database.Database
+let dataDir: string
 
-// commentary.ts (and everything it calls) only ever reaches the database through
-// getDb() — swap it for an in-memory instance so these tests never touch Electron.
+// commentary.ts (and everything it calls, including commentaryCorrections.ts's JSON store)
+// only ever reaches the database/filesystem through these two — swap them so these tests
+// never touch Electron.
 vi.mock('../db/connection', () => ({
-  getDb: () => db
+  getDb: () => db,
+  getDataDir: () => dataDir
 }))
 
 beforeEach(() => {
   db = new Database(':memory:')
   db.pragma('foreign_keys = ON')
   runMigrations(db)
+  dataDir = mkdtempSync(join(tmpdir(), 'loci-commentary-'))
+})
+
+afterEach(() => {
+  rmSync(dataDir, { recursive: true, force: true })
 })
 
 // Imported after the mock is declared; vitest hoists vi.mock above this either way.
 import * as commentary from './commentary'
+import { loadCorrections } from './commentaryCorrections'
 import type { NewCommentaryExcerpt } from './commentary'
 
 function makeSource(displayName: string, sortOrder?: number): string {
@@ -43,14 +55,15 @@ function excerpt(patch: Partial<NewCommentaryExcerpt>): NewCommentaryExcerpt {
     headerRaw: 'v. 16',
     confidence: 1,
     flagged: false,
+    flagReasons: [],
     ...patch
   }
 }
 
 describe('migrations', () => {
-  it('runs twice without error and lands on version 14', () => {
+  it('runs twice without error and lands on version 15', () => {
     expect(() => runMigrations(db)).not.toThrow()
-    expect(db.pragma('user_version', { simple: true })).toBe(14)
+    expect(db.pragma('user_version', { simple: true })).toBe(15)
   })
 })
 
@@ -152,5 +165,55 @@ describe('replaceExcerptsForSource', () => {
     expect(commentary.lookupVerse('ROM', 1, 1)).toHaveLength(1)
     expect(commentary.lookupVerse('ROM', 1, 2)).toHaveLength(1)
     expect(commentary.lookupVerse('ROM', 5, 1)).toHaveLength(0)
+  })
+})
+
+describe('review actions', () => {
+  function firstExcerptId(sourceId: string): string {
+    return (
+      commentary
+        .listFlagged(sourceId)
+        .find(Boolean)?.id ?? ''
+    )
+  }
+
+  it('reviewConfirm unflags the excerpt and writes a confirm correction', () => {
+    const sourceId = makeSource('Review Source')
+    commentary.replaceExcerptsForSource(sourceId, [
+      excerpt({ chapterStart: 1, verseStart: 1, chapterEnd: 1, verseEnd: 1, flagged: true })
+    ])
+    const id = firstExcerptId(sourceId)
+    commentary.reviewConfirm(id)
+    expect(commentary.lookupVerse('ROM', 1, 1)).toHaveLength(1)
+    expect(loadCorrections()).toMatchObject([{ action: 'confirm' }])
+  })
+
+  it('reviewDiscard keeps the excerpt flagged and writes a discard correction', () => {
+    const sourceId = makeSource('Review Source 2')
+    commentary.replaceExcerptsForSource(sourceId, [
+      excerpt({ chapterStart: 1, verseStart: 1, chapterEnd: 1, verseEnd: 1 })
+    ])
+    const id = commentary.lookupVerse('ROM', 1, 1)[0].excerptId
+    commentary.reviewDiscard(id)
+    expect(commentary.lookupVerse('ROM', 1, 1)).toHaveLength(0)
+    expect(loadCorrections()).toMatchObject([{ action: 'discard' }])
+  })
+
+  it('reviewReassign rewrites the reference and writes a reassign correction', () => {
+    const sourceId = makeSource('Review Source 3')
+    commentary.replaceExcerptsForSource(sourceId, [
+      excerpt({ chapterStart: 1, verseStart: 1, chapterEnd: 1, verseEnd: 1, flagged: true })
+    ])
+    const id = firstExcerptId(sourceId)
+    commentary.reviewReassign(id, {
+      book: 'ROM',
+      chapterStart: 2,
+      verseStart: 5,
+      chapterEnd: 2,
+      verseEnd: 5
+    })
+    expect(commentary.lookupVerse('ROM', 1, 1)).toHaveLength(0)
+    expect(commentary.lookupVerse('ROM', 2, 5)).toHaveLength(1)
+    expect(loadCorrections()).toMatchObject([{ action: 'reassign', correctedChapterStart: 2 }])
   })
 })

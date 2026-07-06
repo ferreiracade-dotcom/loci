@@ -1,6 +1,8 @@
 // Shared IPC contract — imported by main, preload, and renderer.
 // The renderer never touches Node/fs directly; everything goes through this surface.
 
+import type { HeaderShape } from './scriptureRef'
+
 export const Channels = {
   getAppState: 'app:getState',
   chooseFolder: 'dialog:chooseFolder',
@@ -74,6 +76,7 @@ export const Channels = {
 
   listCommentarySources: 'commentary:listSources',
   createCommentarySource: 'commentary:createSource',
+  createCommentarySourceFromBook: 'commentary:createSourceFromBook',
   updateCommentarySource: 'commentary:updateSource',
   deleteCommentarySource: 'commentary:deleteSource',
   reorderCommentarySources: 'commentary:reorderSources',
@@ -81,11 +84,19 @@ export const Channels = {
   listFlaggedCommentary: 'commentary:listFlagged',
   setCommentaryExcerptFlag: 'commentary:setExcerptFlag',
   reassignCommentaryExcerpt: 'commentary:reassignExcerpt',
+  profileCommentarySource: 'commentary:profileSource',
+  indexCommentarySource: 'commentary:indexSource',
+  cancelCommentaryIndexing: 'commentary:cancelIndexing',
+  reviewConfirmCommentaryExcerpt: 'commentary:reviewConfirm',
+  reviewReassignCommentaryExcerpt: 'commentary:reviewReassign',
+  reviewDiscardCommentaryExcerpt: 'commentary:reviewDiscard',
+  deleteCommentaryCorrectionsForSource: 'commentary:deleteCorrectionsForSource',
 
   // main → renderer events
   importProgress: 'library:importProgress',
   libraryChanged: 'library:libraryChanged',
-  librarySynced: 'library:librarySynced'
+  librarySynced: 'library:librarySynced',
+  commentaryIndexProgress: 'commentary:indexProgress'
 } as const
 
 export type ChannelName = (typeof Channels)[keyof typeof Channels]
@@ -294,6 +305,12 @@ export interface LociApi {
 
   listCommentarySources(): Promise<CommentarySource[]>
   createCommentarySource(input: NewCommentarySource): Promise<CommentarySource>
+  /** Register a source from an already-imported, already-tagged library book. */
+  createCommentarySourceFromBook(
+    bookId: string,
+    displayName: string,
+    author: string | null
+  ): Promise<CommentarySource>
   updateCommentarySource(id: string, patch: CommentarySourceUpdate): Promise<void>
   deleteCommentarySource(id: string): Promise<void>
   /** Persist a new display order for all commentary sources (full list of ids, in order). */
@@ -303,9 +320,23 @@ export interface LociApi {
   listFlaggedCommentary(sourceId?: string): Promise<CommentaryExcerpt[]>
   setCommentaryExcerptFlag(id: string, flagged: boolean): Promise<void>
   reassignCommentaryExcerpt(id: string, patch: CommentaryExcerptReassign): Promise<void>
+  /** Sample the source's PDF and infer its header shape/structural signal for confirmation. */
+  profileCommentarySource(sourceId: string): Promise<CommentaryProfileResult>
+  /** Run full extraction + validation + corrections replay, writing excerpts to the index.
+   *  Requires the source to have a confirmed `parserConfig` already saved. */
+  indexCommentarySource(sourceId: string): Promise<CommentaryIndexSummary>
+  cancelCommentaryIndexing(sourceId: string): Promise<void>
+  /** Review-queue actions: each both updates the excerpt and records a correction so the
+   *  decision survives a re-index. */
+  reviewConfirmCommentaryExcerpt(excerptId: string): Promise<void>
+  reviewReassignCommentaryExcerpt(excerptId: string, patch: CommentaryExcerptReassign): Promise<void>
+  reviewDiscardCommentaryExcerpt(excerptId: string): Promise<void>
+  deleteCommentaryCorrectionsForSource(pdfRelativePath: string): Promise<void>
 
   /** Subscribe to import progress; returns an unsubscribe function. */
   onImportProgress(cb: (p: ImportProgress) => void): () => void
+  /** Subscribe to commentary indexing progress; returns an unsubscribe function. */
+  onCommentaryIndexProgress(cb: (p: CommentaryIndexProgress) => void): () => void
   /** Fired when the book/shelf data changes in the background; returns unsubscribe. */
   onLibraryChanged(cb: () => void): () => void
   /** Fired when the startup folder sync finishes, with a summary of what changed. */
@@ -610,6 +641,8 @@ export interface CommentaryExcerpt {
   headerRaw: string | null
   confidence: number
   flagged: boolean
+  /** Human-readable reasons this excerpt failed validation (empty if never flagged). */
+  flagReasons: string[]
 }
 
 export interface CommentaryExcerptReassign {
@@ -618,6 +651,55 @@ export interface CommentaryExcerptReassign {
   verseStart: number
   chapterEnd: number
   verseEnd: number
+}
+
+/** Learned per-source header profile (font/margin/font-switch signal), confirmed by the
+ *  user before full extraction runs (Phase 2c). */
+export interface CommentaryProfile {
+  shape: HeaderShape
+  bodyFontSize: number
+  headerFontSize: number
+  bodyMarginX: number
+  headerMarginX: number
+  headerMultiFontRate: number
+  bodyMultiFontRate: number
+}
+
+/** One sampled header match shown to the user for confirmation. */
+export interface CommentaryProfileSample {
+  page: number
+  headerRaw: string
+  snippetAfter: string
+}
+
+export interface CommentaryProfileResult {
+  profile: CommentaryProfile
+  samples: CommentaryProfileSample[]
+}
+
+/** Saved alongside the confirmed profile — where a source with bare verse/range headers
+ *  starts (needed since those headers never restate the book/chapter themselves). */
+export interface CommentaryParserConfig {
+  profile: CommentaryProfile
+  seedBook: string | null
+  seedChapter: number | null
+}
+
+export type CommentaryIndexPhase = 'extracting' | 'validating' | 'done'
+
+export interface CommentaryIndexProgress {
+  phase: CommentaryIndexPhase
+  done: number
+  total: number
+}
+
+export interface CommentaryIndexSummary {
+  totalCount: number
+  flaggedCount: number
+  booksCovered: string[]
+  chaptersWithNoCoverage: { book: string; chapter: number }[]
+  orphanedCorrections: number
+  cancelled: boolean
 }
 
 /** A commentary excerpt joined with its source, for the reference sidebar. */

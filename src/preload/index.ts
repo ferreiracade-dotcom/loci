@@ -1,7 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { IpcRendererEvent } from 'electron'
 import { Channels } from '../shared/ipc'
-import type { ImportProgress, LociApi, SyncResult } from '../shared/ipc'
+import type { CommentaryIndexProgress, ImportProgress, LociApi, SyncResult } from '../shared/ipc'
 
 const api: LociApi = {
   getAppState: () => ipcRenderer.invoke(Channels.getAppState),
@@ -84,6 +84,8 @@ const api: LociApi = {
 
   listCommentarySources: () => ipcRenderer.invoke(Channels.listCommentarySources),
   createCommentarySource: (input) => ipcRenderer.invoke(Channels.createCommentarySource, input),
+  createCommentarySourceFromBook: (bookId, displayName, author) =>
+    ipcRenderer.invoke(Channels.createCommentarySourceFromBook, bookId, displayName, author),
   updateCommentarySource: (id, patch) =>
     ipcRenderer.invoke(Channels.updateCommentarySource, id, patch),
   deleteCommentarySource: (id) => ipcRenderer.invoke(Channels.deleteCommentarySource, id),
@@ -97,6 +99,19 @@ const api: LociApi = {
     ipcRenderer.invoke(Channels.setCommentaryExcerptFlag, id, flagged),
   reassignCommentaryExcerpt: (id, patch) =>
     ipcRenderer.invoke(Channels.reassignCommentaryExcerpt, id, patch),
+  profileCommentarySource: (sourceId) =>
+    ipcRenderer.invoke(Channels.profileCommentarySource, sourceId),
+  indexCommentarySource: (sourceId) => ipcRenderer.invoke(Channels.indexCommentarySource, sourceId),
+  cancelCommentaryIndexing: (sourceId) =>
+    ipcRenderer.invoke(Channels.cancelCommentaryIndexing, sourceId),
+  reviewConfirmCommentaryExcerpt: (excerptId) =>
+    ipcRenderer.invoke(Channels.reviewConfirmCommentaryExcerpt, excerptId),
+  reviewReassignCommentaryExcerpt: (excerptId, patch) =>
+    ipcRenderer.invoke(Channels.reviewReassignCommentaryExcerpt, excerptId, patch),
+  reviewDiscardCommentaryExcerpt: (excerptId) =>
+    ipcRenderer.invoke(Channels.reviewDiscardCommentaryExcerpt, excerptId),
+  deleteCommentaryCorrectionsForSource: (pdfRelativePath) =>
+    ipcRenderer.invoke(Channels.deleteCommentaryCorrectionsForSource, pdfRelativePath),
 
   onImportProgress: (cb) => {
     const listener = (_e: IpcRendererEvent, p: ImportProgress): void => cb(p)
@@ -112,6 +127,11 @@ const api: LociApi = {
     const listener = (_e: IpcRendererEvent, r: SyncResult): void => cb(r)
     ipcRenderer.on(Channels.librarySynced, listener)
     return () => ipcRenderer.removeListener(Channels.librarySynced, listener)
+  },
+  onCommentaryIndexProgress: (cb) => {
+    const listener = (_e: IpcRendererEvent, p: CommentaryIndexProgress): void => cb(p)
+    ipcRenderer.on(Channels.commentaryIndexProgress, listener)
+    return () => ipcRenderer.removeListener(Channels.commentaryIndexProgress, listener)
   }
 }
 

@@ -300,6 +300,15 @@ const migrations: Migration[] = [
         INSERT INTO tags (id, name) VALUES ('tag-commentary', 'commentary');
       `)
     }
+  },
+  {
+    version: 15,
+    name: 'commentary-flag-reasons',
+    up: (db) => {
+      // Human-readable reasons a chunk failed validation (JSON string array) — the review
+      // queue shows these; confidence/flagged alone don't explain *why*.
+      db.exec(`ALTER TABLE commentary_excerpts ADD COLUMN flag_reasons TEXT NOT NULL DEFAULT '[]';`)
+    }
   }
 ]
 

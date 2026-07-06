@@ -1,5 +1,8 @@
 import { randomUUID } from 'crypto'
+import { relative } from 'path'
 import { getDb } from '../db/connection'
+import { newCorrection, saveCorrection } from './commentaryCorrections'
+import { readConfig } from './config'
 import type {
   CommentaryExcerpt,
   CommentaryExcerptReassign,
@@ -41,6 +44,13 @@ export function listSources(): CommentarySource[] {
       .prepare('SELECT * FROM commentary_sources ORDER BY sort_order, display_name COLLATE NOCASE')
       .all() as SourceRow[]
   ).map(toSource)
+}
+
+export function getSource(id: string): CommentarySource | null {
+  const row = getDb().prepare('SELECT * FROM commentary_sources WHERE id = ?').get(id) as
+    | SourceRow
+    | undefined
+  return row ? toSource(row) : null
 }
 
 export function createSource(input: NewCommentarySource): CommentarySource {
@@ -85,6 +95,24 @@ export function deleteSource(id: string): void {
   getDb().prepare('DELETE FROM commentary_sources WHERE id = ?').run(id)
 }
 
+/** Register a commentary source from an already-imported library book — resolves the
+ *  vault-relative PDF path server-side so the renderer never needs to see raw filesystem
+ *  paths (the app's existing IPC boundary convention). */
+export function createSourceFromBook(
+  bookId: string,
+  displayName: string,
+  author: string | null
+): CommentarySource {
+  const row = getDb().prepare('SELECT pdf_path, local_path FROM books WHERE id = ?').get(bookId) as
+    | { pdf_path: string | null; local_path: string | null }
+    | undefined
+  const absolutePath = row?.pdf_path ?? row?.local_path
+  if (!absolutePath) throw new Error("Could not locate this book's PDF")
+  const vaultPath = readConfig().vaultPath
+  const pdfRelativePath = vaultPath ? relative(vaultPath, absolutePath) : absolutePath
+  return createSource({ displayName, author, bookId, pdfRelativePath })
+}
+
 /** Persist a manual display order for sources — `orderedIds` is the full list, in order. */
 export function reorderSources(orderedIds: string[]): void {
   const db = getDb()
@@ -105,6 +133,7 @@ export interface NewCommentaryExcerpt {
   headerRaw: string | null
   confidence: number
   flagged: boolean
+  flagReasons: string[]
 }
 
 /** Replace every excerpt for a source in one transaction (full re-index or first ingest). */
@@ -114,8 +143,8 @@ export function replaceExcerptsForSource(sourceId: string, excerpts: NewCommenta
   const ins = db.prepare(
     `INSERT INTO commentary_excerpts
        (id, source_id, book, chapter_start, verse_start, chapter_end, verse_end, text,
-        page_number, header_raw, confidence, flagged)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        page_number, header_raw, confidence, flagged, flag_reasons)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   )
   db.transaction(() => {
     del.run(sourceId)
@@ -132,7 +161,8 @@ export function replaceExcerptsForSource(sourceId: string, excerpts: NewCommenta
         e.pageNumber,
         e.headerRaw,
         e.confidence,
-        e.flagged ? 1 : 0
+        e.flagged ? 1 : 0,
+        JSON.stringify(e.flagReasons)
       )
     }
   })()
@@ -199,6 +229,7 @@ interface ExcerptRow {
   header_raw: string | null
   confidence: number
   flagged: number
+  flag_reasons: string
 }
 
 function toExcerpt(r: ExcerptRow): CommentaryExcerpt {
@@ -214,7 +245,8 @@ function toExcerpt(r: ExcerptRow): CommentaryExcerpt {
     pageNumber: r.page_number,
     headerRaw: r.header_raw,
     confidence: r.confidence,
-    flagged: r.flagged === 1
+    flagged: r.flagged === 1,
+    flagReasons: JSON.parse(r.flag_reasons || '[]')
   }
 }
 
@@ -242,4 +274,71 @@ export function reassignExcerpt(id: string, patch: CommentaryExcerptReassign): v
        WHERE id = ?`
     )
     .run(patch.book, patch.chapterStart, patch.verseStart, patch.chapterEnd, patch.verseEnd, id)
+}
+
+/** Load an excerpt row plus its source's pdf_relative_path, for writing a correction keyed
+ *  to the excerpt's own (pre-review) content. */
+function excerptWithSourcePath(
+  id: string
+): { row: ExcerptRow; pdfRelativePath: string } | null {
+  const db = getDb()
+  const row = db.prepare('SELECT * FROM commentary_excerpts WHERE id = ?').get(id) as
+    | ExcerptRow
+    | undefined
+  if (!row) return null
+  const source = db
+    .prepare('SELECT pdf_relative_path FROM commentary_sources WHERE id = ?')
+    .get(row.source_id) as { pdf_relative_path: string } | undefined
+  if (!source) return null
+  return { row, pdfRelativePath: source.pdf_relative_path }
+}
+
+/** Review-queue "Confirm": accept the excerpt as-is. Unflags it and records a correction so
+ *  a future re-index doesn't re-flag the identical content. */
+export function reviewConfirm(excerptId: string): void {
+  const found = excerptWithSourcePath(excerptId)
+  if (!found) return
+  const { row, pdfRelativePath } = found
+  saveCorrection(
+    newCorrection(
+      pdfRelativePath,
+      { headerRaw: row.header_raw ?? '', text: row.text, page: row.page_number },
+      'confirm'
+    )
+  )
+  setExcerptFlag(excerptId, false)
+}
+
+/** Review-queue "Reassign": correct the reference. The correction is keyed to the excerpt's
+ *  *original* content, so a re-extraction that reproduces that same mistake gets corrected
+ *  again automatically. */
+export function reviewReassign(excerptId: string, patch: CommentaryExcerptReassign): void {
+  const found = excerptWithSourcePath(excerptId)
+  if (!found) return
+  const { row, pdfRelativePath } = found
+  saveCorrection(
+    newCorrection(
+      pdfRelativePath,
+      { headerRaw: row.header_raw ?? '', text: row.text, page: row.page_number },
+      'reassign',
+      patch
+    )
+  )
+  reassignExcerpt(excerptId, patch)
+}
+
+/** Review-queue "Discard": permanently exclude this excerpt (kept flagged) and remember the
+ *  decision so it doesn't resurface after a re-index. */
+export function reviewDiscard(excerptId: string): void {
+  const found = excerptWithSourcePath(excerptId)
+  if (!found) return
+  const { row, pdfRelativePath } = found
+  saveCorrection(
+    newCorrection(
+      pdfRelativePath,
+      { headerRaw: row.header_raw ?? '', text: row.text, page: row.page_number },
+      'discard'
+    )
+  )
+  setExcerptFlag(excerptId, true)
 }

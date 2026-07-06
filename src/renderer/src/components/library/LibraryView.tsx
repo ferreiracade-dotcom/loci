@@ -15,7 +15,8 @@ import {
   Cloud,
   HardDrive,
   CloudOff,
-  X
+  X,
+  MessageSquareQuote
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
@@ -25,6 +26,7 @@ import { EmptyState } from '../EmptyState'
 import { BookCover } from './BookCover'
 import { BookInfoDrawer } from './BookInfoDrawer'
 import { ShelvesManager } from './ShelvesManager'
+import { CommentariesManager } from './CommentariesManager'
 import { DriveStatus } from './DriveStatus'
 import type { Book, PdfSource, ReadingStatus } from '@shared/ipc'
 
@@ -203,6 +205,7 @@ export function LibraryView() {
   const [infoId, setInfoId] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [shelvesOpen, setShelvesOpen] = useState(false)
+  const [commentariesOpen, setCommentariesOpen] = useState(false)
   const [groupBy, setGroupBy] = useState('none')
   const [contentTab, setContentTab] = useState<ContentTab>('books')
   const [query, setQuery] = useState('')
@@ -510,6 +513,13 @@ export function LibraryView() {
         >
           <Pencil size={12} /> Edit shelves
         </button>
+        <button
+          className="chip chip-manage"
+          title="Manage verse-keyed commentary sources"
+          onClick={() => setCommentariesOpen(true)}
+        >
+          <MessageSquareQuote size={12} /> Commentaries
+        </button>
       </div>
 
       <div
@@ -568,6 +578,7 @@ export function LibraryView() {
       {toast && <div className="toast">{toast}</div>}
       {infoId && <BookInfoDrawer bookId={infoId} onClose={() => setInfoId(null)} />}
       {shelvesOpen && <ShelvesManager onClose={() => setShelvesOpen(false)} />}
+      {commentariesOpen && <CommentariesManager onClose={() => setCommentariesOpen(false)} />}
 
       {menu &&
         (() => {
