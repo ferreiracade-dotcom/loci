@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { FileText, ArrowLeft, FilePlus, X } from 'lucide-react'
+import { FileText, FolderKanban, ArrowLeft, FilePlus, X } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { RichNoteEditor } from './RichNoteEditor'
+import type { NoteSummary } from '@shared/ipc'
 
 export function StandaloneNotesPanel() {
   const notes = useStore((s) => s.standaloneNotes)
@@ -15,6 +16,24 @@ export function StandaloneNotesPanel() {
 
   const [creating, setCreating] = useState(false)
   const [title, setTitle] = useState('')
+
+  const projects = notes.filter((n) => n.type === 'project')
+  const regular = notes.filter((n) => n.type !== 'project')
+  const renderRow = (n: NoteSummary): React.ReactNode => (
+    <button
+      key={n.path}
+      className="backlink-row"
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData('application/x-loci-note', n.path)
+        e.dataTransfer.effectAllowed = 'copy'
+      }}
+      onClick={() => openSidebarNote(n.path)}
+    >
+      {n.type === 'project' ? <FolderKanban size={14} /> : <FileText size={14} />}
+      <span>{n.title}</span>
+    </button>
+  )
 
   // Restore the last sidebar note on mount, if it still exists.
   useEffect(() => {
@@ -94,21 +113,18 @@ export function StandaloneNotesPanel() {
         </div>
       ) : (
         <div className="backlinks-list">
-          {notes.map((n) => (
-            <button
-              key={n.path}
-              className="backlink-row"
-              draggable
-              onDragStart={(e) => {
-                e.dataTransfer.setData('application/x-loci-note', n.path)
-                e.dataTransfer.effectAllowed = 'copy'
-              }}
-              onClick={() => openSidebarNote(n.path)}
-            >
-              <FileText size={14} />
-              <span>{n.title}</span>
-            </button>
-          ))}
+          {projects.length > 0 && (
+            <>
+              <div className="notes-group-head">Projects</div>
+              {projects.map(renderRow)}
+            </>
+          )}
+          {regular.length > 0 && (
+            <>
+              {projects.length > 0 && <div className="notes-group-head">Notes</div>}
+              {regular.map(renderRow)}
+            </>
+          )}
         </div>
       )}
     </div>

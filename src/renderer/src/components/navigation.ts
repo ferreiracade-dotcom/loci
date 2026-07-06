@@ -30,11 +30,11 @@ export const LEFT_VIEWS: RailItem[] = [
 /** Right notes-panel tabs (spec §3). */
 // Right-hand reference panel sources. Tags were folded into Search + the notes list.
 export const RIGHT_TABS: RailItem[] = [
-  { id: 'book-notes', label: 'Book Notes', icon: BookMarked },
-  { id: 'scripture-highlights', label: 'Scripture', icon: Highlighter },
+  { id: 'book-notes', label: 'Book Quotes', icon: BookMarked },
+  { id: 'scripture-highlights', label: 'Bible Quotes', icon: Highlighter },
   { id: 'standalone-notes', label: 'Notes', icon: FileText },
   { id: 'backlinks', label: 'Backlinks', icon: Link2 },
-  { id: 'reference-pdf', label: 'PDF', icon: File },
+  { id: 'reference-pdf', label: 'Books', icon: File },
   { id: 'reference-bible', label: 'Bible', icon: BookOpenText }
 ]
 

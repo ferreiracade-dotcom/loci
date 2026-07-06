@@ -32,7 +32,9 @@ export const Channels = {
   createShelf: 'library:createShelf',
   renameShelf: 'library:renameShelf',
   deleteShelf: 'library:deleteShelf',
+  reorderShelves: 'library:reorderShelves',
   listTags: 'library:listTags',
+  reorderTags: 'library:reorderTags',
   getBookPdf: 'library:getBookPdf',
   setBookLastPage: 'library:setBookLastPage',
   backfillLocal: 'library:backfillLocal',
@@ -210,7 +212,11 @@ export interface LociApi {
   createShelf(name: string): Promise<Shelf>
   renameShelf(id: string, name: string): Promise<void>
   deleteShelf(id: string): Promise<void>
+  /** Persist a new display order for all shelves (full list of ids, in the desired order). */
+  reorderShelves(orderedIds: string[]): Promise<void>
   listTags(): Promise<Tag[]>
+  /** Persist a new display order for all tags (full list of ids, in the desired order). */
+  reorderTags(orderedIds: string[]): Promise<void>
   /** Raw PDF bytes for a book (also marks it opened), or null if the file is missing. */
   getBookPdf(id: string): Promise<Uint8Array | null>
   setBookLastPage(id: string, page: number): Promise<void>

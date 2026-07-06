@@ -246,6 +246,16 @@ const migrations: Migration[] = [
         ALTER TABLE quotes ADD COLUMN scripture_translation TEXT;
       `)
     }
+  },
+  {
+    version: 13,
+    name: 'tags-sort-order',
+    up: (db) => {
+      // Custom manual ordering for tags, mirroring shelves.sort_order. All existing tags
+      // default to 0 (falling back to alphabetical via the ORDER BY tiebreaker) until the
+      // user reorders them.
+      db.exec(`ALTER TABLE tags ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0;`)
+    }
   }
 ]
 

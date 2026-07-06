@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Search as SearchIcon, DatabaseZap, X } from 'lucide-react'
+import { Search as SearchIcon, DatabaseZap, ScrollText, X } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { SearchResults } from './SearchResults'
 import type { SearchHit, SearchKind } from '@shared/ipc'
@@ -32,6 +32,9 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
   const indexing = useStore((s) => s.indexing)
   const startIndexing = useStore((s) => s.startIndexing)
   const cancelIndexing = useStore((s) => s.cancelIndexing)
+  const bibleIndexing = useStore((s) => s.bibleIndexing)
+  const startBibleIndexing = useStore((s) => s.startBibleIndexing)
+  const cancelBibleIndexing = useStore((s) => s.cancelBibleIndexing)
 
   const [searching, setSearching] = useState(false)
 
@@ -87,6 +90,29 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
               onClick={() => void startIndexing()}
             >
               <DatabaseZap size={14} /> Build index
+            </button>
+          ))}
+        {!compact &&
+          (bibleIndexing ? (
+            <div className="index-progress">
+              <span>
+                {bibleIndexing.total === 0
+                  ? 'Bible up to date'
+                  : `Indexing Bible ${bibleIndexing.done}/${bibleIndexing.total}`}
+              </span>
+              {bibleIndexing.total > 0 && (
+                <button className="btn btn-sm" onClick={cancelBibleIndexing}>
+                  <X size={14} /> Stop
+                </button>
+              )}
+            </div>
+          ) : (
+            <button
+              className="btn btn-sm"
+              title="Fetch and index every chapter of the BSB (public domain) for search — runs in the background"
+              onClick={() => void startBibleIndexing()}
+            >
+              <ScrollText size={14} /> Index Bible
             </button>
           ))}
       </div>

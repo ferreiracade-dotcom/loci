@@ -20,6 +20,7 @@ import {
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { splitAuthors } from '../../lib/authors'
+import { bookMatchesQuery } from '../../lib/bookSearch'
 import { EmptyState } from '../EmptyState'
 import { BookCover } from './BookCover'
 import { BookInfoDrawer } from './BookInfoDrawer'
@@ -131,7 +132,7 @@ function BookCard({
   )
 }
 
-function BookListRow({
+export function BookListRow({
   book,
   onOpen,
   onRead,
@@ -275,28 +276,8 @@ export function LibraryView() {
   )
 
   const searched = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return filtered
-    const terms = q.split(/\s+/).filter(Boolean)
-    return filtered.filter((b) => {
-      const series = b.series ?? ''
-      const num = b.seriesNumber ?? ''
-      const abbr = b.seriesAbbr ?? ''
-      // Include "<series> <n>" and "<abbr> <n>" as contiguous strings so a query
-      // like "ANF 1" or "Ante-Nicene Fathers 1" matches the right volume.
-      const hay = [
-        b.title,
-        b.author ?? '',
-        series,
-        abbr,
-        num,
-        series && num ? `${series} ${num}` : '',
-        abbr && num ? `${abbr} ${num}` : ''
-      ]
-        .join(' ')
-        .toLowerCase()
-      return terms.every((t) => hay.includes(t))
-    })
+    if (!query.trim()) return filtered
+    return filtered.filter((b) => bookMatchesQuery(b, query))
   }, [filtered, query])
 
   const groups = useMemo(() => {
@@ -522,7 +503,11 @@ export function LibraryView() {
             {s.name} <span className="chip-n">{s.count}</span>
           </button>
         ))}
-        <button className="chip chip-manage" title="Add or edit shelves" onClick={() => setShelvesOpen(true)}>
+        <button
+          className="chip chip-manage"
+          title="Add, reorder, or edit shelves and tags"
+          onClick={() => setShelvesOpen(true)}
+        >
           <Pencil size={12} /> Edit shelves
         </button>
       </div>

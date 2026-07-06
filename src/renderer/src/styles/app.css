@@ -376,6 +376,7 @@ select.field {
 .pp-empty {
   color: var(--muted);
   font-size: 12.5px;
+  line-height: 1.5;
   padding: 12px 6px;
 }
 .pp-row {
@@ -404,6 +405,123 @@ select.field {
   color: var(--danger, #d9534f);
   background: var(--accent-12);
 }
+.pp-add-source {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pp-add-source .pp-scroll {
+  max-height: 260px;
+  overflow-y: auto;
+}
+.pp-search-sm {
+  padding: 7px 10px;
+  font-size: 12.5px;
+}
+.pp-add-icon {
+  margin-left: auto;
+  color: var(--accent) !important;
+}
+.pp-add-tabs {
+  display: flex;
+  gap: 4px;
+}
+.pp-add-tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  background: none;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  cursor: pointer;
+}
+.pp-add-tab:hover {
+  color: var(--text);
+}
+.pp-add-tab.active {
+  background: var(--accent-12);
+  color: var(--accent);
+  border-color: var(--gold);
+}
+.pp-bible-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+.pp-bible-list {
+  gap: 0;
+}
+.pp-bible-book-group {
+  display: flex;
+  flex-direction: column;
+}
+.pp-bible-chapters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px 6px 10px 28px;
+}
+.pp-bible-chapter {
+  width: 28px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  border: 1px solid var(--border-strong);
+  background: none;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  cursor: pointer;
+}
+.pp-bible-chapter:hover {
+  background: var(--accent-12);
+  border-color: var(--accent);
+}
+.pp-bible-chapter.added {
+  color: var(--accent);
+  border-color: var(--gold);
+  background: var(--accent-12);
+}
+.pp-bible-preview {
+  height: 300px;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.pp-bible-preview-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+}
+.pp-bible-added-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--accent);
+}
 
 /* Notes-list navigator (full-center) */
 .notes-nav {
@@ -424,6 +542,18 @@ select.field {
   font-family: var(--font-ui);
   color: var(--muted);
   border-bottom: 1px solid var(--border);
+}
+.notes-nav-new {
+  display: flex;
+  gap: 2px;
+}
+.notes-group-head {
+  font-family: var(--font-title);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding: 10px 9px 4px;
 }
 .notes-nav-list {
   flex: 1;
@@ -590,6 +720,54 @@ select.field {
 .ref-pdf-head .book-select {
   flex: 1;
   min-width: 0;
+}
+.ref-pdf-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+}
+.ref-pdf-search-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--base);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 0 10px;
+}
+.ref-pdf-search-icon {
+  flex: 0 0 auto;
+  color: var(--muted);
+}
+.ref-pdf-search {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  padding: 8px 0;
+}
+.ref-pdf-search:focus {
+  outline: none;
+}
+.ref-pdf-browse {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
 }
 .ref-promote-wrap {
   position: relative;
@@ -2674,6 +2852,7 @@ select.field {
 }
 .search-bar {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   align-items: center;
   padding: 12px 14px;
@@ -3037,6 +3216,36 @@ select.field {
   color: var(--muted);
   min-width: 20px;
   text-align: right;
+}
+.shelf-mgr-tag-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--text);
+}
+.mgr-sec-title {
+  font-family: var(--font-title);
+  font-size: 13px;
+  color: var(--muted);
+  margin: 18px 0 8px;
+}
+.mgr-sec-title:first-child {
+  margin-top: 0;
+}
+.mgr-reorder {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.mgr-reorder .icon-btn {
+  width: 18px;
+  height: 14px;
+  padding: 0;
+}
+.mgr-reorder .icon-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
 }
 .quote-tags {
   display: flex;

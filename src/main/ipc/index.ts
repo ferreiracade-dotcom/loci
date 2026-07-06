@@ -176,7 +176,11 @@ export function registerIpc(): void {
     library.renameShelf(id, name)
   )
   ipcMain.handle(Channels.deleteShelf, (_e, id: string) => library.deleteShelf(id))
+  ipcMain.handle(Channels.reorderShelves, (_e, orderedIds: string[]) =>
+    library.reorderShelves(orderedIds)
+  )
   ipcMain.handle(Channels.listTags, () => library.listTags())
+  ipcMain.handle(Channels.reorderTags, (_e, orderedIds: string[]) => library.reorderTags(orderedIds))
   ipcMain.handle(Channels.getBookPdf, (_e, id: string) => library.getBookPdf(id))
   ipcMain.handle(Channels.setBookLastPage, (_e, id: string, page: number) =>
     library.setBookLastPage(id, page)

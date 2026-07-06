@@ -1,11 +1,27 @@
 import { useEffect, useState } from 'react'
-import { FileText, BookOpen, ScrollText, Plus, FolderKanban, X, Search as SearchIcon } from 'lucide-react'
+import {
+  FileText,
+  BookOpen,
+  ScrollText,
+  Plus,
+  FolderKanban,
+  X,
+  Search as SearchIcon,
+  ChevronRight,
+  ChevronDown,
+  Check
+} from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import type { PaneContent } from '../../store/useStore'
 import { api } from '../../lib/api'
-import { bookByCode } from '@shared/scriptureRef'
+import { bookByCode, BOOKS } from '@shared/scriptureRef'
+import { bookMatchesQuery } from '../../lib/bookSearch'
 import { SearchResults } from './SearchResults'
+import { BookListRow } from './LibraryView'
+import { ScriptureReader } from './ScriptureReader'
 import type { ProjectItem, SearchHit } from '@shared/ipc'
+
+type AddTab = 'notes' | 'library' | 'bible'
 
 /** Human label for a scripture project item, e.g. "John 3". */
 function scriptureLabel(item: { book: string; chapter: number }): string {
@@ -37,11 +53,25 @@ export function PanePicker({
   const createNote = useStore((s) => s.createNote)
   const scripturePassage = useStore((s) => s.scripturePassage)
   const scriptureTranslation = useStore((s) => s.scriptureTranslation)
+  const scriptureTranslations = useStore((s) => s.scriptureTranslations)
+  const loadScripture = useStore((s) => s.loadScripture)
   const addProjectItem = useStore((s) => s.addProjectItem)
   const removeProjectItem = useStore((s) => s.removeProjectItem)
 
+  // The Bible tab's preview needs a resolved translation; nothing else in this picker
+  // guarantees `loadScripture` has run yet (unlike the reference-panel Bible view).
+  useEffect(() => {
+    if (scriptureTranslations.length === 0) void loadScripture()
+  }, [scriptureTranslations.length, loadScripture])
+
   const [q, setQ] = useState('')
   const [contentHits, setContentHits] = useState<SearchHit[]>([])
+  const [addTab, setAddTab] = useState<AddTab>('notes')
+  const [addQ, setAddQ] = useState('')
+  const [expandedBook, setExpandedBook] = useState<string | null>(null)
+  const [previewChapter, setPreviewChapter] = useState<{ book: string; chapter: number } | null>(
+    null
+  )
   const query = q.trim()
   const ql = query.toLowerCase()
 
@@ -64,6 +94,17 @@ export function PanePicker({
   const scriptureHits = scriptureItems.filter(
     (s) => !ql || scriptureLabel(s).toLowerCase().includes(ql)
   )
+
+  // "Add a source" mirrors the real Notes/Library lists (minus what's already in the project)
+  // so a source can be added by browsing, not just by dragging in from the reference panel.
+  const addNoteHits = restrictToProject
+    ? notes.filter((n) => !notePaths?.has(n.path) && (!addQ.trim() || n.title.toLowerCase().includes(addQ.trim().toLowerCase())))
+    : []
+  const addProjects = addNoteHits.filter((n) => n.type === 'project')
+  const addRegularNotes = addNoteHits.filter((n) => n.type !== 'project')
+  const addBookHits = restrictToProject
+    ? books.filter((b) => !bookIds?.has(b.id) && bookMatchesQuery(b, addQ))
+    : []
 
   // In restricted mode, the box also runs a real content search over the collection.
   useEffect(() => {
@@ -233,8 +274,164 @@ export function PanePicker({
             {scriptureHits.length === 0 && noteHits.length === 0 && bookHits.length === 0 && (
               <div className="pp-empty">
                 {restrictToProject
-                  ? 'No sources yet — drag a book, note, or Bible chapter in from the reference panel.'
+                  ? 'No sources yet — add one below, or drag a book, note, or Bible chapter in from the reference panel.'
                   : 'No matches. Type a name above to create a note.'}
+              </div>
+            )}
+          </div>
+        )}
+
+        {restrictToProject && (
+          <div className="pp-add-source">
+            <div className="pp-sec">
+              <Plus size={11} /> Add a source
+            </div>
+            <div className="pp-add-tabs">
+              <button
+                className={`pp-add-tab${addTab === 'notes' ? ' active' : ''}`}
+                onClick={() => setAddTab('notes')}
+              >
+                <FileText size={13} /> Notes
+              </button>
+              <button
+                className={`pp-add-tab${addTab === 'library' ? ' active' : ''}`}
+                onClick={() => setAddTab('library')}
+              >
+                <BookOpen size={13} /> Library
+              </button>
+              <button
+                className={`pp-add-tab${addTab === 'bible' ? ' active' : ''}`}
+                onClick={() => setAddTab('bible')}
+              >
+                <ScrollText size={13} /> Bible
+              </button>
+            </div>
+
+            {addTab !== 'bible' && (
+              <input
+                className="pp-search pp-search-sm"
+                placeholder={addTab === 'notes' ? 'Search your notes…' : 'Search your library…'}
+                value={addQ}
+                onChange={(e) => setAddQ(e.target.value)}
+              />
+            )}
+
+            {addTab === 'notes' && (
+              <div className="pp-scroll">
+                {addProjects.length > 0 && <div className="pp-sec">Projects</div>}
+                {addProjects.map((n) => (
+                  <button
+                    key={n.path}
+                    className="pp-item"
+                    onClick={() => void addProjectItem({ kind: 'note', path: n.path })}
+                  >
+                    <FolderKanban size={14} />
+                    <span className="pp-item-title">{n.title}</span>
+                    <Plus size={12} className="pp-add-icon" />
+                  </button>
+                ))}
+                {addRegularNotes.length > 0 && <div className="pp-sec">Notes</div>}
+                {addRegularNotes.map((n) => (
+                  <button
+                    key={n.path}
+                    className="pp-item"
+                    onClick={() => void addProjectItem({ kind: 'note', path: n.path })}
+                  >
+                    <FileText size={14} />
+                    <span className="pp-item-title">{n.title}</span>
+                    <Plus size={12} className="pp-add-icon" />
+                  </button>
+                ))}
+                {addNoteHits.length === 0 && <div className="pp-empty">No matching notes.</div>}
+              </div>
+            )}
+
+            {addTab === 'library' && (
+              <div className="pp-scroll list">
+                {addBookHits.map((b) => (
+                  <BookListRow
+                    key={b.id}
+                    book={b}
+                    onRead={() => void addProjectItem({ kind: 'book', id: b.id })}
+                    onOpen={() => void addProjectItem({ kind: 'book', id: b.id })}
+                    onMenu={(e) => e.preventDefault()}
+                  />
+                ))}
+                {addBookHits.length === 0 && <div className="pp-empty">No matching books.</div>}
+              </div>
+            )}
+
+            {addTab === 'bible' && (
+              <div className="pp-bible-tab">
+                {previewChapter &&
+                  (() => {
+                    const already = scriptureItems.some(
+                      (s) => s.book === previewChapter.book && s.chapter === previewChapter.chapter
+                    )
+                    return (
+                      <div className="pp-bible-preview">
+                        <ScriptureReader
+                          key={`${previewChapter.book}:${previewChapter.chapter}`}
+                          translation={scriptureTranslation}
+                          book={previewChapter.book}
+                          chapter={previewChapter.chapter}
+                          highlight={[]}
+                          onNavigate={(book, chapter) => setPreviewChapter({ book, chapter })}
+                          compact
+                          onClose={() => setPreviewChapter(null)}
+                        />
+                        <div className="pp-bible-preview-actions">
+                          {already ? (
+                            <span className="pp-bible-added-badge">
+                              <Check size={13} /> Already in this project
+                            </span>
+                          ) : (
+                            <button
+                              className="btn btn-sm btn-primary"
+                              onClick={() => void addProjectItem({ kind: 'scripture', ...previewChapter })}
+                            >
+                              <Plus size={14} /> Add to project
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })()}
+                <div className="pp-scroll pp-bible-list">
+                  {BOOKS.map((b) => {
+                    const open = expandedBook === b.code
+                    return (
+                      <div key={b.code} className="pp-bible-book-group">
+                        <button
+                          className="pp-item"
+                          onClick={() => setExpandedBook(open ? null : b.code)}
+                        >
+                          {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                          <span className="pp-item-title">{b.name}</span>
+                        </button>
+                        {open && (
+                          <div className="pp-bible-chapters">
+                            {Array.from({ length: b.chapters }, (_, i) => i + 1).map((c) => {
+                              const already = scriptureItems.some(
+                                (s) => s.book === b.code && s.chapter === c
+                              )
+                              return (
+                                <button
+                                  key={c}
+                                  className={`pp-bible-chapter${already ? ' added' : ''}`}
+                                  title={already ? `${b.name} ${c} — already in this project` : `Preview ${b.name} ${c}`}
+                                  onClick={() => setPreviewChapter({ book: b.code, chapter: c })}
+                                >
+                                  {c}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             )}
           </div>

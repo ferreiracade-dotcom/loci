@@ -880,6 +880,11 @@ function enrichOne(id: string): boolean {
       series: parsed.series ?? row.series,
       num: parsed.seriesNumber ?? row.series_number
     })
+  // Without this, a book's on-disk sidecar keeps whatever title/author it had before this
+  // parse (often the unsplit "Title - Author" from an older import) — and since a fresh
+  // re-import trusts a sidecar's title over a fresh file-name parse, that stale sidecar would
+  // silently undo this exact fix the next time the book gets re-catalogued.
+  writeSidecarForBook(id)
   return true
 }
 
@@ -939,6 +944,40 @@ export function applyFilenameAuthorMigration(): void {
     /* best effort */
   }
   console.log(`[filename-author] derived an author for ${updated}/${rows.length} books`)
+}
+
+/**
+ * One-time: some sidecars still carry a title from before file-name-based parsing existed (or
+ * from a transient write failure during a re-catalog, e.g. while Drive was still mounting) —
+ * unlike the DB row, which `enrichOne` fixes directly, the sidecar was never rewritten to match.
+ * That stale sidecar would silently reintroduce the old (unsplit "Title - Author") title the
+ * next time its book gets re-imported, since a fresh import trusts a sidecar's title over a
+ * fresh parse. Refresh every sidecar whose title doesn't match its book's current DB title so
+ * there's nothing left to regress from. Triggered by a flag file, runs once.
+ */
+export function applySidecarResync(): void {
+  const flag = join(getDataDir(), 'sidecar-resync.flag')
+  if (!existsSync(flag)) return
+  const rows = getDb().prepare('SELECT id, title, pdf_path FROM books').all() as {
+    id: string
+    title: string
+    pdf_path: string | null
+  }[]
+  let fixed = 0
+  for (const r of rows) {
+    if (!r.pdf_path) continue
+    const side = readSidecar(r.pdf_path)
+    if (side && side.title?.trim() !== r.title) {
+      writeSidecarForBook(r.id)
+      fixed++
+    }
+  }
+  try {
+    unlinkSync(flag)
+  } catch {
+    /* best effort */
+  }
+  console.log(`[sidecar-resync] refreshed ${fixed}/${rows.length} stale sidecars`)
 }
 
 // ---------- Mutations ----------
@@ -1142,6 +1181,24 @@ export function deleteShelf(id: string): void {
   getDb().prepare('DELETE FROM shelves WHERE id = ?').run(id)
 }
 
+/** Persist a manual display order for shelves — `orderedIds` is the full list, in order. */
+export function reorderShelves(orderedIds: string[]): void {
+  const db = getDb()
+  const upd = db.prepare('UPDATE shelves SET sort_order = ? WHERE id = ?')
+  db.transaction(() => {
+    orderedIds.forEach((id, i) => upd.run(i + 1, id))
+  })()
+}
+
 export function listTags(): Tag[] {
-  return getDb().prepare('SELECT id, name FROM tags ORDER BY name').all() as Tag[]
+  return getDb().prepare('SELECT id, name FROM tags ORDER BY sort_order, name').all() as Tag[]
+}
+
+/** Persist a manual display order for tags — `orderedIds` is the full list, in order. */
+export function reorderTags(orderedIds: string[]): void {
+  const db = getDb()
+  const upd = db.prepare('UPDATE tags SET sort_order = ? WHERE id = ?')
+  db.transaction(() => {
+    orderedIds.forEach((id, i) => upd.run(i + 1, id))
+  })()
 }

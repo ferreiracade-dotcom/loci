@@ -1,10 +1,29 @@
 import { useEffect, useState } from 'react'
-import { X, Plus, Trash2 } from 'lucide-react'
+import { X, Plus, Trash2, ChevronUp, ChevronDown } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { DrawerOverlay } from '../DrawerOverlay'
-import type { Shelf } from '@shared/ipc'
+import type { Shelf, Tag } from '@shared/ipc'
 
-function ShelfRow({ shelf }: { shelf: Shelf }) {
+/** Move the item at `index` up or down one spot; a no-op at either end. */
+function moved<T>(list: T[], index: number, dir: -1 | 1): T[] {
+  const j = index + dir
+  if (j < 0 || j >= list.length) return list
+  const next = list.slice()
+  ;[next[index], next[j]] = [next[j], next[index]]
+  return next
+}
+
+function ShelfRow({
+  shelf,
+  onMove,
+  canMoveUp,
+  canMoveDown
+}: {
+  shelf: Shelf
+  onMove: (dir: -1 | 1) => void
+  canMoveUp: boolean
+  canMoveDown: boolean
+}) {
   const renameShelf = useStore((s) => s.renameShelf)
   const deleteShelf = useStore((s) => s.deleteShelf)
   const [name, setName] = useState(shelf.name)
@@ -21,6 +40,19 @@ function ShelfRow({ shelf }: { shelf: Shelf }) {
 
   return (
     <div className="shelf-mgr-row">
+      <div className="mgr-reorder">
+        <button className="icon-btn" title="Move up" disabled={!canMoveUp} onClick={() => onMove(-1)}>
+          <ChevronUp size={13} />
+        </button>
+        <button
+          className="icon-btn"
+          title="Move down"
+          disabled={!canMoveDown}
+          onClick={() => onMove(1)}
+        >
+          <ChevronDown size={13} />
+        </button>
+      </div>
       <input
         className="field"
         value={name}
@@ -48,9 +80,43 @@ function ShelfRow({ shelf }: { shelf: Shelf }) {
   )
 }
 
+function TagRow({
+  tag,
+  onMove,
+  canMoveUp,
+  canMoveDown
+}: {
+  tag: Tag
+  onMove: (dir: -1 | 1) => void
+  canMoveUp: boolean
+  canMoveDown: boolean
+}) {
+  return (
+    <div className="shelf-mgr-row">
+      <div className="mgr-reorder">
+        <button className="icon-btn" title="Move up" disabled={!canMoveUp} onClick={() => onMove(-1)}>
+          <ChevronUp size={13} />
+        </button>
+        <button
+          className="icon-btn"
+          title="Move down"
+          disabled={!canMoveDown}
+          onClick={() => onMove(1)}
+        >
+          <ChevronDown size={13} />
+        </button>
+      </div>
+      <span className="shelf-mgr-tag-name">#{tag.name}</span>
+    </div>
+  )
+}
+
 export function ShelvesManager({ onClose }: { onClose: () => void }) {
   const shelves = useStore((s) => s.shelves)
+  const tags = useStore((s) => s.tags)
   const createShelf = useStore((s) => s.createShelf)
+  const reorderShelves = useStore((s) => s.reorderShelves)
+  const reorderTags = useStore((s) => s.reorderTags)
   const [newName, setNewName] = useState('')
 
   useEffect(() => {
@@ -68,15 +134,23 @@ export function ShelvesManager({ onClose }: { onClose: () => void }) {
     setNewName('')
   }
 
+  const moveShelf = (index: number, dir: -1 | 1): void => {
+    void reorderShelves(moved(shelves, index, dir).map((s) => s.id))
+  }
+  const moveTag = (index: number, dir: -1 | 1): void => {
+    void reorderTags(moved(tags, index, dir).map((t) => t.id))
+  }
+
   return (
     <DrawerOverlay onClose={onClose}>
       <div className="drawer-head">
-          <h2 className="drawer-title">Shelves</h2>
+          <h2 className="drawer-title">Shelves &amp; Tags</h2>
           <button className="icon-btn" title="Close" onClick={onClose}>
             <X size={16} />
           </button>
         </div>
         <div className="drawer-body">
+          <h3 className="mgr-sec-title">Shelves</h3>
           <div className="shelf-add">
             <input
               className="field"
@@ -92,11 +166,42 @@ export function ShelvesManager({ onClose }: { onClose: () => void }) {
             </button>
           </div>
           <div className="shelf-mgr-list">
-            {shelves.map((s) => (
-              <ShelfRow key={s.id} shelf={s} />
+            {shelves.map((s, i) => (
+              <ShelfRow
+                key={s.id}
+                shelf={s}
+                onMove={(dir) => moveShelf(i, dir)}
+                canMoveUp={i > 0}
+                canMoveDown={i < shelves.length - 1}
+              />
             ))}
           </div>
-          <p className="folder-hint">Rename inline; deleting a shelf keeps the books themselves.</p>
+          <p className="folder-hint">
+            Rename inline, reorder with the arrows; deleting a shelf keeps the books themselves.
+          </p>
+
+          <h3 className="mgr-sec-title">Tags</h3>
+          {tags.length === 0 ? (
+            <p className="folder-hint">
+              No tags yet — add them from a book&apos;s info panel and they&apos;ll appear here to
+              reorder.
+            </p>
+          ) : (
+            <>
+              <div className="shelf-mgr-list">
+                {tags.map((t, i) => (
+                  <TagRow
+                    key={t.id}
+                    tag={t}
+                    onMove={(dir) => moveTag(i, dir)}
+                    canMoveUp={i > 0}
+                    canMoveDown={i < tags.length - 1}
+                  />
+                ))}
+              </div>
+              <p className="folder-hint">This order is used anywhere tags are listed or grouped.</p>
+            </>
+          )}
         </div>
     </DrawerOverlay>
   )

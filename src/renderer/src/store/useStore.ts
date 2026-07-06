@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { api } from '../lib/api'
 import { applyTheme } from '../lib/theme'
 import { extractAndIndexBook } from '../lib/pdfIndex'
-import { parseReference } from '@shared/scriptureRef'
+import { BOOKS, parseReference } from '@shared/scriptureRef'
 import { DEFAULT_THEME } from '@shared/ipc'
 import { parseNote, serializeFrontMatter } from '../lib/noteFrontmatter'
 import type {
@@ -155,6 +155,8 @@ interface Store {
   /** Target page to jump to when (re)opening a book from search; consumed by the reader. */
   pendingPage: number | null
   indexing: { done: number; total: number } | null
+  /** Progress of a whole-Bible (BSB) indexing pass, or null when idle. */
+  bibleIndexing: { done: number; total: number } | null
   searchResults: SearchHit[]
   /** Folded query tokens, used to flash-highlight matches when jumping to a page. */
   searchTerms: string[]
@@ -240,8 +242,15 @@ interface Store {
   createShelf: (name: string) => Promise<void>
   renameShelf: (id: string, name: string) => Promise<void>
   deleteShelf: (id: string) => Promise<void>
+  /** Persist a new display order for all shelves (full list of ids, in the desired order). */
+  reorderShelves: (orderedIds: string[]) => Promise<void>
+  /** Persist a new display order for all tags (full list of ids, in the desired order). */
+  reorderTags: (orderedIds: string[]) => Promise<void>
   startIndexing: () => Promise<void>
   cancelIndexing: () => void
+  /** Fetch and index every chapter of the BSB (public-domain) so the whole Bible is searchable. */
+  startBibleIndexing: () => Promise<void>
+  cancelBibleIndexing: () => void
   runSearch: (query: string, scope: SearchScope) => Promise<void>
   clearSearch: () => void
   setSearchQuery: (q: string) => void
@@ -319,6 +328,7 @@ export const useStore = create<Store>((set, get) => {
   let refreshTimer: ReturnType<typeof setTimeout> | null = null
   let lastRefresh = 0
   let indexCancel = false
+  let bibleIndexCancel = false
 
   // Coalesce background "library changed" events into at most one refresh per 1.5s.
   const scheduleRefresh = (): void => {
@@ -357,6 +367,7 @@ export const useStore = create<Store>((set, get) => {
     notesTagFilter: null,
     pendingPage: null,
     indexing: null,
+    bibleIndexing: null,
     searchResults: [],
     searchTerms: [],
     searchQuery: '',
@@ -745,6 +756,22 @@ export const useStore = create<Store>((set, get) => {
       await get().refreshLibrary()
     },
 
+    reorderShelves: async (orderedIds) => {
+      // Optimistic: the caller already knows the desired order, so reflect it immediately
+      // rather than waiting on a round trip before the UI updates.
+      const byId = new Map(get().shelves.map((s) => [s.id, s]))
+      const shelves = orderedIds.map((id) => byId.get(id)).filter((s): s is Shelf => !!s)
+      set({ shelves })
+      await api.reorderShelves(orderedIds)
+    },
+
+    reorderTags: async (orderedIds) => {
+      const byId = new Map(get().tags.map((t) => [t.id, t]))
+      const tags = orderedIds.map((id) => byId.get(id)).filter((t): t is Tag => !!t)
+      set({ tags })
+      await api.reorderTags(orderedIds)
+    },
+
     startIndexing: async () => {
       if (get().indexing) return
       indexCancel = false
@@ -771,6 +798,37 @@ export const useStore = create<Store>((set, get) => {
 
     cancelIndexing: () => {
       indexCancel = true
+    },
+
+    startBibleIndexing: async () => {
+      if (get().bibleIndexing) return
+      bibleIndexCancel = false
+      const total = BOOKS.reduce((sum, b) => sum + b.chapters, 0)
+      set({ bibleIndexing: { done: 0, total } })
+      let done = 0
+      chapters: for (const b of BOOKS) {
+        for (let c = 1; c <= b.chapters; c++) {
+          if (bibleIndexCancel) break chapters
+          try {
+            const passage = await api.getScriptureChapter('BSB', b.code, c)
+            if (passage) {
+              await api.indexScriptureChapter('BSB', b.code, c, passage.reference, passage.verses)
+            }
+          } catch {
+            /* skip a chapter that fails to fetch — the pass can be re-run later */
+          }
+          done++
+          set({ bibleIndexing: { done, total } })
+          // Already-cached chapters return almost instantly; this only meaningfully throttles
+          // the (much slower) network fetches on a fresh pass, to stay a polite API citizen.
+          await new Promise((r) => setTimeout(r, 40))
+        }
+      }
+      set({ bibleIndexing: null })
+    },
+
+    cancelBibleIndexing: () => {
+      bibleIndexCancel = true
     },
 
     runSearch: async (query, scope) => {

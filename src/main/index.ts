@@ -7,6 +7,7 @@ import { registerIpc } from './ipc'
 import { backupSnapshot } from './services/backup'
 import {
   applyFilenameAuthorMigration,
+  applySidecarResync,
   backfillLocalCopies,
   enrichPending,
   syncLibrary
@@ -133,6 +134,7 @@ app.whenReady().then(() => {
   applyRelinkMap() // one-time library-consolidation relink, if pending
   applyTitleClean() // one-time: strip trailing author from titles, if pending
   applyFilenameAuthorMigration() // one-time: derive missing authors from file names, if pending
+  applySidecarResync() // one-time: refresh sidecars left stale by the migration above, if pending
   registerIpc()
   createWindow()
   maybeRebuildSidecars() // one-time whole-library sidecar write, if pending
