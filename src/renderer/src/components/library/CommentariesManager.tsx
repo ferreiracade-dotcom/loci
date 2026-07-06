@@ -115,6 +115,19 @@ export function CommentariesManager({ onClose }: { onClose: () => void }) {
     await startProfiling(source.id)
   }
 
+  // Markdown sources have explicit heading boundaries, so they skip profiling entirely and
+  // index straight away — both on first add and on re-index.
+  const addMarkdown = async (): Promise<void> => {
+    try {
+      const source = await api.addMarkdownCommentarySource()
+      if (!source) return
+      await reload()
+      await runIndex(source.id)
+    } catch (err) {
+      setToast(err instanceof Error ? err.message : 'Could not add this Markdown file')
+    }
+  }
+
   const runIndex = async (sourceId: string, config?: CommentaryParserConfig): Promise<void> => {
     if (config) await api.updateCommentarySource(sourceId, { parserConfig: JSON.stringify(config) })
     setView({ kind: 'indexing', sourceId })
@@ -151,8 +164,9 @@ export function CommentariesManager({ onClose }: { onClose: () => void }) {
             <div className="commentary-mgr-list">
               {sources.length === 0 && (
                 <p className="folder-hint">
-                  No commentaries registered yet. Tag a verse-by-verse commentary PDF as
-                  &quot;commentary&quot; in the library, then add it here.
+                  No commentaries registered yet. Add a verse-by-verse commentary PDF (tag it
+                  &quot;commentary&quot; in the library first), or add a commentary Markdown
+                  (.md) file.
                 </p>
               )}
               {sources.map((s, i) => (
@@ -194,7 +208,9 @@ export function CommentariesManager({ onClose }: { onClose: () => void }) {
                       className="icon-btn"
                       title={s.status === 'unindexed' ? 'Index' : 'Re-index'}
                       onClick={() =>
-                        s.parserConfig ? void runIndex(s.id) : void startProfiling(s.id)
+                        s.parserConfig || /\.md$/i.test(s.pdfRelativePath)
+                          ? void runIndex(s.id)
+                          : void startProfiling(s.id)
                       }
                     >
                       <RefreshCw size={14} />
@@ -210,9 +226,14 @@ export function CommentariesManager({ onClose }: { onClose: () => void }) {
                 </div>
               ))}
             </div>
-            <button className="btn btn-primary btn-sm" onClick={() => setView({ kind: 'pick-book' })}>
-              <Plus size={14} /> Add source
-            </button>
+            <div className="commentary-mgr-add">
+              <button className="btn btn-primary btn-sm" onClick={() => setView({ kind: 'pick-book' })}>
+                <Plus size={14} /> Add PDF source
+              </button>
+              <button className="btn btn-sm" onClick={() => void addMarkdown()}>
+                <Plus size={14} /> Add Markdown file
+              </button>
+            </div>
           </>
         )}
 

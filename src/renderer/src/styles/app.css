@@ -3367,6 +3367,11 @@ select.field {
   gap: 6px;
   margin-bottom: 14px;
 }
+.commentary-mgr-add {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 .commentary-mgr-row {
   display: flex;
   align-items: center;

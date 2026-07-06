@@ -77,6 +77,7 @@ export const Channels = {
   listCommentarySources: 'commentary:listSources',
   createCommentarySource: 'commentary:createSource',
   createCommentarySourceFromBook: 'commentary:createSourceFromBook',
+  addMarkdownCommentarySource: 'commentary:addMarkdownSource',
   updateCommentarySource: 'commentary:updateSource',
   deleteCommentarySource: 'commentary:deleteSource',
   reorderCommentarySources: 'commentary:reorderSources',
@@ -311,6 +312,9 @@ export interface LociApi {
     displayName: string,
     author: string | null
   ): Promise<CommentarySource>
+  /** Prompt for a canonical commentary-Markdown (.md) file and register it as a source (no
+   *  library book, no profiling — headings are the excerpt boundaries). Null if cancelled. */
+  addMarkdownCommentarySource(): Promise<CommentarySource | null>
   updateCommentarySource(id: string, patch: CommentarySourceUpdate): Promise<void>
   deleteCommentarySource(id: string): Promise<void>
   /** Persist a new display order for all commentary sources (full list of ids, in order). */

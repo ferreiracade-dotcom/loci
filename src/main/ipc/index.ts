@@ -302,6 +302,17 @@ export function registerIpc(): void {
     (_e, bookId: string, displayName: string, author: string | null) =>
       commentary.createSourceFromBook(bookId, displayName, author)
   )
+  ipcMain.handle(Channels.addMarkdownCommentarySource, async (e) => {
+    const win = BrowserWindow.fromWebContents(e.sender)
+    const opts: OpenDialogOptions = {
+      title: 'Choose a commentary Markdown file',
+      properties: ['openFile'],
+      filters: [{ name: 'Markdown', extensions: ['md', 'markdown'] }]
+    }
+    const res = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts)
+    if (res.canceled || !res.filePaths[0]) return null
+    return commentary.createSourceFromMarkdown(res.filePaths[0])
+  })
   ipcMain.handle(Channels.updateCommentarySource, (_e, id: string, patch: CommentarySourceUpdate) =>
     commentary.updateSource(id, patch)
   )

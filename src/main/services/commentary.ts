@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto'
-import { relative } from 'path'
+import { basename, relative } from 'path'
 import { getDb } from '../db/connection'
 import { newCorrection, saveCorrection } from './commentaryCorrections'
 import { readConfig } from './config'
@@ -111,6 +111,24 @@ export function createSourceFromBook(
   const vaultPath = readConfig().vaultPath
   const pdfRelativePath = vaultPath ? relative(vaultPath, absolutePath) : absolutePath
   return createSource({ displayName, author, bookId, pdfRelativePath })
+}
+
+/** Register a commentary source from a canonical commentary-Markdown file. Unlike a PDF
+ *  source there's no library book behind it (bookId stays null) and no profiling step — the
+ *  file's headings are the excerpt boundaries, so it can be indexed immediately. The path is
+ *  stored vault-relative when the file lives inside the vault (so it survives Drive sync like
+ *  every other source), else absolute. */
+export function createSourceFromMarkdown(
+  absolutePath: string,
+  displayName?: string,
+  author: string | null = null
+): CommentarySource {
+  const vaultPath = readConfig().vaultPath
+  const rel = vaultPath ? relative(vaultPath, absolutePath) : absolutePath
+  // relative() gives a "../"-prefixed path when the file is outside the vault — keep absolute then.
+  const storedPath = !rel.startsWith('..') ? rel : absolutePath
+  const name = displayName?.trim() || basename(absolutePath).replace(/\.md$/i, '')
+  return createSource({ displayName: name, author, bookId: null, pdfRelativePath: storedPath })
 }
 
 /** Persist a manual display order for sources — `orderedIds` is the full list, in order. */

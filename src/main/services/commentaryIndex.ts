@@ -1,11 +1,16 @@
+import { readFileSync } from 'fs'
+import { isAbsolute, join } from 'path'
 import * as commentary from './commentary'
 import * as library from './library'
+import { readConfig } from './config'
 import {
   chunkDocument,
   extractPagesLines,
   profileSource,
+  type ExtractedChunk,
   type PositionedLine
 } from './commentaryExtract'
+import { parseCommentaryMarkdown } from './commentaryMarkdown'
 import { applyCorrections, correctionsForSource, hashChunkContent } from './commentaryCorrections'
 import { validateSource } from './commentaryValidate'
 import { VERSE_COUNTS } from '../../shared/versification'
@@ -48,6 +53,21 @@ async function readSourcePdf(sourceId: string): Promise<{
   return { bytes, source }
 }
 
+/** True when a source is a canonical commentary-Markdown file rather than a PDF. */
+export function isMarkdownSource(pdfRelativePath: string): boolean {
+  return /\.md$/i.test(pdfRelativePath)
+}
+
+/** Read a Markdown source's text. `pdf_relative_path` is either already absolute or relative
+ *  to the vault (same convention as PDF sources). */
+function readSourceMarkdown(pdfRelativePath: string): string {
+  const vaultPath = readConfig().vaultPath
+  const abs = isAbsolute(pdfRelativePath)
+    ? pdfRelativePath
+    : join(vaultPath ?? '', pdfRelativePath)
+  return readFileSync(abs, 'utf8')
+}
+
 /** Phase 2c: sample the source's PDF and infer its header shape for user confirmation.
  *  Read-only — writes nothing; the caller saves the (possibly adjusted) profile via
  *  `updateCommentarySource` once confirmed. */
@@ -76,7 +96,19 @@ export async function indexSource(
   sourceId: string,
   onProgress?: (p: CommentaryIndexProgress) => void
 ): Promise<CommentaryIndexSummary> {
-  const { bytes, source } = await readSourcePdf(sourceId)
+  const source = commentary.getSource(sourceId)
+  if (!source) throw new Error('Commentary source not found')
+
+  // Markdown sources skip PDF extraction and profiling entirely — their excerpt boundaries are
+  // explicit headings, so a trivial, always-reliable parse replaces the whole heuristic stack.
+  if (isMarkdownSource(source.pdfRelativePath)) {
+    onProgress?.({ phase: 'extracting', done: 0, total: 1 })
+    const rawChunks = parseCommentaryMarkdown(readSourceMarkdown(source.pdfRelativePath))
+    onProgress?.({ phase: 'validating', done: 0, total: 1 })
+    return finalizeIndex(sourceId, source.pdfRelativePath, rawChunks, onProgress)
+  }
+
+  const { bytes } = await readSourcePdf(sourceId)
   if (!source.parserConfig) throw new Error('This source has not been profiled yet')
   const config = JSON.parse(source.parserConfig) as CommentaryParserConfig
 
@@ -95,8 +127,18 @@ export async function indexSource(
     book: config.seedBook,
     chapter: config.seedChapter
   })
+  return finalizeIndex(sourceId, source.pdfRelativePath, rawChunks, onProgress)
+}
 
-  const corrections = correctionsForSource(source.pdfRelativePath)
+/** Shared tail for both PDF and Markdown ingestion: replay manual corrections, validate,
+ *  persist excerpts, and update source status. */
+function finalizeIndex(
+  sourceId: string,
+  pdfRelativePath: string,
+  rawChunks: ExtractedChunk[],
+  onProgress?: (p: CommentaryIndexProgress) => void
+): CommentaryIndexSummary {
+  const corrections = correctionsForSource(pdfRelativePath)
   const { replayed, orphaned } = applyCorrections(rawChunks, corrections)
   const finalChunks = replayed.filter((r) => r.action !== 'discard').map((r) => r.chunk)
   const confirmedHashes = new Set(

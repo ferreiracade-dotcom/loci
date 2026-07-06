@@ -178,6 +178,14 @@ export function matchBareBookName(text: string): string | null {
   return SPELLING_TO_CODE.get(m[1].toLowerCase()) ?? null
 }
 
+/** Resolve a full book name or abbreviation (the *entire* string, any recognized spelling —
+ *  "Matthew", "Song of Solomon", "1 Timothy", "1 Cor") to its USFM code, or null. Unlike
+ *  matchBareBookName this requires the whole string to be exactly a book name, so it's for
+ *  contexts where that's already known — e.g. a Markdown "# Book" heading. */
+export function bookCodeFromName(name: string): string | null {
+  return SPELLING_TO_CODE.get(name.trim().toLowerCase()) ?? null
+}
+
 export interface ParsedRef {
   /** The exact matched text, e.g. "Rom 3:28". */
   raw: string

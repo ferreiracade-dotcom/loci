@@ -86,6 +86,7 @@ const api: LociApi = {
   createCommentarySource: (input) => ipcRenderer.invoke(Channels.createCommentarySource, input),
   createCommentarySourceFromBook: (bookId, displayName, author) =>
     ipcRenderer.invoke(Channels.createCommentarySourceFromBook, bookId, displayName, author),
+  addMarkdownCommentarySource: () => ipcRenderer.invoke(Channels.addMarkdownCommentarySource),
   updateCommentarySource: (id, patch) =>
     ipcRenderer.invoke(Channels.updateCommentarySource, id, patch),
   deleteCommentarySource: (id) => ipcRenderer.invoke(Channels.deleteCommentarySource, id),
