@@ -1,8 +1,9 @@
 import { randomUUID } from 'crypto'
-import { basename, relative } from 'path'
+import { copyFileSync, mkdirSync } from 'fs'
+import { basename, join, relative } from 'path'
 import { getDb } from '../db/connection'
 import { newCorrection, saveCorrection } from './commentaryCorrections'
-import { readConfig } from './config'
+import { commentaryVaultDir, readConfig } from './config'
 import type {
   CommentaryExcerpt,
   CommentaryExcerptReassign,
@@ -113,21 +114,34 @@ export function createSourceFromBook(
   return createSource({ displayName, author, bookId, pdfRelativePath })
 }
 
-/** Register a commentary source from a canonical commentary-Markdown file. Unlike a PDF
- *  source there's no library book behind it (bookId stays null) and no profiling step — the
- *  file's headings are the excerpt boundaries, so it can be indexed immediately. The path is
- *  stored vault-relative when the file lives inside the vault (so it survives Drive sync like
- *  every other source), else absolute. */
+/** Find a source by its stored (vault-relative) path, if any. */
+export function getSourceByPath(pdfRelativePath: string): CommentarySource | null {
+  const row = getDb()
+    .prepare('SELECT * FROM commentary_sources WHERE pdf_relative_path = ?')
+    .get(pdfRelativePath) as SourceRow | undefined
+  return row ? toSource(row) : null
+}
+
+/** Register a commentary source from a canonical commentary-Markdown file. The file is copied
+ *  into the vault's dedicated `commentaries/` folder so it travels with the vault to every
+ *  device (Drive sync), and the source is stored with that vault-relative path. No library
+ *  book (bookId stays null) and no profiling — the headings are the excerpt boundaries, so it
+ *  indexes immediately. Idempotent: re-adding a file already registered returns the existing
+ *  source rather than failing the UNIQUE path constraint. */
 export function createSourceFromMarkdown(
   absolutePath: string,
   displayName?: string,
   author: string | null = null
 ): CommentarySource {
-  const vaultPath = readConfig().vaultPath
-  const rel = vaultPath ? relative(vaultPath, absolutePath) : absolutePath
-  // relative() gives a "../"-prefixed path when the file is outside the vault — keep absolute then.
-  const storedPath = !rel.startsWith('..') ? rel : absolutePath
-  const name = displayName?.trim() || basename(absolutePath).replace(/\.md$/i, '')
+  const folder = commentaryVaultDir()
+  mkdirSync(folder, { recursive: true })
+  const fileName = basename(absolutePath)
+  const dest = join(folder, fileName)
+  if (relative(dest, absolutePath) !== '') copyFileSync(absolutePath, dest)
+  const storedPath = `commentaries/${fileName}`
+  const existing = getSourceByPath(storedPath)
+  if (existing) return existing
+  const name = displayName?.trim() || fileName.replace(/\.md$/i, '')
   return createSource({ displayName: name, author, bookId: null, pdfRelativePath: storedPath })
 }
 

@@ -29,6 +29,7 @@ import * as scripture from '../services/scripture'
 import * as commentary from '../services/commentary'
 import * as commentaryIndex from '../services/commentaryIndex'
 import { deleteCorrectionsForSource } from '../services/commentaryCorrections'
+import { syncVault } from '../services/vaultsync'
 import {
   getWelcomeBackgroundDataUrl,
   hasApiBibleKey,
@@ -311,7 +312,13 @@ export function registerIpc(): void {
     }
     const res = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts)
     if (res.canceled || !res.filePaths[0]) return null
-    return commentary.createSourceFromMarkdown(res.filePaths[0])
+    const source = commentary.createSourceFromMarkdown(res.filePaths[0])
+    try {
+      syncVault() // push the newly-copied file to Drive so it reaches other devices
+    } catch {
+      /* best effort — the periodic sync will catch it */
+    }
+    return source
   })
   ipcMain.handle(Channels.updateCommentarySource, (_e, id: string, patch: CommentarySourceUpdate) =>
     commentary.updateSource(id, patch)

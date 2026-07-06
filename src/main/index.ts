@@ -16,6 +16,7 @@ import { readConfig } from './services/config'
 import { applyRelinkMap, applyTitleClean } from './services/relink'
 import { rebuildAllSidecars } from './services/sidecar'
 import { syncVault } from './services/vaultsync'
+import { syncCommentaryFolder } from './services/commentaryIndex'
 import { Channels } from '../shared/ipc'
 
 /** One-time whole-library sidecar write, triggered by a flag file, run off the boot path. */
@@ -138,6 +139,10 @@ app.whenReady().then(() => {
   registerIpc()
   createWindow()
   maybeRebuildSidecars() // one-time whole-library sidecar write, if pending
+  // Auto-register + index any Markdown commentaries the vault carries (best-effort; new/changed
+  // files only). Makes vault commentaries appear on every device without manual re-adding.
+  // Deferred so the window paints before the (synchronous) index work runs.
+  setTimeout(() => void syncCommentaryFolder().catch(() => {}), 2000)
 
   // Keep the Drive backup fresh during long sessions (best-effort, skips when offline).
   setInterval(() => {

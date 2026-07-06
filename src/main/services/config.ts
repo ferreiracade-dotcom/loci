@@ -58,6 +58,12 @@ export function localVaultDir(): string {
   return join(getDataDir(), 'vault')
 }
 
+/** The vault's dedicated commentary-Markdown folder. Lives inside the synced vault so
+ *  commentary sources travel with the vault to every device (see vaultsync SUBDIRS). */
+export function commentaryVaultDir(): string {
+  return join(localVaultDir(), 'commentaries')
+}
+
 export function readConfig(): LociConfig {
   const p = configPath()
   if (!existsSync(p)) return { ...defaults }

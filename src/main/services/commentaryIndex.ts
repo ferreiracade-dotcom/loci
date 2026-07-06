@@ -1,8 +1,8 @@
-import { readFileSync } from 'fs'
+import { existsSync, readFileSync, readdirSync, statSync } from 'fs'
 import { isAbsolute, join } from 'path'
 import * as commentary from './commentary'
 import * as library from './library'
-import { readConfig } from './config'
+import { commentaryVaultDir, localVaultDir } from './config'
 import {
   chunkDocument,
   extractPagesLines,
@@ -59,13 +59,49 @@ export function isMarkdownSource(pdfRelativePath: string): boolean {
 }
 
 /** Read a Markdown source's text. `pdf_relative_path` is either already absolute or relative
- *  to the vault (same convention as PDF sources). */
+ *  to the local vault (where Markdown sources live under `commentaries/`, synced to Drive). */
 function readSourceMarkdown(pdfRelativePath: string): string {
-  const vaultPath = readConfig().vaultPath
   const abs = isAbsolute(pdfRelativePath)
     ? pdfRelativePath
-    : join(vaultPath ?? '', pdfRelativePath)
+    : join(localVaultDir(), pdfRelativePath)
   return readFileSync(abs, 'utf8')
+}
+
+/** Discover and index commentary-Markdown files sitting in the vault's `commentaries/` folder.
+ *  Called at startup (after the vault sync pulls them down from Drive) so that on any device
+ *  the vault reaches, its `.md` commentaries auto-register and index without manual re-adding —
+ *  the local index is derived, but the vault files that define it travel with the vault.
+ *  Registers unseen files and re-indexes ones whose file is newer than the last index. */
+export async function syncCommentaryFolder(): Promise<void> {
+  const folder = commentaryVaultDir()
+  if (!existsSync(folder)) return
+  let files: string[]
+  try {
+    files = readdirSync(folder).filter((f) => /\.md$/i.test(f))
+  } catch {
+    return
+  }
+  for (const fileName of files) {
+    const storedPath = `commentaries/${fileName}`
+    let source = commentary.getSourceByPath(storedPath)
+    if (!source) {
+      source = commentary.createSource({
+        displayName: fileName.replace(/\.md$/i, ''),
+        author: null,
+        bookId: null,
+        pdfRelativePath: storedPath
+      })
+    } else if (source.indexedAt) {
+      // Already indexed — skip unless the file changed since.
+      const mtime = statSync(join(folder, fileName)).mtimeMs
+      if (mtime <= Date.parse(source.indexedAt)) continue
+    }
+    try {
+      await indexSource(source.id)
+    } catch {
+      /* best effort — a malformed file just won't produce excerpts */
+    }
+  }
 }
 
 /** Phase 2c: sample the source's PDF and infer its header shape for user confirmation.
