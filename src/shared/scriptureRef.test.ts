@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   findReferences,
+  looksLikeChapterTitle,
+  matchBareBookName,
   parseChapterOnlyHeader,
   parseCommentaryHeader,
   romanToInt,
@@ -41,6 +43,38 @@ describe('romanToInt', () => {
     expect(romanToInt('')).toBeNull()
     expect(romanToInt('verse')).toBeNull()
     expect(romanToInt('16')).toBeNull()
+  })
+
+  it('rejects a repeated V/L/D as nonsensical rather than computing a bogus value (real: Lenski\'s "CHAPTER ll" is glyph-mangled "II", not "LL" = 100)', () => {
+    expect(romanToInt('ll')).toBeNull()
+    expect(romanToInt('xll')).toBeNull()
+    expect(romanToInt('vv')).toBeNull()
+    expect(romanToInt('dd')).toBeNull()
+    // I, X, C, M legitimately repeat.
+    expect(romanToInt('iii')).toBe(3)
+    expect(romanToInt('xxx')).toBe(30)
+  })
+})
+
+describe('matchBareBookName', () => {
+  it('finds a bare book name with no chapter/verse (real: Lenski\'s "Interpretation of Second Corinthians")', () => {
+    expect(matchBareBookName('Interpretation of Second Corinthians')).toBe('2CO')
+    expect(matchBareBookName('Interpretation of First Corinthians')).toBe('1CO')
+  })
+
+  it('returns null when no known book name appears', () => {
+    expect(matchBareBookName('Just some ordinary prose')).toBeNull()
+  })
+
+  it('does not match a short abbreviation, since those collide with footnote/cross-reference citations elsewhere in the text (real: Lenski\'s Corinthians commentary has recurring citations like "cf. Jn 5:22")', () => {
+    expect(matchBareBookName('cf. Jn 5:22')).toBeNull()
+    expect(matchBareBookName('See Rm 8:38 and Mt 6:24')).toBeNull()
+  })
+
+  it('does not match a full book name mentioned mid-sentence, only one trailing the whole line (real: Lenski\'s Corinthians commentary discursively cross-references other books by full name — "as Paul says in Romans 8, we..." — which recurs near page edges often enough to otherwise hijack book tracking)', () => {
+    expect(matchBareBookName('as Paul says in Romans 8, we know this')).toBeNull()
+    expect(matchBareBookName('recall the account in Genesis of the flood')).toBeNull()
+    expect(matchBareBookName('900 Interpretation of Second Corinthians')).toBe('2CO')
   })
 })
 
@@ -144,6 +178,23 @@ describe('parseCommentaryHeader — bare shapes requiring carried context', () =
     })
   })
 
+  it('flags a glyph-mangled numeral rather than guessing its value from run length (real: Gerhard "Verse lL." for verse 1, "Verse LI." for verse 11 — same run length, different values)', () => {
+    // The parser can't tell these apart from the glyphs alone (see verseStartGlitched) — it
+    // marks them and leaves resolution to the caller, which knows the surrounding sequence.
+    expect(parseCommentaryHeader('Verse lL.', withContext, 'word-label')).toMatchObject({
+      verseStartGlitched: true
+    })
+    expect(parseCommentaryHeader('Verse l.', withContext, 'word-label')).toMatchObject({
+      verseStartGlitched: true
+    })
+    expect(parseCommentaryHeader('Verse LI.', withContext, 'word-label')).toMatchObject({
+      verseStartGlitched: true
+    })
+    expect(parseCommentaryHeader('Verse 11.', withContext, 'word-label')).toMatchObject({
+      verseStartGlitched: false
+    })
+  })
+
   it('phrase-label (real: Kretzmann "False discipleship: V. 21.")', () => {
     expect(
       parseCommentaryHeader('False discipleship: V. 21.', withContext, 'phrase-label')
@@ -214,5 +265,23 @@ describe('parseChapterOnlyHeader', () => {
   it('returns null for non-chapter-heading lines', () => {
     expect(parseChapterOnlyHeader('Verse 11.')).toBeNull()
     expect(parseChapterOnlyHeader('This is just prose.')).toBeNull()
+  })
+
+  it('returns null for a glyph-mangled numeral it cannot cleanly decode (real: Gerhard "CHAPTER |" / "CHAPTER II]")', () => {
+    expect(parseChapterOnlyHeader('CHAPTER |')).toBeNull()
+    expect(parseChapterOnlyHeader('CHAPTER II]')).toBeNull()
+  })
+})
+
+describe('looksLikeChapterTitle', () => {
+  it('recognizes glyph-mangled chapter titles that parseChapterOnlyHeader could not decode', () => {
+    expect(looksLikeChapterTitle('CHAPTER |')).toBe(true)
+    expect(looksLikeChapterTitle('CHAPTER II]')).toBe(true)
+    expect(looksLikeChapterTitle('Chapter III')).toBe(true)
+  })
+
+  it('returns false for ordinary prose', () => {
+    expect(looksLikeChapterTitle('This is just prose.')).toBe(false)
+    expect(looksLikeChapterTitle('Verse 11.')).toBe(false)
   })
 })

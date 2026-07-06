@@ -29,12 +29,12 @@ const RAW: [string, string, number, string[]][] = [
   ['JOS', 'Joshua', 24, ['Josh', 'Jos', 'Jsh']],
   ['JDG', 'Judges', 21, ['Judg', 'Jdg', 'Jg']],
   ['RUT', 'Ruth', 4, ['Ruth', 'Rth', 'Ru']],
-  ['1SA', '1 Samuel', 31, ['1 Sam', '1 Sa', '1Sam', '1Sa', 'I Samuel', 'I Sam', '1st Samuel']],
-  ['2SA', '2 Samuel', 24, ['2 Sam', '2 Sa', '2Sam', '2Sa', 'II Samuel', 'II Sam', '2nd Samuel']],
-  ['1KI', '1 Kings', 22, ['1 Kgs', '1 Ki', '1Kgs', '1Ki', 'I Kings', '1st Kings']],
-  ['2KI', '2 Kings', 25, ['2 Kgs', '2 Ki', '2Kgs', '2Ki', 'II Kings', '2nd Kings']],
-  ['1CH', '1 Chronicles', 29, ['1 Chron', '1 Chr', '1Chr', '1Ch', 'I Chronicles']],
-  ['2CH', '2 Chronicles', 36, ['2 Chron', '2 Chr', '2Chr', '2Ch', 'II Chronicles']],
+  ['1SA', '1 Samuel', 31, ['1 Sam', '1 Sa', '1Sam', '1Sa', 'I Samuel', 'I Sam', '1st Samuel', 'First Samuel']],
+  ['2SA', '2 Samuel', 24, ['2 Sam', '2 Sa', '2Sam', '2Sa', 'II Samuel', 'II Sam', '2nd Samuel', 'Second Samuel']],
+  ['1KI', '1 Kings', 22, ['1 Kgs', '1 Ki', '1Kgs', '1Ki', 'I Kings', '1st Kings', 'First Kings']],
+  ['2KI', '2 Kings', 25, ['2 Kgs', '2 Ki', '2Kgs', '2Ki', 'II Kings', '2nd Kings', 'Second Kings']],
+  ['1CH', '1 Chronicles', 29, ['1 Chron', '1 Chr', '1Chr', '1Ch', 'I Chronicles', 'First Chronicles']],
+  ['2CH', '2 Chronicles', 36, ['2 Chron', '2 Chr', '2Chr', '2Ch', 'II Chronicles', 'Second Chronicles']],
   ['EZR', 'Ezra', 10, ['Ezra', 'Ezr']],
   ['NEH', 'Nehemiah', 13, ['Neh', 'Ne']],
   ['EST', 'Esther', 10, ['Esth', 'Est']],
@@ -66,25 +66,25 @@ const RAW: [string, string, number, string[]][] = [
   ['JHN', 'John', 21, ['John', 'Jhn', 'Joh', 'Jn']],
   ['ACT', 'Acts', 28, ['Acts', 'Act']],
   ['ROM', 'Romans', 16, ['Rom', 'Ro', 'Rm']],
-  ['1CO', '1 Corinthians', 16, ['1 Cor', '1 Co', '1Cor', '1Co', 'I Corinthians', '1st Corinthians']],
-  ['2CO', '2 Corinthians', 13, ['2 Cor', '2 Co', '2Cor', '2Co', 'II Corinthians', '2nd Corinthians']],
+  ['1CO', '1 Corinthians', 16, ['1 Cor', '1 Co', '1Cor', '1Co', 'I Corinthians', '1st Corinthians', 'First Corinthians']],
+  ['2CO', '2 Corinthians', 13, ['2 Cor', '2 Co', '2Cor', '2Co', 'II Corinthians', '2nd Corinthians', 'Second Corinthians']],
   ['GAL', 'Galatians', 6, ['Gal', 'Ga']],
   ['EPH', 'Ephesians', 6, ['Eph', 'Ephes']],
   ['PHP', 'Philippians', 4, ['Phil', 'Php', 'Pp']],
   ['COL', 'Colossians', 4, ['Col', 'Cl']],
-  ['1TH', '1 Thessalonians', 5, ['1 Thess', '1 Thes', '1Thess', '1Th', 'I Thessalonians']],
-  ['2TH', '2 Thessalonians', 3, ['2 Thess', '2 Thes', '2Thess', '2Th', 'II Thessalonians']],
-  ['1TI', '1 Timothy', 6, ['1 Tim', '1 Ti', '1Tim', '1Ti', 'I Timothy']],
-  ['2TI', '2 Timothy', 4, ['2 Tim', '2 Ti', '2Tim', '2Ti', 'II Timothy']],
+  ['1TH', '1 Thessalonians', 5, ['1 Thess', '1 Thes', '1Thess', '1Th', 'I Thessalonians', 'First Thessalonians']],
+  ['2TH', '2 Thessalonians', 3, ['2 Thess', '2 Thes', '2Thess', '2Th', 'II Thessalonians', 'Second Thessalonians']],
+  ['1TI', '1 Timothy', 6, ['1 Tim', '1 Ti', '1Tim', '1Ti', 'I Timothy', 'First Timothy']],
+  ['2TI', '2 Timothy', 4, ['2 Tim', '2 Ti', '2Tim', '2Ti', 'II Timothy', 'Second Timothy']],
   ['TIT', 'Titus', 3, ['Titus', 'Tit']],
   ['PHM', 'Philemon', 1, ['Philem', 'Phlm', 'Phm']],
   ['HEB', 'Hebrews', 13, ['Heb', 'Hbr']],
   ['JAS', 'James', 5, ['James', 'Jas', 'Jms']],
-  ['1PE', '1 Peter', 5, ['1 Pet', '1 Pe', '1Pet', '1Pe', 'I Peter', '1st Peter']],
-  ['2PE', '2 Peter', 3, ['2 Pet', '2 Pe', '2Pet', '2Pe', 'II Peter', '2nd Peter']],
-  ['1JN', '1 John', 5, ['1 John', '1 Jn', '1John', '1Jn', 'I John', '1st John']],
-  ['2JN', '2 John', 1, ['2 John', '2 Jn', '2John', '2Jn', 'II John', '2nd John']],
-  ['3JN', '3 John', 1, ['3 John', '3 Jn', '3John', '3Jn', 'III John', '3rd John']],
+  ['1PE', '1 Peter', 5, ['1 Pet', '1 Pe', '1Pet', '1Pe', 'I Peter', '1st Peter', 'First Peter']],
+  ['2PE', '2 Peter', 3, ['2 Pet', '2 Pe', '2Pet', '2Pe', 'II Peter', '2nd Peter', 'Second Peter']],
+  ['1JN', '1 John', 5, ['1 John', '1 Jn', '1John', '1Jn', 'I John', '1st John', 'First John']],
+  ['2JN', '2 John', 1, ['2 John', '2 Jn', '2John', '2Jn', 'II John', '2nd John', 'Second John']],
+  ['3JN', '3 John', 1, ['3 John', '3 Jn', '3John', '3Jn', 'III John', '3rd John', 'Third John']],
   ['JUD', 'Jude', 1, ['Jude', 'Jud', 'Jd']],
   ['REV', 'Revelation', 22, ['Rev', 'Apocalypse', 'Apoc']]
 ]
@@ -115,9 +115,29 @@ export function bookByOrder(order: number): ScriptureBookDef | undefined {
 // lowercase prose, defeating the point.
 const SPELLING_TO_CODE = new Map<string, string>()
 const RAW_SPELLINGS: string[] = []
+// Unambiguous full-word book names only ("Second Corinthians", "Genesis") — no cryptic
+// abbreviations ("Mt", "Jn", "Rm"). Used for matchBareBookName below, which (unlike SCAN_RE)
+// isn't anchored to a chapter number, so a short abbreviation would readily collide with an
+// ordinary footnote/cross-reference citation ("cf. Jn 5:22") rather than a genuine running
+// header restating the book.
+const FULL_NAME_SPELLINGS: string[] = []
 for (const b of BOOKS) {
+  FULL_NAME_SPELLINGS.push(b.name)
   for (const s of [b.name, ...b.abbr]) {
     SPELLING_TO_CODE.set(s.toLowerCase(), b.code)
+    // Ordinal-word spellings ("First Corinthians") are deliberately kept OUT of
+    // RAW_SPELLINGS/ALTERNATION (the free-text reference scanner and the profiler's
+    // 'book-chapter-verse' shape-matching both draw from it): recognizing them there made
+    // the profiler massively over-count 'book-chapter-verse' matches in real data (Lenski's
+    // Corinthians commentary uses "First/Second Corinthians" in its own running header, and
+    // once that shape recognized it, EVERY abbreviated footnote citation elsewhere in the
+    // document — already-recognized short forms like "Gal.", "Matt." — tipped the shape
+    // selection away from the source's real verse-header shape, 'paren-number', entirely).
+    // They're only ever needed for matchBareBookName's own separate, narrower alternation.
+    if (/^(First|Second|Third)\s/.test(s)) {
+      FULL_NAME_SPELLINGS.push(s)
+      continue
+    }
     RAW_SPELLINGS.push(s)
   }
 }
@@ -127,12 +147,36 @@ const ESC = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 const ALTERNATION = RAW_SPELLINGS.sort((a, b) => b.length - a.length)
   .map((s) => ESC(s))
   .join('|')
+const FULL_NAME_ALTERNATION = FULL_NAME_SPELLINGS.sort((a, b) => b.length - a.length)
+  .map((s) => ESC(s))
+  .join('|')
 
 // chapter, then optional :verse(-verse). Case-SENSITIVE for prose scanning (references in
 // notes are capitalized), which keeps "Mark 3" a match but "mark 3 items" not.
 const CORE = `(${ALTERNATION})\\b\\.?\\s+(\\d{1,3})(?::(\\d{1,3})(?:\\s*[-–]\\s*(\\d{1,3}))?)?`
 const SCAN_RE = new RegExp(`\\b${CORE}`, 'g')
 const ONE_RE = new RegExp(`^\\s*${CORE}\\s*$`, 'i')
+// Anchored to the END of the text, not just a bare word-boundary match anywhere in it — a
+// genuine "book restated with no reference" running header trails the book name at the very
+// end ("Interpretation of Second Corinthians"), whereas an ordinary discursive cross-reference
+// ("as Paul says in Romans 8, we...") is virtually never the last thing on its line, since
+// prose keeps going after naming the book. Full names alone weren't enough of a restriction —
+// real evidence (Lenski's Corinthians commentary) shows spelled-out cross-references to other
+// books ("Genesis", "Matthew", "Romans", ...) recurring near page edges in ordinary prose
+// often enough to hijack book tracking without this positional anchor too.
+const BARE_BOOK_NAME_RE = new RegExp(`\\b(${FULL_NAME_ALTERNATION})\\s*$`)
+
+/** Find a bare book-name mention at the end of `text`, with no chapter/verse required — for
+ *  running headers that restate only the book ("Interpretation of Second Corinthians") with
+ *  no page-guide reference at all (real: Lenski's Corinthians commentary never restates a
+ *  chapter:verse in its running header, unlike Gerhard's "2 TIMOTHY 1:2-3" style). Same
+ *  case-sensitivity rationale as the free-text scanner above. Returns the matched name's
+ *  USFM code, or null. */
+export function matchBareBookName(text: string): string | null {
+  const m = BARE_BOOK_NAME_RE.exec(text.trim())
+  if (!m) return null
+  return SPELLING_TO_CODE.get(m[1].toLowerCase()) ?? null
+}
 
 export interface ParsedRef {
   /** The exact matched text, e.g. "Rom 3:28". */
@@ -236,6 +280,13 @@ export interface ParsedHeader {
   /** True when this header only gave a bare verse/range and relied on carried-over state
    *  for book/chapter (as opposed to restating them itself). */
   contextual: boolean
+  /** True when verseStart came from a glyph-mangled numeral (see GLITCHED_ONE) whose actual
+   *  value this parser can't read — the glyph-run's length doesn't reliably indicate how
+   *  many digits it stands for (real: Gerhard's "Verse LI." is genuinely verse 11, not 1,
+   *  despite being the same two-character run as "Verse lL." for verse 1 elsewhere).
+   *  verseStart is left as a 1 placeholder; the caller (which tracks the previous chunk's
+   *  verseEnd) should resolve the real value contextually instead of trusting this. */
+  verseStartGlitched?: boolean
 }
 
 /** The header conventions observed across real commentary PDFs (spec Phase 2c: a source's
@@ -251,9 +302,21 @@ export type HeaderShape =
   | 'bare-range' // "16.", "16-18." — needs state.book + state.chapter
 
 const N = '\\d{1,3}'
+/** Some sources' embedded fonts mangle the glyph for a lone numeral "1" into a look-alike
+ *  ("l", "L", "I", "|", "]") — an old-style-figure rendering quirk seen only on standalone
+ *  "1"s, never other digits (real: Gerhard's "Verse lL." / "Verse l." for "Verse 1."). RANGE
+ *  accepts these interchangeably with real digits at the exact same anchored numeral
+ *  position (never as a blind substring replace elsewhere in the line) — parseNumeral()
+ *  below resolves whichever alternative actually matched back to a number. */
+const GLITCHED_ONE = '[lLI|\\]]{1,2}'
+const NUM = `(?:${N}|${GLITCHED_ONE})`
 const DASH = '[-–—]'
 /** "16" or "16-18" — a single-chapter verse or range, as two optional capture groups. */
-const RANGE = `(${N})(?:\\s*${DASH}\\s*(${N}))?`
+const RANGE = `(${NUM})(?:\\s*${DASH}\\s*(${NUM}))?`
+
+function parseNumeral(s: string): number {
+  return /^\d+$/.test(s) ? Number(s) : 1
+}
 
 const ROMAN_RE = /^[ivxlcdm]+$/i
 const ROMAN_VALUES: Record<string, number> = { i: 1, v: 5, x: 10, l: 50, c: 100, d: 500, m: 1000 }
@@ -262,6 +325,11 @@ const ROMAN_VALUES: Record<string, number> = { i: 1, v: 5, x: 10, l: 50, c: 100,
 export function romanToInt(s: string): number | null {
   const clean = s.trim().toLowerCase()
   if (!clean || !ROMAN_RE.test(clean)) return null
+  // V, L, and D never repeat in a valid Roman numeral (only I, X, C, M can) — reject "ll",
+  // "vv", "dd" rather than silently computing a technically-parseable but nonsensical value
+  // (real: Lenski's "CHAPTER ll" / "CHAPTER Xll" are glyph-mangled "II" / "XII" — the same
+  // font quirk that renders a lone "1" as a lookalike letter — not a genuine repeated "L").
+  if (/([vld])\1/.test(clean)) return null
   let total = 0
   for (let i = 0; i < clean.length; i++) {
     const cur = ROMAN_VALUES[clean[i]]
@@ -358,8 +426,8 @@ export function parseCommentaryHeader(
   if (!pattern) return null
   const m = pattern.exec(trimmed)
   if (!m) return null
-  const verseStart = Number(m[1])
-  const verseEnd = m[2] ? Number(m[2]) : verseStart
+  const verseStart = parseNumeral(m[1])
+  const verseEnd = m[2] ? parseNumeral(m[2]) : verseStart
   return {
     raw: m[0],
     book: state.book,
@@ -367,7 +435,8 @@ export function parseCommentaryHeader(
     verseStart,
     chapterEnd: state.chapter,
     verseEnd,
-    contextual: true
+    contextual: true,
+    verseStartGlitched: !/^\d+$/.test(m[1])
   }
 }
 
@@ -379,4 +448,17 @@ export function parseChapterOnlyHeader(line: string): { chapter: number } | null
   if (!m) return null
   const chapter = romanToInt(m[1])
   return chapter != null ? { chapter } : null
+}
+
+const CHAPTER_TITLE_LOOSE_RE = /^(?:Chapter|Chap\.?|Cap\.?)\s+\S+$/i
+
+/** True when `line` clearly reads as a chapter-title marker ("Chapter III") even though its
+ *  numeral doesn't parse as a clean Roman numeral. Some sources' embedded fonts mangle the
+ *  glyph for Roman "I" into look-alike punctuation ("|", "]") inconsistently by font subset,
+ *  and can do so *mid-numeral* (real: Gerhard's "CHAPTER |" for "CHAPTER I", "CHAPTER II]"
+ *  for "CHAPTER III") — there's no reliable way to recover the intended value character by
+ *  character. Callers that see this without a successful parseChapterOnlyHeader match should
+ *  fall back to "the next chapter" instead (chapters are always sequential, never skipped). */
+export function looksLikeChapterTitle(line: string): boolean {
+  return CHAPTER_TITLE_LOOSE_RE.test(line.trim())
 }

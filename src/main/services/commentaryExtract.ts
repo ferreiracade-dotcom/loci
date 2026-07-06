@@ -1,5 +1,7 @@
 import { pathToFileURL } from 'url'
 import {
+  looksLikeChapterTitle,
+  matchBareBookName,
   parseChapterOnlyHeader,
   parseCommentaryHeader,
   type HeaderParseState,
@@ -271,6 +273,47 @@ export function detectRunningLines(pagesLines: PositionedLine[][]): RunningLineS
   return specs
 }
 
+// Wide enough to see through sources whose running header alternates format by verso/recto
+// page (real: Gerhard's odd pages show "2 TIMOTHY 1:2-3 115", even pages show "116
+// COMMENTARY ON 2 TIMOTHY" with no chapter:verse at all) — a same-shape match then only
+// recurs every other page, so a narrower window can miss the second confirming match.
+// MIN_MATCHES is deliberately higher than the bare minimum needed to detect *some* pattern:
+// a citation-dense source can have the same cross-reference citation format coincidentally
+// recur 2-3 times nearby (real: Lenski's Corinthians commentary has isolated, self-correcting
+// single-page misfires where a footnote reference to another book briefly hijacks tracking) —
+// a genuine running header recurs on nearly every page for the length of a whole section, so
+// requiring more confirmations costs nothing there while filtering out rarer coincidences.
+const RECURRING_EDGE_WINDOW = 8
+const RECURRING_EDGE_MIN_MATCHES = 3
+
+/** True when the page at `pageIdx`'s top/bottom line also appears (digit-normalized) at the
+ *  same edge on at least a couple of nearby pages — confirms a genuine running header/footer
+ *  local to this stretch of the document, as opposed to incidental body text that happens to
+ *  land on a single page's first/last line (a book-wide detectRunningLines pass can miss a
+ *  running header that's only common within one section of a multi-book source, since it
+ *  never reaches 50% of the *whole* document — this is deliberately local instead). */
+function isRecurringEdge(
+  pagesLines: PositionedLine[][],
+  pageIdx: number,
+  edge: 'top' | 'bottom'
+): boolean {
+  const lines = pagesLines[pageIdx]
+  if (lines.length === 0) return false
+  const normalized = normalizeForBandDetection(edge === 'top' ? lines[0].text : lines[lines.length - 1].text)
+
+  let matches = 0
+  const from = Math.max(0, pageIdx - RECURRING_EDGE_WINDOW)
+  const to = Math.min(pagesLines.length - 1, pageIdx + RECURRING_EDGE_WINDOW)
+  for (let i = from; i <= to; i++) {
+    if (i === pageIdx) continue
+    const other = pagesLines[i]
+    if (other.length === 0) continue
+    const otherNormalized = normalizeForBandDetection(edge === 'top' ? other[0].text : other[other.length - 1].text)
+    if (otherNormalized === normalized) matches++
+  }
+  return matches >= RECURRING_EDGE_MIN_MATCHES
+}
+
 /** Strip lines matching detected running headers/footers from one page's lines. */
 export function stripRunningLines(lines: PositionedLine[], specs: RunningLineSpec[]): PositionedLine[] {
   if (specs.length === 0 || lines.length === 0) return lines
@@ -309,15 +352,32 @@ export function chunkDocument(
   const state: HeaderParseState = { ...initialState }
   const chunks: ExtractedChunk[] = []
   let current: ExtractedChunk | null = null
+  // Guards the "assume next chapter" glyph-mangled-title fallback below: true once a real
+  // verse header has been produced under the *current* book/chapter anchor. Without it, the
+  // very first chapter-title-like line seen right after any reset (document start, a book
+  // transition, or an explicit chapter update) would be read as "the next chapter" even
+  // though it's actually just restating the chapter that reset already established (real:
+  // Gerhard's 2 Timothy opens with its own "CHAPTER |" restating chapter 1, right after the
+  // book transition reset chapter to 1 — advancing to 2 there would be wrong).
+  let chunkSeenSinceReset = false
 
   for (let pageIdx = 0; pageIdx < pagesLines.length; pageIdx++) {
     const rawLines = pagesLines[pageIdx]
     // Running headers/footers often restate "BOOK chapter:verse-verse" as a page guide
     // (e.g. "2 TIMOTHY 1:2-3") — re-anchor context from it before stripping, so a book
     // change partway through a source (a single PDF covering two epistles, say) isn't
-    // missed even when the commentary's own excerpt headers never restate the book.
-    for (const edgeLine of [rawLines[0], rawLines[rawLines.length - 1]]) {
-      if (!edgeLine) continue
+    // missed even when the commentary's own excerpt headers never restate the book. Only
+    // trust an edge line for this if it actually *recurs* nearby — otherwise ordinary body
+    // text that happens to land on a page's very first/last line and happens to look like a
+    // reference gets mistaken for an authoritative page guide (real: Lenski's Corinthians
+    // commentary has a footnote "Gal. 3:1: ..." as a page's last line, which isn't a running
+    // header at all and would otherwise hijack the whole book as Galatians from then on).
+    const edges: Array<['top' | 'bottom', PositionedLine | undefined]> = [
+      ['top', rawLines[0]],
+      ['bottom', rawLines[rawLines.length - 1]]
+    ]
+    for (const [edge, edgeLine] of edges) {
+      if (!edgeLine || !isRecurringEdge(pagesLines, pageIdx, edge)) continue
       // Running headers are frequently set in small caps/all caps ("2 TIMOTHY 1:2-3"), but
       // the book-name grammar is deliberately case-sensitive (to reject lowercase prose like
       // "mark 3 items") and only recognizes mixed-case spellings — title-case just for this
@@ -328,8 +388,22 @@ export function chunkDocument(
         'book-chapter-verse'
       )
       if (pageRef) {
+        if (pageRef.book !== state.book || pageRef.chapterStart !== state.chapter) chunkSeenSinceReset = false
         state.book = pageRef.book
         state.chapter = pageRef.chapterStart
+        break
+      }
+      // Some running headers restate only the book, with no chapter:verse page guide at all
+      // (real: Lenski's "Interpretation of Second Corinthians" — unlike Gerhard's "2 TIMOTHY
+      // 1:2-3" style, it never restates a reference). Catch a bare book-name *change* too,
+      // resetting to chapter 1 since a book transition always starts there — but only on an
+      // actual change, so a header merely restating the book already in progress doesn't
+      // stomp on chapter tracking already underway from real headers.
+      const bareBook = matchBareBookName(titleCaseWords(edgeLine.text))
+      if (bareBook && bareBook !== state.book) {
+        state.book = bareBook
+        state.chapter = 1
+        chunkSeenSinceReset = false
         break
       }
     }
@@ -342,22 +416,58 @@ export function chunkDocument(
       // enough on its own to avoid misfiring on ordinary prose.
       const chapterOnly = parseChapterOnlyHeader(line.text)
       if (chapterOnly) {
+        if (chapterOnly.chapter !== state.chapter) chunkSeenSinceReset = false
         state.chapter = chapterOnly.chapter
+        continue
+      }
+      // Chapter title, but the numeral itself didn't parse (garbled glyph) — assume the
+      // next sequential chapter rather than discarding the transition entirely. Unlike
+      // parseChapterOnlyHeader's strict regex, "looks like a chapter title" alone (just
+      // "Chapter <token>" on its own line) is loose enough to misfire on ordinary prose
+      // outline text ("Chapter 5" mentioned in a summary) — real chapter titles are also
+      // set in a big display font, well above body size, so require that too. Also require
+      // a real chunk to have appeared since the last reset (document start, a book
+      // transition, or an explicit chapter update) — the first chapter-title-like line right
+      // after one of those restates the chapter the reset already established rather than
+      // advancing past it (real: Gerhard's opening "CHAPTER I|" for 1 Timothy chapter 1, and
+      // again "CHAPTER |" for 2 Timothy chapter 1 right after the book transition).
+      const isLargeTitleFont = line.fontSize > profile.bodyFontSize + 3
+      if (isLargeTitleFont && looksLikeChapterTitle(line.text) && state.chapter != null && chunkSeenSinceReset) {
+        state.chapter += 1
         continue
       }
 
       const header = parseCommentaryHeader(line.text, state, profile.shape)
       if (header && matchesLearnedHeaderStyle(line, profile)) {
-        if (current) chunks.push(current)
+        chunkSeenSinceReset = true
+        const previous: ExtractedChunk | null = current
+        if (previous) chunks.push(previous)
         state.book = header.book
         state.chapter = header.chapterEnd
+        // header.verseStart is just a "1" placeholder when the numeral itself was a
+        // glyph-mangled glob whose value can't be read off directly (see
+        // ParsedHeader.verseStartGlitched) — the glyph-run's length doesn't reliably
+        // indicate the digit count (real: Gerhard's "Verse LI." is genuinely verse 11, not
+        // 1). Resolve it from the chunk that came right before instead: commentaries
+        // proceed verse-by-verse without skipping, so if the prior chunk (same book,
+        // same chapter) ended at verse 10, this one is verse 11 — reliable without ever
+        // having to guess at the glyphs themselves. Falls back to the 1 placeholder only
+        // when there's no same-chapter predecessor (i.e. this really is a fresh chapter).
+        const verseStart: number =
+          header.verseStartGlitched &&
+          previous &&
+          previous.book === header.book &&
+          previous.chapterEnd === header.chapterStart
+            ? previous.verseEnd + 1
+            : header.verseStart
+        const verseEnd = header.verseEnd === header.verseStart ? verseStart : header.verseEnd
         current = {
           headerRaw: line.text,
           book: header.book,
           chapterStart: header.chapterStart,
-          verseStart: header.verseStart,
+          verseStart,
           chapterEnd: header.chapterEnd,
-          verseEnd: header.verseEnd,
+          verseEnd,
           text: '',
           page: line.page
         }
