@@ -45,18 +45,20 @@ export interface PositionedLine {
   multiFont: boolean
 }
 
-/** Raw pdfjs TextItem shape (subset actually used here). */
+/** Raw pdfjs TextItem shape (subset actually used here). `width` is the item's rendered
+ *  advance width (pdfjs supplies it) — used only for two-column gutter detection. */
 export interface RawTextItem {
   str: string
   transform: number[]
   height: number
+  width?: number
   fontName: string
   hasEOL?: boolean
 }
 
 /** Group a page's raw text items into lines by y-coordinate proximity (items on the same
  *  line generally share a y within a point or two; distinct lines don't). */
-export function groupIntoLines(items: RawTextItem[], page: number): PositionedLine[] {
+function groupItemsByY(items: RawTextItem[], page: number): PositionedLine[] {
   const buckets: {
     y: number
     items: { x: number; text: string; fontSize: number; bold: boolean; fontName: string }[]
@@ -95,6 +97,54 @@ export function groupIntoLines(items: RawTextItem[], page: number): PositionedLi
     })
     .filter((l) => l.text.trim().length > 0)
     .sort((a, b) => b.y - a.y) // reading order: top of page first
+}
+
+const ITEM_LEFT = (i: RawTextItem): number => i.transform[4]
+const ITEM_RIGHT = (i: RawTextItem): number => i.transform[4] + (i.width ?? 0)
+
+/** Detect a vertical whitespace gutter splitting a page into two text columns, returning the
+ *  split x-coordinate, or null for an ordinary single-column page. Two-column scholarly
+ *  commentaries (real: Kretzmann's Popular Commentary) place items from both columns at the
+ *  same y, so a naive y-grouping splices "left-column line + right-column line" into gibberish
+ *  and buries every header. The gutter is the x in the page's middle third crossed by the
+ *  fewest item spans — a real one is crossed by almost nothing, with substantial text on both
+ *  sides (which is exactly what a single-column page's full-width body lines are NOT, so they
+ *  correctly return null). */
+export function findColumnGutter(items: RawTextItem[]): number | null {
+  const withText = items.filter((i) => i.str.trim())
+  if (withText.length < 40) return null
+  const minX = Math.min(...withText.map(ITEM_LEFT))
+  const maxX = Math.max(...withText.map(ITEM_RIGHT))
+  const span = maxX - minX
+  if (span <= 0) return null
+
+  let bestX: number | null = null
+  let bestCrossing = Infinity
+  for (let x = minX + span * 0.33; x <= minX + span * 0.66; x += 2) {
+    let crossing = 0
+    for (const i of withText) if (ITEM_LEFT(i) < x && ITEM_RIGHT(i) > x) crossing++
+    if (crossing < bestCrossing) {
+      bestCrossing = crossing
+      bestX = x
+    }
+  }
+  if (bestX == null || bestCrossing > withText.length * 0.02) return null
+
+  const leftCount = withText.filter((i) => ITEM_RIGHT(i) <= bestX!).length
+  const rightCount = withText.filter((i) => ITEM_LEFT(i) >= bestX!).length
+  if (leftCount < withText.length * 0.25 || rightCount < withText.length * 0.25) return null
+  return bestX
+}
+
+/** Group a page's items into reading-order lines, transparently handling two-column layouts:
+ *  when a gutter is detected, the left column's lines (top-to-bottom) precede the right
+ *  column's, matching how the page actually reads. Single-column pages are grouped as-is. */
+export function groupIntoLines(items: RawTextItem[], page: number): PositionedLine[] {
+  const gutter = findColumnGutter(items)
+  if (gutter == null) return groupItemsByY(items, page)
+  const leftItems = items.filter((i) => ITEM_LEFT(i) < gutter)
+  const rightItems = items.filter((i) => ITEM_LEFT(i) >= gutter)
+  return [...groupItemsByY(leftItems, page), ...groupItemsByY(rightItems, page)]
 }
 
 /** Tests whether `line` matches `shape`'s grammar at all, ignoring contextual state (used

@@ -54,6 +54,37 @@ describe('groupIntoLines', () => {
     expect(lines[0].multiFont).toBe(true)
   })
 
+  it('splits a two-column page into left-then-right reading order (real: Kretzmann Popular Commentary)', () => {
+    // A single item per line: 25 left-column lines (x=40, right edge ~140) and 25
+    // right-column lines (x=240, right edge ~340), a clear gutter around x=190. Both columns
+    // share the same y-values — a naive y-grouping would splice them into gibberish.
+    const items: RawTextItem[] = []
+    for (let i = 0; i < 25; i++) {
+      const y = 500 - i * 10
+      items.push({ str: `L${i}`, transform: [1, 0, 0, 1, 40, y], height: 8, width: 100, fontName: 'F1' })
+      items.push({ str: `R${i}`, transform: [1, 0, 0, 1, 240, y], height: 8, width: 100, fontName: 'F1' })
+    }
+    const lines = groupIntoLines(items, 1)
+    expect(lines).toHaveLength(50)
+    // Left column first, top-to-bottom, then right column top-to-bottom.
+    expect(lines.slice(0, 25).map((l) => l.text)).toEqual(Array.from({ length: 25 }, (_, i) => `L${i}`))
+    expect(lines.slice(25).map((l) => l.text)).toEqual(Array.from({ length: 25 }, (_, i) => `R${i}`))
+  })
+
+  it('does not split an ordinary single-column page whose body lines span the full width', () => {
+    // Full-width lines (x=40, right edge ~340) cross any candidate mid-page gutter, so there
+    // is no whitespace corridor — must stay one column.
+    const items: RawTextItem[] = []
+    for (let i = 0; i < 50; i++) {
+      const y = 500 - i * 10
+      items.push({ str: `line ${i}`, transform: [1, 0, 0, 1, 40, y], height: 8, width: 300, fontName: 'F1' })
+    }
+    const lines = groupIntoLines(items, 1)
+    expect(lines).toHaveLength(50)
+    expect(lines[0].text).toBe('line 0')
+    expect(lines[49].text).toBe('line 49')
+  })
+
   it('detects bold from the font name and drops whitespace-only lines', () => {
     const items: RawTextItem[] = [
       { str: 'Verse 11.', transform: [1, 0, 0, 1, 30, 100], height: 8, fontName: 'Times-Bold' },
