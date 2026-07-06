@@ -1,0 +1,370 @@
+import { pathToFileURL } from 'url'
+import {
+  parseChapterOnlyHeader,
+  parseCommentaryHeader,
+  type HeaderParseState,
+  type HeaderShape,
+  type ParsedHeader
+} from '../../shared/scriptureRef'
+
+/** All header shapes profiling will try, in no particular order. */
+export const HEADER_SHAPES: HeaderShape[] = [
+  'book-chapter-verse',
+  'chapter-verse',
+  'chapter-verse-roman',
+  'bracket-number',
+  'paren-number',
+  'word-label',
+  'phrase-label',
+  'bare-range'
+]
+
+/** A line of body text, grouped from raw pdfjs text items by y-coordinate. `x`/`fontSize`/
+ *  `bold` describe the leftmost (first) item on the line — what actually determines whether
+ *  the line *starts* with header-styled text, since a header phrase's font often reverts to
+ *  body style partway through (e.g. "1:9 exaltation. <body text...>"). `multiFont` is a
+ *  separate signal: some sources mark a header by switching fonts mid-line (e.g. a roman
+ *  verse-number label followed by an italicized quotation) without changing size or margin —
+ *  and pdfjs anonymizes embedded font names (e.g. "g_d0_f1"), so "is this run italic/bold"
+ *  can't be read from the name; a font *change within the line* is what's actually visible. */
+export interface PositionedLine {
+  page: number
+  y: number
+  x: number
+  text: string
+  fontSize: number
+  bold: boolean
+  multiFont: boolean
+}
+
+/** Raw pdfjs TextItem shape (subset actually used here). */
+export interface RawTextItem {
+  str: string
+  transform: number[]
+  height: number
+  fontName: string
+  hasEOL?: boolean
+}
+
+/** Group a page's raw text items into lines by y-coordinate proximity (items on the same
+ *  line generally share a y within a point or two; distinct lines don't). */
+export function groupIntoLines(items: RawTextItem[], page: number): PositionedLine[] {
+  const buckets: {
+    y: number
+    items: { x: number; text: string; fontSize: number; bold: boolean; fontName: string }[]
+  }[] = []
+  const TOLERANCE = 2
+
+  for (const item of items) {
+    if (!item.str) continue
+    const y = item.transform[5]
+    const x = item.transform[4]
+    const fontSize = Math.round(item.height * 100) / 100
+    const bold = /bold|black|heavy/i.test(item.fontName)
+    let bucket = buckets.find((b) => Math.abs(b.y - y) <= TOLERANCE)
+    if (!bucket) {
+      bucket = { y, items: [] }
+      buckets.push(bucket)
+    }
+    bucket.items.push({ x, text: item.str, fontSize, bold, fontName: item.fontName })
+  }
+
+  return buckets
+    .map((b) => {
+      const sorted = [...b.items].sort((a, c) => a.x - c.x)
+      const text = sorted.map((i) => i.text).join('')
+      const first = sorted[0]
+      const distinctFonts = new Set(b.items.map((i) => i.fontName))
+      return {
+        page,
+        y: b.y,
+        x: first.x,
+        text,
+        fontSize: first.fontSize,
+        bold: first.bold,
+        multiFont: distinctFonts.size > 1
+      }
+    })
+    .filter((l) => l.text.trim().length > 0)
+    .sort((a, b) => b.y - a.y) // reading order: top of page first
+}
+
+/** Tests whether `line` matches `shape`'s grammar at all, ignoring contextual state (used
+ *  during profiling's sampling pass, before any book/chapter context has been established).
+ *  A placeholder non-null state satisfies parseCommentaryHeader's context gate — the shape's
+ *  regex itself doesn't depend on the placeholder's actual value. */
+function shapeMatchesLine(text: string, shape: HeaderShape): boolean {
+  return parseCommentaryHeader(text, { book: 'XXX', chapter: 1 }, shape) !== null
+}
+
+function median(nums: number[]): number {
+  if (nums.length === 0) return 0
+  const sorted = [...nums].sort((a, b) => a - b)
+  const mid = Math.floor(sorted.length / 2)
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2
+}
+
+/** The learned per-source header profile, confirmed by the user (Phase 2c) before full
+ *  extraction runs. `bodyFontSize`/`bodyMarginX` and `headerFontSize`/`headerMarginX` are
+ *  compared against each other (not fixed constants) since headers can be smaller OR larger
+ *  than body text, and indented OR flush depending on the source's typesetting. */
+export interface SourceProfile {
+  shape: HeaderShape
+  bodyFontSize: number
+  headerFontSize: number
+  bodyMarginX: number
+  headerMarginX: number
+  /** Fraction of header-shaped lines (during profiling) that mixed more than one font, vs.
+   *  the same fraction among ordinary body lines — a header that switches fonts mid-line
+   *  (e.g. a label followed by an italicized quotation) trips this even when size/margin
+   *  don't differ at all (real example: bracketed verse numbers followed by an italic quote,
+   *  where the PDF's embedded fonts have anonymized names so "italic" can't be read directly). */
+  headerMultiFontRate: number
+  bodyMultiFontRate: number
+}
+
+const SIZE_TOLERANCE = 0.75
+const X_TOLERANCE = 4
+const MULTI_FONT_RATE_TOLERANCE = 0.3
+
+/** A candidate line matches the learned header style if it's close to the header's own
+ *  (font size, x, font-switching) on whichever axis actually distinguishes header from body
+ *  for this source. */
+export function matchesLearnedHeaderStyle(line: PositionedLine, profile: SourceProfile): boolean {
+  const sizeDistinct = Math.abs(profile.headerFontSize - profile.bodyFontSize) > SIZE_TOLERANCE
+  const xDistinct = Math.abs(profile.headerMarginX - profile.bodyMarginX) > X_TOLERANCE
+  const multiFontDistinct =
+    Math.abs(profile.headerMultiFontRate - profile.bodyMultiFontRate) > MULTI_FONT_RATE_TOLERANCE
+
+  const sizeMatches = Math.abs(line.fontSize - profile.headerFontSize) <= SIZE_TOLERANCE
+  const xMatches = Math.abs(line.x - profile.headerMarginX) <= X_TOLERANCE
+  const multiFontMatches = line.multiFont === profile.headerMultiFontRate > 0.5
+
+  return (
+    (sizeDistinct && sizeMatches) || (xDistinct && xMatches) || (multiFontDistinct && multiFontMatches)
+  )
+}
+
+export interface HeaderCandidate {
+  line: PositionedLine
+  header: ParsedHeader
+}
+
+/** A line qualifies as a header only if it BOTH parses under the source's confirmed shape
+ *  AND carries that shape's learned structural signal — rejects inline cross-references like
+ *  "see v. 16" in ordinary body text, which match the regex but not the structural signal. */
+export function detectHeaders(
+  lines: PositionedLine[],
+  state: HeaderParseState,
+  profile: SourceProfile
+): HeaderCandidate[] {
+  const out: HeaderCandidate[] = []
+  for (const line of lines) {
+    const header = parseCommentaryHeader(line.text, state, profile.shape)
+    if (!header) continue
+    if (!matchesLearnedHeaderStyle(line, profile)) continue
+    out.push({ line, header })
+    state.book = header.book
+    state.chapter = header.chapterEnd
+  }
+  return out
+}
+
+export interface ProfileSample {
+  page: number
+  headerRaw: string
+  snippetAfter: string
+}
+
+/** Infer a source's header shape and structural signal from a sample of its pages, and
+ *  return a handful of matches for the user to confirm (Phase 2c). Pure function of
+ *  already-grouped lines so it's testable without touching pdfjs or the filesystem. */
+export function profileSource(pagesLines: PositionedLine[][]): {
+  profile: SourceProfile
+  samples: ProfileSample[]
+} {
+  const allLines = pagesLines.flat()
+
+  let bestShape: HeaderShape = HEADER_SHAPES[0]
+  let bestMatches: PositionedLine[] = []
+  for (const shape of HEADER_SHAPES) {
+    const matches = allLines.filter((l) => shapeMatchesLine(l.text, shape))
+    // A source with real per-verse headers should have dozens across a whole book, not just
+    // one or two incidental matches — require at least a few hits, and prefer whichever
+    // shape has the most (but not literally most-of-the-document, which would mean the
+    // "shape" is just matching ordinary prose).
+    const bodyLikeCount = allLines.length
+    if (matches.length >= 3 && matches.length < bodyLikeCount * 0.5 && matches.length > bestMatches.length) {
+      bestShape = shape
+      bestMatches = matches
+    }
+  }
+
+  const nonMatching = allLines.filter((l) => !bestMatches.includes(l))
+  const rate = (lines: PositionedLine[]): number =>
+    lines.length === 0 ? 0 : lines.filter((l) => l.multiFont).length / lines.length
+  const profile: SourceProfile = {
+    shape: bestShape,
+    bodyFontSize: median(nonMatching.map((l) => l.fontSize)),
+    headerFontSize: median(bestMatches.map((l) => l.fontSize)),
+    bodyMarginX: median(nonMatching.map((l) => l.x)),
+    headerMarginX: median(bestMatches.map((l) => l.x)),
+    headerMultiFontRate: rate(bestMatches),
+    bodyMultiFontRate: rate(nonMatching)
+  }
+
+  const samples: ProfileSample[] = bestMatches.slice(0, 10).map((line) => {
+    const pageLines = pagesLines[line.page - 1] ?? []
+    const idx = pageLines.indexOf(line)
+    const after = idx >= 0 ? pageLines.slice(idx + 1, idx + 3) : []
+    return {
+      page: line.page,
+      headerRaw: line.text,
+      snippetAfter: after.map((l) => l.text).join(' ').slice(0, 150)
+    }
+  })
+
+  return { profile, samples }
+}
+
+const DIGIT_RUN = /\d+/g
+
+/** Normalize a line for running-header/footer comparison — page numbers change per page,
+ *  everything else in a running header/footer stays fixed. */
+function normalizeForBandDetection(text: string): string {
+  return text.trim().replace(DIGIT_RUN, '#')
+}
+
+export interface RunningLineSpec {
+  /** Which edge of the page this recurring line sits on. */
+  edge: 'top' | 'bottom'
+  normalizedText: string
+}
+
+/** Detect recurring running headers/footers by comparing each page's topmost and bottommost
+ *  line across all sampled pages — if the same (digit-normalized) text recurs on at least
+ *  half the pages, it's a running header/footer, not body content. */
+export function detectRunningLines(pagesLines: PositionedLine[][]): RunningLineSpec[] {
+  const pagesWithContent = pagesLines.filter((p) => p.length > 0)
+  if (pagesWithContent.length < 3) return []
+
+  const topCounts = new Map<string, number>()
+  const bottomCounts = new Map<string, number>()
+  for (const page of pagesWithContent) {
+    const top = normalizeForBandDetection(page[0].text)
+    const bottom = normalizeForBandDetection(page[page.length - 1].text)
+    topCounts.set(top, (topCounts.get(top) ?? 0) + 1)
+    if (bottom !== top) bottomCounts.set(bottom, (bottomCounts.get(bottom) ?? 0) + 1)
+  }
+
+  const threshold = pagesWithContent.length * 0.5
+  const specs: RunningLineSpec[] = []
+  for (const [text, count] of topCounts) if (count >= threshold) specs.push({ edge: 'top', normalizedText: text })
+  for (const [text, count] of bottomCounts)
+    if (count >= threshold) specs.push({ edge: 'bottom', normalizedText: text })
+  return specs
+}
+
+/** Strip lines matching detected running headers/footers from one page's lines. */
+export function stripRunningLines(lines: PositionedLine[], specs: RunningLineSpec[]): PositionedLine[] {
+  if (specs.length === 0 || lines.length === 0) return lines
+  const normalizedTop = normalizeForBandDetection(lines[0].text)
+  const normalizedBottom = normalizeForBandDetection(lines[lines.length - 1].text)
+  const dropTop = specs.some((s) => s.edge === 'top' && s.normalizedText === normalizedTop)
+  const dropBottom = specs.some((s) => s.edge === 'bottom' && s.normalizedText === normalizedBottom)
+  return lines.filter((_l, i) => {
+    if (dropTop && i === 0) return false
+    if (dropBottom && i === lines.length - 1) return false
+    return true
+  })
+}
+
+export interface ExtractedChunk {
+  headerRaw: string
+  book: string
+  chapterStart: number
+  verseStart: number
+  chapterEnd: number
+  verseEnd: number
+  text: string
+  page: number
+}
+
+/** Chunk a whole document's already-grouped, per-page lines into verse-keyed excerpts,
+ *  threading header-parse state across page boundaries (a chapter can continue across a
+ *  page break) and stripping detected running headers/footers first. Pure — takes lines,
+ *  not PDF bytes, so it's testable without pdfjs. */
+export function chunkDocument(
+  pagesLines: PositionedLine[][],
+  profile: SourceProfile,
+  initialState: HeaderParseState = { book: null, chapter: null }
+): ExtractedChunk[] {
+  const runningLines = detectRunningLines(pagesLines)
+  const state: HeaderParseState = { ...initialState }
+  const chunks: ExtractedChunk[] = []
+  let current: ExtractedChunk | null = null
+
+  for (let pageIdx = 0; pageIdx < pagesLines.length; pageIdx++) {
+    const lines = stripRunningLines(pagesLines[pageIdx], runningLines)
+    for (const line of lines) {
+      const chapterOnly = parseChapterOnlyHeader(line.text)
+      if (chapterOnly && matchesLearnedHeaderStyle(line, profile)) {
+        state.chapter = chapterOnly.chapter
+        continue
+      }
+
+      const header = parseCommentaryHeader(line.text, state, profile.shape)
+      if (header && matchesLearnedHeaderStyle(line, profile)) {
+        if (current) chunks.push(current)
+        state.book = header.book
+        state.chapter = header.chapterEnd
+        current = {
+          headerRaw: line.text,
+          book: header.book,
+          chapterStart: header.chapterStart,
+          verseStart: header.verseStart,
+          chapterEnd: header.chapterEnd,
+          verseEnd: header.verseEnd,
+          text: '',
+          page: line.page
+        }
+        continue
+      }
+
+      if (current) {
+        current.text += (current.text ? '\n' : '') + line.text
+      }
+      // Lines before the first header are front matter/preface — dropped, not mis-tagged.
+    }
+  }
+  if (current) chunks.push(current)
+  return chunks
+}
+
+// --- pdfjs-dist I/O (thin — everything above this line is pure and unit-tested against
+// synthetic fixtures; this is the one part that actually opens a PDF) ---------------------
+
+/** Extract every page's grouped lines from a PDF's bytes. `onProgress` reports pages read,
+ *  not excerpts produced — chunking/validation happen afterward on the returned lines. */
+export async function extractPagesLines(
+  pdfBytes: Uint8Array,
+  onProgress?: (done: number, total: number) => void
+): Promise<PositionedLine[][]> {
+  const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs')
+  // No real Worker thread is used in Node — pdfjs still needs workerSrc pointed at the
+  // worker module (as a file:// URL — Windows absolute paths aren't valid ESM specifiers)
+  // so its "fake worker" fallback can load it in-process.
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pathToFileURL(
+    require.resolve('pdfjs-dist/legacy/build/pdf.worker.mjs')
+  ).href
+
+  const doc = await pdfjsLib.getDocument({ data: pdfBytes, useSystemFonts: true }).promise
+  const pages: PositionedLine[][] = []
+  for (let pageNum = 1; pageNum <= doc.numPages; pageNum++) {
+    const page = await doc.getPage(pageNum)
+    const content = await page.getTextContent()
+    pages.push(groupIntoLines(content.items as RawTextItem[], pageNum))
+    onProgress?.(pageNum, doc.numPages)
+  }
+  return pages
+}
