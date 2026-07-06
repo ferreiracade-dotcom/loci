@@ -72,6 +72,16 @@ export const Channels = {
   listScriptureQuotes: 'scripture:listQuotes',
   listScriptureQuoteBooks: 'scripture:listQuoteBooks',
 
+  listCommentarySources: 'commentary:listSources',
+  createCommentarySource: 'commentary:createSource',
+  updateCommentarySource: 'commentary:updateSource',
+  deleteCommentarySource: 'commentary:deleteSource',
+  reorderCommentarySources: 'commentary:reorderSources',
+  lookupCommentary: 'commentary:lookup',
+  listFlaggedCommentary: 'commentary:listFlagged',
+  setCommentaryExcerptFlag: 'commentary:setExcerptFlag',
+  reassignCommentaryExcerpt: 'commentary:reassignExcerpt',
+
   // main → renderer events
   importProgress: 'library:importProgress',
   libraryChanged: 'library:libraryChanged',
@@ -281,6 +291,18 @@ export interface LociApi {
   listScriptureQuotes(translation: string, book: string): Promise<Quote[]>
   /** Books (for a translation) that have at least one saved Scripture quote. */
   listScriptureQuoteBooks(translation: string): Promise<ScriptureQuoteBook[]>
+
+  listCommentarySources(): Promise<CommentarySource[]>
+  createCommentarySource(input: NewCommentarySource): Promise<CommentarySource>
+  updateCommentarySource(id: string, patch: CommentarySourceUpdate): Promise<void>
+  deleteCommentarySource(id: string): Promise<void>
+  /** Persist a new display order for all commentary sources (full list of ids, in order). */
+  reorderCommentarySources(orderedIds: string[]): Promise<void>
+  /** Every non-flagged excerpt covering this verse, grouped by source (sidebar lookup). */
+  lookupCommentary(book: string, chapter: number, verse: number): Promise<CommentaryMatch[]>
+  listFlaggedCommentary(sourceId?: string): Promise<CommentaryExcerpt[]>
+  setCommentaryExcerptFlag(id: string, flagged: boolean): Promise<void>
+  reassignCommentaryExcerpt(id: string, patch: CommentaryExcerptReassign): Promise<void>
 
   /** Subscribe to import progress; returns an unsubscribe function. */
   onImportProgress(cb: (p: ImportProgress) => void): () => void
@@ -543,6 +565,75 @@ export interface ScriptureQuoteBook {
   book: string
   name: string
   count: number
+}
+
+/** Registered verse-keyed commentary PDF. */
+export interface CommentarySource {
+  id: string
+  bookId: string | null
+  displayName: string
+  author: string | null
+  pdfRelativePath: string
+  sortOrder: number
+  parserConfig: string | null
+  indexedAt: string | null
+  status: 'unindexed' | 'profiling' | 'indexing' | 'indexed' | 'needs_review' | 'error'
+}
+
+export interface NewCommentarySource {
+  displayName: string
+  author: string | null
+  bookId: string | null
+  pdfRelativePath: string
+}
+
+export interface CommentarySourceUpdate {
+  displayName?: string
+  author?: string | null
+  sortOrder?: number
+  status?: CommentarySource['status']
+  parserConfig?: string | null
+  indexedAt?: string | null
+}
+
+/** A single indexed commentary chunk, keyed to a verse range. */
+export interface CommentaryExcerpt {
+  id: string
+  sourceId: string
+  book: string
+  chapterStart: number
+  verseStart: number
+  chapterEnd: number
+  verseEnd: number
+  text: string
+  pageNumber: number
+  headerRaw: string | null
+  confidence: number
+  flagged: boolean
+}
+
+export interface CommentaryExcerptReassign {
+  book: string
+  chapterStart: number
+  verseStart: number
+  chapterEnd: number
+  verseEnd: number
+}
+
+/** A commentary excerpt joined with its source, for the reference sidebar. */
+export interface CommentaryMatch {
+  excerptId: string
+  sourceId: string
+  sourceDisplayName: string
+  sourceAuthor: string | null
+  sortOrder: number
+  bookId: string | null
+  text: string
+  pageNumber: number
+  chapterStart: number
+  verseStart: number
+  chapterEnd: number
+  verseEnd: number
 }
 
 export interface Quote {

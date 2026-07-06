@@ -82,6 +82,22 @@ const api: LociApi = {
   listScriptureQuoteBooks: (translation) =>
     ipcRenderer.invoke(Channels.listScriptureQuoteBooks, translation),
 
+  listCommentarySources: () => ipcRenderer.invoke(Channels.listCommentarySources),
+  createCommentarySource: (input) => ipcRenderer.invoke(Channels.createCommentarySource, input),
+  updateCommentarySource: (id, patch) =>
+    ipcRenderer.invoke(Channels.updateCommentarySource, id, patch),
+  deleteCommentarySource: (id) => ipcRenderer.invoke(Channels.deleteCommentarySource, id),
+  reorderCommentarySources: (orderedIds) =>
+    ipcRenderer.invoke(Channels.reorderCommentarySources, orderedIds),
+  lookupCommentary: (book, chapter, verse) =>
+    ipcRenderer.invoke(Channels.lookupCommentary, book, chapter, verse),
+  listFlaggedCommentary: (sourceId) =>
+    ipcRenderer.invoke(Channels.listFlaggedCommentary, sourceId),
+  setCommentaryExcerptFlag: (id, flagged) =>
+    ipcRenderer.invoke(Channels.setCommentaryExcerptFlag, id, flagged),
+  reassignCommentaryExcerpt: (id, patch) =>
+    ipcRenderer.invoke(Channels.reassignCommentaryExcerpt, id, patch),
+
   onImportProgress: (cb) => {
     const listener = (_e: IpcRendererEvent, p: ImportProgress): void => cb(p)
     ipcRenderer.on(Channels.importProgress, listener)

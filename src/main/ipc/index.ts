@@ -5,9 +5,12 @@ import type {
   Annotation,
   AppState,
   BookUpdate,
+  CommentaryExcerptReassign,
+  CommentarySourceUpdate,
   ExportOptions,
   ImportProgress,
   IndexedPage,
+  NewCommentarySource,
   NewQuote,
   NewScriptureHighlight,
   NoteType,
@@ -22,6 +25,7 @@ import * as notes from '../services/notes'
 import * as search from '../services/search'
 import * as exporter from '../services/export'
 import * as scripture from '../services/scripture'
+import * as commentary from '../services/commentary'
 import {
   getWelcomeBackgroundDataUrl,
   hasApiBibleKey,
@@ -283,5 +287,31 @@ export function registerIpc(): void {
   )
   ipcMain.handle(Channels.listScriptureQuoteBooks, (_e, translation: string) =>
     quotes.listScriptureQuoteBooks(translation)
+  )
+
+  // --- Commentary (verse-keyed ingestion) ---
+  ipcMain.handle(Channels.listCommentarySources, () => commentary.listSources())
+  ipcMain.handle(Channels.createCommentarySource, (_e, input: NewCommentarySource) =>
+    commentary.createSource(input)
+  )
+  ipcMain.handle(Channels.updateCommentarySource, (_e, id: string, patch: CommentarySourceUpdate) =>
+    commentary.updateSource(id, patch)
+  )
+  ipcMain.handle(Channels.deleteCommentarySource, (_e, id: string) => commentary.deleteSource(id))
+  ipcMain.handle(Channels.reorderCommentarySources, (_e, orderedIds: string[]) =>
+    commentary.reorderSources(orderedIds)
+  )
+  ipcMain.handle(Channels.lookupCommentary, (_e, book: string, chapter: number, verse: number) =>
+    commentary.lookupVerse(book, chapter, verse)
+  )
+  ipcMain.handle(Channels.listFlaggedCommentary, (_e, sourceId?: string) =>
+    commentary.listFlagged(sourceId)
+  )
+  ipcMain.handle(Channels.setCommentaryExcerptFlag, (_e, id: string, flagged: boolean) =>
+    commentary.setExcerptFlag(id, flagged)
+  )
+  ipcMain.handle(
+    Channels.reassignCommentaryExcerpt,
+    (_e, id: string, patch: CommentaryExcerptReassign) => commentary.reassignExcerpt(id, patch)
   )
 }

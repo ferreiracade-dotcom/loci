@@ -256,6 +256,50 @@ const migrations: Migration[] = [
       // user reorders them.
       db.exec(`ALTER TABLE tags ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0;`)
     }
+  },
+  {
+    version: 14,
+    name: 'commentary',
+    up: (db) => {
+      // Verse-keyed commentary index: sources (registered PDFs) and their excerpts, keyed
+      // by USFM book code + chapter/verse range so a clicked verse can look up every
+      // excerpt whose range covers it. Rebuildable from the vault like everything else here
+      // — manual corrections survive rebuilds in a separate JSON file (getDataDir()), not
+      // in this table.
+      db.exec(`
+        CREATE TABLE commentary_sources (
+          id                 TEXT PRIMARY KEY,
+          book_id            TEXT REFERENCES books(id) ON DELETE SET NULL,
+          display_name       TEXT NOT NULL,
+          author             TEXT,
+          pdf_relative_path  TEXT NOT NULL UNIQUE,
+          sort_order         INTEGER NOT NULL DEFAULT 0,
+          parser_config      TEXT,
+          indexed_at         TEXT,
+          status             TEXT NOT NULL DEFAULT 'unindexed'
+        );
+
+        CREATE TABLE commentary_excerpts (
+          id              TEXT PRIMARY KEY,
+          source_id       TEXT NOT NULL REFERENCES commentary_sources(id) ON DELETE CASCADE,
+          book            TEXT NOT NULL,
+          chapter_start   INTEGER NOT NULL,
+          verse_start     INTEGER NOT NULL,
+          chapter_end     INTEGER NOT NULL,
+          verse_end       INTEGER NOT NULL,
+          text            TEXT NOT NULL,
+          page_number     INTEGER NOT NULL,
+          header_raw      TEXT,
+          confidence      REAL NOT NULL DEFAULT 1.0,
+          flagged         INTEGER NOT NULL DEFAULT 0
+        );
+
+        CREATE INDEX idx_excerpts_lookup ON commentary_excerpts(book, chapter_start, chapter_end);
+        CREATE INDEX idx_excerpts_source ON commentary_excerpts(source_id);
+
+        INSERT INTO tags (id, name) VALUES ('tag-commentary', 'commentary');
+      `)
+    }
   }
 ]
 
