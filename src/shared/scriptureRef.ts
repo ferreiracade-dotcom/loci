@@ -108,15 +108,23 @@ export function bookByOrder(order: number): ScriptureBookDef | undefined {
   return BY_ORDER.get(order)
 }
 
-// spelling (lowercased) -> code, plus an alternation ordered longest-first so multi-word
-// and numbered names ("1 John", "Song of Songs") win over their shorter substrings.
+// spelling (lowercased) -> code, for resolving whatever case a scan/parse actually matched.
+// The alternation itself is built from the ORIGINAL casing (below) — SCAN_RE relies on
+// that casing to distinguish "Mark 3" from "mark 3 items"; lowercasing it here would make
+// every alternative unmatchable against real (capitalized) text without also accepting
+// lowercase prose, defeating the point.
 const SPELLING_TO_CODE = new Map<string, string>()
+const RAW_SPELLINGS: string[] = []
 for (const b of BOOKS) {
-  for (const s of [b.name, ...b.abbr]) SPELLING_TO_CODE.set(s.toLowerCase(), b.code)
+  for (const s of [b.name, ...b.abbr]) {
+    SPELLING_TO_CODE.set(s.toLowerCase(), b.code)
+    RAW_SPELLINGS.push(s)
+  }
 }
 const ESC = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-const ALTERNATION = [...SPELLING_TO_CODE.keys()]
-  .sort((a, b) => b.length - a.length)
+// Ordered longest-first so multi-word and numbered names ("1 John", "Song of Songs") win
+// over their shorter substrings.
+const ALTERNATION = RAW_SPELLINGS.sort((a, b) => b.length - a.length)
   .map((s) => ESC(s))
   .join('|')
 
@@ -198,4 +206,177 @@ export function refLabel(ref: {
     if (ref.verseEnd != null && ref.verseEnd !== ref.verseStart) s += `-${ref.verseEnd}`
   }
   return s
+}
+
+// --- Commentary header parsing (Phase 2a) --------------------------------------------
+//
+// A distinct grammar from the free-text reference scanner above: commentary PDFs mark
+// excerpt boundaries with a huge variety of bare verse/range headers ("[16]", "Verse 16.",
+// "16)", "3:16", "15-18.", "False discipleship: V. 21.") that a real corpus survey turned
+// up — none of which name the book, and several of which don't even restate the chapter.
+// So parsing here is stateful: the caller (the per-source chunker in Phase 2d) tracks
+// which book/chapter is "current" and this module only supplies the per-line grammar.
+
+export interface HeaderParseState {
+  /** USFM code of the book currently being commented on, or null before the first header. */
+  book: string | null
+  /** Chapter currently being commented on, or null before the first header. */
+  chapter: number | null
+}
+
+/** A commentary excerpt boundary, resolved against (and possibly updating) parser state. */
+export interface ParsedHeader {
+  /** The exact matched text. */
+  raw: string
+  book: string
+  chapterStart: number
+  verseStart: number
+  chapterEnd: number
+  verseEnd: number
+  /** True when this header only gave a bare verse/range and relied on carried-over state
+   *  for book/chapter (as opposed to restating them itself). */
+  contextual: boolean
+}
+
+/** The header conventions observed across real commentary PDFs (spec Phase 2c: a source's
+ *  shape is inferred by profiling, confirmed by the user, then applied strictly). */
+export type HeaderShape =
+  | 'book-chapter-verse' // "Romans 3:16", "Rom. 3:16-21" — resets book and chapter
+  | 'chapter-verse' // "3:16", "3:16-18", "3:25-4:2" — needs state.book; sets state.chapter
+  | 'chapter-verse-roman' // "i. 15-18", "(i. 15-18)", "Cap. III, v. 5" — needs state.book
+  | 'bracket-number' // "[16]", "[16-18]" — needs state.book + state.chapter
+  | 'paren-number' // "16)", "16-18)" — needs state.book + state.chapter
+  | 'word-label' // "Verse 16.", "Verses 16-18.", "V. 16.", "Vv. 16-18.", "Vers. 16."
+  | 'phrase-label' // "False discipleship: V. 21." — a lead-in phrase before the label
+  | 'bare-range' // "16.", "16-18." — needs state.book + state.chapter
+
+const N = '\\d{1,3}'
+const DASH = '[-–—]'
+/** "16" or "16-18" — a single-chapter verse or range, as two optional capture groups. */
+const RANGE = `(${N})(?:\\s*${DASH}\\s*(${N}))?`
+
+const ROMAN_RE = /^[ivxlcdm]+$/i
+const ROMAN_VALUES: Record<string, number> = { i: 1, v: 5, x: 10, l: 50, c: 100, d: 500, m: 1000 }
+
+/** Parse a Roman numeral (any case) to an integer, or null if it isn't one. */
+export function romanToInt(s: string): number | null {
+  const clean = s.trim().toLowerCase()
+  if (!clean || !ROMAN_RE.test(clean)) return null
+  let total = 0
+  for (let i = 0; i < clean.length; i++) {
+    const cur = ROMAN_VALUES[clean[i]]
+    const next = i + 1 < clean.length ? ROMAN_VALUES[clean[i + 1]] : 0
+    total += cur < next ? -cur : cur
+  }
+  return total > 0 ? total : null
+}
+
+const SHAPE_PATTERNS: Partial<Record<HeaderShape, RegExp>> = {
+  'chapter-verse': new RegExp(
+    `^\\(?(${N})\\s*:\\s*(${N})(?:\\s*${DASH}\\s*(?:(${N})\\s*:\\s*)?(${N}))?\\)?`
+  ),
+  'chapter-verse-roman': new RegExp(
+    `^\\(?(?:Chapter|Chap\\.?|Cap\\.?)?\\s*([ivxlcdm]+)\\b[.,]?\\s*(?:v\\.?|vv\\.?|vers\\.?)?\\s*(${N})?(?:\\s*${DASH}\\s*(${N}))?\\)?`,
+    'i'
+  ),
+  'bracket-number': new RegExp(`^\\[${RANGE}\\]`),
+  'paren-number': new RegExp(`^${RANGE}\\)`),
+  'word-label': new RegExp(`^(?:Verses?|Vers\\.?|Vv\\.?|V\\.?)\\s+${RANGE}\\.?`, 'i'),
+  'phrase-label': new RegExp(`^[^:\\n]{1,80}:\\s*(?:Verses?|Vers\\.?|Vv\\.?|V\\.?)\\s+${RANGE}\\.?`, 'i'),
+  'bare-range': new RegExp(`^${RANGE}\\.`)
+}
+
+/** Parse one candidate header line against carried context. Returns null if `line` doesn't
+ *  match `shape` (or the shape needs context that hasn't been established yet). Does not
+ *  mutate `state` — the caller applies the returned header's book/chapterEnd back onto its
+ *  own state before parsing the next line. */
+export function parseCommentaryHeader(
+  line: string,
+  state: HeaderParseState,
+  shape: HeaderShape
+): ParsedHeader | null {
+  const trimmed = line.trim()
+  if (!trimmed) return null
+
+  if (shape === 'book-chapter-verse') {
+    const refs = findReferences(trimmed)
+    const ref = refs[0]
+    if (!ref || ref.index !== 0) return null
+    return {
+      raw: ref.raw,
+      book: ref.book,
+      chapterStart: ref.chapter,
+      verseStart: ref.verseStart ?? 1,
+      chapterEnd: ref.chapter,
+      verseEnd: ref.verseEnd ?? ref.verseStart ?? 1,
+      contextual: false
+    }
+  }
+
+  if (shape === 'chapter-verse') {
+    if (!state.book) return null
+    const m = SHAPE_PATTERNS['chapter-verse']!.exec(trimmed)
+    if (!m) return null
+    const chapterStart = Number(m[1])
+    const verseStart = Number(m[2])
+    const chapterEnd = m[3] ? Number(m[3]) : chapterStart
+    const verseEnd = m[4] ? Number(m[4]) : verseStart
+    return {
+      raw: m[0],
+      book: state.book,
+      chapterStart,
+      verseStart,
+      chapterEnd,
+      verseEnd,
+      contextual: false
+    }
+  }
+
+  if (shape === 'chapter-verse-roman') {
+    if (!state.book) return null
+    const m = SHAPE_PATTERNS['chapter-verse-roman']!.exec(trimmed)
+    if (!m || !m[2]) return null // no verse number captured — treat as unparseable here
+    const chapter = romanToInt(m[1])
+    if (chapter == null) return null
+    const verseStart = Number(m[2])
+    const verseEnd = m[3] ? Number(m[3]) : verseStart
+    return {
+      raw: m[0],
+      book: state.book,
+      chapterStart: chapter,
+      verseStart,
+      chapterEnd: chapter,
+      verseEnd,
+      contextual: false
+    }
+  }
+
+  // Remaining shapes are all "bare verse/range" forms that require a fully-established
+  // book + chapter from prior headers.
+  if (!state.book || state.chapter == null) return null
+  const pattern = SHAPE_PATTERNS[shape]
+  if (!pattern) return null
+  const m = pattern.exec(trimmed)
+  if (!m) return null
+  const verseStart = Number(m[1])
+  const verseEnd = m[2] ? Number(m[2]) : verseStart
+  return {
+    raw: m[0],
+    book: state.book,
+    chapterStart: state.chapter,
+    verseStart,
+    chapterEnd: state.chapter,
+    verseEnd,
+    contextual: true
+  }
+}
+
+/** A standalone chapter heading with no verse component ("Chapter III", "Cap. III") — just
+ *  updates carried context for subsequent bare-verse headers; not an excerpt boundary
+ *  itself. Returns null if `line` isn't one. */
+export function parseChapterOnlyHeader(line: string): { chapter: number } | null {
+  const m = /^(?:Chapter|Chap\.?|Cap\.?)\s+([ivxlcdm]+)\s*\.?$/i.exec(line.trim())
+  if (!m) return null
+  const chapter = romanToInt(m[1])
+  return chapter != null ? { chapter } : null
 }
