@@ -335,8 +335,13 @@ export function chunkDocument(
     }
     const lines = stripRunningLines(rawLines, runningLines)
     for (const line of lines) {
+      // Chapter-title pages ("CHAPTER II") are typically styled as a big display headline,
+      // nothing like the source's learned *verse*-header signature (small label + body text)
+      // — so unlike verse headers, this isn't gated by matchesLearnedHeaderStyle. The regex's
+      // own anchoring (the whole line must be nothing but "Chapter <roman>") is specific
+      // enough on its own to avoid misfiring on ordinary prose.
       const chapterOnly = parseChapterOnlyHeader(line.text)
-      if (chapterOnly && matchesLearnedHeaderStyle(line, profile)) {
+      if (chapterOnly) {
         state.chapter = chapterOnly.chapter
         continue
       }

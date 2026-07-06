@@ -302,6 +302,43 @@ describe('chunkDocument', () => {
     expect(chunks[1]).toMatchObject({ book: '2TI', verseStart: 2 })
   })
 
+  it('advances state.chapter from a "CHAPTER II" title page even though it looks nothing like the learned verse-header style (real: Gerhard 1 Timothy)', () => {
+    const wordLabelProfile: SourceProfile = {
+      shape: 'word-label',
+      bodyFontSize: 9.5,
+      headerFontSize: 8.6,
+      bodyMarginX: 30,
+      headerMarginX: 30,
+      headerMultiFontRate: 0,
+      bodyMultiFontRate: 0
+    }
+    const pages: PositionedLine[][] = [
+      [
+        line(1, 590, '28 COMMENTARY ON 1 TIMOTHY'), // running header, gets stripped
+        line(1, 420, 'Verse 20.', { fontSize: 8.6 }),
+        line(1, 410, 'last comment on chapter 1 verse 20')
+      ],
+      // Chapter title page — big display headline, nothing like the 8.6pt verse-header style.
+      [
+        line(2, 590, '29 COMMENTARY ON 1 TIMOTHY'),
+        line(2, 475, 'CHAPTER II', { fontSize: 15.6 }),
+        line(2, 400, 'Summary of the chapter.')
+      ],
+      [
+        line(3, 590, '30 COMMENTARY ON 1 TIMOTHY'),
+        line(3, 265, 'Verse 1.', { fontSize: 8.6 }),
+        line(3, 250, 'first comment on chapter 2 verse 1'),
+        line(3, 200, 'Verse 2.', { fontSize: 8.6 }),
+        line(3, 190, 'second comment on chapter 2 verse 2')
+      ]
+    ]
+    const chunks = chunkDocument(pages, wordLabelProfile, { book: '1TI', chapter: 1 })
+    expect(chunks).toHaveLength(3)
+    expect(chunks[0]).toMatchObject({ book: '1TI', chapterStart: 1, verseStart: 20 })
+    expect(chunks[1]).toMatchObject({ book: '1TI', chapterStart: 2, verseStart: 1 })
+    expect(chunks[2]).toMatchObject({ book: '1TI', chapterStart: 2, verseStart: 2 })
+  })
+
   it('drops text before the first header as front matter rather than mis-tagging it', () => {
     const pages: PositionedLine[][] = [
       [
