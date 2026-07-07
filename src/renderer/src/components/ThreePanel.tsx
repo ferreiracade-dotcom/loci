@@ -10,6 +10,7 @@ import { CenterWorkspace } from './library/CenterWorkspace'
 import { QuotesPanel } from './library/QuotesPanel'
 import { ScriptureHighlightsPanel } from './library/ScriptureHighlightsPanel'
 import { NotesView } from './library/NotesView'
+import { QuotesView } from './library/QuotesView'
 import { BacklinksPanel } from './library/BacklinksPanel'
 import { StandaloneNotesPanel } from './library/StandaloneNotesPanel'
 import { ReferencePdfPanel } from './library/ReferencePdfPanel'
@@ -104,6 +105,8 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
         return <SearchView />
       case 'notes':
         return <NotesView />
+      case 'quotes':
+        return <QuotesView />
       case 'dashboard':
         return <DashboardView />
       case 'graph':

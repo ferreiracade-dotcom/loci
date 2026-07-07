@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { BookOpen, FileText, ScrollText, ChevronRight, ChevronDown } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
+import { getCachedCover, setCachedCover } from '../../lib/coverCache'
 import type { Book, SearchHit } from '@shared/ipc'
 
 /** Group hits by book (page/quote), by chapter ref (scripture), or bundle notes together. */
@@ -31,17 +32,23 @@ function Snippet({ text }: { text: string }) {
 /** Book cover for a group header; a kind icon for the Notes/Scripture groups. */
 function GroupThumb({ bookId, kind, books }: { bookId: string | null; kind: string; books: Book[] }) {
   const book = bookId ? books.find((b) => b.id === bookId) : undefined
-  const [src, setSrc] = useState<string | null>(null)
+  const [src, setSrc] = useState<string | null>(() => (book ? (getCachedCover(book.id) ?? null) : null))
 
   useEffect(() => {
     let alive = true
-    if (book?.hasCover) {
-      void api.getCover(book.id).then((d) => {
-        if (alive) setSrc(d)
-      })
-    } else {
+    if (!book?.hasCover) {
       setSrc(null)
+      return
     }
+    const cached = getCachedCover(book.id)
+    if (cached !== undefined) {
+      setSrc(cached)
+      return
+    }
+    void api.getCover(book.id).then((d) => {
+      setCachedCover(book.id, d)
+      if (alive) setSrc(d)
+    })
     return () => {
       alive = false
     }

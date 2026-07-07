@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { BookOpen } from 'lucide-react'
 import { api } from '../../lib/api'
+import { getCachedCover, setCachedCover } from '../../lib/coverCache'
 
 interface BookCoverProps {
   id: string
@@ -8,19 +9,26 @@ interface BookCoverProps {
   title: string
 }
 
-/** Lazily loads a book's cover as a data URL via IPC; falls back to a titled card. */
+/** Lazily loads a book's cover as a data URL via IPC (cached across mounts); falls back to a
+ *  titled card. */
 export function BookCover({ id, hasCover, title }: BookCoverProps) {
-  const [src, setSrc] = useState<string | null>(null)
+  const [src, setSrc] = useState<string | null>(() => getCachedCover(id) ?? null)
 
   useEffect(() => {
     let alive = true
-    if (hasCover) {
-      void api.getCover(id).then((d) => {
-        if (alive) setSrc(d)
-      })
-    } else {
+    if (!hasCover) {
       setSrc(null)
+      return
     }
+    const cached = getCachedCover(id)
+    if (cached !== undefined) {
+      setSrc(cached)
+      return
+    }
+    void api.getCover(id).then((d) => {
+      setCachedCover(id, d)
+      if (alive) setSrc(d)
+    })
     return () => {
       alive = false
     }

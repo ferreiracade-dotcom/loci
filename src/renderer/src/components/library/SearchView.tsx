@@ -29,6 +29,7 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
   const openNote = useStore((s) => s.openNote)
   const navigateScripture = useStore((s) => s.navigateScripture)
   const setActiveHit = useStore((s) => s.setActiveHit)
+  const markCameFromSearch = useStore((s) => s.markCameFromSearch)
   const indexing = useStore((s) => s.indexing)
   const startIndexing = useStore((s) => s.startIndexing)
   const cancelIndexing = useStore((s) => s.cancelIndexing)
@@ -50,6 +51,7 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
 
   const onHit = (h: SearchHit, index: number): void => {
     setActiveHit(index)
+    markCameFromSearch()
     if ((h.kind === 'page' || h.kind === 'quote') && h.bookId) openBookAt(h.bookId, h.page ?? 1)
     else if (h.kind === 'note' && h.ref) openNote(h.ref)
     else if (h.kind === 'scripture' && h.ref) {

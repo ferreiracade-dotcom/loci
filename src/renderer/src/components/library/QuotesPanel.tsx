@@ -7,11 +7,12 @@ import {
   type ReactNode,
   type TextareaHTMLAttributes
 } from 'react'
-import { Trash2, Plus, Pencil, Copy, Check, BookMarked } from 'lucide-react'
+import { Trash2, Plus, Pencil, Copy, Check, BookMarked, ExternalLink } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { formatCitation, parseAuthors, type CitationSource, type CitationStyle } from '@shared/citation'
 import type { Annotation, Book, Quote } from '@shared/ipc'
+import { QuoteBodyEditor } from './QuoteBodyEditor'
 
 const STYLE_OPTIONS: { id: CitationStyle; label: string }[] = [
   { id: 'footnote', label: 'Footnote' },
@@ -45,6 +46,16 @@ function renderCitation(text: string): ReactNode {
   })
 }
 
+/** Render a quote body with inline **bold**, *italic*, and ~~strike~~ markdown. */
+function renderInline(text: string): ReactNode {
+  return text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|~~[^~]+~~)/g).map((p, i) => {
+    if (p.startsWith('**') && p.endsWith('**')) return <strong key={i}>{p.slice(2, -2)}</strong>
+    if (p.startsWith('~~') && p.endsWith('~~')) return <s key={i}>{p.slice(2, -2)}</s>
+    if (p.startsWith('*') && p.endsWith('*')) return <em key={i}>{p.slice(1, -1)}</em>
+    return <Fragment key={i}>{p}</Fragment>
+  })
+}
+
 function AutoTextarea({
   value,
   ...rest
@@ -63,6 +74,9 @@ function AutoTextarea({
 export interface CardHandlers {
   onSetTags: (id: string, tags: string[]) => void
   onSetAnnotations: (id: string, annotations: Annotation[]) => void
+  onSetText: (id: string, text: string) => void
+  /** Pass null/empty to reset the citation back to auto-generation. */
+  onSetCitation: (id: string, citation: string | null) => void
   onDelete: (id: string) => void
 }
 
@@ -82,11 +96,47 @@ export function QuoteCard({
   const [draft, setDraft] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
+  const [editingBody, setEditingBody] = useState(false)
+  const [editingCitation, setEditingCitation] = useState(false)
+  const [citationDraft, setCitationDraft] = useState('')
   const [copied, setCopied] = useState(false)
 
+  const openBookAt = useStore((s) => s.openBookAt)
+  const navigateScripture = useStore((s) => s.navigateScripture)
+  const verseClicked = useStore((s) => s.verseClicked)
+
   const printedPage = q.page != null && book ? q.page - (book.pageOffset ?? 0) : q.page
-  const citation = book ? formatCitation(sourceFromBook(book), style, printedPage) : q.citation
+  const autoCitation = book ? formatCitation(sourceFromBook(book), style, printedPage) : q.citation
+  const citation = q.citationOverride ?? autoCitation
   const verifyPage = !!book && q.page != null && (book.pageOffset ?? 0) === 0
+
+  const startEditCitation = (): void => {
+    setCitationDraft(citation)
+    setEditingCitation(true)
+  }
+  const commitCitation = (): void => {
+    const text = citationDraft.trim()
+    setEditingCitation(false)
+    // Blank, or back to what auto-generation would already produce, resets the override.
+    handlers.onSetCitation(q.id, text && text !== autoCitation ? text : null)
+  }
+
+  // Jump back to wherever this quote was captured: the PDF page, the Bible passage, or (for a
+  // commentary quote) the verse it comments on — which also reruns the commentary lookup so the
+  // matching excerpt shows again in the reference sidebar.
+  const openSource = (): void => {
+    if (q.bookId) {
+      openBookAt(q.bookId, q.page ?? 1)
+      return
+    }
+    if (q.scriptureBook == null || q.scriptureChapter == null || q.verseStart == null) return
+    const end = q.verseEnd ?? q.verseStart
+    const highlight = Array.from({ length: end - q.verseStart + 1 }, (_, i) => q.verseStart! + i)
+    navigateScripture(q.scriptureBook, q.scriptureChapter, highlight)
+    if (q.commentarySource) void verseClicked(q.scriptureBook, q.scriptureChapter, q.verseStart)
+  }
+  const canOpenSource = !!q.bookId || (q.scriptureBook != null && q.scriptureChapter != null)
+  const openTitle = q.bookId ? 'Open in book' : q.commentarySource ? 'Open in Bible + Commentary' : 'Open in Bible'
 
   const quoteMarkdown = (): string => {
     const body = q.text.trim().replace(/\n+/g, '\n> ')
@@ -138,24 +188,70 @@ export function QuoteCard({
       </button>
       <div
         className="quote-bubble"
-        draggable
+        draggable={!editingBody}
         onDragStart={(e) => {
           e.dataTransfer.setData('text/plain', quoteMarkdown())
           e.dataTransfer.effectAllowed = 'copy'
         }}
-        title="Drag into a note to insert the quote + citation"
+        title={editingBody ? undefined : 'Drag into a note to insert the quote + citation'}
       >
-        <div className="quote-text">{q.text}</div>
-        <div className="quote-cite-row">
-          <div className="quote-cite">
-            {renderCitation(citation)}
-            {verifyPage && (
-              <span className="cite-verify" title="No page offset set for this book — the printed page may differ from the PDF page. Set it in Book Info.">
-                {' '}
-                · verify page
-              </span>
-            )}
+        {editingBody ? (
+          <QuoteBodyEditor
+            value={q.text}
+            onSave={(text) => {
+              setEditingBody(false)
+              if (text && text !== q.text) handlers.onSetText(q.id, text)
+            }}
+            onCancel={() => setEditingBody(false)}
+          />
+        ) : (
+          <div className="quote-text">
+            {renderInline(q.text)}
+            <button
+              className="quote-edit"
+              title="Edit quote text (bold, italic…)"
+              onClick={() => setEditingBody(true)}
+            >
+              <Pencil size={11} />
+            </button>
           </div>
+        )}
+        <div className="quote-cite-row">
+          {editingCitation ? (
+            <input
+              className="quote-cite-input"
+              autoFocus
+              value={citationDraft}
+              onChange={(e) => setCitationDraft(e.target.value)}
+              onBlur={commitCitation}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  commitCitation()
+                } else if (e.key === 'Escape') {
+                  setEditingCitation(false)
+                }
+              }}
+            />
+          ) : (
+            <div className="quote-cite">
+              {renderCitation(citation)}
+              {verifyPage && (
+                <span className="cite-verify" title="No page offset set for this book — the printed page may differ from the PDF page. Set it in Book Info.">
+                  {' '}
+                  · verify page
+                </span>
+              )}
+              <button className="quote-edit quote-cite-edit" title="Edit citation" onClick={startEditCitation}>
+                <Pencil size={10} />
+              </button>
+            </div>
+          )}
+          {canOpenSource && (
+            <button className="cite-copy" title={openTitle} onClick={openSource}>
+              <ExternalLink size={12} />
+            </button>
+          )}
           <button className="cite-copy" title="Copy quote + citation" onClick={copyCitation}>
             {copied ? <Check size={12} /> : <Copy size={12} />}
           </button>
@@ -314,6 +410,11 @@ export function QuotesPanel() {
       setQuotes((qs) => qs.map((q) => (q.id === id ? { ...q, annotations } : q)))
       void api.setQuoteAnnotations(id, annotations)
     },
+    onSetText: (id, text) => {
+      setQuotes((qs) => qs.map((q) => (q.id === id ? { ...q, text } : q)))
+      void api.setQuoteText(id, text).then(reload)
+    },
+    onSetCitation: (id, citation) => void api.setQuoteCitation(id, citation).then(reload),
     onDelete: (id) =>
       void api
         .deleteQuote(id)

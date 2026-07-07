@@ -234,14 +234,25 @@ export function listBooks(): Book[] {
   return rows.map(rowToBook)
 }
 
+// Keyed by cover file path; invalidated by mtime so a changed cover (same path, new bytes) still
+// gets picked up. Without this, every Library re-render (or a search-results thumbnail) re-reads
+// and re-base64-encodes every cover from disk on the single-threaded main process — with a library
+// of any size that's a synchronous burst that stalls IPC for whatever else was navigated to next.
+const coverCache = new Map<string, { mtimeMs: number; dataUrl: string }>()
+
 export function getCoverDataUrl(id: string): string | null {
   const r = getDb().prepare('SELECT cover_path FROM books WHERE id = ?').get(id) as
     | { cover_path: string | null }
     | undefined
   if (!r?.cover_path || !existsSync(r.cover_path)) return null
+  const mtimeMs = statSync(r.cover_path).mtimeMs
+  const cached = coverCache.get(r.cover_path)
+  if (cached && cached.mtimeMs === mtimeMs) return cached.dataUrl
   const buf = readFileSync(r.cover_path)
   const mime = extname(r.cover_path).toLowerCase() === '.png' ? 'image/png' : 'image/jpeg'
-  return `data:${mime};base64,${buf.toString('base64')}`
+  const dataUrl = `data:${mime};base64,${buf.toString('base64')}`
+  coverCache.set(r.cover_path, { mtimeMs, dataUrl })
+  return dataUrl
 }
 
 /** Set a book's cover from a chosen image file; returns the new cover data URL. */

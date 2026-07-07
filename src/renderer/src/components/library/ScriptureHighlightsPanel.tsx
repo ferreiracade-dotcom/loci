@@ -57,6 +57,11 @@ export function ScriptureHighlightsPanel() {
       setQuotes((qs) => qs.map((q) => (q.id === id ? { ...q, annotations } : q)))
       void api.setQuoteAnnotations(id, annotations)
     },
+    onSetText: (id, text) => {
+      setQuotes((qs) => qs.map((q) => (q.id === id ? { ...q, text } : q)))
+      void api.setQuoteText(id, text).then(reload)
+    },
+    onSetCitation: (id, citation) => void api.setQuoteCitation(id, citation).then(reload),
     // Delete via the store so the reader un-marks the verses too (shared token bump);
     // the noteReloadToken effects below also reload this panel's list + book counts.
     onDelete: (id) => void deleteScriptureHighlight(id)

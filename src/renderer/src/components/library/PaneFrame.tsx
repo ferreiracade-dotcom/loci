@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { X, FileText, BookOpen, ChevronLeft, Replace, LayoutPanelTop } from 'lucide-react'
+import { X, FileText, BookOpen, ChevronLeft, Replace, LayoutPanelTop, Quote } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import type { Pane } from '../../store/useStore'
 import { RichNoteEditor } from './RichNoteEditor'
 import { PdfReader } from './PdfReader'
 import { BiblePane } from './BiblePane'
 import { PanePicker } from './PanePicker'
+import { QuoteGroupPane } from './QuoteGroupPane'
 
 /** Read whichever project-item drag payload is present on a drop event, if any. */
 function projectItemFromDrag(e: React.DragEvent): { kind: 'book' | 'note' | 'scripture'; value: string } | null {
@@ -93,6 +94,25 @@ export function PaneFrame({
     icon = <FileText size={13} />
     title = notes.find((n) => n.path === pane.notePath)?.title ?? 'Note'
     body = <RichNoteEditor key={pane.notePath} path={pane.notePath} />
+    canReplace = true
+  } else if (pane.kind === 'quotes' && pane.quotesGroup) {
+    const g = pane.quotesGroup
+    icon = <Quote size={13} />
+    title =
+      g.type === 'book'
+        ? g.title
+        : g.type === 'scripture'
+          ? g.chapter != null
+            ? `${g.name} ${g.chapter}`
+            : g.name
+          : g.type === 'commentary'
+            ? g.displayName
+            : g.type === 'author'
+              ? g.author
+              : g.tag
+                ? `#${g.tag}`
+                : 'Untagged'
+    body = <QuoteGroupPane key={JSON.stringify(g)} group={g} />
     canReplace = true
   } else if (pane.kind === 'empty') {
     icon = <LayoutPanelTop size={13} />

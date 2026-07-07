@@ -178,6 +178,19 @@ select.field {
 }
 
 /* Center workspace — up to two typed panes (note / Bible / PDF) */
+.center-workspace-wrap {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ws-search-return {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
 .center-workspace {
   flex: 1;
   min-width: 0;
@@ -2564,8 +2577,83 @@ select.field {
   font-size: 14px;
   line-height: 1.45;
   color: var(--text);
+  white-space: pre-wrap;
   user-select: text;
   -webkit-user-select: text;
+}
+.quote-text strong {
+  font-weight: 700;
+}
+.quote-text em {
+  font-style: italic;
+}
+/* Inline "edit quote text" affordance — a small pencil that trails the text on hover. */
+.quote-edit {
+  margin-left: 6px;
+  padding: 0;
+  vertical-align: baseline;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.quote-card:hover .quote-edit {
+  opacity: 0.7;
+}
+.quote-edit:hover {
+  opacity: 1;
+  color: var(--accent);
+}
+
+/* Compact rich-text editor for a quote body (bold/italic/strike). */
+.quote-body-editor {
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--panel);
+  overflow: hidden;
+}
+.qbe-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--border);
+}
+.qbe-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+.qbe-toolbar button:hover {
+  color: var(--text);
+  background: var(--card);
+}
+.qbe-toolbar .qbe-spacer {
+  flex: 1;
+}
+.qbe-toolbar .qbe-save:hover {
+  color: var(--accent);
+}
+.qbe-toolbar .qbe-cancel:hover {
+  color: #d98a76;
+}
+.qbe-content {
+  padding: 6px 8px;
+  font-family: var(--font-read);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.qbe-content .ProseMirror {
+  outline: none;
 }
 .quote-cite {
   flex: 1;
@@ -2574,6 +2662,20 @@ select.field {
   color: var(--muted);
   user-select: text;
   -webkit-user-select: text;
+}
+.quote-cite-edit {
+  margin-left: 4px;
+}
+.quote-cite-input {
+  flex: 1;
+  min-width: 0;
+  font-family: inherit;
+  font-size: 11px;
+  color: var(--text);
+  background: var(--base);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  padding: 2px 6px;
 }
 .anno-list {
   display: flex;
@@ -4616,4 +4718,100 @@ select.field {
   font-family: var(--font-ui);
   font-size: 12.5px;
   color: var(--muted);
+}
+
+/* ---- Quotes nav section (left view + center pane) ---- */
+.quotes-nav {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.quotes-nav-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  font-family: var(--font-ui);
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.quotes-nav-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px;
+}
+.quotes-nav .note-row {
+  padding-right: 12px;
+}
+.quotes-row-count {
+  flex: 0 0 auto;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--panel);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.note-row.active .quotes-row-count {
+  color: var(--accent);
+  background: var(--accent-12);
+}
+
+.quote-group-pane {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.quote-group-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.quote-group-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ---- Commentary excerpt actions (copy / add quote / view in PDF) ---- */
+.commentary-excerpt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+.commentary-excerpt-act {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  cursor: pointer;
+}
+.commentary-excerpt-act:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.commentary-view-pdf {
+  margin-top: 0;
 }

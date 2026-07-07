@@ -13,6 +13,7 @@ import {
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { splitAuthors, joinAuthors } from '../../lib/authors'
+import { setCachedCover } from '../../lib/coverCache'
 import { DrawerOverlay } from '../DrawerOverlay'
 import { BookCover } from './BookCover'
 import type { PdfSource, ReadingStatus } from '@shared/ipc'
@@ -57,6 +58,7 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
   const changeCover = async (): Promise<void> => {
     const url = await api.setBookCover(bookId)
     if (url) {
+      setCachedCover(bookId, url)
       await refreshLibrary()
       setCoverKey((k) => k + 1)
     }

@@ -309,6 +309,30 @@ const migrations: Migration[] = [
       // queue shows these; confidence/flagged alone don't explain *why*.
       db.exec(`ALTER TABLE commentary_excerpts ADD COLUMN flag_reasons TEXT NOT NULL DEFAULT '[]';`)
     }
+  },
+  {
+    version: 16,
+    name: 'commentary-quotes',
+    up: (db) => {
+      // Commentary excerpts can be captured as quotes, alongside book quotes (book_id) and
+      // Scripture quotes (scripture_ref). A commentary quote carries the source it came from
+      // and the verse ref it was anchored to; its verse text is copyrighted but stays local,
+      // just like the commentary vault + index it's drawn from.
+      db.exec(`
+        ALTER TABLE quotes ADD COLUMN commentary_source_id TEXT REFERENCES commentary_sources(id) ON DELETE CASCADE;
+        ALTER TABLE quotes ADD COLUMN commentary_ref TEXT;
+      `)
+    }
+  },
+  {
+    version: 17,
+    name: 'quote-citation-override',
+    up: (db) => {
+      // Lets the user hand-edit a quote's citation (fix a typo, adjust wording) instead of
+      // always taking the auto-generated one. Null = keep auto-generating from the book /
+      // scripture ref / commentary source as before.
+      db.exec(`ALTER TABLE quotes ADD COLUMN citation_override TEXT;`)
+    }
   }
 ]
 

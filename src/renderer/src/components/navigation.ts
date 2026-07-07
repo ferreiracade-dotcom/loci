@@ -12,7 +12,8 @@ import {
   Highlighter,
   File,
   BookOpenText,
-  MessageSquareQuote
+  MessageSquareQuote,
+  Quote
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { RailItem } from './IconRail'
@@ -21,6 +22,7 @@ import type { RailItem } from './IconRail'
 export const LEFT_VIEWS: RailItem[] = [
   { id: 'library', label: 'Library', icon: BookOpen },
   { id: 'notes', label: 'Notes', icon: NotebookPen },
+  { id: 'quotes', label: 'Quotes', icon: Quote },
   { id: 'search', label: 'Search', icon: Search },
   { id: 'scripture', label: 'Scripture', icon: ScrollText },
   { id: 'graph', label: 'Graph', icon: Network },
@@ -57,6 +59,11 @@ export const CENTER_EMPTY: Record<string, EmptyCopy> = {
     icon: NotebookPen,
     title: 'No notes yet',
     subtitle: 'Linked notes and quote entities arrive in Phase 2.'
+  },
+  quotes: {
+    icon: Quote,
+    title: 'No quotes yet',
+    subtitle: 'Capture quotes from books, the Bible, or commentary and they collect here.'
   },
   search: {
     icon: Search,

@@ -36,7 +36,16 @@ export type Phase = 'loading' | 'wizard' | 'welcome' | 'ready'
 
 // --- Center workspace (Phase 8.7 Stage 3) ---
 // 'empty' is a not-yet-filled pane that shows the content picker.
-export type PaneKind = 'note' | 'bible' | 'pdf' | 'empty'
+export type PaneKind = 'note' | 'bible' | 'pdf' | 'empty' | 'quotes'
+
+/** A group of saved quotes opened in the center: a PDF, a Bible chapter, or a commentary source. */
+export type QuoteGroupRef =
+  | { type: 'book'; bookId: string; title: string }
+  // `chapter` omitted = every chapter of this book (the "Bible book" grouping mode).
+  | { type: 'scripture'; book: string; chapter?: number; translation: string; name: string }
+  | { type: 'commentary'; sourceId: string; displayName: string }
+  | { type: 'author'; author: string }
+  | { type: 'tag'; tag: string }
 
 /** One slot in the center workspace. Only the fields for its `kind` are set. */
 export interface Pane {
@@ -48,6 +57,7 @@ export interface Pane {
   chapter?: number
   highlight?: number[]
   translation?: string
+  quotesGroup?: QuoteGroupRef
 }
 
 /** Content to place into a pane. */
@@ -55,6 +65,7 @@ export type PaneContent =
   | { kind: 'note'; notePath: string }
   | { kind: 'pdf'; bookId: string }
   | { kind: 'bible'; book: string; chapter: number; highlight?: number[]; translation?: string }
+  | { kind: 'quotes'; quotesGroup: QuoteGroupRef }
 
 function paneFromContent(c: PaneContent): Pane {
   return { id: crypto.randomUUID(), ...c }
@@ -168,6 +179,9 @@ interface Store {
   searchTag: string
   /** Index of the result the user last opened, highlighted in the results panel. */
   activeHit: number | null
+  /** True after clicking a search hit opened the reading workspace — shows a "back to search
+   *  results" affordance there. Cleared on any deliberate navigation away from 'reading'. */
+  cameFromSearch: boolean
 
   // --- Scripture (Phase 8) ---
   scriptureTranslations: ScriptureTranslation[]
@@ -232,7 +246,12 @@ interface Store {
   loadQuotes: (bookId: string) => Promise<void>
   addQuote: (input: NewQuote) => Promise<void>
   setQuoteTags: (quoteId: string, tags: string[]) => Promise<void>
+  setQuoteText: (quoteId: string, text: string) => Promise<void>
   deleteQuote: (quoteId: string) => Promise<void>
+  /** Open a group of saved quotes (PDF / Bible chapter / commentary source) as a center pane. */
+  openQuotesGroup: (group: QuoteGroupRef) => void
+  /** Bump the shared reload token so quote panels/panes/nav re-fetch after an edit. */
+  bumpReload: () => void
   refreshLibrary: () => Promise<void>
   importFromSource: () => Promise<ImportResult>
   importFiles: () => Promise<ImportResult>
@@ -263,6 +282,10 @@ interface Store {
   setSearchShelf: (s: string) => void
   setSearchTag: (t: string) => void
   setActiveHit: (i: number | null) => void
+  /** Mark that the reading workspace is about to be opened from a search-hit click. */
+  markCameFromSearch: () => void
+  /** The "back to search results" action — returns to the Search view without closing panes. */
+  returnToSearch: () => void
 
   loadScripture: () => Promise<void>
   setScriptureTranslation: (id: string) => void
@@ -383,6 +406,7 @@ export const useStore = create<Store>((set, get) => {
     searchShelf: '',
     searchTag: '',
     activeHit: null,
+    cameFromSearch: false,
     scriptureTranslations: [],
     scriptureTranslation: '',
     scripturePassage: null,
@@ -423,61 +447,39 @@ export const useStore = create<Store>((set, get) => {
       }
       const data = await loadAll()
       applyTheme(data.config.theme)
-      // Restore the center workspace (panes) saved at last quit.
-      let panes: Pane[] = []
-      let activePaneId: string | null = null
-      let paneRatio = 0.5
-      const ws = await api.getSession('workspace')
-      if (ws) {
-        try {
-          const parsed = JSON.parse(ws) as {
-            panes?: Pane[]
-            activePaneId?: string | null
-            paneRatio?: number
+      // Never auto-restore workspace panes on launch — landing back in a PDF/note pane (or with
+      // two panes still open) is exactly the clutter the user doesn't want. Instead, land on
+      // whatever *screen* they were last on: if that was the reading workspace itself, translate
+      // its last pane kind to the equivalent list view (a note pane -> the Notes list, anything
+      // else -> the Library) rather than reopening the pane.
+      let landingView = data.layout.activeLeftView
+      if (landingView === 'reading') {
+        landingView = 'library'
+        const ws = await api.getSession('workspace')
+        if (ws) {
+          try {
+            const parsed = JSON.parse(ws) as { panes?: Pane[]; activePaneId?: string | null }
+            const panes = Array.isArray(parsed.panes) ? parsed.panes : []
+            const lastPane = panes.find((p) => p.id === parsed.activePaneId) ?? panes[0]
+            if (lastPane?.kind === 'note') landingView = 'notes'
+          } catch {
+            /* ignore malformed value */
           }
-          if (Array.isArray(parsed.panes)) {
-            // Drop PDF panes whose book no longer exists; keep note/bible panes (checked lazily).
-            panes = parsed.panes
-              .filter((p) => (p.kind === 'pdf' ? data.books.some((b) => b.id === p.bookId) : true))
-              .slice(0, 2)
-            activePaneId = panes.some((p) => p.id === parsed.activePaneId)
-              ? (parsed.activePaneId ?? null)
-              : (panes[0]?.id ?? null)
-            if (typeof parsed.paneRatio === 'number') paneRatio = parsed.paneRatio
-          }
-        } catch {
-          /* ignore malformed value */
         }
       }
-      // Back-compat: no saved workspace but a last open book → restore it as a PDF pane.
-      if (panes.length === 0) {
-        const lastOpen = await api.getSession('lastOpenBook')
-        const b = lastOpen ? data.books.find((x) => x.id === lastOpen) : undefined
-        if (b) {
-          panes = [{ id: crypto.randomUUID(), kind: 'pdf', bookId: b.id }]
-          activePaneId = panes[0].id
-        }
-      }
-      const reflected = reflectPanes(panes, activePaneId)
-      const pdfPane = panes.find((p) => p.kind === 'pdf')
-      const pdfBook = pdfPane ? data.books.find((b) => b.id === pdfPane.bookId) : undefined
-      const pendingPage = pdfBook && pdfBook.lastPage > 1 ? pdfBook.lastPage : null
-      // Show the workspace if it has content, so restored panes aren't hidden behind a navigator.
-      const layout = panes.length
-        ? { ...data.layout, activeLeftView: 'reading' }
-        : data.layout
+      const layout = { ...data.layout, activeLeftView: landingView }
+      const reflected = reflectPanes([], null)
       set({
         appState,
         ...data,
         layout,
-        panes,
-        activePaneId,
-        paneRatio,
+        panes: [],
+        activePaneId: null,
+        paneRatio: 0.5,
         ...reflected,
-        pendingPage,
+        pendingPage: null,
         phase: 'welcome'
       })
-      if (reflected.openBookId) void get().loadQuotes(reflected.openBookId)
       void get().refreshActiveProject()
     },
 
@@ -529,6 +531,11 @@ export const useStore = create<Store>((set, get) => {
       const layout = get().layout
       if (!layout) return
       set({ layout: { ...layout, ...patch } })
+      // Any deliberate move away from the reading workspace retires the "back to search" link —
+      // it only makes sense while a search hit's pane is still showing.
+      if (patch.activeLeftView && patch.activeLeftView !== 'reading' && get().cameFromSearch) {
+        set({ cameFromSearch: false })
+      }
       void api.setLayout(patch)
     },
 
@@ -660,6 +667,22 @@ export const useStore = create<Store>((set, get) => {
       const id = get().openBookId
       if (id) await get().loadQuotes(id)
     },
+
+    setQuoteText: async (quoteId, text) => {
+      await api.setQuoteText(quoteId, text)
+      set({
+        quotes: get().quotes.map((q) => (q.id === quoteId ? { ...q, text } : q)),
+        // Bump so open quote panes / the reference panels reload with the new text.
+        noteReloadToken: get().noteReloadToken + 1
+      })
+    },
+
+    openQuotesGroup: (group) => {
+      get().openInPane({ kind: 'quotes', quotesGroup: group })
+      get().saveLayout({ activeLeftView: 'reading' })
+    },
+
+    bumpReload: () => set({ noteReloadToken: get().noteReloadToken + 1 }),
 
     setQuoteAnnotations: async (quoteId, annotations) => {
       await api.setQuoteAnnotations(quoteId, annotations)
@@ -857,6 +880,11 @@ export const useStore = create<Store>((set, get) => {
     setSearchShelf: (s) => set({ searchShelf: s }),
     setSearchTag: (t) => set({ searchTag: t }),
     setActiveHit: (i) => set({ activeHit: i }),
+    markCameFromSearch: () => set({ cameFromSearch: true }),
+    returnToSearch: () => {
+      set({ cameFromSearch: false })
+      get().saveLayout({ activeLeftView: 'search' })
+    },
 
     loadScripture: async () => {
       const translations = await api.listScriptureTranslations()

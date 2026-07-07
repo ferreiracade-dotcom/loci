@@ -7,6 +7,7 @@ import type {
   BookUpdate,
   CommentaryExcerptReassign,
   CommentaryIndexProgress,
+  CommentaryQuoteInput,
   CommentarySourceUpdate,
   ExportOptions,
   ImportProgress,
@@ -220,7 +221,23 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.setQuoteAnnotations, (_e, quoteId: string, annotations: Annotation[]) =>
     quotes.setQuoteAnnotations(quoteId, annotations)
   )
+  ipcMain.handle(Channels.setQuoteText, (_e, quoteId: string, text: string) =>
+    quotes.setQuoteText(quoteId, text)
+  )
+  ipcMain.handle(Channels.setQuoteCitation, (_e, quoteId: string, citation: string | null) =>
+    quotes.setQuoteCitation(quoteId, citation)
+  )
   ipcMain.handle(Channels.deleteQuote, (_e, quoteId: string) => quotes.deleteQuote(quoteId))
+  ipcMain.handle(Channels.addCommentaryQuote, (_e, input: CommentaryQuoteInput) =>
+    quotes.addCommentaryQuote(input)
+  )
+  ipcMain.handle(Channels.listCommentaryQuotes, (_e, sourceId: string) =>
+    quotes.listCommentaryQuotes(sourceId)
+  )
+  ipcMain.handle(Channels.listQuoteGroups, (_e, translation: string) =>
+    quotes.listQuoteGroups(translation)
+  )
+  ipcMain.handle(Channels.listAllQuotes, () => quotes.listAllQuotes())
 
   // --- Notes (Phase 2c) ---
   ipcMain.handle(Channels.getBookNote, (_e, bookId: string) => notes.getBookNote(bookId))

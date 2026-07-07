@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto'
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { getDb } from '../db/connection'
 import { localVaultDir } from './config'
@@ -15,9 +15,11 @@ import { bookByCode } from '../../shared/scriptureRef'
 import { sanitizeName } from './library'
 import type {
   Annotation,
+  CommentaryQuoteInput,
   NewQuote,
   NewScriptureHighlight,
   Quote,
+  QuoteGroups,
   ScriptureHighlight,
   ScriptureQuoteBook
 } from '../../shared/ipc'
@@ -44,6 +46,9 @@ interface QuoteRow {
   annotation: string
   scripture_ref: string | null
   scripture_translation: string | null
+  commentary_source_id: string | null
+  commentary_ref: string | null
+  citation_override: string | null
 }
 
 /** Parse a stored canonical ref like "JHN 3:16-18" into its parts. */
@@ -61,6 +66,35 @@ function parseScriptureRef(
     verseEnd: m[4] ? Number(m[4]) : null,
     abbr
   }
+}
+
+/** Human ref label from parsed parts, e.g. "James 1:1" / "James 1:1-3". */
+function refLabelOf(sref: ScriptureCiteRef): string {
+  const end = sref.verseEnd && sref.verseEnd !== sref.verseStart ? `-${sref.verseEnd}` : ''
+  return `${sref.bookName} ${sref.chapter}:${sref.verseStart}${end}`
+}
+
+/** The leading USFM book code from a stored ref like "JHN 3:16-18". */
+function refBookCode(ref: string): string {
+  return ref.split(' ')[0]
+}
+
+interface CommentarySourceRow {
+  display_name: string
+  author: string | null
+}
+
+function commentarySourceMeta(id: string): CommentarySourceRow | undefined {
+  return getDb()
+    .prepare('SELECT display_name, author FROM commentary_sources WHERE id = ?')
+    .get(id) as CommentarySourceRow | undefined
+}
+
+/** Citation for a commentary quote: "Author, *Source*, James 1:1" (author omitted if absent). */
+function commentaryCitationOf(src: CommentarySourceRow, ref: string | null): string {
+  const sref = ref ? parseScriptureRef(ref, '') : null
+  const parts = [src.author?.trim() || '', `*${src.display_name}*`, sref ? refLabelOf(sref) : '']
+  return parts.filter(Boolean).join(', ')
 }
 
 interface SidecarQuote {
@@ -201,6 +235,21 @@ function removeQuoteBlock(vault: string, rel: string | null, id: string): void {
   writeFileSync(abs, txt.replace(re, '\n'), 'utf-8')
 }
 
+/**
+ * These per-book/scripture/commentary note files exist solely to hold quote blocks. Once the
+ * last quote is removed, the file is just frontmatter + a heading — dead weight that still syncs
+ * to Drive. Delete it entirely rather than leave an empty husk (it's recreated on demand the next
+ * time a quote is captured for that book/passage/source).
+ */
+function pruneNoteIfEmpty(vault: string, rel: string | null): void {
+  if (!rel) return
+  const abs = join(vault, rel)
+  if (!existsSync(abs)) return
+  const txt = readFileSync(abs, 'utf-8')
+  if (txt.includes('<!-- quote:')) return
+  unlinkSync(abs)
+}
+
 function sidecarPath(vault: string, sanitized: string): string {
   return join(vault, 'highlights', `${sanitized}.highlights.json`)
 }
@@ -219,8 +268,29 @@ function writeSidecar(p: string, list: SidecarQuote[]): void {
   writeFileSync(p, JSON.stringify(list, null, 2), 'utf-8')
 }
 
+/**
+ * The citation for a quote's row: the user's hand-edited override if set, else auto-generated
+ * from whichever source the quote is anchored to (book, Scripture ref, or commentary source).
+ * Centralized so every mirror-writing call site (and the frontend, for non-book quotes) agrees.
+ */
+function citationForRow(r: QuoteRow): string {
+  if (r.citation_override) return r.citation_override
+  if (r.book_id) {
+    const b = bookMeta(r.book_id)
+    if (b) return citationFor(b, r.page)
+  }
+  if (r.scripture_ref) {
+    const sref = parseScriptureRef(r.scripture_ref, r.scripture_translation ?? '')
+    if (sref) return scriptureCitation(sref)
+  }
+  if (r.commentary_source_id) {
+    const src = commentarySourceMeta(r.commentary_source_id)
+    if (src) return commentaryCitationOf(src, r.commentary_ref)
+  }
+  return ''
+}
+
 function rowToQuote(r: QuoteRow): Quote {
-  const b = r.book_id ? bookMeta(r.book_id) : undefined
   const tags = (
     getDb()
       .prepare(
@@ -234,13 +304,35 @@ function rowToQuote(r: QuoteRow): Quote {
   } catch {
     usedIn = []
   }
-  let citation = b ? citationFor(b, r.page) : ''
   let scriptureChapter: number | undefined
+  let scriptureBook: string | undefined
+  let verseStart: number | undefined
+  let verseEnd: number | undefined
   if (r.scripture_ref) {
     const sref = parseScriptureRef(r.scripture_ref, r.scripture_translation ?? '')
     if (sref) {
-      citation = scriptureCitation(sref)
       scriptureChapter = sref.chapter
+      scriptureBook = refBookCode(r.scripture_ref)
+      verseStart = sref.verseStart
+      verseEnd = sref.verseEnd ?? sref.verseStart
+    }
+  }
+  let commentarySource: string | undefined
+  let commentaryAuthor: string | undefined
+  let commentaryRef: string | undefined
+  if (r.commentary_source_id) {
+    const src = commentarySourceMeta(r.commentary_source_id)
+    const sref = r.commentary_ref ? parseScriptureRef(r.commentary_ref, '') : null
+    if (src) {
+      commentarySource = src.display_name
+      commentaryAuthor = src.author ?? undefined
+      commentaryRef = sref ? refLabelOf(sref) : (r.commentary_ref ?? undefined)
+      if (sref && r.commentary_ref) {
+        scriptureChapter = sref.chapter
+        scriptureBook = refBookCode(r.commentary_ref)
+        verseStart = sref.verseStart
+        verseEnd = sref.verseEnd ?? sref.verseStart
+      }
     }
   }
   return {
@@ -251,11 +343,18 @@ function rowToQuote(r: QuoteRow): Quote {
     color: r.color,
     tags,
     annotations: parseAnnotations(r.annotation ?? ''),
-    citation,
+    citation: citationForRow(r),
+    citationOverride: r.citation_override ?? undefined,
     notePath: r.note_path,
     usedIn,
     createdAt: r.created,
-    scriptureChapter
+    scriptureChapter,
+    commentarySource,
+    commentaryAuthor,
+    commentaryRef,
+    scriptureBook,
+    verseStart,
+    verseEnd
   }
 }
 
@@ -268,7 +367,7 @@ function reindexQuote(quoteId: string): void {
   const content = [q.text, ...q.annotations.map((a) => a.text), q.tags.map((t) => `#${t}`).join(' ')]
     .filter(Boolean)
     .join('\n')
-  const title = b?.title ?? (row.scripture_ref ? q.citation : '')
+  const title = b?.title ?? q.citation
   search.indexQuote({ id: q.id, bookId: q.bookId || null, content, page: q.page, title })
 }
 
@@ -530,8 +629,82 @@ export function setQuoteAnnotations(quoteId: string, annotations: Annotation[]):
       vault,
       r.note_path,
       quoteId,
-      buildBlock(quoteId, r.text, citationFor(b, r.page), annotations)
+      buildBlock(quoteId, r.text, citationForRow(r), annotations)
     )
+  }
+  reindexQuote(quoteId)
+}
+
+/** Re-mirror a quote's block wherever it lives — the flat mirror for book/commentary quotes, or
+ *  the chaptered mirror for Scripture quotes. */
+function remirrorQuoteBlock(
+  vault: string,
+  r: QuoteRow,
+  text: string,
+  citation: string,
+  annotations: Annotation[]
+): void {
+  if (!r.note_path) return
+  if (r.scripture_ref) {
+    const sref = parseScriptureRef(r.scripture_ref, r.scripture_translation ?? '')
+    upsertScriptureBlock(
+      vault,
+      r.note_path,
+      sref?.chapter ?? 0,
+      r.id,
+      buildBlock(r.id, text, citation, annotations)
+    )
+  } else {
+    upsertQuoteBlock(vault, r.note_path, r.id, buildBlock(r.id, text, citation, annotations))
+  }
+}
+
+/**
+ * Replace a quote's body text (markdown, so inline bold/italic survive), and re-mirror it into
+ * whichever note/sidecar the quote lives in — book note + highlights sidecar, per-book scripture
+ * note, or per-source commentary note. Annotations and citation are recomputed from the row.
+ */
+export function setQuoteText(quoteId: string, text: string): void {
+  const vault = localVaultDir()
+  const r = getDb().prepare('SELECT * FROM quotes WHERE id = ?').get(quoteId) as QuoteRow | undefined
+  if (!r) return
+  getDb().prepare('UPDATE quotes SET text = ? WHERE id = ?').run(text, quoteId)
+
+  if (vault && r.note_path) {
+    const annotations = parseAnnotations(r.annotation ?? '')
+    remirrorQuoteBlock(vault, r, text, citationForRow(r), annotations)
+    // Book quotes also carry the text in the PDF highlights sidecar.
+    if (r.book_id) {
+      const b = bookMeta(r.book_id)
+      if (b) {
+        const sp = sidecarPath(vault, b.title_sanitized)
+        const list = readSidecar(sp)
+        const entry = list.find((x) => x.id === quoteId)
+        if (entry) {
+          entry.text = text
+          writeSidecar(sp, list)
+        }
+      }
+    }
+  }
+  reindexQuote(quoteId)
+}
+
+/**
+ * Hand-edit a quote's citation (fix a typo, adjust wording) instead of always taking the
+ * auto-generated one. Pass null (or an empty string) to reset back to auto-generation.
+ */
+export function setQuoteCitation(quoteId: string, citation: string | null): void {
+  const vault = localVaultDir()
+  const r = getDb().prepare('SELECT * FROM quotes WHERE id = ?').get(quoteId) as QuoteRow | undefined
+  if (!r) return
+  const trimmed = citation?.trim() || null
+  getDb().prepare('UPDATE quotes SET citation_override = ? WHERE id = ?').run(trimmed, quoteId)
+
+  if (vault && r.note_path) {
+    const annotations = parseAnnotations(r.annotation ?? '')
+    const finalCitation = trimmed ?? citationForRow({ ...r, citation_override: null })
+    remirrorQuoteBlock(vault, r, r.text, finalCitation, annotations)
   }
   reindexQuote(quoteId)
 }
@@ -542,6 +715,7 @@ export function deleteQuote(quoteId: string): void {
   if (!r) return
   if (vault) {
     removeQuoteBlock(vault, r.note_path, quoteId)
+    pruneNoteIfEmpty(vault, r.note_path)
     if (r.book_id) {
       const b = bookMeta(r.book_id)
       if (b) {
@@ -560,4 +734,119 @@ export function deleteQuote(quoteId: string): void {
       .prepare('UPDATE books SET quote_count = MAX(0, quote_count - 1) WHERE id = ?')
       .run(r.book_id)
   }
+}
+
+// Commentary quotes live in one note per source, mirroring the book-note / scripture-note pattern
+// — a location-anchored home so a captured excerpt survives outside the DB (personal use; the text
+// is copyrighted but stays local, like the commentary vault it's drawn from).
+function commentaryNoteRel(displayName: string): string {
+  return `notes/commentary/${sanitizeName(displayName)}.md`
+}
+
+function ensureCommentaryNote(vault: string, displayName: string): string {
+  const rel = commentaryNoteRel(displayName)
+  const abs = join(vault, rel)
+  if (!existsSync(abs)) {
+    mkdirSync(dirname(abs), { recursive: true })
+    const fm =
+      `---\n` +
+      `title: ${displayName.replace(/\r?\n/g, ' ')}\n` +
+      `type: commentary-note\n` +
+      `---\n\n# ${displayName}\n`
+    writeFileSync(abs, fm, 'utf-8')
+  }
+  return rel
+}
+
+/**
+ * Capture a commentary excerpt (or a selected portion of one) as a quote. Anchored to a verse
+ * ref and its source; auto-homed into the per-source commentary note. Full parity with book /
+ * Scripture quotes.
+ */
+export function addCommentaryQuote(input: CommentaryQuoteInput): Quote {
+  const vault = localVaultDir()
+  if (!vault) throw new Error('No vault')
+  const src = commentarySourceMeta(input.sourceId)
+  if (!src) throw new Error('Commentary source not found')
+
+  const id = randomUUID()
+  const color = input.color ?? 'amber'
+  const end = input.verseEnd && input.verseEnd !== input.verseStart ? input.verseEnd : null
+  const ref = `${input.book} ${input.chapter}:${input.verseStart}${end ? `-${end}` : ''}`
+  const citation = commentaryCitationOf(src, ref)
+
+  const rel = ensureCommentaryNote(vault, src.display_name)
+  upsertQuoteBlock(vault, rel, id, buildBlock(id, input.text, citation, []))
+
+  getDb()
+    .prepare(
+      `INSERT INTO quotes
+         (id, book_id, text, page, color, note_path, used_in, created, commentary_source_id, commentary_ref)
+       VALUES (?, NULL, ?, NULL, ?, ?, ?, ?, ?, ?)`
+    )
+    .run(id, input.text, color, rel, JSON.stringify([rel]), Date.now(), input.sourceId, ref)
+
+  reindexQuote(id)
+  const row = getDb().prepare('SELECT * FROM quotes WHERE id = ?').get(id) as QuoteRow
+  return rowToQuote(row)
+}
+
+/** All saved commentary quotes for a source, ordered by chapter then verse (for the panel). */
+export function listCommentaryQuotes(sourceId: string): Quote[] {
+  const rows = getDb()
+    .prepare('SELECT * FROM quotes WHERE commentary_source_id = ?')
+    .all(sourceId) as QuoteRow[]
+  const keyed = rows.map((r) => {
+    const m = (r.commentary_ref ?? '').match(/\s(\d+):(\d+)/)
+    return { r, ch: m ? Number(m[1]) : 0, vs: m ? Number(m[2]) : 0 }
+  })
+  keyed.sort((a, b) => a.ch - b.ch || a.vs - b.vs || a.r.created - b.r.created)
+  return keyed.map((x) => rowToQuote(x.r))
+}
+
+/** Every saved quote, for cross-cutting groupings (by author, by tag) that span book/Scripture/
+ *  commentary quotes alike rather than being scoped to one book/source. */
+export function listAllQuotes(): Quote[] {
+  const rows = getDb().prepare('SELECT * FROM quotes ORDER BY created').all() as QuoteRow[]
+  return rows.map(rowToQuote)
+}
+
+/** Everything with saved quotes, for the Quotes nav section (books, Bible chapters, commentary). */
+export function listQuoteGroups(translation: string): QuoteGroups {
+  const db = getDb()
+  const books = db
+    .prepare('SELECT id AS bookId, title, quote_count AS count FROM books WHERE quote_count > 0 ORDER BY title')
+    .all() as QuoteGroups['books']
+
+  // Bible chapters: group this translation's saved scripture quotes by book + chapter.
+  const scriptureRows = db
+    .prepare('SELECT scripture_ref FROM quotes WHERE scripture_translation = ? AND scripture_ref IS NOT NULL')
+    .all(translation) as { scripture_ref: string }[]
+  const chapterCounts = new Map<string, number>()
+  for (const row of scriptureRows) {
+    const m = row.scripture_ref.match(/^(\S+)\s+(\d+):/)
+    if (!m) continue
+    chapterCounts.set(`${m[1]}|${m[2]}`, (chapterCounts.get(`${m[1]}|${m[2]}`) ?? 0) + 1)
+  }
+  const scripture = [...chapterCounts.entries()]
+    .map(([key, count]) => {
+      const [book, ch] = key.split('|')
+      return { book, chapter: Number(ch), name: bookByCode(book)?.name ?? book, count }
+    })
+    .sort(
+      (a, b) => (bookByCode(a.book)?.order ?? 0) - (bookByCode(b.book)?.order ?? 0) || a.chapter - b.chapter
+    )
+
+  const commentary = db
+    .prepare(
+      `SELECT q.commentary_source_id AS sourceId, s.display_name AS displayName, s.author AS author,
+              COUNT(*) AS count
+       FROM quotes q JOIN commentary_sources s ON s.id = q.commentary_source_id
+       WHERE q.commentary_source_id IS NOT NULL
+       GROUP BY q.commentary_source_id
+       ORDER BY s.sort_order, s.display_name`
+    )
+    .all() as QuoteGroups['commentary']
+
+  return { books, scripture, commentary }
 }

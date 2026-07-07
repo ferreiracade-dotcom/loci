@@ -46,7 +46,13 @@ export const Channels = {
   buildBibliography: 'quotes:bibliography',
   setQuoteTags: 'quotes:setTags',
   setQuoteAnnotations: 'quotes:setAnnotations',
+  setQuoteText: 'quotes:setText',
+  setQuoteCitation: 'quotes:setCitation',
   deleteQuote: 'quotes:delete',
+  addCommentaryQuote: 'quotes:addCommentary',
+  listCommentaryQuotes: 'quotes:listCommentary',
+  listQuoteGroups: 'quotes:listGroups',
+  listAllQuotes: 'quotes:listAll',
   getBookNote: 'notes:getBookNote',
   saveNote: 'notes:save',
   readNote: 'notes:read',
@@ -252,7 +258,22 @@ export interface LociApi {
   buildBibliography(): Promise<BibliographyEntry[]>
   setQuoteTags(quoteId: string, tags: string[]): Promise<void>
   setQuoteAnnotations(quoteId: string, annotations: Annotation[]): Promise<void>
+  /** Replace a quote's body text (markdown; supports inline bold/italic/strike). Re-mirrors
+   *  into whichever note/sidecar the quote is homed in. */
+  setQuoteText(quoteId: string, text: string): Promise<void>
+  /** Hand-edit a quote's citation; pass null to reset back to auto-generation. */
+  setQuoteCitation(quoteId: string, citation: string | null): Promise<void>
   deleteQuote(quoteId: string): Promise<void>
+  /** Capture a commentary excerpt (or a selected portion of one) as a quote. */
+  addCommentaryQuote(input: CommentaryQuoteInput): Promise<Quote>
+  /** Saved commentary quotes for one source, ordered by chapter then verse. */
+  listCommentaryQuotes(sourceId: string): Promise<Quote[]>
+  /** Everything that has saved quotes, for the Quotes nav section: books (PDFs), Bible
+   *  chapters (for the given translation), and commentary sources. */
+  listQuoteGroups(translation: string): Promise<QuoteGroups>
+  /** Every saved quote (book/Scripture/commentary alike), for cross-cutting groupings
+   *  (by author, by tag) that aren't tied to a single book/source. */
+  listAllQuotes(): Promise<Quote[]>
   getBookNote(bookId: string): Promise<BookNote | null>
   saveNote(path: string, content: string): Promise<void>
   readNote(path: string): Promise<string>
@@ -434,6 +455,30 @@ export interface NewQuote {
   text: string
   page: number | null
   color?: string
+}
+
+/** Capture a commentary excerpt (or a selection within it) as a quote, anchored to a verse. */
+export interface CommentaryQuoteInput {
+  /** The commentary source the excerpt came from. */
+  sourceId: string
+  /** USFM book code the verse belongs to, e.g. "JAS". */
+  book: string
+  chapter: number
+  verseStart: number
+  verseEnd?: number
+  /** The excerpt text to store (whole bubble, or the user's selection within it). */
+  text: string
+  color?: string
+}
+
+/** Rows for the Quotes nav section: everything that has at least one saved quote. */
+export interface QuoteGroups {
+  /** Library PDFs with book quotes. */
+  books: { bookId: string; title: string; count: number }[]
+  /** Bible chapters (for the active translation) with saved highlights. */
+  scripture: { book: string; chapter: number; name: string; count: number }[]
+  /** Commentary sources with captured quotes. */
+  commentary: { sourceId: string; displayName: string; author: string | null; count: number }[]
 }
 
 export interface BookNote {
@@ -731,11 +776,25 @@ export interface Quote {
   tags: string[]
   /** The user's comments/annotations on this quote (saved, editable). */
   annotations: Annotation[]
-  /** Stub citation until the CMOS 18 engine lands in Phase 4. */
+  /** The displayed citation: `citationOverride` if the user hand-edited it, else auto-generated. */
   citation: string
+  /** The user's hand-edited citation text, if they overrode the auto-generated one. */
+  citationOverride?: string
   notePath: string | null
   usedIn: string[]
   createdAt: number
   /** For Scripture quotes (book_id null): the chapter, for grouping in the panel. */
   scriptureChapter?: number
+  /** For commentary quotes: the source's display name (used as the group label). */
+  commentarySource?: string
+  /** For commentary quotes: the source's author, if set (for grouping by author). */
+  commentaryAuthor?: string
+  /** For commentary quotes: the human verse-ref label, e.g. "James 1:1". */
+  commentaryRef?: string
+  /** For Scripture AND commentary quotes: the USFM book code the quote is anchored to, so the
+   *  card can jump back to that passage. */
+  scriptureBook?: string
+  /** For Scripture AND commentary quotes: the verse range the quote is anchored to. */
+  verseStart?: number
+  verseEnd?: number
 }
