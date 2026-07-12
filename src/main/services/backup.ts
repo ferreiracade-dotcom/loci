@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'fs'
+import { cpSync, existsSync, mkdirSync, renameSync, rmSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { readConfig } from './config'
 
@@ -14,8 +14,15 @@ export function backupSnapshot(): boolean {
   try {
     mkdirSync(cfg.backupPath, { recursive: true })
     const dest = join(cfg.backupPath, 'vault-snapshot')
+    const tmp = join(cfg.backupPath, 'vault-snapshot.tmp')
+    // Build the new snapshot alongside the old one and swap it in only once the copy has fully
+    // succeeded. Deleting the old snapshot first (as this used to) meant any mid-copy failure —
+    // Drive going offline, disk full, the app being killed — left no local snapshot at all, exactly
+    // the safety copy the user is relying on.
+    rmSync(tmp, { recursive: true, force: true })
+    cpSync(cfg.vaultPath, tmp, { recursive: true })
     rmSync(dest, { recursive: true, force: true })
-    cpSync(cfg.vaultPath, dest, { recursive: true })
+    renameSync(tmp, dest)
     writeFileSync(join(cfg.backupPath, 'last-backup.txt'), new Date().toISOString(), 'utf-8')
     return true
   } catch {

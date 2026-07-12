@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, unlinkSync, writeFileSync } from 'fs'
-import { basename, dirname, join, relative } from 'path'
+import { basename, dirname, isAbsolute, join, relative } from 'path'
 import { getDb } from '../db/connection'
 import { localVaultDir } from './config'
 import { removeFromDrive } from './vaultsync'
@@ -90,11 +90,22 @@ export function getBookNote(bookId: string): BookNote | null {
   return { path: rel, content: readFileSync(abs, 'utf-8') }
 }
 
+/** Resolve a renderer-supplied relative note path against the vault, returning the absolute path
+ *  only when it truly stays inside the vault. The old `abs.startsWith(vault)` guard missed the
+ *  path separator, so a sibling folder sharing the vault's name prefix (…/vault-backup) passed,
+ *  and readNote had no guard at all — letting the renderer read or write files outside the vault. */
+function resolveInVault(vault: string, relPath: string): string | null {
+  const abs = join(vault, relPath)
+  const rel = relative(vault, abs)
+  if (rel === '' || rel.startsWith('..') || isAbsolute(rel)) return null
+  return abs
+}
+
 export function saveNote(relPath: string, content: string): void {
   const vault = localVaultDir()
   if (!vault) return
-  const abs = join(vault, relPath)
-  if (!abs.startsWith(vault)) return // guard against traversal
+  const abs = resolveInVault(vault, relPath)
+  if (!abs) return
   mkdirSync(dirname(abs), { recursive: true })
   writeFileSync(abs, content, 'utf-8')
   search.indexNote(relPath, titleFromContent(content, basename(relPath, '.md')), content)
@@ -103,7 +114,8 @@ export function saveNote(relPath: string, content: string): void {
 export function readNote(relPath: string): string {
   const vault = localVaultDir()
   if (!vault) return ''
-  const abs = join(vault, relPath)
+  const abs = resolveInVault(vault, relPath)
+  if (!abs) return ''
   return existsSync(abs) ? readFileSync(abs, 'utf-8') : ''
 }
 
@@ -153,8 +165,8 @@ export function createStandaloneNote(title: string, type: NoteType = 'note'): No
 
 export function deleteNote(relPath: string): void {
   const vault = localVaultDir()
-  const abs = join(vault, relPath)
-  if (!abs.startsWith(vault)) return // traversal guard
+  const abs = resolveInVault(vault, relPath)
+  if (!abs) return
   try {
     if (existsSync(abs)) unlinkSync(abs)
   } catch {

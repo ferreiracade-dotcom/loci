@@ -1,5 +1,31 @@
 import { describe, expect, it } from 'vitest'
-import { vaultScanLooksIncomplete } from './library'
+import { groupValuesById, vaultScanLooksIncomplete } from './library'
+
+describe('groupValuesById', () => {
+  it('buckets multiple values under one id, preserving input order', () => {
+    const rows = [
+      { id: 'a', v: 'x' },
+      { id: 'a', v: 'y' },
+      { id: 'b', v: 'z' }
+    ]
+    const map = groupValuesById(
+      rows,
+      (r) => r.id,
+      (r) => r.v
+    )
+    expect(map.get('a')).toEqual(['x', 'y'])
+    expect(map.get('b')).toEqual(['z'])
+  })
+
+  it('returns an empty map for no rows', () => {
+    expect(groupValuesById([], String, String).size).toBe(0)
+  })
+
+  it('has no entry for an id that never appears', () => {
+    const map = groupValuesById([{ id: 'a', v: 'x' }], (r) => r.id, (r) => r.v)
+    expect(map.get('missing')).toBeUndefined()
+  })
+})
 
 // Guards the stale-row prune in syncLibrary: when a Google Drive mount hasn't finished
 // hydrating, walkPdfs returns far fewer files than the catalog expects, and pruning would

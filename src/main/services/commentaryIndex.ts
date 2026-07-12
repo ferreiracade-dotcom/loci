@@ -135,6 +135,11 @@ export async function indexSource(
   const source = commentary.getSource(sourceId)
   if (!source) throw new Error('Commentary source not found')
 
+  // Start clean: discard any cancel request left over from a previous run (e.g. one that arrived
+  // during the validating phase, after extraction stopped checking the flag, or while nothing was
+  // indexing). Without this, that stale flag instantly aborted the next run of this source.
+  cancelRequested.delete(sourceId)
+
   // Markdown sources skip PDF extraction and profiling entirely — their excerpt boundaries are
   // explicit headings, so a trivial, always-reliable parse replaces the whole heuristic stack.
   if (isMarkdownSource(source.pdfRelativePath)) {

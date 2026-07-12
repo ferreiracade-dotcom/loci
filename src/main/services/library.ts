@@ -189,20 +189,64 @@ function bookPdfSource(localPath: string | null, pdfPath: string | null): PdfSou
   return 'missing'
 }
 
-function rowToBook(r: BookRow): Book {
+/** Bucket rows into a Map of id -> values[], preserving input order. Lets a caller replace a
+ *  per-row lookup query with one grouped query (see listBooks / listAllQuotes). */
+export function groupValuesById<T>(
+  rows: T[],
+  keyOf: (row: T) => string,
+  valueOf: (row: T) => string
+): Map<string, string[]> {
+  const map = new Map<string, string[]>()
+  for (const row of rows) {
+    const k = keyOf(row)
+    const arr = map.get(k)
+    if (arr) arr.push(valueOf(row))
+    else map.set(k, [valueOf(row)])
+  }
+  return map
+}
+
+/** Shelf ids and tag names for every book at once — passed to rowToBook in the list path so it
+ *  doesn't run two queries per book (which stalled every library refresh, and thus IPC for
+ *  whatever view was switched to next). */
+function loadBookRelations(): { shelves: Map<string, string[]>; tags: Map<string, string[]> } {
   const db = getDb()
-  const shelfIds = (
-    db.prepare('SELECT shelf_id FROM book_shelves WHERE book_id = ?').all(r.id) as {
-      shelf_id: string
-    }[]
-  ).map((x) => x.shelf_id)
-  const tags = (
-    db
-      .prepare(
-        'SELECT t.name FROM book_tags bt JOIN tags t ON t.id = bt.tag_id WHERE bt.book_id = ? ORDER BY t.name'
-      )
-      .all(r.id) as { name: string }[]
-  ).map((x) => x.name)
+  const shelfRows = db.prepare('SELECT book_id, shelf_id FROM book_shelves').all() as {
+    book_id: string
+    shelf_id: string
+  }[]
+  const tagRows = db
+    .prepare(
+      'SELECT bt.book_id, t.name FROM book_tags bt JOIN tags t ON t.id = bt.tag_id ORDER BY t.name'
+    )
+    .all() as { book_id: string; name: string }[]
+  return {
+    shelves: groupValuesById(shelfRows, (r) => r.book_id, (r) => r.shelf_id),
+    tags: groupValuesById(tagRows, (r) => r.book_id, (r) => r.name)
+  }
+}
+
+function rowToBook(
+  r: BookRow,
+  rel?: { shelves: Map<string, string[]>; tags: Map<string, string[]> }
+): Book {
+  const db = getDb()
+  const shelfIds = rel
+    ? (rel.shelves.get(r.id) ?? [])
+    : (
+        db.prepare('SELECT shelf_id FROM book_shelves WHERE book_id = ?').all(r.id) as {
+          shelf_id: string
+        }[]
+      ).map((x) => x.shelf_id)
+  const tags = rel
+    ? (rel.tags.get(r.id) ?? [])
+    : (
+        db
+          .prepare(
+            'SELECT t.name FROM book_tags bt JOIN tags t ON t.id = bt.tag_id WHERE bt.book_id = ? ORDER BY t.name'
+          )
+          .all(r.id) as { name: string }[]
+      ).map((x) => x.name)
   return {
     id: r.id,
     title: r.title,
@@ -232,7 +276,8 @@ export function listBooks(): Book[] {
   const rows = getDb()
     .prepare('SELECT * FROM books ORDER BY title COLLATE NOCASE')
     .all() as BookRow[]
-  return rows.map(rowToBook)
+  const rel = loadBookRelations()
+  return rows.map((r) => rowToBook(r, rel))
 }
 
 // Keyed by cover file path; invalidated by mtime so a changed cover (same path, new bytes) still
@@ -750,7 +795,9 @@ export async function syncLibrary(
   const cfg = readConfig()
   const titles: string[] = []
   let removed = 0
-  if (!cfg.vaultPath) return { added: 0, removed: 0, total: listBooks().length, titles }
+  const bookCount = (): number =>
+    (getDb().prepare('SELECT COUNT(*) c FROM books').get() as { c: number }).c
+  if (!cfg.vaultPath) return { added: 0, removed: 0, total: bookCount(), titles }
 
   const booksDir = join(cfg.vaultPath, 'pdfs', 'Books')
   const vaultFiles = existsSync(booksDir) ? walkPdfs(booksDir, NO_EXCLUDES) : []
@@ -864,7 +911,7 @@ export async function syncLibrary(
 
   onProgress?.({ phase: 'done', done: 0, total: 0 })
   onChanged?.()
-  return { added: titles.length, removed, total: listBooks().length, titles }
+  return { added: titles.length, removed, total: bookCount(), titles }
 }
 
 // ---------- Enrichment (fast, filename-only, background) ----------

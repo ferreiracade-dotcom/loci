@@ -12,7 +12,7 @@ import {
   type ScriptureCiteRef
 } from '../../shared/citation'
 import { bookByCode } from '../../shared/scriptureRef'
-import { sanitizeName } from './library'
+import { groupValuesById, sanitizeName } from './library'
 import type {
   Annotation,
   CommentaryQuoteInput,
@@ -88,6 +88,40 @@ function commentarySourceMeta(id: string): CommentarySourceRow | undefined {
   return getDb()
     .prepare('SELECT display_name, author FROM commentary_sources WHERE id = ?')
     .get(id) as CommentarySourceRow | undefined
+}
+
+/** Per-call lookup caches for the list paths, so mapping N quote rows doesn't run a tag query
+ *  per row and re-fetch the same book/source metadata once per quote (it stalled the Quotes
+ *  view — and thus IPC — the same way the library's per-book queries did). Omitted for
+ *  single-quote calls, which just hit the database directly. */
+interface QuoteListCtx {
+  tagsByQuote: Map<string, string[]>
+  bookMetaById: Map<string, BookMetaRow | undefined>
+  sourceById: Map<string, CommentarySourceRow | undefined>
+}
+
+function metaBook(id: string, ctx?: QuoteListCtx): BookMetaRow | undefined {
+  if (!ctx) return bookMeta(id)
+  if (!ctx.bookMetaById.has(id)) ctx.bookMetaById.set(id, bookMeta(id))
+  return ctx.bookMetaById.get(id)
+}
+
+function metaSource(id: string, ctx?: QuoteListCtx): CommentarySourceRow | undefined {
+  if (!ctx) return commentarySourceMeta(id)
+  if (!ctx.sourceById.has(id)) ctx.sourceById.set(id, commentarySourceMeta(id))
+  return ctx.sourceById.get(id)
+}
+
+/** One grouped tag query for a whole listing, plus empty metadata caches to fill lazily. */
+function buildQuoteListCtx(): QuoteListCtx {
+  const tagRows = getDb()
+    .prepare('SELECT qt.quote_id, t.name FROM quote_tags qt JOIN tags t ON t.id = qt.tag_id ORDER BY t.name')
+    .all() as { quote_id: string; name: string }[]
+  return {
+    tagsByQuote: groupValuesById(tagRows, (r) => r.quote_id, (r) => r.name),
+    bookMetaById: new Map(),
+    sourceById: new Map()
+  }
 }
 
 /** Citation for a commentary quote: "Author, *Source*, James 1:1" (author omitted if absent). */
@@ -273,10 +307,10 @@ function writeSidecar(p: string, list: SidecarQuote[]): void {
  * from whichever source the quote is anchored to (book, Scripture ref, or commentary source).
  * Centralized so every mirror-writing call site (and the frontend, for non-book quotes) agrees.
  */
-function citationForRow(r: QuoteRow): string {
+function citationForRow(r: QuoteRow, ctx?: QuoteListCtx): string {
   if (r.citation_override) return r.citation_override
   if (r.book_id) {
-    const b = bookMeta(r.book_id)
+    const b = metaBook(r.book_id, ctx)
     if (b) return citationFor(b, r.page)
   }
   if (r.scripture_ref) {
@@ -284,20 +318,22 @@ function citationForRow(r: QuoteRow): string {
     if (sref) return scriptureCitation(sref)
   }
   if (r.commentary_source_id) {
-    const src = commentarySourceMeta(r.commentary_source_id)
+    const src = metaSource(r.commentary_source_id, ctx)
     if (src) return commentaryCitationOf(src, r.commentary_ref)
   }
   return ''
 }
 
-function rowToQuote(r: QuoteRow): Quote {
-  const tags = (
-    getDb()
-      .prepare(
-        'SELECT t.name FROM quote_tags qt JOIN tags t ON t.id = qt.tag_id WHERE qt.quote_id = ? ORDER BY t.name'
-      )
-      .all(r.id) as { name: string }[]
-  ).map((x) => x.name)
+function rowToQuote(r: QuoteRow, ctx?: QuoteListCtx): Quote {
+  const tags = ctx
+    ? (ctx.tagsByQuote.get(r.id) ?? [])
+    : (
+        getDb()
+          .prepare(
+            'SELECT t.name FROM quote_tags qt JOIN tags t ON t.id = qt.tag_id WHERE qt.quote_id = ? ORDER BY t.name'
+          )
+          .all(r.id) as { name: string }[]
+      ).map((x) => x.name)
   let usedIn: string[] = []
   try {
     usedIn = JSON.parse(r.used_in || '[]') as string[]
@@ -321,7 +357,7 @@ function rowToQuote(r: QuoteRow): Quote {
   let commentaryAuthor: string | undefined
   let commentaryRef: string | undefined
   if (r.commentary_source_id) {
-    const src = commentarySourceMeta(r.commentary_source_id)
+    const src = metaSource(r.commentary_source_id, ctx)
     const sref = r.commentary_ref ? parseScriptureRef(r.commentary_ref, '') : null
     if (src) {
       commentarySource = src.display_name
@@ -343,7 +379,7 @@ function rowToQuote(r: QuoteRow): Quote {
     color: r.color,
     tags,
     annotations: parseAnnotations(r.annotation ?? ''),
-    citation: citationForRow(r),
+    citation: citationForRow(r, ctx),
     citationOverride: r.citation_override ?? undefined,
     notePath: r.note_path,
     usedIn,
@@ -415,7 +451,8 @@ export function listQuotes(bookId: string): Quote[] {
   const rows = getDb()
     .prepare('SELECT * FROM quotes WHERE book_id = ? ORDER BY page IS NULL, page, created')
     .all(bookId) as QuoteRow[]
-  return rows.map(rowToQuote)
+  const ctx = buildQuoteListCtx()
+  return rows.map((r) => rowToQuote(r, ctx))
 }
 
 // Scripture highlights live in one note per translation+book, with `## Chapter N` sections —
@@ -527,7 +564,8 @@ export function listScriptureQuotes(translation: string, book: string): Quote[] 
     return { r, ch: m ? Number(m[1]) : 0, vs: m ? Number(m[2]) : 0 }
   })
   keyed.sort((a, b) => a.ch - b.ch || a.vs - b.vs || a.r.created - b.r.created)
-  return keyed.map((x) => rowToQuote(x.r))
+  const ctx = buildQuoteListCtx()
+  return keyed.map((x) => rowToQuote(x.r, ctx))
 }
 
 /** Books (for a translation) that have at least one saved Scripture quote. */
@@ -614,23 +652,26 @@ export function setQuoteAnnotations(quoteId: string, annotations: Annotation[]):
   getDb()
     .prepare('UPDATE quotes SET annotation = ? WHERE id = ?')
     .run(JSON.stringify(annotations), quoteId)
-  if (!vault || !r.book_id) return
-  const b = bookMeta(r.book_id)
-  if (!b) return
-  const sp = sidecarPath(vault, b.title_sanitized)
-  const list = readSidecar(sp)
-  const entry = list.find((q) => q.id === quoteId)
-  if (entry) {
-    entry.annotations = annotations
-    writeSidecar(sp, list)
-  }
-  if (r.note_path) {
-    upsertQuoteBlock(
-      vault,
-      r.note_path,
-      quoteId,
-      buildBlock(quoteId, r.text, citationForRow(r), annotations)
-    )
+
+  // Mirror into whichever note the quote lives in — book note, per-book Scripture note, or
+  // per-source commentary note. This previously bailed for non-book quotes (book_id null), so
+  // annotations on Scripture/commentary quotes never reached the vault file or the search index,
+  // unlike setQuoteText. Route through remirrorQuoteBlock so each type lands in the right place.
+  if (vault && r.note_path) {
+    remirrorQuoteBlock(vault, r, r.text, citationForRow(r), annotations)
+    // Book quotes also carry annotations in the PDF highlights sidecar.
+    if (r.book_id) {
+      const b = bookMeta(r.book_id)
+      if (b) {
+        const sp = sidecarPath(vault, b.title_sanitized)
+        const list = readSidecar(sp)
+        const entry = list.find((q) => q.id === quoteId)
+        if (entry) {
+          entry.annotations = annotations
+          writeSidecar(sp, list)
+        }
+      }
+    }
   }
   reindexQuote(quoteId)
 }
@@ -801,14 +842,16 @@ export function listCommentaryQuotes(sourceId: string): Quote[] {
     return { r, ch: m ? Number(m[1]) : 0, vs: m ? Number(m[2]) : 0 }
   })
   keyed.sort((a, b) => a.ch - b.ch || a.vs - b.vs || a.r.created - b.r.created)
-  return keyed.map((x) => rowToQuote(x.r))
+  const ctx = buildQuoteListCtx()
+  return keyed.map((x) => rowToQuote(x.r, ctx))
 }
 
 /** Every saved quote, for cross-cutting groupings (by author, by tag) that span book/Scripture/
  *  commentary quotes alike rather than being scoped to one book/source. */
 export function listAllQuotes(): Quote[] {
   const rows = getDb().prepare('SELECT * FROM quotes ORDER BY created').all() as QuoteRow[]
-  return rows.map(rowToQuote)
+  const ctx = buildQuoteListCtx()
+  return rows.map((r) => rowToQuote(r, ctx))
 }
 
 /** Everything with saved quotes, for the Quotes nav section (books, Bible chapters, commentary). */
