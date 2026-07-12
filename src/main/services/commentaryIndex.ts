@@ -1,5 +1,6 @@
-import { existsSync, readFileSync, readdirSync, statSync } from 'fs'
+import { existsSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync } from 'fs'
 import { isAbsolute, join } from 'path'
+import { getDataDir } from '../db/connection'
 import * as commentary from './commentary'
 import * as library from './library'
 import { commentaryVaultDir, localVaultDir } from './config'
@@ -67,11 +68,34 @@ function readSourceMarkdown(pdfRelativePath: string): string {
   return readFileSync(abs, 'utf8')
 }
 
+/** Local, rebuildable record of the mtime (whole seconds) each commentary Markdown file had when
+ *  it was last indexed on THIS device — kept in getDataDir(), not the vault, like the index it
+ *  guards. Change detection compares against this rather than the wall-clock index time, so an
+ *  edit synced in from another device is re-indexed even when its (vaultsync-preserved) mtime is
+ *  *older* than this device's last index run — which the previous `mtime <= indexedAt` check
+ *  skipped forever, serving stale excerpts. */
+function indexMtimesPath(): string {
+  return join(getDataDir(), 'commentary-index-mtimes.json')
+}
+function loadIndexMtimes(): Record<string, number> {
+  try {
+    return JSON.parse(readFileSync(indexMtimesPath(), 'utf8')) as Record<string, number>
+  } catch {
+    return {}
+  }
+}
+function saveIndexMtimes(mtimes: Record<string, number>): void {
+  const path = indexMtimesPath()
+  const tmp = `${path}.tmp`
+  writeFileSync(tmp, JSON.stringify(mtimes, null, 2))
+  renameSync(tmp, path)
+}
+
 /** Discover and index commentary-Markdown files sitting in the vault's `commentaries/` folder.
  *  Called at startup (after the vault sync pulls them down from Drive) so that on any device
  *  the vault reaches, its `.md` commentaries auto-register and index without manual re-adding —
  *  the local index is derived, but the vault files that define it travel with the vault.
- *  Registers unseen files and re-indexes ones whose file is newer than the last index. */
+ *  Registers unseen files and re-indexes ones whose file changed since it was last indexed. */
 export async function syncCommentaryFolder(): Promise<void> {
   const folder = commentaryVaultDir()
   if (!existsSync(folder)) return
@@ -81,27 +105,35 @@ export async function syncCommentaryFolder(): Promise<void> {
   } catch {
     return
   }
+  const mtimes = loadIndexMtimes()
+  let changed = false
   for (const fileName of files) {
     const storedPath = `commentaries/${fileName}`
-    let source = commentary.getSourceByPath(storedPath)
-    if (!source) {
-      source = commentary.createSource({
+    let mtime: number
+    try {
+      mtime = Math.floor(statSync(join(folder, fileName)).mtimeMs / 1000)
+    } catch {
+      continue // file vanished between listing and stat — skip it this pass
+    }
+    const source =
+      commentary.getSourceByPath(storedPath) ??
+      commentary.createSource({
         displayName: fileName.replace(/\.md$/i, ''),
         author: null,
         bookId: null,
         pdfRelativePath: storedPath
       })
-    } else if (source.indexedAt) {
-      // Already indexed — skip unless the file changed since.
-      const mtime = statSync(join(folder, fileName)).mtimeMs
-      if (mtime <= Date.parse(source.indexedAt)) continue
-    }
+    // Skip only when this exact file (by its own mtime) was already indexed here.
+    if (mtimes[storedPath] === mtime) continue
     try {
       await indexSource(source.id)
+      mtimes[storedPath] = mtime
+      changed = true
     } catch {
       /* best effort — a malformed file just won't produce excerpts */
     }
   }
+  if (changed) saveIndexMtimes(mtimes)
 }
 
 /** Phase 2c: sample the source's PDF and infer its header shape for user confirmation.
