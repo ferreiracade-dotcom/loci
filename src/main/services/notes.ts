@@ -10,7 +10,7 @@ import type { BookNote, LinkTarget, NoteSummary, NoteType, VaultHealth } from '.
 const NOTE_TYPES: NoteType[] = ['note', 'page', 'chapter', 'topic', 'book-note', 'project']
 
 function typeFromContent(content: string): NoteType {
-  const fm = content.match(/^---\n([\s\S]*?)\n---/)
+  const fm = content.match(/^---\r?\n([\s\S]*?)\r?\n---/)
   if (fm) {
     const m = fm[1].match(/^type:\s*(.+)$/m)
     const t = m?.[1].trim() as NoteType | undefined
@@ -36,7 +36,7 @@ function parseTagList(s: string): string[] {
 }
 
 function tagsFromContent(content: string): string[] {
-  const fm = content.match(/^---\n([\s\S]*?)\n---/)
+  const fm = content.match(/^---\r?\n([\s\S]*?)\r?\n---/)
   if (!fm) return []
   const m = fm[1].match(/^tags:\s*(.*)$/m)
   return m ? parseTagList(m[1]) : []
@@ -53,7 +53,7 @@ function bookNoteRelPath(sanitized: string): string {
 }
 
 function titleFromContent(content: string, fallback: string): string {
-  const fm = content.match(/^---\n([\s\S]*?)\n---/)
+  const fm = content.match(/^---\r?\n([\s\S]*?)\r?\n---/)
   if (fm) {
     const m = fm[1].match(/^title:\s*(.+)$/m)
     if (m && m[1].trim()) return m[1].trim()

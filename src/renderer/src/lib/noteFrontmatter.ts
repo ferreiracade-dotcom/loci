@@ -50,10 +50,10 @@ function parseItemList(s: string): ProjectItem[] {
 }
 
 export function parseNote(raw: string): { fm: FrontMatter; body: string } {
-  const m = raw.match(/^---\n([\s\S]*?)\n---\n?/)
+  const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/)
   if (!m) return { fm: { tags: [], items: [], rest: [] }, body: raw }
   const fm: FrontMatter = { tags: [], items: [], rest: [] }
-  for (const line of m[1].split('\n')) {
+  for (const line of m[1].split(/\r?\n/)) {
     const title = line.match(/^title:\s*(.*)$/)
     if (title) {
       fm.title = title[1].trim()

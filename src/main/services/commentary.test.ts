@@ -61,9 +61,26 @@ function excerpt(patch: Partial<NewCommentaryExcerpt>): NewCommentaryExcerpt {
 }
 
 describe('migrations', () => {
-  it('runs twice without error and lands on version 15', () => {
+  it('runs twice without error and lands on the latest version', () => {
     expect(() => runMigrations(db)).not.toThrow()
-    expect(db.pragma('user_version', { simple: true })).toBe(15)
+    expect(db.pragma('user_version', { simple: true })).toBe(17)
+  })
+
+  it('migration 14 does not fail when the user already created a "commentary" tag', () => {
+    // A pre-v14 database can already hold a user-made tag named "commentary" (setBookTags
+    // lowercases and inserts into the same UNIQUE-named tags table). Migration 14 seeds one
+    // too, so a bare INSERT would hit the UNIQUE constraint, throw inside the migration
+    // transaction, and brick the database on every launch. It must tolerate the collision.
+    const legacy = new Database(':memory:')
+    legacy.pragma('foreign_keys = ON')
+    runMigrations(legacy, 13) // build the schema through v13, before the commentary migration
+    legacy.prepare("INSERT INTO tags (id, name) VALUES ('user-tag', 'commentary')").run()
+    expect(() => runMigrations(legacy)).not.toThrow()
+    expect(
+      (legacy.prepare("SELECT COUNT(*) c FROM tags WHERE name = 'commentary'").get() as { c: number })
+        .c
+    ).toBe(1)
+    legacy.close()
   })
 })
 

@@ -14,7 +14,8 @@ import {
 import { copyFile } from 'fs/promises'
 import { basename, dirname, extname, isAbsolute, join, relative } from 'path'
 import { getDataDir, getDb } from '../db/connection'
-import { readConfig } from './config'
+import { localVaultDir, readConfig } from './config'
+import { removeFromDrive } from './vaultsync'
 import * as search from './search'
 import {
   moveSidecar,
@@ -718,6 +719,18 @@ export function collectSourcePdfs(): string[] {
   return walkPdfs(root, excludes)
 }
 
+/** True when a vault scan looks too incomplete to trust for pruning. A Drive-desktop mount that
+ *  hasn't finished hydrating returns far fewer PDFs than the catalog holds (or none at all), and
+ *  Pass C pruning on that basis would delete real books — cascading to their quotes, notes, and
+ *  highlights. Skip pruning when we found nothing but expected something, or found well under what
+ *  the catalog expects. The old check only guarded libraries over 20 books, so a small library
+ *  whose Drive was still mounting was wiped entirely. */
+export function vaultScanLooksIncomplete(foundCount: number, catalogedCount: number): boolean {
+  if (catalogedCount === 0) return false
+  if (foundCount === 0) return true
+  return catalogedCount > 20 && foundCount < catalogedCount * 0.8
+}
+
 /**
  * Reconcile the catalog with the two book folders — the Drive vault's `pdfs/Books` and the local
  * library folder — so books added to either place show up automatically and the folders mirror
@@ -826,7 +839,7 @@ export async function syncLibrary(
         .prepare('SELECT COUNT(*) c FROM books WHERE pdf_path LIKE ?')
         .get(`${booksDir}%`) as { c: number }
     ).c
-    if (catalogedInVault > 20 && vaultFiles.length < catalogedInVault * 0.8) {
+    if (vaultScanLooksIncomplete(vaultFiles.length, catalogedInVault)) {
       console.warn(
         `[sync] skipping stale-row prune: scan found ${vaultFiles.length} vault files but ` +
           `${catalogedInVault} are catalogued — Drive may still be mounting`
@@ -993,6 +1006,88 @@ export function applySidecarResync(): void {
 
 // ---------- Mutations ----------
 
+/** Every .md file under a directory (recursive) — for re-keying a moved note folder. */
+function walkMdIn(dir: string): string[] {
+  const out: string[] = []
+  let entries: string[]
+  try {
+    entries = readdirSync(dir)
+  } catch {
+    return out
+  }
+  for (const name of entries) {
+    const full = join(dir, name)
+    let isDir = false
+    try {
+      isDir = statSync(full).isDirectory()
+    } catch {
+      continue
+    }
+    if (isDir) out.push(...walkMdIn(full))
+    else if (name.toLowerCase().endsWith('.md')) out.push(full)
+  }
+  return out
+}
+
+/** Move a book's note folder and highlights sidecar when its note key (title_sanitized)
+ *  changes, re-keying the search index, the quotes rows that point at the note, and the
+ *  Drive mirror (which is copy-only and would resurrect the old paths otherwise). Without
+ *  this, a title edit silently orphans the user's book note, quote blocks, and highlights —
+ *  the app starts fresh files under the new key. Never clobbers an existing target. */
+function migrateBookNoteKey(bookId: string, oldSan: string, newSan: string): void {
+  if (oldSan === newSan) return
+  const vault = localVaultDir()
+  const oldDir = join(vault, 'notes', oldSan)
+  const newDir = join(vault, 'notes', newSan)
+  if (existsSync(oldDir) && !existsSync(newDir)) {
+    // Capture the folder's notes before the rename so their old index/Drive keys are known.
+    const oldRels = walkMdIn(oldDir).map((abs) => relative(vault, abs).replace(/\\/g, '/'))
+    try {
+      renameSync(oldDir, newDir)
+    } catch {
+      return // locked/streamed folder — leave everything keyed as before
+    }
+    // The book note itself also carries the key in its basename: notes/<san>/<san>.md.
+    const oldMd = join(newDir, `${oldSan}.md`)
+    const newMd = join(newDir, `${newSan}.md`)
+    if (existsSync(oldMd) && !existsSync(newMd)) {
+      try {
+        renameSync(oldMd, newMd)
+      } catch {
+        /* keep the old basename — still inside the right folder */
+      }
+    }
+    for (const oldRel of oldRels) {
+      search.removeNote(oldRel)
+      removeFromDrive(oldRel)
+    }
+    for (const abs of walkMdIn(newDir)) {
+      const rel = relative(vault, abs).replace(/\\/g, '/')
+      let content: string
+      try {
+        content = readFileSync(abs, 'utf-8')
+      } catch {
+        continue
+      }
+      const h1 = content.match(/^#\s+(.+)$/m)
+      search.indexNote(rel, h1 ? h1[1].trim() : basename(abs, '.md'), content)
+    }
+    getDb()
+      .prepare('UPDATE quotes SET note_path = ? WHERE book_id = ? AND note_path = ?')
+      .run(`notes/${newSan}/${newSan}.md`, bookId, `notes/${oldSan}/${oldSan}.md`)
+  }
+  const oldSide = join(vault, 'highlights', `${oldSan}.highlights.json`)
+  const newSide = join(vault, 'highlights', `${newSan}.highlights.json`)
+  if (existsSync(oldSide) && !existsSync(newSide)) {
+    try {
+      renameSync(oldSide, newSide)
+      removeFromDrive(`highlights/${oldSan}.highlights.json`)
+    } catch {
+      /* best effort */
+    }
+  }
+}
+
 export function updateBook(id: string, patch: BookUpdate): void {
   const columns: Record<keyof BookUpdate, string> = {
     title: 'title',
@@ -1022,11 +1117,12 @@ export function updateBook(id: string, patch: BookUpdate): void {
   if ('title' in patch || 'author' in patch || 'series' in patch || 'seriesNumber' in patch) {
     const before = db
       .prepare(
-        'SELECT title, author, series, series_number, pdf_path, local_path, source_path FROM books WHERE id = ?'
+        'SELECT title, title_sanitized, author, series, series_number, pdf_path, local_path, source_path FROM books WHERE id = ?'
       )
       .get(id) as
       | {
           title: string
+          title_sanitized: string
           author: string | null
           series: string | null
           series_number: string | null
@@ -1059,20 +1155,25 @@ export function updateBook(id: string, patch: BookUpdate): void {
         newLocal !== before.local_path ||
         newSource !== before.source_path
       ) {
-        sets.push(
-          'pdf_path = @__pdf',
-          'local_path = @__local',
-          'source_path = @__source',
-          'title_sanitized = @__san'
-        )
+        sets.push('pdf_path = @__pdf', 'local_path = @__local', 'source_path = @__source')
         params.__pdf = newPdf
         params.__local = newLocal
         params.__source = newSource
-        params.__san = base
         invalidatePrimaryIndex()
         // Keep the sidecar folders' names in step with the renamed PDFs.
         moveSidecar(before.pdf_path, newPdf)
         moveSidecar(before.local_path, newLocal)
+      }
+      // The note/highlights key derives from the title alone — the same sanitizeName(title)
+      // the import path stores. (It briefly used the "Title (Series N) - Author" file base
+      // here, which re-keyed the book's note and highlights on any author/series edit and
+      // orphaned the existing files.) When the key really changes (title edit), move the
+      // note folder + sidecar with it.
+      const newSan = sanitizeName(newTitle)
+      if (newSan !== before.title_sanitized) {
+        sets.push('title_sanitized = @__san')
+        params.__san = newSan
+        migrateBookNoteKey(id, before.title_sanitized, newSan)
       }
     }
   }

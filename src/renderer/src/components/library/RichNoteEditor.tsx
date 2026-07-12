@@ -355,6 +355,7 @@ export function RichNoteEditor({ path }: { path: string }) {
 
   const fmRef = useRef<FrontMatter>({ tags: [], items: [], rest: [] })
   const loadingRef = useRef(false)
+  const dirtyRef = useRef(false)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const validRef = useRef<(n: string) => boolean>(() => false)
@@ -379,6 +380,9 @@ export function RichNoteEditor({ path }: { path: string }) {
 
   const save = useCallback(
     async (ed: Editor) => {
+      // Clear the flag before the async write: an edit arriving mid-save re-marks it
+      // (and re-schedules the debounce), so nothing is lost if we unmount right after.
+      dirtyRef.current = false
       const md = (ed.storage.markdown.getMarkdown() as string).replace(
         /\\\[\\\[([^\]]*?)\\\]\\\]/g,
         '[[$1]]'
@@ -413,6 +417,7 @@ export function RichNoteEditor({ path }: { path: string }) {
     ],
     onUpdate: ({ editor }) => {
       if (loadingRef.current) return
+      dirtyRef.current = true
       setStatus('saving')
       if (saveTimer.current) clearTimeout(saveTimer.current)
       saveTimer.current = setTimeout(() => void save(editor), 800)
@@ -424,6 +429,7 @@ export function RichNoteEditor({ path }: { path: string }) {
     if (!editor) return
     let alive = true
     loadingRef.current = true
+    dirtyRef.current = false
     void api.readNote(path).then((raw) => {
       if (!alive) return
       const { fm, body } = parseNote(raw)
@@ -444,11 +450,13 @@ export function RichNoteEditor({ path }: { path: string }) {
     }
   }, [path, editor])
 
-  // Flush a pending save on unmount / path change.
+  // Flush a pending save on unmount / path change — only when the user actually edited.
+  // An unconditional save would rewrite every viewed note with tiptap-normalized content
+  // (injected H1, raw HTML stripped, frontmatter reformatted) and re-sync it across devices.
   useEffect(() => {
     return () => {
       if (saveTimer.current) clearTimeout(saveTimer.current)
-      if (editor && !loadingRef.current) void save(editor)
+      if (editor && !loadingRef.current && dirtyRef.current) void save(editor)
     }
   }, [editor, save])
 
