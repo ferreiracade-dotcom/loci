@@ -165,7 +165,7 @@ interface Store {
   /** Filter the standalone-notes list to a single tag, or null for all. */
   notesTagFilter: string | null
   /** Target page to jump to when (re)opening a book from search; consumed by the reader. */
-  pendingPage: number | null
+  pendingPage: { bookId: string; page: number } | null
   indexing: { done: number; total: number } | null
   /** Progress of a whole-Bible (BSB) indexing pass, or null when idle. */
   bibleIndexing: { done: number; total: number } | null
@@ -229,7 +229,7 @@ interface Store {
   openBookAt: (id: string, page: number) => void
   clearPendingPage: () => void
   /** Jump the open book to a page and flash-highlight the given terms (in-book search). */
-  jumpToBookPage: (page: number, terms: string[]) => void
+  jumpToBookPage: (bookId: string, page: number, terms: string[]) => void
   closeBook: () => void
   loadStandaloneNotes: () => Promise<void>
   createNote: (title: string, type?: NoteType) => Promise<void>
@@ -560,7 +560,7 @@ export const useStore = create<Store>((set, get) => {
       get().openInPane({ kind: 'pdf', bookId: id })
       set({
         quotes: [],
-        pendingPage: page,
+        pendingPage: { bookId: id, page },
         books: get().books.map((b) => (b.id === id ? { ...b, lastPage: page } : b))
       })
       get().saveLayout({ activeLeftView: 'reading' })
@@ -571,7 +571,8 @@ export const useStore = create<Store>((set, get) => {
 
     clearPendingPage: () => set({ pendingPage: null }),
 
-    jumpToBookPage: (page, terms) => set({ pendingPage: page, searchTerms: terms }),
+    jumpToBookPage: (bookId, page, terms) =>
+      set({ pendingPage: { bookId, page }, searchTerms: terms }),
 
     closeBook: () => {
       const pdf = get().panes.find((p) => p.kind === 'pdf')

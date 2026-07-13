@@ -195,6 +195,16 @@ describe('parseCommentaryHeader — bare shapes requiring carried context', () =
     })
   })
 
+  it('does not emit an inverted range when the range END numeral is glyph-mangled (real: "Verses 9-ll." for 9-11)', () => {
+    // parseNumeral resolves an unreadable numeral to a 1 placeholder. For a range end that would
+    // make verseEnd < verseStart (9-1), an inverted range no verse lookup can ever match. Collapse
+    // to the start instead so the excerpt stays findable at verse 9.
+    const h = parseCommentaryHeader('Verses 9-ll.', withContext, 'word-label')
+    expect(h).not.toBeNull()
+    expect(h!.verseEnd).toBeGreaterThanOrEqual(h!.verseStart)
+    expect(h).toMatchObject({ verseStart: 9, verseEnd: 9 })
+  })
+
   it('phrase-label (real: Kretzmann "False discipleship: V. 21.")', () => {
     expect(
       parseCommentaryHeader('False discipleship: V. 21.', withContext, 'phrase-label')
