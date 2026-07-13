@@ -4,7 +4,7 @@ import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { bookByCode } from '@shared/scriptureRef'
 import type { Quote, ScriptureQuoteBook } from '@shared/ipc'
-import { QuoteCard, type CardHandlers } from './QuotesPanel'
+import { QuoteCard, makeQuoteCardHandlers } from './QuotesPanel'
 
 /**
  * Scripture highlights, location-anchored like the Book Notes panel: it follows the open
@@ -51,21 +51,13 @@ export function ScriptureHighlightsPanel() {
     void reload()
   }, [reload, noteReloadToken])
 
-  const handlers: CardHandlers = {
-    onSetTags: (id, tags) => void api.setQuoteTags(id, tags).then(reload),
-    onSetAnnotations: (id, annotations) => {
-      setQuotes((qs) => qs.map((q) => (q.id === id ? { ...q, annotations } : q)))
-      void api.setQuoteAnnotations(id, annotations)
-    },
-    onSetText: (id, text) => {
-      setQuotes((qs) => qs.map((q) => (q.id === id ? { ...q, text } : q)))
-      void api.setQuoteText(id, text).then(reload)
-    },
-    onSetCitation: (id, citation) => void api.setQuoteCitation(id, citation).then(reload),
+  const handlers = makeQuoteCardHandlers({
+    setQuotes,
+    refresh: reload,
     // Delete via the store so the reader un-marks the verses too (shared token bump);
     // the noteReloadToken effects below also reload this panel's list + book counts.
     onDelete: (id) => void deleteScriptureHighlight(id)
-  }
+  })
 
   if (books.length === 0) {
     return (

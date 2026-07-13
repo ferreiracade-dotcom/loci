@@ -55,7 +55,6 @@ const api: LociApi = {
   listCommentaryQuotes: (sourceId) => ipcRenderer.invoke(Channels.listCommentaryQuotes, sourceId),
   listQuoteGroups: (translation) => ipcRenderer.invoke(Channels.listQuoteGroups, translation),
   listAllQuotes: () => ipcRenderer.invoke(Channels.listAllQuotes),
-  getBookNote: (bookId) => ipcRenderer.invoke(Channels.getBookNote, bookId),
   saveNote: (path, content) => ipcRenderer.invoke(Channels.saveNote, path, content),
   readNote: (path) => ipcRenderer.invoke(Channels.readNote, path),
   listStandaloneNotes: () => ipcRenderer.invoke(Channels.listStandaloneNotes),

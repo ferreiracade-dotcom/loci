@@ -4,7 +4,7 @@ import { api } from '../../lib/api'
 import { authorFor } from '../../lib/quoteGrouping'
 import type { Book, Quote } from '@shared/ipc'
 import type { QuoteGroupRef } from '../../store/useStore'
-import { QuoteCard, type CardHandlers } from './QuotesPanel'
+import { QuoteCard, makeQuoteCardHandlers } from './QuotesPanel'
 
 /**
  * A group of saved quotes shown as a center workspace pane: the quotes for one PDF, one Bible
@@ -41,23 +41,15 @@ export function QuoteGroupPane({ group }: { group: QuoteGroupRef }) {
     void reload()
   }, [reload, noteReloadToken])
 
-  const handlers: CardHandlers = {
-    onSetTags: (id, tags) => void api.setQuoteTags(id, tags).then(() => bumpReload()),
-    onSetAnnotations: (id, annotations) => {
-      setQuotes((qs) => qs.map((q) => (q.id === id ? { ...q, annotations } : q)))
-      void api.setQuoteAnnotations(id, annotations)
-    },
-    onSetText: (id, text) => {
-      setQuotes((qs) => qs.map((q) => (q.id === id ? { ...q, text } : q)))
-      void api.setQuoteText(id, text).then(() => bumpReload())
-    },
-    onSetCitation: (id, citation) => void api.setQuoteCitation(id, citation).then(() => bumpReload()),
+  const handlers = makeQuoteCardHandlers({
+    setQuotes,
+    refresh: bumpReload,
     onDelete: (id) =>
       void api.deleteQuote(id).then(() => {
         bumpReload()
         void refreshLibrary()
       })
-  }
+  })
 
   const book: Book | null =
     group.type === 'book' ? books.find((b) => b.id === group.bookId) ?? null : null

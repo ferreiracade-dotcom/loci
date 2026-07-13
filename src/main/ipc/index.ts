@@ -256,7 +256,6 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.listAllQuotes, () => quotes.listAllQuotes())
 
   // --- Notes (Phase 2c) ---
-  ipcMain.handle(Channels.getBookNote, (_e, bookId: string) => notes.getBookNote(bookId))
   ipcMain.handle(Channels.saveNote, (_e, path: string, content: string) =>
     notes.saveNote(path, content)
   )

@@ -5,7 +5,7 @@ import { localVaultDir } from './config'
 import { removeFromDrive } from './vaultsync'
 import { sanitizeName } from './library'
 import * as search from './search'
-import type { BookNote, LinkTarget, NoteSummary, NoteType, VaultHealth } from '../../shared/ipc'
+import type { LinkTarget, NoteSummary, NoteType, VaultHealth } from '../../shared/ipc'
 
 const NOTE_TYPES: NoteType[] = ['note', 'page', 'chapter', 'topic', 'book-note', 'project']
 
@@ -42,16 +42,6 @@ function tagsFromContent(content: string): string[] {
   return m ? parseTagList(m[1]) : []
 }
 
-interface BookMetaRow {
-  title: string
-  title_sanitized: string
-  author: string | null
-}
-
-function bookNoteRelPath(sanitized: string): string {
-  return `notes/${sanitized}/${sanitized}.md`
-}
-
 function titleFromContent(content: string, fallback: string): string {
   const fm = content.match(/^---\r?\n([\s\S]*?)\r?\n---/)
   if (fm) {
@@ -65,29 +55,6 @@ function titleFromContent(content: string, fallback: string): string {
 
 function escapeRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-}
-
-/** Read the book's source note, creating it (with frontmatter) if it doesn't exist. */
-export function getBookNote(bookId: string): BookNote | null {
-  const vault = localVaultDir()
-  const b = getDb()
-    .prepare('SELECT title, title_sanitized, author FROM books WHERE id = ?')
-    .get(bookId) as BookMetaRow | undefined
-  if (!vault || !b) return null
-
-  const rel = bookNoteRelPath(b.title_sanitized)
-  const abs = join(vault, rel)
-  if (!existsSync(abs)) {
-    mkdirSync(dirname(abs), { recursive: true })
-    const fm =
-      `---\n` +
-      `title: ${b.title.replace(/\r?\n/g, ' ')}\n` +
-      `author: ${b.author ?? ''}\n` +
-      `type: book-note\n` +
-      `---\n\n# ${b.title}\n\n`
-    writeFileSync(abs, fm, 'utf-8')
-  }
-  return { path: rel, content: readFileSync(abs, 'utf-8') }
 }
 
 /** Resolve a renderer-supplied relative note path against the vault, returning the absolute path

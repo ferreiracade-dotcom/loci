@@ -82,13 +82,11 @@ function reflectPanes(panes: Pane[], activeId: string | null): Partial<Store> {
   const pdf = active?.kind === 'pdf' ? active : panes.find((p) => p.kind === 'pdf')
   const notePanes = panes.filter((p) => p.kind === 'note')
   const activeNote = active?.kind === 'note' ? active : notePanes[0]
-  const otherNote = notePanes.find((p) => p.id !== activeNote?.id)
   const biblePanes = panes.filter((p) => p.kind === 'bible')
   const activeBible = active?.kind === 'bible' ? active : biblePanes[0]
   const patch: Partial<Store> = {
     openBookId: pdf?.bookId ?? null,
-    activeNotePath: activeNote?.notePath ?? null,
-    splitNotePath: otherNote?.notePath ?? null
+    activeNotePath: activeNote?.notePath ?? null
   }
   if (activeBible?.book && activeBible.chapter != null) {
     patch.scripturePassage = {
@@ -158,8 +156,6 @@ interface Store {
   noteReloadToken: number
   standaloneNotes: NoteSummary[]
   activeNotePath: string | null
-  /** A second note shown side-by-side in the Notes view, or null. */
-  splitNotePath: string | null
   /** A standalone note opened for editing in the right Notes sidebar, or null. */
   sidebarNotePath: string | null
   /** Filter the standalone-notes list to a single tag, or null for all. */
@@ -189,8 +185,6 @@ interface Store {
   scriptureTranslation: string
   /** The passage shown in the Bible reader, or null until first opened. */
   scripturePassage: { book: string; chapter: number; highlight: number[] } | null
-  /** When true, the Bible reader is shown as a split beside the open note. */
-  scriptureSplitOpen: boolean
   /** When true, a second translation column is shown beside the reader (compare view). */
   scriptureCompareOpen: boolean
   /** Second translation id for the compare column. */
@@ -234,11 +228,8 @@ interface Store {
   loadStandaloneNotes: () => Promise<void>
   createNote: (title: string, type?: NoteType) => Promise<void>
   openNote: (path: string) => void
-  openNoteInLeft: (path: string) => void
   openNoteInSplit: (path: string) => void
   setNotesTagFilter: (tag: string | null) => void
-  closeSplitNote: () => void
-  closeLeftNote: () => void
   deleteNote: (path: string) => Promise<void>
   openSidebarNote: (path: string) => void
   closeSidebarNote: () => void
@@ -297,7 +288,6 @@ interface Store {
   showScripture: () => Promise<void>
   /** Resolve a reference string and open it in a Bible pane beside the current pane. */
   openScripture: (ref: string) => Promise<void>
-  closeScriptureSplit: () => void
   toggleScriptureCompare: () => void
   setCompareTranslation: (id: string) => void
   addScriptureHighlight: (input: NewScriptureHighlight) => Promise<void>
@@ -393,7 +383,6 @@ export const useStore = create<Store>((set, get) => {
     noteReloadToken: 0,
     standaloneNotes: [],
     activeNotePath: null,
-    splitNotePath: null,
     sidebarNotePath: null,
     notesTagFilter: null,
     pendingPage: null,
@@ -410,7 +399,6 @@ export const useStore = create<Store>((set, get) => {
     scriptureTranslations: [],
     scriptureTranslation: '',
     scripturePassage: null,
-    scriptureSplitOpen: false,
     scriptureCompareOpen: false,
     scriptureCompareTranslation: '',
     commentaryLookup: null,
@@ -597,29 +585,12 @@ export const useStore = create<Store>((set, get) => {
       get().saveLayout({ activeLeftView: 'reading' })
     },
 
-    openNoteInLeft: (path) => {
-      // Open in the active pane (no split).
-      get().openInPane({ kind: 'note', notePath: path })
-      get().saveLayout({ activeLeftView: 'reading' })
-    },
-
     openNoteInSplit: (path) => {
       get().openInPane({ kind: 'note', notePath: path }, { split: true })
       get().saveLayout({ activeLeftView: 'reading' })
     },
 
-    closeSplitNote: () => {
-      const notes = get().panes.filter((p) => p.kind === 'note')
-      if (notes[1]) get().closePane(notes[1].id)
-    },
-
     setNotesTagFilter: (tag) => set({ notesTagFilter: tag }),
-
-    // Close the first note pane (the other, if any, remains).
-    closeLeftNote: () => {
-      const notes = get().panes.filter((p) => p.kind === 'note')
-      if (notes[0]) get().closePane(notes[0].id)
-    },
 
     deleteNote: async (path) => {
       await api.deleteNote(path)
@@ -990,8 +961,6 @@ export const useStore = create<Store>((set, get) => {
           : []
       get().navigateScripture(ref.book, ref.chapter, highlight)
     },
-
-    closeScriptureSplit: () => set({ scriptureSplitOpen: false }),
 
     toggleScriptureCompare: () => {
       const next = !get().scriptureCompareOpen
