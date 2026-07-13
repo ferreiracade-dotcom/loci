@@ -1231,6 +1231,29 @@ export function updateBook(id: string, patch: BookUpdate): void {
   writeSidecarForBook(id)
 }
 
+/** Move a file into the vault's `deleted/` folder under a collision-free name. Uses rename, with a
+ *  copy+unlink fallback for a cross-volume move (a local library on a different drive than the
+ *  Drive vault). Returns true if the file was relocated. */
+function moveToTrash(src: string, trashDir: string): boolean {
+  try {
+    mkdirSync(trashDir, { recursive: true })
+    let dest = join(trashDir, basename(src))
+    if (existsSync(dest)) {
+      const ext = extname(src)
+      dest = join(trashDir, `${basename(src, ext)}-${Date.now().toString(36)}${ext}`)
+    }
+    try {
+      renameSync(src, dest)
+    } catch {
+      copyFileSync(src, dest)
+      unlinkSync(src)
+    }
+    return true
+  } catch {
+    return false
+  }
+}
+
 export function deleteBook(id: string): void {
   const r = getDb()
     .prepare('SELECT cover_path, pdf_path, local_path, source_path FROM books WHERE id = ?')
@@ -1244,22 +1267,48 @@ export function deleteBook(id: string): void {
     | undefined
   getDb().prepare('DELETE FROM books WHERE id = ?').run(id)
   search.removeBook(id)
-  if (r) removeSidecars(r.local_path, r.pdf_path)
-  // Remove the cover, and the cached PDF — but never the user's in-place source file.
-  if (r?.cover_path && existsSync(r.cover_path)) {
+  if (!r) return
+  removeSidecars(r.local_path, r.pdf_path)
+  // Cover and the app's cached PDF copy are derived — remove them outright.
+  if (r.cover_path && existsSync(r.cover_path)) {
     try {
       unlinkSync(r.cover_path)
     } catch {
       /* best effort */
     }
   }
-  if (r?.pdf_path && r.pdf_path !== r.source_path && existsSync(r.pdf_path)) {
-    try {
-      unlinkSync(r.pdf_path)
-    } catch {
-      /* best effort */
+
+  // Move the real PDF copies (the Drive vault's Books folder and the local library folder) into a
+  // recoverable `deleted/` folder in the vault. Deleting used to leave the vault file in place
+  // when it doubled as the source, so the next sync simply re-catalogued it and the book came
+  // back. Moving the file out of the scanned folders makes the delete stick, removes it from both
+  // the local and Drive folders, and stays recoverable. Files the user keeps outside the vault and
+  // library (an external original) are never touched.
+  const cfg = readConfig()
+  const cacheDir = join(getDataDir(), 'pdf-cache')
+  const vaultPdfs = cfg.vaultPath ? join(cfg.vaultPath, 'pdfs') : null
+  const trashDir = cfg.vaultPath ? join(cfg.vaultPath, 'deleted') : null
+  const seen = new Set<string>()
+  let movedLocalCopy = false
+  for (const p of [r.pdf_path, r.local_path, r.source_path]) {
+    if (!p || seen.has(p) || !existsSync(p)) continue
+    seen.add(p)
+    if (isInside(p, cacheDir)) {
+      try {
+        unlinkSync(p)
+      } catch {
+        /* best effort */
+      }
+      continue
+    }
+    const inVault = !!vaultPdfs && isInside(p, vaultPdfs)
+    const inLocalLibrary = !!cfg.primaryLibraryPath && isInside(p, cfg.primaryLibraryPath)
+    if (trashDir && (inVault || inLocalLibrary) && moveToTrash(p, trashDir) && inLocalLibrary) {
+      movedLocalCopy = true
     }
   }
+  // A moved local copy invalidates the cached primary-library index (it still points at the old path).
+  if (movedLocalCopy) invalidatePrimaryIndex()
 }
 
 export function setBookShelves(id: string, shelfIds: string[]): void {

@@ -390,7 +390,10 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
             <h3 className="set-h">Danger zone</h3>
             {confirmDelete ? (
               <div className="confirm-row">
-                <span>Delete “{book.title}” and its cached PDF?</span>
+                <span>
+                  Delete “{book.title}”? Its PDF moves to the vault’s “deleted” folder
+                  (recoverable) and leaves your library and Drive folders.
+                </span>
                 <button className="btn btn-sm" onClick={() => setConfirmDelete(false)}>
                   Cancel
                 </button>
