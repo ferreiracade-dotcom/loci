@@ -228,6 +228,29 @@ describe('profileSource', () => {
     expect(samples.length).toBeGreaterThan(0)
     expect(samples[0].headerRaw).toMatch(/Verse \d+\./)
   })
+
+  it('resolves the after-header snippet when sample pages are not index-aligned', () => {
+    // pickProfilingSample returns a re-indexed subset for long PDFs: each page object keeps its
+    // original page number (50, 51) but now sits at array index 0, 1. The snippet lookup must key
+    // on the page number, not the array index, or every snippetAfter comes back empty.
+    const pages: PositionedLine[][] = [
+      [
+        line(50, 700, 'Verse 16.', { fontSize: 8 }),
+        line(50, 690, 'For I am not ashamed of the gospel.', { fontSize: 10 }),
+        line(50, 680, 'For it is the power of God for salvation.', { fontSize: 10 }),
+        line(50, 670, 'Verse 17.', { fontSize: 8 }),
+        line(50, 660, 'For in it the righteousness of God is revealed.', { fontSize: 10 })
+      ],
+      [
+        line(51, 700, 'Verse 18.', { fontSize: 8 }),
+        line(51, 690, 'For the wrath of God is revealed from heaven.', { fontSize: 10 }),
+        line(51, 680, 'Against all ungodliness of men.', { fontSize: 10 })
+      ]
+    ]
+    const { samples } = profileSource(pages)
+    expect(samples.length).toBeGreaterThan(0)
+    expect(samples[0].snippetAfter.length).toBeGreaterThan(0)
+  })
 })
 
 describe('detectRunningLines / stripRunningLines', () => {

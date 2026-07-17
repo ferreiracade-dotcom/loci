@@ -435,7 +435,11 @@ export function parseCommentaryHeader(
   const m = pattern.exec(trimmed)
   if (!m) return null
   const verseStart = parseNumeral(m[1])
-  const verseEnd = m[2] ? parseNumeral(m[2]) : verseStart
+  // A glyph-mangled range END can't be read, and parseNumeral's 1 placeholder would make an
+  // inverted range (e.g. "9-ll." -> 9-1) that no verse lookup can ever match. Collapse to the
+  // start so the excerpt stays findable; the true end is lost but recoverable on review.
+  const endGlitched = !!m[2] && !/^\d+$/.test(m[2])
+  const verseEnd = !m[2] || endGlitched ? verseStart : parseNumeral(m[2])
   return {
     raw: m[0],
     book: state.book,

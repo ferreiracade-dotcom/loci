@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'crypto'
-import { existsSync, readFileSync, writeFileSync } from 'fs'
+import { existsSync, readFileSync, renameSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { getDataDir } from '../db/connection'
 import type { ExtractedChunk } from './commentaryExtract'
@@ -39,7 +39,13 @@ function loadAll(): Correction[] {
 }
 
 function saveAll(corrections: Correction[]): void {
-  writeFileSync(correctionsPath(), JSON.stringify(corrections, null, 2))
+  // Write to a temp file and rename over the real one, so a crash mid-write can't truncate the
+  // corrections file (which loadAll would then read as empty, silently discarding every manual
+  // review decision). rename over the same directory is atomic.
+  const path = correctionsPath()
+  const tmp = `${path}.tmp`
+  writeFileSync(tmp, JSON.stringify(corrections, null, 2))
+  renameSync(tmp, path)
 }
 
 export function loadCorrections(): Correction[] {

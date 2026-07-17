@@ -1,16 +1,16 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, unlinkSync, writeFileSync } from 'fs'
-import { basename, dirname, join, relative } from 'path'
+import { basename, dirname, isAbsolute, join, relative } from 'path'
 import { getDb } from '../db/connection'
 import { localVaultDir } from './config'
 import { removeFromDrive } from './vaultsync'
 import { sanitizeName } from './library'
 import * as search from './search'
-import type { BookNote, LinkTarget, NoteSummary, NoteType, VaultHealth } from '../../shared/ipc'
+import type { LinkTarget, NoteSummary, NoteType, VaultHealth } from '../../shared/ipc'
 
 const NOTE_TYPES: NoteType[] = ['note', 'page', 'chapter', 'topic', 'book-note', 'project']
 
 function typeFromContent(content: string): NoteType {
-  const fm = content.match(/^---\n([\s\S]*?)\n---/)
+  const fm = content.match(/^---\r?\n([\s\S]*?)\r?\n---/)
   if (fm) {
     const m = fm[1].match(/^type:\s*(.+)$/m)
     const t = m?.[1].trim() as NoteType | undefined
@@ -36,24 +36,14 @@ function parseTagList(s: string): string[] {
 }
 
 function tagsFromContent(content: string): string[] {
-  const fm = content.match(/^---\n([\s\S]*?)\n---/)
+  const fm = content.match(/^---\r?\n([\s\S]*?)\r?\n---/)
   if (!fm) return []
   const m = fm[1].match(/^tags:\s*(.*)$/m)
   return m ? parseTagList(m[1]) : []
 }
 
-interface BookMetaRow {
-  title: string
-  title_sanitized: string
-  author: string | null
-}
-
-function bookNoteRelPath(sanitized: string): string {
-  return `notes/${sanitized}/${sanitized}.md`
-}
-
 function titleFromContent(content: string, fallback: string): string {
-  const fm = content.match(/^---\n([\s\S]*?)\n---/)
+  const fm = content.match(/^---\r?\n([\s\S]*?)\r?\n---/)
   if (fm) {
     const m = fm[1].match(/^title:\s*(.+)$/m)
     if (m && m[1].trim()) return m[1].trim()
@@ -67,34 +57,22 @@ function escapeRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-/** Read the book's source note, creating it (with frontmatter) if it doesn't exist. */
-export function getBookNote(bookId: string): BookNote | null {
-  const vault = localVaultDir()
-  const b = getDb()
-    .prepare('SELECT title, title_sanitized, author FROM books WHERE id = ?')
-    .get(bookId) as BookMetaRow | undefined
-  if (!vault || !b) return null
-
-  const rel = bookNoteRelPath(b.title_sanitized)
-  const abs = join(vault, rel)
-  if (!existsSync(abs)) {
-    mkdirSync(dirname(abs), { recursive: true })
-    const fm =
-      `---\n` +
-      `title: ${b.title.replace(/\r?\n/g, ' ')}\n` +
-      `author: ${b.author ?? ''}\n` +
-      `type: book-note\n` +
-      `---\n\n# ${b.title}\n\n`
-    writeFileSync(abs, fm, 'utf-8')
-  }
-  return { path: rel, content: readFileSync(abs, 'utf-8') }
+/** Resolve a renderer-supplied relative note path against the vault, returning the absolute path
+ *  only when it truly stays inside the vault. The old `abs.startsWith(vault)` guard missed the
+ *  path separator, so a sibling folder sharing the vault's name prefix (…/vault-backup) passed,
+ *  and readNote had no guard at all — letting the renderer read or write files outside the vault. */
+function resolveInVault(vault: string, relPath: string): string | null {
+  const abs = join(vault, relPath)
+  const rel = relative(vault, abs)
+  if (rel === '' || rel.startsWith('..') || isAbsolute(rel)) return null
+  return abs
 }
 
 export function saveNote(relPath: string, content: string): void {
   const vault = localVaultDir()
   if (!vault) return
-  const abs = join(vault, relPath)
-  if (!abs.startsWith(vault)) return // guard against traversal
+  const abs = resolveInVault(vault, relPath)
+  if (!abs) return
   mkdirSync(dirname(abs), { recursive: true })
   writeFileSync(abs, content, 'utf-8')
   search.indexNote(relPath, titleFromContent(content, basename(relPath, '.md')), content)
@@ -103,7 +81,8 @@ export function saveNote(relPath: string, content: string): void {
 export function readNote(relPath: string): string {
   const vault = localVaultDir()
   if (!vault) return ''
-  const abs = join(vault, relPath)
+  const abs = resolveInVault(vault, relPath)
+  if (!abs) return ''
   return existsSync(abs) ? readFileSync(abs, 'utf-8') : ''
 }
 
@@ -153,8 +132,8 @@ export function createStandaloneNote(title: string, type: NoteType = 'note'): No
 
 export function deleteNote(relPath: string): void {
   const vault = localVaultDir()
-  const abs = join(vault, relPath)
-  if (!abs.startsWith(vault)) return // traversal guard
+  const abs = resolveInVault(vault, relPath)
+  if (!abs) return
   try {
     if (existsSync(abs)) unlinkSync(abs)
   } catch {

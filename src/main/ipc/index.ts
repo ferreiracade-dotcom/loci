@@ -90,8 +90,24 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.getConfig, () => toPublicConfig())
 
   ipcMain.handle(Channels.setConfig, (_e, patch: Partial<PublicConfig>) => {
-    // Strip the read-only flag; never accept secrets through the public config path.
-    const { hasApiKey: _omit, ...safe } = patch ?? {}
+    // Whitelist the user-preference fields the renderer is allowed to set. Everything else —
+    // vaultPath, welcomeBackground, setupComplete, and the encrypted key fields — is managed by
+    // its own dedicated flow (wizard, file pickers, key handlers). A blanket spread let the
+    // renderer repoint vaultPath or set welcomeBackground to any absolute path and read it back
+    // as a data URL, and even write the *Encrypted secret fields directly.
+    const ALLOWED = [
+      'theme',
+      'aiMode',
+      'rateCard',
+      'scriptureTranslation',
+      'keepLocalCopies',
+      'backupPath',
+      'primaryLibraryPath'
+    ] as const
+    const safe: Partial<PublicConfig> = {}
+    for (const k of ALLOWED) {
+      if (patch && patch[k] !== undefined) Object.assign(safe, { [k]: patch[k] })
+    }
     writeConfig(safe)
     return toPublicConfig()
   })
@@ -240,7 +256,6 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.listAllQuotes, () => quotes.listAllQuotes())
 
   // --- Notes (Phase 2c) ---
-  ipcMain.handle(Channels.getBookNote, (_e, bookId: string) => notes.getBookNote(bookId))
   ipcMain.handle(Channels.saveNote, (_e, path: string, content: string) =>
     notes.saveNote(path, content)
   )

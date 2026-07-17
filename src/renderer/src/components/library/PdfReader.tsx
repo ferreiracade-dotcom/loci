@@ -89,6 +89,9 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
   // True while the user is dragging a selection — pauses lazy load/unload so text
   // layers aren't torn down mid-drag (which makes the selection jump).
   const selectingRef = useRef(false)
+  // True while the pointer is over this reader's stage — arrow/PageUp/Down page only the reader
+  // being looked at, so a center pane and the reference panel don't both page on one keypress.
+  const hoveredRef = useRef(false)
 
   const [numPages, setNumPages] = useState(0)
   const [base, setBase] = useState<{ w: number; h: number } | null>(null)
@@ -96,6 +99,9 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
   const [manualScale, setManualScale] = useState(1)
   const [fitWidth, setFitWidth] = useState(true)
   const [currentPage, setCurrentPage] = useState(book?.lastPage ?? 1)
+  // While the user is editing the page box, hold their draft so scroll-sync (which rewrites
+  // currentPage) doesn't clobber a half-typed multi-digit page number. Committed on Enter/blur.
+  const [pageDraft, setPageDraft] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -334,7 +340,12 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
       stage.removeEventListener('scroll', onScroll)
       if (raf) window.cancelAnimationFrame(raf)
     }
-  }, [effScale, base, numPages, loading, error, renderPage, book?.lastPage])
+    // book?.lastPage is intentionally omitted: it's only read for the one-time initial scroll
+    // (guarded by didInitialScroll). Including it tore down and re-rendered every page canvas
+    // whenever the debounced lastPage write flowed back through refreshLibrary — a visible blank/
+    // flash after each quote capture.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [effScale, base, numPages, loading, error, renderPage])
 
   // Persist the resume page (debounced).
   useEffect(() => {
@@ -356,8 +367,16 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
     [numPages]
   )
 
+  const commitPageDraft = (): void => {
+    if (pageDraft === null) return
+    const n = Number(pageDraft)
+    if (!Number.isNaN(n) && n > 0) goToPage(n)
+    setPageDraft(null)
+  }
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
+      if (!hoveredRef.current) return // only the reader under the pointer responds
       const t = e.target as HTMLElement | null
       if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return
       if (e.key === 'ArrowRight' || e.key === 'PageDown') goToPage(currentPage + 1)
@@ -382,8 +401,11 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
   // text layer and act when it appears — however long that takes — rather than
   // polling against a fixed deadline that slow pages can miss.
   useEffect(() => {
-    if (!pendingPage || loading || !numPages) return
-    const p = Math.min(Math.max(1, pendingPage), numPages)
+    // pendingPage is global; only the reader showing its target book should act (two readers can
+    // be mounted — a center pane and the reference panel), otherwise the wrong one scrolls itself
+    // and clears the flag before the intended reader jumps.
+    if (!pendingPage || pendingPage.bookId !== bookId || loading || !numPages) return
+    const p = Math.min(Math.max(1, pendingPage.page), numPages)
     const fold = (s: string): string =>
       s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
     const folded = searchTerms.map(fold)
@@ -452,7 +474,7 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
       cancelled = true
       cleanup()
     }
-  }, [pendingPage, loading, numPages, clearPendingPage, searchTerms])
+  }, [pendingPage, bookId, loading, numPages, clearPendingPage, searchTerms])
 
   // In-book search: query this book's indexed pages only, in page order (not FTS relevance —
   // Prev/Next through a book reads naturally top-to-bottom, like a browser's find-in-page).
@@ -468,7 +490,7 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
         const sorted = [...hits].sort((a, b) => (a.page ?? 0) - (b.page ?? 0))
         setSearchHits(sorted)
         setHitIndex(0)
-        if (sorted.length) jumpToBookPage(sorted[0].page ?? 1, foldTokens(searchQuery))
+        if (sorted.length) jumpToBookPage(bookId, sorted[0].page ?? 1, foldTokens(searchQuery))
       })
     }, 300)
     return () => {
@@ -482,7 +504,7 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
     if (!searchHits.length) return
     const next = (hitIndex + dir + searchHits.length) % searchHits.length
     setHitIndex(next)
-    jumpToBookPage(searchHits[next].page ?? 1, foldTokens(searchQuery))
+    jumpToBookPage(bookId, searchHits[next].page ?? 1, foldTokens(searchQuery))
   }
 
   const closeSearch = (): void => {
@@ -592,11 +614,18 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
           <span className="reader-page">
             <input
               className="page-input"
-              value={String(currentPage)}
-              onChange={(e) => {
-                const n = Number(e.target.value)
-                if (!Number.isNaN(n) && n > 0) goToPage(n)
+              value={pageDraft ?? String(currentPage)}
+              onChange={(e) => setPageDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  commitPageDraft()
+                  ;(e.target as HTMLInputElement).blur()
+                } else if (e.key === 'Escape') {
+                  setPageDraft(null)
+                  ;(e.target as HTMLInputElement).blur()
+                }
               }}
+              onBlur={commitPageDraft}
             />
             <span className="reader-of">/ {numPages || '—'}</span>
           </span>
@@ -660,7 +689,14 @@ export function PdfReader({ bookId, embedded = false }: { bookId: string; embedd
           </button>
         </div>
       </div>
-      <div className="reader-stage" ref={stageRef} onMouseDown={onStageMouseDown} onMouseUp={onStageMouseUp}>
+      <div
+        className="reader-stage"
+        ref={stageRef}
+        onMouseDown={onStageMouseDown}
+        onMouseUp={onStageMouseUp}
+        onMouseEnter={() => (hoveredRef.current = true)}
+        onMouseLeave={() => (hoveredRef.current = false)}
+      >
         {loading && <div className="reader-msg">Opening…</div>}
         {error && (
           <div className="reader-msg error">

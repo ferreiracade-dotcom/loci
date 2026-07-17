@@ -271,8 +271,13 @@ export function profileSource(pagesLines: PositionedLine[][]): {
     bodyMultiFontRate: rate(nonMatching)
   }
 
+  // Key pages by their real page number, not array position: profiling runs on a re-indexed
+  // sample (pickProfilingSample) for long PDFs, where pagesLines[line.page - 1] points at the
+  // wrong page (or out of bounds), leaving every snippet empty.
+  const pageByNumber = new Map<number, PositionedLine[]>()
+  for (const p of pagesLines) if (p.length) pageByNumber.set(p[0].page, p)
   const samples: ProfileSample[] = bestMatches.slice(0, 10).map((line) => {
-    const pageLines = pagesLines[line.page - 1] ?? []
+    const pageLines = pageByNumber.get(line.page) ?? []
     const idx = pageLines.indexOf(line)
     const after = idx >= 0 ? pageLines.slice(idx + 1, idx + 3) : []
     return {

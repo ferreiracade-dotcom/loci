@@ -14,7 +14,8 @@ import {
 import { copyFile } from 'fs/promises'
 import { basename, dirname, extname, isAbsolute, join, relative } from 'path'
 import { getDataDir, getDb } from '../db/connection'
-import { readConfig } from './config'
+import { localVaultDir, readConfig } from './config'
+import { removeFromDrive } from './vaultsync'
 import * as search from './search'
 import {
   moveSidecar,
@@ -188,20 +189,64 @@ function bookPdfSource(localPath: string | null, pdfPath: string | null): PdfSou
   return 'missing'
 }
 
-function rowToBook(r: BookRow): Book {
+/** Bucket rows into a Map of id -> values[], preserving input order. Lets a caller replace a
+ *  per-row lookup query with one grouped query (see listBooks / listAllQuotes). */
+export function groupValuesById<T>(
+  rows: T[],
+  keyOf: (row: T) => string,
+  valueOf: (row: T) => string
+): Map<string, string[]> {
+  const map = new Map<string, string[]>()
+  for (const row of rows) {
+    const k = keyOf(row)
+    const arr = map.get(k)
+    if (arr) arr.push(valueOf(row))
+    else map.set(k, [valueOf(row)])
+  }
+  return map
+}
+
+/** Shelf ids and tag names for every book at once — passed to rowToBook in the list path so it
+ *  doesn't run two queries per book (which stalled every library refresh, and thus IPC for
+ *  whatever view was switched to next). */
+function loadBookRelations(): { shelves: Map<string, string[]>; tags: Map<string, string[]> } {
   const db = getDb()
-  const shelfIds = (
-    db.prepare('SELECT shelf_id FROM book_shelves WHERE book_id = ?').all(r.id) as {
-      shelf_id: string
-    }[]
-  ).map((x) => x.shelf_id)
-  const tags = (
-    db
-      .prepare(
-        'SELECT t.name FROM book_tags bt JOIN tags t ON t.id = bt.tag_id WHERE bt.book_id = ? ORDER BY t.name'
-      )
-      .all(r.id) as { name: string }[]
-  ).map((x) => x.name)
+  const shelfRows = db.prepare('SELECT book_id, shelf_id FROM book_shelves').all() as {
+    book_id: string
+    shelf_id: string
+  }[]
+  const tagRows = db
+    .prepare(
+      'SELECT bt.book_id, t.name FROM book_tags bt JOIN tags t ON t.id = bt.tag_id ORDER BY t.name'
+    )
+    .all() as { book_id: string; name: string }[]
+  return {
+    shelves: groupValuesById(shelfRows, (r) => r.book_id, (r) => r.shelf_id),
+    tags: groupValuesById(tagRows, (r) => r.book_id, (r) => r.name)
+  }
+}
+
+function rowToBook(
+  r: BookRow,
+  rel?: { shelves: Map<string, string[]>; tags: Map<string, string[]> }
+): Book {
+  const db = getDb()
+  const shelfIds = rel
+    ? (rel.shelves.get(r.id) ?? [])
+    : (
+        db.prepare('SELECT shelf_id FROM book_shelves WHERE book_id = ?').all(r.id) as {
+          shelf_id: string
+        }[]
+      ).map((x) => x.shelf_id)
+  const tags = rel
+    ? (rel.tags.get(r.id) ?? [])
+    : (
+        db
+          .prepare(
+            'SELECT t.name FROM book_tags bt JOIN tags t ON t.id = bt.tag_id WHERE bt.book_id = ? ORDER BY t.name'
+          )
+          .all(r.id) as { name: string }[]
+      ).map((x) => x.name)
   return {
     id: r.id,
     title: r.title,
@@ -231,7 +276,8 @@ export function listBooks(): Book[] {
   const rows = getDb()
     .prepare('SELECT * FROM books ORDER BY title COLLATE NOCASE')
     .all() as BookRow[]
-  return rows.map(rowToBook)
+  const rel = loadBookRelations()
+  return rows.map((r) => rowToBook(r, rel))
 }
 
 // Keyed by cover file path; invalidated by mtime so a changed cover (same path, new bytes) still
@@ -718,6 +764,18 @@ export function collectSourcePdfs(): string[] {
   return walkPdfs(root, excludes)
 }
 
+/** True when a vault scan looks too incomplete to trust for pruning. A Drive-desktop mount that
+ *  hasn't finished hydrating returns far fewer PDFs than the catalog holds (or none at all), and
+ *  Pass C pruning on that basis would delete real books — cascading to their quotes, notes, and
+ *  highlights. Skip pruning when we found nothing but expected something, or found well under what
+ *  the catalog expects. The old check only guarded libraries over 20 books, so a small library
+ *  whose Drive was still mounting was wiped entirely. */
+export function vaultScanLooksIncomplete(foundCount: number, catalogedCount: number): boolean {
+  if (catalogedCount === 0) return false
+  if (foundCount === 0) return true
+  return catalogedCount > 20 && foundCount < catalogedCount * 0.8
+}
+
 /**
  * Reconcile the catalog with the two book folders — the Drive vault's `pdfs/Books` and the local
  * library folder — so books added to either place show up automatically and the folders mirror
@@ -737,7 +795,9 @@ export async function syncLibrary(
   const cfg = readConfig()
   const titles: string[] = []
   let removed = 0
-  if (!cfg.vaultPath) return { added: 0, removed: 0, total: listBooks().length, titles }
+  const bookCount = (): number =>
+    (getDb().prepare('SELECT COUNT(*) c FROM books').get() as { c: number }).c
+  if (!cfg.vaultPath) return { added: 0, removed: 0, total: bookCount(), titles }
 
   const booksDir = join(cfg.vaultPath, 'pdfs', 'Books')
   const vaultFiles = existsSync(booksDir) ? walkPdfs(booksDir, NO_EXCLUDES) : []
@@ -826,7 +886,7 @@ export async function syncLibrary(
         .prepare('SELECT COUNT(*) c FROM books WHERE pdf_path LIKE ?')
         .get(`${booksDir}%`) as { c: number }
     ).c
-    if (catalogedInVault > 20 && vaultFiles.length < catalogedInVault * 0.8) {
+    if (vaultScanLooksIncomplete(vaultFiles.length, catalogedInVault)) {
       console.warn(
         `[sync] skipping stale-row prune: scan found ${vaultFiles.length} vault files but ` +
           `${catalogedInVault} are catalogued — Drive may still be mounting`
@@ -851,7 +911,7 @@ export async function syncLibrary(
 
   onProgress?.({ phase: 'done', done: 0, total: 0 })
   onChanged?.()
-  return { added: titles.length, removed, total: listBooks().length, titles }
+  return { added: titles.length, removed, total: bookCount(), titles }
 }
 
 // ---------- Enrichment (fast, filename-only, background) ----------
@@ -993,6 +1053,88 @@ export function applySidecarResync(): void {
 
 // ---------- Mutations ----------
 
+/** Every .md file under a directory (recursive) — for re-keying a moved note folder. */
+function walkMdIn(dir: string): string[] {
+  const out: string[] = []
+  let entries: string[]
+  try {
+    entries = readdirSync(dir)
+  } catch {
+    return out
+  }
+  for (const name of entries) {
+    const full = join(dir, name)
+    let isDir = false
+    try {
+      isDir = statSync(full).isDirectory()
+    } catch {
+      continue
+    }
+    if (isDir) out.push(...walkMdIn(full))
+    else if (name.toLowerCase().endsWith('.md')) out.push(full)
+  }
+  return out
+}
+
+/** Move a book's note folder and highlights sidecar when its note key (title_sanitized)
+ *  changes, re-keying the search index, the quotes rows that point at the note, and the
+ *  Drive mirror (which is copy-only and would resurrect the old paths otherwise). Without
+ *  this, a title edit silently orphans the user's book note, quote blocks, and highlights —
+ *  the app starts fresh files under the new key. Never clobbers an existing target. */
+function migrateBookNoteKey(bookId: string, oldSan: string, newSan: string): void {
+  if (oldSan === newSan) return
+  const vault = localVaultDir()
+  const oldDir = join(vault, 'notes', oldSan)
+  const newDir = join(vault, 'notes', newSan)
+  if (existsSync(oldDir) && !existsSync(newDir)) {
+    // Capture the folder's notes before the rename so their old index/Drive keys are known.
+    const oldRels = walkMdIn(oldDir).map((abs) => relative(vault, abs).replace(/\\/g, '/'))
+    try {
+      renameSync(oldDir, newDir)
+    } catch {
+      return // locked/streamed folder — leave everything keyed as before
+    }
+    // The book note itself also carries the key in its basename: notes/<san>/<san>.md.
+    const oldMd = join(newDir, `${oldSan}.md`)
+    const newMd = join(newDir, `${newSan}.md`)
+    if (existsSync(oldMd) && !existsSync(newMd)) {
+      try {
+        renameSync(oldMd, newMd)
+      } catch {
+        /* keep the old basename — still inside the right folder */
+      }
+    }
+    for (const oldRel of oldRels) {
+      search.removeNote(oldRel)
+      removeFromDrive(oldRel)
+    }
+    for (const abs of walkMdIn(newDir)) {
+      const rel = relative(vault, abs).replace(/\\/g, '/')
+      let content: string
+      try {
+        content = readFileSync(abs, 'utf-8')
+      } catch {
+        continue
+      }
+      const h1 = content.match(/^#\s+(.+)$/m)
+      search.indexNote(rel, h1 ? h1[1].trim() : basename(abs, '.md'), content)
+    }
+    getDb()
+      .prepare('UPDATE quotes SET note_path = ? WHERE book_id = ? AND note_path = ?')
+      .run(`notes/${newSan}/${newSan}.md`, bookId, `notes/${oldSan}/${oldSan}.md`)
+  }
+  const oldSide = join(vault, 'highlights', `${oldSan}.highlights.json`)
+  const newSide = join(vault, 'highlights', `${newSan}.highlights.json`)
+  if (existsSync(oldSide) && !existsSync(newSide)) {
+    try {
+      renameSync(oldSide, newSide)
+      removeFromDrive(`highlights/${oldSan}.highlights.json`)
+    } catch {
+      /* best effort */
+    }
+  }
+}
+
 export function updateBook(id: string, patch: BookUpdate): void {
   const columns: Record<keyof BookUpdate, string> = {
     title: 'title',
@@ -1022,11 +1164,12 @@ export function updateBook(id: string, patch: BookUpdate): void {
   if ('title' in patch || 'author' in patch || 'series' in patch || 'seriesNumber' in patch) {
     const before = db
       .prepare(
-        'SELECT title, author, series, series_number, pdf_path, local_path, source_path FROM books WHERE id = ?'
+        'SELECT title, title_sanitized, author, series, series_number, pdf_path, local_path, source_path FROM books WHERE id = ?'
       )
       .get(id) as
       | {
           title: string
+          title_sanitized: string
           author: string | null
           series: string | null
           series_number: string | null
@@ -1059,20 +1202,25 @@ export function updateBook(id: string, patch: BookUpdate): void {
         newLocal !== before.local_path ||
         newSource !== before.source_path
       ) {
-        sets.push(
-          'pdf_path = @__pdf',
-          'local_path = @__local',
-          'source_path = @__source',
-          'title_sanitized = @__san'
-        )
+        sets.push('pdf_path = @__pdf', 'local_path = @__local', 'source_path = @__source')
         params.__pdf = newPdf
         params.__local = newLocal
         params.__source = newSource
-        params.__san = base
         invalidatePrimaryIndex()
         // Keep the sidecar folders' names in step with the renamed PDFs.
         moveSidecar(before.pdf_path, newPdf)
         moveSidecar(before.local_path, newLocal)
+      }
+      // The note/highlights key derives from the title alone — the same sanitizeName(title)
+      // the import path stores. (It briefly used the "Title (Series N) - Author" file base
+      // here, which re-keyed the book's note and highlights on any author/series edit and
+      // orphaned the existing files.) When the key really changes (title edit), move the
+      // note folder + sidecar with it.
+      const newSan = sanitizeName(newTitle)
+      if (newSan !== before.title_sanitized) {
+        sets.push('title_sanitized = @__san')
+        params.__san = newSan
+        migrateBookNoteKey(id, before.title_sanitized, newSan)
       }
     }
   }
@@ -1081,6 +1229,29 @@ export function updateBook(id: string, patch: BookUpdate): void {
   db.prepare(`UPDATE books SET ${sets.join(', ')} WHERE id = @id`).run(params)
   // Refresh the metadata sidecar to reflect the change.
   writeSidecarForBook(id)
+}
+
+/** Move a file into the vault's `deleted/` folder under a collision-free name. Uses rename, with a
+ *  copy+unlink fallback for a cross-volume move (a local library on a different drive than the
+ *  Drive vault). Returns true if the file was relocated. */
+function moveToTrash(src: string, trashDir: string): boolean {
+  try {
+    mkdirSync(trashDir, { recursive: true })
+    let dest = join(trashDir, basename(src))
+    if (existsSync(dest)) {
+      const ext = extname(src)
+      dest = join(trashDir, `${basename(src, ext)}-${Date.now().toString(36)}${ext}`)
+    }
+    try {
+      renameSync(src, dest)
+    } catch {
+      copyFileSync(src, dest)
+      unlinkSync(src)
+    }
+    return true
+  } catch {
+    return false
+  }
 }
 
 export function deleteBook(id: string): void {
@@ -1096,22 +1267,48 @@ export function deleteBook(id: string): void {
     | undefined
   getDb().prepare('DELETE FROM books WHERE id = ?').run(id)
   search.removeBook(id)
-  if (r) removeSidecars(r.local_path, r.pdf_path)
-  // Remove the cover, and the cached PDF — but never the user's in-place source file.
-  if (r?.cover_path && existsSync(r.cover_path)) {
+  if (!r) return
+  removeSidecars(r.local_path, r.pdf_path)
+  // Cover and the app's cached PDF copy are derived — remove them outright.
+  if (r.cover_path && existsSync(r.cover_path)) {
     try {
       unlinkSync(r.cover_path)
     } catch {
       /* best effort */
     }
   }
-  if (r?.pdf_path && r.pdf_path !== r.source_path && existsSync(r.pdf_path)) {
-    try {
-      unlinkSync(r.pdf_path)
-    } catch {
-      /* best effort */
+
+  // Move the real PDF copies (the Drive vault's Books folder and the local library folder) into a
+  // recoverable `deleted/` folder in the vault. Deleting used to leave the vault file in place
+  // when it doubled as the source, so the next sync simply re-catalogued it and the book came
+  // back. Moving the file out of the scanned folders makes the delete stick, removes it from both
+  // the local and Drive folders, and stays recoverable. Files the user keeps outside the vault and
+  // library (an external original) are never touched.
+  const cfg = readConfig()
+  const cacheDir = join(getDataDir(), 'pdf-cache')
+  const vaultPdfs = cfg.vaultPath ? join(cfg.vaultPath, 'pdfs') : null
+  const trashDir = cfg.vaultPath ? join(cfg.vaultPath, 'deleted') : null
+  const seen = new Set<string>()
+  let movedLocalCopy = false
+  for (const p of [r.pdf_path, r.local_path, r.source_path]) {
+    if (!p || seen.has(p) || !existsSync(p)) continue
+    seen.add(p)
+    if (isInside(p, cacheDir)) {
+      try {
+        unlinkSync(p)
+      } catch {
+        /* best effort */
+      }
+      continue
+    }
+    const inVault = !!vaultPdfs && isInside(p, vaultPdfs)
+    const inLocalLibrary = !!cfg.primaryLibraryPath && isInside(p, cfg.primaryLibraryPath)
+    if (trashDir && (inVault || inLocalLibrary) && moveToTrash(p, trashDir) && inLocalLibrary) {
+      movedLocalCopy = true
     }
   }
+  // A moved local copy invalidates the cached primary-library index (it still points at the old path).
+  if (movedLocalCopy) invalidatePrimaryIndex()
 }
 
 export function setBookShelves(id: string, shelfIds: string[]): void {

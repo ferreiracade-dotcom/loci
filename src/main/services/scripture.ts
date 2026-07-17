@@ -65,10 +65,25 @@ const ESV_ENTRY: RegEntry = {
 // Resolved registry is cached and rebuilt only when the set of configured keys changes.
 let resolvedRegistry: RegEntry[] | null = null
 let resolvedSig = ''
+// A single in-flight resolution shared by concurrent callers, so the (network-bound)
+// API.Bible catalog lookup runs at most once even when several panes open at the same time.
+let registryInFlight: Promise<RegEntry[]> | null = null
 
 /** Invalidate the cached registry (call when a Scripture API key changes). */
 export function invalidateRegistry(): void {
   resolvedRegistry = null
+  registryInFlight = null
+}
+
+/**
+ * Translations available with no network round-trip: public-domain BSB always, plus ESV when
+ * its key is set (the ESV entry is static). Only API.Bible versions (NKJV/NASB) need a catalog
+ * lookup, so reading BSB or ESV must never wait on {@link getRegistry}.
+ */
+function instantRegistry(): RegEntry[] {
+  const out: RegEntry[] = [...FREE_USE]
+  if (getEsvKey()) out.push(ESV_ENTRY)
+  return out
 }
 
 async function getRegistry(): Promise<RegEntry[]> {
@@ -76,12 +91,29 @@ async function getRegistry(): Promise<RegEntry[]> {
   const esvKey = getEsvKey()
   const sig = `${apiBibleKey ? '1' : '0'}:${esvKey ? '1' : '0'}`
   if (resolvedRegistry && resolvedSig === sig) return resolvedRegistry
-  const out: RegEntry[] = [...FREE_USE]
-  if (apiBibleKey) out.push(...(await resolveApiBible(apiBibleKey)))
-  if (esvKey) out.push(ESV_ENTRY)
-  resolvedRegistry = out
+  if (registryInFlight && resolvedSig === sig) return registryInFlight
   resolvedSig = sig
-  return out
+  const p = (async () => {
+    const out: RegEntry[] = [...FREE_USE]
+    if (apiBibleKey) out.push(...(await resolveApiBible(apiBibleKey)))
+    if (esvKey) out.push(ESV_ENTRY)
+    return out
+  })()
+  registryInFlight = p
+  // Cache the result only if this resolution is still the current one (a key change between
+  // start and finish supersedes it via invalidateRegistry, and must not resurrect stale data).
+  p.then(
+    (out) => {
+      if (registryInFlight === p) {
+        resolvedRegistry = out
+        registryInFlight = null
+      }
+    },
+    () => {
+      if (registryInFlight === p) registryInFlight = null
+    }
+  )
+  return p
 }
 
 function toPublic(e: RegEntry): ScriptureTranslation {
@@ -222,7 +254,11 @@ interface AbChapterResponse {
 async function resolveApiBible(key: string): Promise<RegEntry[]> {
   let bibles: AbBible[] = []
   try {
-    const res = await fetch(`${AB_BASE}/bibles?language=eng`, { headers: { 'api-key': key } })
+    const res = await fetch(`${AB_BASE}/bibles?language=eng`, {
+      headers: { 'api-key': key },
+      // Never let a slow/unreachable catalog hang the resolution; the free-use registry still works.
+      signal: AbortSignal.timeout(8000)
+    })
     if (res.ok) bibles = ((await res.json()) as AbBiblesResponse).data ?? []
   } catch {
     return []
@@ -346,11 +382,18 @@ export async function getChapter(
   book: string,
   chapter: number
 ): Promise<ScripturePassage | null> {
-  const reg = await getRegistry()
-  const entry = reg.find((r) => r.id === translation) ?? reg[0]
   const def = bookByCode(book)
-  if (!entry || !def) return null
+  if (!def) return null
   if (chapter < 1 || chapter > def.chapters) return null
+  // Serve BSB/ESV straight from the instant registry so an offline-cached chapter opens with no
+  // network wait. Only a copyrighted API.Bible version falls back to the full (catalog-resolved)
+  // registry — and it can only be the selected translation once that catalog has already loaded.
+  let entry = instantRegistry().find((r) => r.id === translation)
+  if (!entry) {
+    const reg = await getRegistry()
+    entry = reg.find((r) => r.id === translation) ?? reg[0]
+  }
+  if (!entry) return null
   const { verses, audio } = await loadChapter(entry, def.code, chapter)
   return {
     translation: entry.id,

@@ -364,6 +364,17 @@ for (const file of isAccs ? [] : files) {
     // Mark) or backward at all (a back-reference like "4:16" cited inside the chapter-10 comment)
     // is a citation, not a section boundary — fold its text back into the open excerpt.
     if (lastChapter !== null && (chapter > lastChapter + 1 || chapter < lastChapter)) {
+      // A forward jump is ambiguous: usually a cross-reference citation, but possibly a
+      // legitimately skipped chapter — which this fold would silently swallow (and, because
+      // lastChapter doesn't advance, cascade into losing the rest of the book). We can't tell
+      // the two apart from the number alone, so surface it: a lone warning is a harmless
+      // cross-ref; a flood of consecutive ones means a real chapter gap was lost — check the output.
+      if (chapter > lastChapter + 1) {
+        console.error(
+          `  warn: ${currentBook} — folded "${ref}" as a citation (chapter ${lastChapter} -> ${chapter}). ` +
+            `If ${currentBook} really skips to chapter ${chapter} here, verify this excerpt survived.`
+        )
+      }
       if (open) open.text += ' ' + ref + ' ' + body
       continue
     }

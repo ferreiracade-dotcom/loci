@@ -4,7 +4,9 @@ import {
   useEffect,
   useRef,
   useState,
+  type Dispatch,
   type ReactNode,
+  type SetStateAction,
   type TextareaHTMLAttributes
 } from 'react'
 import { Trash2, Plus, Pencil, Copy, Check, BookMarked, ExternalLink } from 'lucide-react'
@@ -78,6 +80,35 @@ export interface CardHandlers {
   /** Pass null/empty to reset the citation back to auto-generation. */
   onSetCitation: (id: string, citation: string | null) => void
   onDelete: (id: string) => void
+}
+
+/** The four quote-card handlers that are identical across every panel (optimistic tag/text/
+ *  annotation/citation edits, persisted then followed by a refresh). Each panel supplies its own
+ *  optimistic setter, refresh strategy (a local reload or a global token bump), and delete
+ *  behaviour — the only things that actually differ between the Quotes, QuoteGroup, and Scripture
+ *  panels, which previously kept three near-identical hand-wired copies that had already drifted. */
+export function makeQuoteCardHandlers({
+  setQuotes,
+  refresh,
+  onDelete
+}: {
+  setQuotes: Dispatch<SetStateAction<Quote[]>>
+  refresh: () => void
+  onDelete: (id: string) => void
+}): CardHandlers {
+  return {
+    onSetTags: (id, tags) => void api.setQuoteTags(id, tags).then(refresh),
+    onSetAnnotations: (id, annotations) => {
+      setQuotes((qs) => qs.map((q) => (q.id === id ? { ...q, annotations } : q)))
+      void api.setQuoteAnnotations(id, annotations)
+    },
+    onSetText: (id, text) => {
+      setQuotes((qs) => qs.map((q) => (q.id === id ? { ...q, text } : q)))
+      void api.setQuoteText(id, text).then(refresh)
+    },
+    onSetCitation: (id, citation) => void api.setQuoteCitation(id, citation).then(refresh),
+    onDelete
+  }
 }
 
 export function QuoteCard({
@@ -404,23 +435,15 @@ export function QuotesPanel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reload, noteReloadToken, storeQuotes])
 
-  const handlers: CardHandlers = {
-    onSetTags: (id, tags) => void api.setQuoteTags(id, tags).then(reload),
-    onSetAnnotations: (id, annotations) => {
-      setQuotes((qs) => qs.map((q) => (q.id === id ? { ...q, annotations } : q)))
-      void api.setQuoteAnnotations(id, annotations)
-    },
-    onSetText: (id, text) => {
-      setQuotes((qs) => qs.map((q) => (q.id === id ? { ...q, text } : q)))
-      void api.setQuoteText(id, text).then(reload)
-    },
-    onSetCitation: (id, citation) => void api.setQuoteCitation(id, citation).then(reload),
+  const handlers = makeQuoteCardHandlers({
+    setQuotes,
+    refresh: reload,
     onDelete: (id) =>
       void api
         .deleteQuote(id)
         .then(reload)
         .then(() => refreshLibrary())
-  }
+  })
 
   const book = books.find((b) => b.id === selectedBookId) ?? null
 

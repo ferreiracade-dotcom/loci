@@ -297,7 +297,7 @@ const migrations: Migration[] = [
         CREATE INDEX idx_excerpts_lookup ON commentary_excerpts(book, chapter_start, chapter_end);
         CREATE INDEX idx_excerpts_source ON commentary_excerpts(source_id);
 
-        INSERT INTO tags (id, name) VALUES ('tag-commentary', 'commentary');
+        INSERT OR IGNORE INTO tags (id, name) VALUES ('tag-commentary', 'commentary');
       `)
     }
   },
@@ -336,10 +336,13 @@ const migrations: Migration[] = [
   }
 ]
 
-export function runMigrations(db: Database.Database): void {
+export function runMigrations(
+  db: Database.Database,
+  throughVersion = Number.POSITIVE_INFINITY
+): void {
   const current = db.pragma('user_version', { simple: true }) as number
   for (const m of migrations) {
-    if (m.version > current) {
+    if (m.version > current && m.version <= throughVersion) {
       const tx = db.transaction(() => {
         m.up(db)
         db.pragma(`user_version = ${m.version}`)

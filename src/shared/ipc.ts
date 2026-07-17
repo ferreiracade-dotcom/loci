@@ -53,7 +53,6 @@ export const Channels = {
   listCommentaryQuotes: 'quotes:listCommentary',
   listQuoteGroups: 'quotes:listGroups',
   listAllQuotes: 'quotes:listAll',
-  getBookNote: 'notes:getBookNote',
   saveNote: 'notes:save',
   readNote: 'notes:read',
   listStandaloneNotes: 'notes:listStandalone',
@@ -274,7 +273,6 @@ export interface LociApi {
   /** Every saved quote (book/Scripture/commentary alike), for cross-cutting groupings
    *  (by author, by tag) that aren't tied to a single book/source. */
   listAllQuotes(): Promise<Quote[]>
-  getBookNote(bookId: string): Promise<BookNote | null>
   saveNote(path: string, content: string): Promise<void>
   readNote(path: string): Promise<string>
   listStandaloneNotes(): Promise<NoteSummary[]>
@@ -479,12 +477,6 @@ export interface QuoteGroups {
   scripture: { book: string; chapter: number; name: string; count: number }[]
   /** Commentary sources with captured quotes. */
   commentary: { sourceId: string; displayName: string; author: string | null; count: number }[]
-}
-
-export interface BookNote {
-  /** Vault-relative path to the markdown note. */
-  path: string
-  content: string
 }
 
 export interface Annotation {
