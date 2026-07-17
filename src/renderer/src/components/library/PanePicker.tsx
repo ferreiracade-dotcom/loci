@@ -12,7 +12,7 @@ import {
   Check
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
-import type { PaneContent } from '../../store/useStore'
+import type { TabContent } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { bookByCode, BOOKS } from '@shared/scriptureRef'
 import { bookMatchesQuery } from '../../lib/bookSearch'
@@ -37,19 +37,19 @@ function scriptureLabel(item: { book: string; chapter: number }): string {
  * offers that project's sources, plus a real content search scoped to just that collection.
  */
 export function PanePicker({
-  paneId,
+  tabId,
   heading,
   restrictToProject
 }: {
-  paneId?: string
+  tabId?: string
   heading?: string
   restrictToProject?: ProjectItem[]
 }) {
   const notes = useStore((s) => s.standaloneNotes)
   const books = useStore((s) => s.books)
-  const setPaneContent = useStore((s) => s.setPaneContent)
-  const createNoteInPane = useStore((s) => s.createNoteInPane)
-  const openInPane = useStore((s) => s.openInPane)
+  const setTabContent = useStore((s) => s.setTabContent)
+  const createNoteInTab = useStore((s) => s.createNoteInTab)
+  const openTab = useStore((s) => s.openTab)
   const createNote = useStore((s) => s.createNote)
   const scripturePassage = useStore((s) => s.scripturePassage)
   const scriptureTranslation = useStore((s) => s.scriptureTranslation)
@@ -125,10 +125,10 @@ export function PanePicker({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, restrictToProject])
 
-  // Fill the target pane, or open into a fresh pane when there's no target.
-  const place = (content: PaneContent): void => {
-    if (paneId) setPaneContent(paneId, content)
-    else openInPane(content)
+  // Fill the target tab, or open a fresh tab when there's no target.
+  const place = (content: TabContent): void => {
+    if (tabId) setTabContent(tabId, content)
+    else openTab(content)
   }
   const placeBible = (book: string, chapter: number): void => {
     place({ kind: 'bible', book, chapter, highlight: [], translation: scriptureTranslation })
@@ -147,8 +147,8 @@ export function PanePicker({
   }
   const newNote = (): void => {
     if (!query) return
-    if (paneId) {
-      void createNoteInPane(paneId, query).then((note) => {
+    if (tabId) {
+      void createNoteInTab(tabId, query).then((note) => {
         if (restrictToProject) void addProjectItem({ kind: 'note', path: note.path })
       })
     } else {
@@ -157,7 +157,7 @@ export function PanePicker({
   }
   const newProject = (): void => {
     if (!query) return
-    if (paneId) void createNoteInPane(paneId, query, 'project')
+    if (tabId) void createNoteInTab(tabId, query, 'project')
     else void createNote(query, 'project')
   }
 
