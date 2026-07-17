@@ -3966,6 +3966,8 @@ select.field {
   color: var(--accent);
   background: var(--accent-12);
   border-radius: 999px;
+  border: none;
+  cursor: pointer;
 }
 .note-cm {
   flex: 1;
