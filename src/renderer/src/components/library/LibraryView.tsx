@@ -28,6 +28,7 @@ import { BookInfoDrawer } from './BookInfoDrawer'
 import { ShelvesManager } from './ShelvesManager'
 import { CommentariesManager } from './CommentariesManager'
 import { DriveStatus } from './DriveStatus'
+import { OpenElsewhereItems } from './OpenElsewhere'
 import type { Book, PdfSource, ReadingStatus } from '@shared/ipc'
 
 const SOURCE_META: Record<PdfSource, string> = {
@@ -602,6 +603,10 @@ export function LibraryView() {
               >
                 <BookOpen size={14} /> Read
               </button>
+              <OpenElsewhereItems
+                content={{ kind: 'pdf', bookId: mb.id }}
+                onDone={() => setMenu(null)}
+              />
               <button
                 className="ctx-item"
                 onClick={() => {

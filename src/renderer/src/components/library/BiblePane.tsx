@@ -5,6 +5,7 @@ import type { Tab } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { BOOKS, parseReference } from '@shared/scriptureRef'
 import { ScriptureReader } from './ScriptureReader'
+import { useOpenElsewhereMenu } from './OpenElsewhere'
 
 /**
  * A Bible in a center workspace pane: the collapsible book-nav drawer (lifted from the old
@@ -27,6 +28,7 @@ export function BiblePane({
   const openTabInSplit = useStore((s) => s.openTabInSplit)
   const setScriptureTranslation = useStore((s) => s.setScriptureTranslation)
   const verseClicked = useStore((s) => s.verseClicked)
+  const { onContextMenu, menu } = useOpenElsewhereMenu()
 
   const translation = tab.translation || defaultTranslation
   const book = tab.book ?? 'JHN'
@@ -114,6 +116,15 @@ export function BiblePane({
                   key={ch}
                   className={`sv-chap${book === b.code && chapter === ch ? ' active' : ''}`}
                   onClick={() => navigate(b.code, ch)}
+                  onContextMenu={(e) =>
+                    onContextMenu(e, {
+                      kind: 'bible',
+                      book: b.code,
+                      chapter: ch,
+                      highlight: [],
+                      translation
+                    })
+                  }
                 >
                   {ch}
                 </button>
@@ -210,6 +221,7 @@ export function BiblePane({
           <div className="sr-loading">Loading Bible…</div>
         )}
       </div>
+      {menu}
     </div>
   )
 }

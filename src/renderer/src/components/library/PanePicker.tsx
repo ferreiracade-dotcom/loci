@@ -9,17 +9,19 @@ import {
   Search as SearchIcon,
   ChevronRight,
   ChevronDown,
-  Check
+  Check,
+  Quote
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
-import type { TabContent } from '../../store/useStore'
+import type { TabContent, QuoteGroupRef } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { bookByCode, BOOKS } from '@shared/scriptureRef'
 import { bookMatchesQuery } from '../../lib/bookSearch'
 import { SearchResults } from './SearchResults'
 import { BookListRow } from './LibraryView'
 import { ScriptureReader } from './ScriptureReader'
-import type { ProjectItem, SearchHit } from '@shared/ipc'
+import { useOpenElsewhereMenu } from './OpenElsewhere'
+import type { ProjectItem, QuoteGroups, SearchHit } from '@shared/ipc'
 
 type AddTab = 'notes' | 'library' | 'bible'
 
@@ -64,6 +66,16 @@ export function PanePicker({
     if (scriptureTranslations.length === 0) void loadScripture()
   }, [scriptureTranslations.length, loadScripture])
 
+  const { onContextMenu, menu } = useOpenElsewhereMenu()
+  const [quoteGroups, setQuoteGroups] = useState<QuoteGroups>({ books: [], scripture: [], commentary: [] })
+
+  // Load once (and whenever the translation changes, since scripture-quote groups are
+  // translation-scoped) — not debounced/query-dependent, matching the Notes/Library pattern
+  // of filtering an already-loaded list client-side rather than a live search call.
+  useEffect(() => {
+    void api.listQuoteGroups(scriptureTranslation || 'BSB').then(setQuoteGroups)
+  }, [scriptureTranslation])
+
   const [q, setQ] = useState('')
   const [contentHits, setContentHits] = useState<SearchHit[]>([])
   const [addTab, setAddTab] = useState<AddTab>('notes')
@@ -94,6 +106,16 @@ export function PanePicker({
   const scriptureHits = scriptureItems.filter(
     (s) => !ql || scriptureLabel(s).toLowerCase().includes(ql)
   )
+
+  const quoteBookHits = restrictToProject
+    ? []
+    : quoteGroups.books.filter((b) => !ql || b.title.toLowerCase().includes(ql))
+  const quoteScriptureHits = restrictToProject
+    ? []
+    : quoteGroups.scripture.filter((s) => !ql || s.name.toLowerCase().includes(ql))
+  const quoteCommentaryHits = restrictToProject
+    ? []
+    : quoteGroups.commentary.filter((c) => !ql || c.displayName.toLowerCase().includes(ql))
 
   // "Add a source" mirrors the real Notes/Library lists (minus what's already in the project)
   // so a source can be added by browsing, not just by dragging in from the reference panel.
@@ -220,7 +242,19 @@ export function PanePicker({
             {scriptureHits.length > 0 && <div className="pp-sec">Scripture</div>}
             {scriptureHits.map((s) => (
               <div className="pp-row" key={`${s.book}:${s.chapter}`}>
-                <button className="pp-item" onClick={() => placeBible(s.book, s.chapter)}>
+                <button
+                  className="pp-item"
+                  onClick={() => placeBible(s.book, s.chapter)}
+                  onContextMenu={(e) =>
+                    onContextMenu(e, {
+                      kind: 'bible',
+                      book: s.book,
+                      chapter: s.chapter,
+                      highlight: [],
+                      translation: scriptureTranslation
+                    })
+                  }
+                >
                   <ScrollText size={14} />
                   <span className="pp-item-title">{scriptureLabel(s)}</span>
                 </button>
@@ -238,7 +272,11 @@ export function PanePicker({
             {noteHits.length > 0 && <div className="pp-sec">Notes</div>}
             {noteHits.map((n) => (
               <div className="pp-row" key={n.path}>
-                <button className="pp-item" onClick={() => place({ kind: 'note', notePath: n.path })}>
+                <button
+                  className="pp-item"
+                  onClick={() => place({ kind: 'note', notePath: n.path })}
+                  onContextMenu={(e) => onContextMenu(e, { kind: 'note', notePath: n.path })}
+                >
                   <FileText size={14} />
                   <span className="pp-item-title">{n.title}</span>
                 </button>
@@ -256,7 +294,11 @@ export function PanePicker({
             {bookHits.length > 0 && <div className="pp-sec">Library</div>}
             {bookHits.map((b) => (
               <div className="pp-row" key={b.id}>
-                <button className="pp-item" onClick={() => place({ kind: 'pdf', bookId: b.id })}>
+                <button
+                  className="pp-item"
+                  onClick={() => place({ kind: 'pdf', bookId: b.id })}
+                  onContextMenu={(e) => onContextMenu(e, { kind: 'pdf', bookId: b.id })}
+                >
                   <BookOpen size={14} />
                   <span className="pp-item-title">{b.title}</span>
                 </button>
@@ -271,13 +313,72 @@ export function PanePicker({
                 )}
               </div>
             ))}
-            {scriptureHits.length === 0 && noteHits.length === 0 && bookHits.length === 0 && (
-              <div className="pp-empty">
-                {restrictToProject
-                  ? 'No sources yet — add one below, or drag a book, note, or Bible chapter in from the reference panel.'
-                  : 'No matches. Type a name above to create a note.'}
-              </div>
+            {(quoteBookHits.length > 0 || quoteScriptureHits.length > 0 || quoteCommentaryHits.length > 0) && (
+              <div className="pp-sec">Quotes</div>
             )}
+            {quoteBookHits.map((b) => {
+              const ref: QuoteGroupRef = { type: 'book', bookId: b.bookId, title: b.title }
+              return (
+                <div className="pp-row" key={`qb-${b.bookId}`}>
+                  <button
+                    className="pp-item"
+                    onClick={() => place({ kind: 'quotes', quotesGroup: ref })}
+                    onContextMenu={(e) => onContextMenu(e, { kind: 'quotes', quotesGroup: ref })}
+                  >
+                    <Quote size={14} />
+                    <span className="pp-item-title">{b.title}</span>
+                  </button>
+                </div>
+              )
+            })}
+            {quoteScriptureHits.map((s) => {
+              const ref: QuoteGroupRef = {
+                type: 'scripture',
+                book: s.book,
+                chapter: s.chapter,
+                translation: scriptureTranslation,
+                name: s.name
+              }
+              return (
+                <div className="pp-row" key={`qs-${s.book}:${s.chapter}`}>
+                  <button
+                    className="pp-item"
+                    onClick={() => place({ kind: 'quotes', quotesGroup: ref })}
+                    onContextMenu={(e) => onContextMenu(e, { kind: 'quotes', quotesGroup: ref })}
+                  >
+                    <Quote size={14} />
+                    <span className="pp-item-title">{s.name}</span>
+                  </button>
+                </div>
+              )
+            })}
+            {quoteCommentaryHits.map((c) => {
+              const ref: QuoteGroupRef = { type: 'commentary', sourceId: c.sourceId, displayName: c.displayName }
+              return (
+                <div className="pp-row" key={`qc-${c.sourceId}`}>
+                  <button
+                    className="pp-item"
+                    onClick={() => place({ kind: 'quotes', quotesGroup: ref })}
+                    onContextMenu={(e) => onContextMenu(e, { kind: 'quotes', quotesGroup: ref })}
+                  >
+                    <Quote size={14} />
+                    <span className="pp-item-title">{c.displayName}</span>
+                  </button>
+                </div>
+              )
+            })}
+            {scriptureHits.length === 0 &&
+              noteHits.length === 0 &&
+              bookHits.length === 0 &&
+              quoteBookHits.length === 0 &&
+              quoteScriptureHits.length === 0 &&
+              quoteCommentaryHits.length === 0 && (
+                <div className="pp-empty">
+                  {restrictToProject
+                    ? 'No sources yet — add one below, or drag a book, note, or Bible chapter in from the reference panel.'
+                    : 'No matches. Type a name above to create a note.'}
+                </div>
+              )}
           </div>
         )}
 
@@ -437,6 +538,7 @@ export function PanePicker({
           </div>
         )}
       </div>
+      {menu}
     </div>
   )
 }
