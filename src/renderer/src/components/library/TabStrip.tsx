@@ -159,15 +159,15 @@ export function TabStrip({
             </div>
             {menuTabId === tab.id && menuPos && (
               <div
-                className="tab-menu"
-                style={{ position: 'fixed', top: menuPos.top, left: menuPos.left }}
+                className="ctx-menu"
+                style={{ top: menuPos.top, left: menuPos.left }}
                 onMouseLeave={() => {
                   setMenuTabId(null)
                   setMenuPos(null)
                 }}
               >
                 <button
-                  className="tab-menu-item"
+                  className="ctx-item"
                   onClick={() => {
                     moveTabToSplit(tab.id)
                     setMenuTabId(null)

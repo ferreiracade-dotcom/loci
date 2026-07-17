@@ -286,34 +286,6 @@ select.field {
   color: var(--accent);
   background: var(--accent-12);
 }
-.tab-menu {
-  /* position/top/left are set inline (fixed, computed from the tab's rect) so the menu
-     escapes .tab-strip's overflow-y: hidden instead of being clipped by it. */
-  z-index: 20;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
-  padding: 4px;
-  min-width: 150px;
-}
-.tab-menu-item {
-  display: block;
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: none;
-  padding: 6px 8px;
-  border-radius: 4px;
-  color: var(--text);
-  font-family: var(--font-ui);
-  font-size: 12px;
-  cursor: pointer;
-}
-.tab-menu-item:hover {
-  background: var(--accent-12);
-  color: var(--accent);
-}
 .ws-pane {
   min-width: 0;
   min-height: 0;
