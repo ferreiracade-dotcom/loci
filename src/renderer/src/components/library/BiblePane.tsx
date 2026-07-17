@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Search, PanelLeftClose, PanelLeftOpen, Columns2, Replace } from 'lucide-react'
 import { useStore } from '../../store/useStore'
-import type { Pane } from '../../store/useStore'
+import type { Tab } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { BOOKS, parseReference } from '@shared/scriptureRef'
 import { ScriptureReader } from './ScriptureReader'
@@ -12,26 +12,26 @@ import { ScriptureReader } from './ScriptureReader'
  * update *this* pane only; "Compare" opens a second Bible pane beside it.
  */
 export function BiblePane({
-  pane,
+  tab,
   onClose,
   onReplace
 }: {
-  pane: Pane
+  tab: Tab
   onClose?: () => void
   onReplace?: () => void
 }) {
   const translations = useStore((s) => s.scriptureTranslations)
   const defaultTranslation = useStore((s) => s.scriptureTranslation)
   const loadScripture = useStore((s) => s.loadScripture)
-  const setPaneContent = useStore((s) => s.setPaneContent)
-  const openInPane = useStore((s) => s.openInPane)
+  const setTabContent = useStore((s) => s.setTabContent)
+  const openTabInSplit = useStore((s) => s.openTabInSplit)
   const setScriptureTranslation = useStore((s) => s.setScriptureTranslation)
   const verseClicked = useStore((s) => s.verseClicked)
 
-  const translation = pane.translation || defaultTranslation
-  const book = pane.book ?? 'JHN'
-  const chapter = pane.chapter ?? 1
-  const highlight = pane.highlight ?? []
+  const translation = tab.translation || defaultTranslation
+  const book = tab.book ?? 'JHN'
+  const chapter = tab.chapter ?? 1
+  const highlight = tab.highlight ?? []
 
   const [refInput, setRefInput] = useState('')
   const [refError, setRefError] = useState(false)
@@ -60,19 +60,19 @@ export function BiblePane({
   }
 
   const navigate = (b: string, c: number, hl: number[] = []): void => {
-    setPaneContent(pane.id, { kind: 'bible', book: b, chapter: c, highlight: hl, translation })
+    setTabContent(tab.id, { kind: 'bible', book: b, chapter: c, highlight: hl, translation })
     void api.setSession('lastScripture', JSON.stringify({ book: b, chapter: c }))
   }
 
   const pickTranslation = (id: string): void => {
-    setPaneContent(pane.id, { kind: 'bible', book, chapter, highlight, translation: id })
+    setTabContent(tab.id, { kind: 'bible', book, chapter, highlight, translation: id })
     setScriptureTranslation(id)
   }
 
-  // "Compare" = a second Bible pane beside this one, defaulted to another translation.
+  // "Compare" = a second Bible tab beside this one, defaulted to another translation.
   const openCompare = (): void => {
     const other = translations.find((t) => t.id !== translation)?.id ?? translation
-    openInPane({ kind: 'bible', book, chapter, highlight, translation: other }, { split: true })
+    openTabInSplit({ kind: 'bible', book, chapter, highlight, translation: other })
   }
 
   const goToRef = (e: React.FormEvent): void => {
