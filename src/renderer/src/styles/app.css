@@ -331,28 +331,6 @@ select.field {
   box-shadow: inset 0 0 0 2px var(--accent);
   background: var(--accent-12);
 }
-.pane-head {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 8px;
-  border-bottom: 1px solid var(--border);
-  background: var(--panel);
-  flex: 0 0 auto;
-  color: var(--muted);
-}
-.pane-frame.active .pane-head {
-  color: var(--text);
-}
-.pane-title {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-family: var(--font-ui);
-  font-size: 12px;
-}
 .pane-back {
   display: inline-flex;
   align-items: center;
@@ -385,32 +363,6 @@ select.field {
   min-width: 0;
   min-height: 0;
 }
-/* Accent the focused pane only when two panes are open. */
-.center-workspace .ws-pane:not(:only-child) .pane-frame.active .pane-head {
-  box-shadow: inset 0 2px 0 var(--accent);
-}
-/* Bible panes have no pane-head, so accent the frame itself. */
-.center-workspace .ws-pane:not(:only-child) .pane-frame.headerless.active {
-  box-shadow: inset 0 2px 0 var(--accent);
-}
-
-/* "Open a second pane" strip, shown when a single pane is open. */
-.ws-add {
-  flex: 0 0 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-left: 1px solid var(--border);
-  background: var(--panel);
-  color: var(--muted);
-  cursor: pointer;
-}
-.ws-add:hover {
-  color: var(--accent);
-  background: var(--accent-12);
-}
-
 /* Empty-pane content picker */
 .pane-picker {
   flex: 1;

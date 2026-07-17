@@ -1,12 +1,13 @@
 import { useState } from 'react'
-import { X, FileText, BookOpen, ChevronLeft, Replace, LayoutPanelTop, Quote } from 'lucide-react'
 import { useStore } from '../../store/useStore'
-import type { Pane } from '../../store/useStore'
+import type { PaneMeta } from '../../store/useStore'
 import { RichNoteEditor } from './RichNoteEditor'
 import { PdfReader } from './PdfReader'
 import { BiblePane } from './BiblePane'
 import { PanePicker } from './PanePicker'
 import { QuoteGroupPane } from './QuoteGroupPane'
+import { TabStrip } from './TabStrip'
+import type { HoverTarget } from './TabStrip'
 
 /** Read whichever project-item drag payload is present on a drop event, if any. */
 function projectItemFromDrag(e: React.DragEvent): { kind: 'book' | 'note' | 'scripture'; value: string } | null {
@@ -19,36 +20,44 @@ function projectItemFromDrag(e: React.DragEvent): { kind: 'book' | 'note' | 'scr
   return null
 }
 
-/** One center-workspace pane: a slim header (kind + title + close) over the reused body. */
+/** One center-workspace pane: a tab strip over the active tab's reused body. */
 export function PaneFrame({
   pane,
-  active,
-  onClose
+  focused,
+  dragTabId,
+  hover,
+  onDragStart,
+  onHover,
+  onDrop,
+  onDragCancel
 }: {
-  pane: Pane
-  active: boolean
-  onClose: () => void
+  pane: PaneMeta
+  focused: boolean
+  dragTabId: string | null
+  hover: HoverTarget | null
+  onDragStart: (tabId: string) => void
+  onHover: (target: HoverTarget | null) => void
+  onDrop: () => void
+  onDragCancel: () => void
 }) {
-  const books = useStore((s) => s.books)
-  const notes = useStore((s) => s.standaloneNotes)
-  const saveLayout = useStore((s) => s.saveLayout)
-  const setPaneEmpty = useStore((s) => s.setPaneEmpty)
-  const panes = useStore((s) => s.panes)
+  const tabs = useStore((s) => s.tabs)
   const activeProject = useStore((s) => s.activeProject)
   const addProjectItem = useStore((s) => s.addProjectItem)
+  const resetTabToPicker = useStore((s) => s.resetTabToPicker)
+  const closeTab = useStore((s) => s.closeTab)
   const [dragOver, setDragOver] = useState(false)
 
-  const replace = (): void => setPaneEmpty(pane.id)
+  const tab = tabs.find((t) => t.id === pane.activeTabId)
 
-  // If this pane's sibling is the active Project note, this pane is the sources surface —
-  // its (empty-state) picker offers only the project's items instead of the whole library.
-  const projectPane = panes.find((p) => p.kind === 'note' && p.notePath === activeProject?.path)
-  const isProjectSibling = !!projectPane && projectPane.id !== pane.id
-  // Both the sources surface (pane 2) and the project note's own pane accept a dropped
-  // reference-panel item, adding it to the project's collection.
-  const isProjectDropTarget = isProjectSibling || (!!activeProject && pane.id === projectPane?.id)
+  // If this pane's sibling holds the active Project note, this pane is the sources surface —
+  // its picker tabs offer only the project's items instead of the whole library.
+  const projectTab = tabs.find((t) => t.kind === 'note' && t.notePath === activeProject?.path)
+  const isProjectSibling = !!projectTab && projectTab.paneId !== pane.id
+  // Both the sources surface and the project note's own pane accept a dropped reference-panel
+  // item, adding it to the project's collection.
+  const isProjectDropTarget = isProjectSibling || (!!activeProject && pane.id === projectTab?.paneId)
 
-  const onDrop = (e: React.DragEvent): void => {
+  const onDropItem = (e: React.DragEvent): void => {
     if (!isProjectDropTarget || !activeProject) return
     e.preventDefault()
     setDragOver(false)
@@ -62,64 +71,33 @@ export function PaneFrame({
     }
   }
 
-  // Bible panes carry their own rich header (book nav + reader title + translation), so they
-  // skip the generic pane header — the close + change controls live in the reader/nav.
-  if (pane.kind === 'bible' && pane.book && pane.chapter != null) {
-    return (
-      <div className={`pane-frame headerless${active ? ' active' : ''}`}>
-        <div className="pane-body">
-          <BiblePane key={pane.id} pane={pane} onClose={onClose} onReplace={replace} />
-        </div>
-      </div>
+  let body: React.ReactNode = (
+    <PanePicker
+      heading="Open a note, a book, or the Bible"
+      restrictToProject={isProjectSibling ? activeProject?.items : undefined}
+    />
+  )
+
+  if (tab?.kind === 'pdf' && tab.bookId) {
+    body = <PdfReader key={tab.id} bookId={tab.bookId} embedded />
+  } else if (tab?.kind === 'note' && tab.notePath) {
+    body = <RichNoteEditor key={tab.id} path={tab.notePath} />
+  } else if (tab?.kind === 'quotes' && tab.quotesGroup) {
+    body = <QuoteGroupPane key={tab.id} group={tab.quotesGroup} />
+  } else if (tab?.kind === 'bible' && tab.book && tab.chapter != null) {
+    body = (
+      <BiblePane
+        key={tab.id}
+        tab={tab}
+        onClose={() => closeTab(tab.id)}
+        onReplace={() => resetTabToPicker(tab.id)}
+      />
     )
-  }
-
-  // Closing a book should land back on the library grid, not the empty workspace.
-  const backToLibrary = (): void => {
-    onClose()
-    saveLayout({ activeLeftView: 'library' })
-  }
-
-  let icon = <FileText size={13} />
-  let title = 'Pane'
-  let body: React.ReactNode = null
-  let canReplace = false
-
-  if (pane.kind === 'pdf' && pane.bookId) {
-    icon = <BookOpen size={13} />
-    title = books.find((b) => b.id === pane.bookId)?.title ?? 'Document'
-    body = <PdfReader key={pane.bookId} bookId={pane.bookId} embedded />
-    canReplace = true
-  } else if (pane.kind === 'note' && pane.notePath) {
-    icon = <FileText size={13} />
-    title = notes.find((n) => n.path === pane.notePath)?.title ?? 'Note'
-    body = <RichNoteEditor key={pane.notePath} path={pane.notePath} />
-    canReplace = true
-  } else if (pane.kind === 'quotes' && pane.quotesGroup) {
-    const g = pane.quotesGroup
-    icon = <Quote size={13} />
-    title =
-      g.type === 'book'
-        ? g.title
-        : g.type === 'scripture'
-          ? g.chapter != null
-            ? `${g.name} ${g.chapter}`
-            : g.name
-          : g.type === 'commentary'
-            ? g.displayName
-            : g.type === 'author'
-              ? g.author
-              : g.tag
-                ? `#${g.tag}`
-                : 'Untagged'
-    body = <QuoteGroupPane key={JSON.stringify(g)} group={g} />
-    canReplace = true
-  } else if (pane.kind === 'empty') {
-    icon = <LayoutPanelTop size={13} />
-    title = isProjectSibling ? 'Project sources' : 'New pane'
+  } else if (tab?.kind === 'picker') {
     body = (
       <PanePicker
-        paneId={pane.id}
+        key={tab.id}
+        tabId={tab.id}
         restrictToProject={isProjectSibling ? activeProject?.items : undefined}
       />
     )
@@ -127,35 +105,25 @@ export function PaneFrame({
 
   return (
     <div
-      className={`pane-frame${active ? ' active' : ''}${dragOver ? ' drag-over' : ''}`}
+      className={`pane-frame${dragOver ? ' drag-over' : ''}`}
       onDragOver={(e) => {
         if (!isProjectDropTarget) return
         e.preventDefault()
         setDragOver(true)
       }}
       onDragLeave={() => setDragOver(false)}
-      onDrop={onDrop}
+      onDrop={onDropItem}
     >
-      <div className="pane-head">
-        {icon}
-        <span className="pane-title" title={title}>
-          {title}
-        </span>
-        {pane.kind === 'pdf' && (
-          <button className="pane-back" title="Back to Library" onClick={backToLibrary}>
-            <ChevronLeft size={13} />
-            Library
-          </button>
-        )}
-        {canReplace && (
-          <button className="icon-btn" title="Change content" onClick={replace}>
-            <Replace size={13} />
-          </button>
-        )}
-        <button className="icon-btn" title="Close pane" onClick={onClose}>
-          <X size={13} />
-        </button>
-      </div>
+      <TabStrip
+        paneId={pane.id}
+        focused={focused}
+        dragTabId={dragTabId}
+        hover={hover}
+        onDragStart={onDragStart}
+        onHover={onHover}
+        onDrop={onDrop}
+        onDragCancel={onDragCancel}
+      />
       <div className="pane-body">{body}</div>
     </div>
   )
