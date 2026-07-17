@@ -465,6 +465,9 @@ export const useStore = create<Store>((set, get) => {
         activePaneId: null,
         paneRatio: 0.5,
         ...reflected,
+        // Seed the selected translation from config so a Bible pane can render its
+        // (offline-cached) text immediately, before the translation registry has resolved.
+        scriptureTranslation: data.config.scriptureTranslation || 'BSB',
         pendingPage: null,
         phase: 'welcome'
       })
@@ -939,15 +942,30 @@ export const useStore = create<Store>((set, get) => {
     },
 
     showScripture: async () => {
-      if (get().scriptureTranslations.length === 0) await get().loadScripture()
       const bible = get().panes.find((p) => p.kind === 'bible')
       if (bible) {
         get().focusPane(bible.id)
         get().saveLayout({ activeLeftView: 'reading' })
       } else {
-        const p = get().scripturePassage ?? { book: 'JHN', chapter: 1, highlight: [] }
-        get().navigateScripture(p.book, p.chapter, p.highlight)
+        // Open the reader from local state right away. The translation registry can hit the
+        // network to resolve copyrighted versions, so it must NOT gate the view switch — it is
+        // loaded in the background below and fills the translation picker when it arrives.
+        let passage = get().scripturePassage
+        if (!passage) {
+          const last = await api.getSession('lastScripture')
+          if (last) {
+            try {
+              const p = JSON.parse(last) as { book?: string; chapter?: number }
+              if (p.book && p.chapter) passage = { book: p.book, chapter: p.chapter, highlight: [] }
+            } catch {
+              /* ignore malformed session value */
+            }
+          }
+          if (!passage) passage = { book: 'JHN', chapter: 1, highlight: [] }
+        }
+        get().navigateScripture(passage.book, passage.chapter, passage.highlight)
       }
+      if (get().scriptureTranslations.length === 0) void get().loadScripture()
     },
 
     openScripture: async (refStr) => {
