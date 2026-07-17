@@ -17,6 +17,7 @@ import {
   validateRestoredTabs
 } from './workspace'
 import type { Tab, Workspace } from './workspace'
+import type { NoteSummary } from '@shared/ipc'
 
 describe('openTab', () => {
   it('creates the first pane and tab from an empty workspace', () => {
@@ -173,9 +174,9 @@ describe('setTabContent, focusTab, focusPane', () => {
 })
 
 describe('findProjectTab and reflectWorkspace', () => {
-  const notes = [
+  const notes: Pick<NoteSummary, 'path' | 'type'>[] = [
     { path: 'proj.md', type: 'project' },
-    { path: 'plain.md', type: undefined }
+    { path: 'plain.md', type: 'note' }
   ]
 
   it('finds the note tab whose note is a project', () => {
