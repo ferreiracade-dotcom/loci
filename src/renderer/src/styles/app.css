@@ -197,6 +197,124 @@ select.field {
   min-height: 0;
   display: flex;
 }
+.tab-strip {
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+  flex: 0 0 auto;
+}
+.center-workspace .ws-pane:not(:only-child) .tab-strip.pane-focused {
+  box-shadow: inset 0 2px 0 var(--accent);
+}
+.tab-slot {
+  display: flex;
+  align-items: stretch;
+  position: relative;
+  flex: 1 1 0;
+  min-width: 84px;
+  max-width: 200px;
+}
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+  padding: 6px 6px 6px 9px;
+  border-right: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+}
+.tab.active {
+  color: var(--text);
+  background: var(--base);
+}
+.tab.dragging {
+  opacity: 0.4;
+}
+.tab-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-ui);
+  font-size: 12px;
+}
+.tab-close {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: inherit;
+  border-radius: 4px;
+  padding: 2px;
+  cursor: pointer;
+}
+.tab-close:hover {
+  background: var(--accent-12);
+  color: var(--accent);
+}
+.tab-drop-indicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: -1px;
+  width: 2px;
+  background: var(--accent);
+  z-index: 1;
+}
+.tab-new {
+  flex: 0 0 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-left: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+}
+.tab-new:hover {
+  color: var(--accent);
+  background: var(--accent-12);
+}
+.tab-menu {
+  position: absolute;
+  top: 100%;
+  left: 4px;
+  z-index: 20;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  padding: 4px;
+  min-width: 150px;
+}
+.tab-menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 6px 8px;
+  border-radius: 4px;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  cursor: pointer;
+}
+.tab-menu-item:hover {
+  background: var(--accent-12);
+  color: var(--accent);
+}
 .ws-pane {
   min-width: 0;
   min-height: 0;
