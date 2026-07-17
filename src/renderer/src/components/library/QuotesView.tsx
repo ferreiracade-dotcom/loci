@@ -24,7 +24,7 @@ export function QuotesView() {
   const translation = useStore((s) => s.scriptureTranslation)
   const noteReloadToken = useStore((s) => s.noteReloadToken)
   const openQuotesGroup = useStore((s) => s.openQuotesGroup)
-  const panes = useStore((s) => s.panes)
+  const tabs = useStore((s) => s.tabs)
   const books = useStore((s) => s.books)
 
   const [groups, setGroups] = useState<QuoteGroups>({ books: [], scripture: [], commentary: [] })
@@ -95,19 +95,19 @@ export function QuotesView() {
     return { tags, untagged }
   }, [allQuotes])
 
-  // Light up the row whose group is open in a pane.
-  const activePane = panes.find((p) => p.kind === 'quotes')?.quotesGroup
+  // Light up the row whose group is open in a tab.
+  const activeGroup = tabs.find((t) => t.kind === 'quotes')?.quotesGroup
   const isActive = (ref: QuoteGroupRef): boolean => {
-    if (!activePane || activePane.type !== ref.type) return false
-    if (activePane.type === 'book' && ref.type === 'book') return activePane.bookId === ref.bookId
-    if (activePane.type === 'scripture' && ref.type === 'scripture') {
-      return activePane.book === ref.book && activePane.chapter === ref.chapter
+    if (!activeGroup || activeGroup.type !== ref.type) return false
+    if (activeGroup.type === 'book' && ref.type === 'book') return activeGroup.bookId === ref.bookId
+    if (activeGroup.type === 'scripture' && ref.type === 'scripture') {
+      return activeGroup.book === ref.book && activeGroup.chapter === ref.chapter
     }
-    if (activePane.type === 'commentary' && ref.type === 'commentary') {
-      return activePane.sourceId === ref.sourceId
+    if (activeGroup.type === 'commentary' && ref.type === 'commentary') {
+      return activeGroup.sourceId === ref.sourceId
     }
-    if (activePane.type === 'author' && ref.type === 'author') return activePane.author === ref.author
-    if (activePane.type === 'tag' && ref.type === 'tag') return activePane.tag === ref.tag
+    if (activeGroup.type === 'author' && ref.type === 'author') return activeGroup.author === ref.author
+    if (activeGroup.type === 'tag' && ref.type === 'tag') return activeGroup.tag === ref.tag
     return false
   }
 
