@@ -34,81 +34,35 @@ import type {
 
 export type Phase = 'loading' | 'wizard' | 'welcome' | 'ready'
 
-// --- Center workspace (Phase 8.7 Stage 3) ---
-// 'empty' is a not-yet-filled pane that shows the content picker.
-export type PaneKind = 'note' | 'bible' | 'pdf' | 'empty' | 'quotes'
+import {
+  EMPTY_WORKSPACE,
+  activeTab,
+  closeTab as pureCloseTab,
+  findProjectTab,
+  focusPane as pureFocusPane,
+  focusTab as pureFocusTab,
+  moveTab as pureMoveTab,
+  openTab as pureOpenTab,
+  otherPaneId,
+  reflectWorkspace,
+  reorderTab as pureReorderTab,
+  sanitizeWorkspace,
+  setTabContent as pureSetTabContent,
+  tabsForPane,
+  validateRestoredTabs
+} from './workspace'
+import type { PaneMeta, Tab, TabContent, Workspace, QuoteGroupRef } from './workspace'
+import { createSequentialQueue } from '../lib/sequentialQueue'
 
-/** A group of saved quotes opened in the center: a PDF, a Bible chapter, or a commentary source. */
-export type QuoteGroupRef =
-  | { type: 'book'; bookId: string; title: string }
-  // `chapter` omitted = every chapter of this book (the "Bible book" grouping mode).
-  | { type: 'scripture'; book: string; chapter?: number; translation: string; name: string }
-  | { type: 'commentary'; sourceId: string; displayName: string }
-  | { type: 'author'; author: string }
-  | { type: 'tag'; tag: string }
+export type { PaneMeta, Tab, TabContent, Workspace, QuoteGroupRef }
+export { tabsForPane, activeTab }
 
-/** One slot in the center workspace. Only the fields for its `kind` are set. */
-export interface Pane {
-  id: string
-  kind: PaneKind
-  notePath?: string
-  bookId?: string
-  book?: string
-  chapter?: number
-  highlight?: number[]
-  translation?: string
-  quotesGroup?: QuoteGroupRef
-}
-
-/** Content to place into a pane. */
-export type PaneContent =
-  | { kind: 'note'; notePath: string }
-  | { kind: 'pdf'; bookId: string }
-  | { kind: 'bible'; book: string; chapter: number; highlight?: number[]; translation?: string }
-  | { kind: 'quotes'; quotesGroup: QuoteGroupRef }
-
-function paneFromContent(c: PaneContent): Pane {
-  return { id: crypto.randomUUID(), ...c }
-}
-
-/**
- * Legacy "active context" fields derived from the focused pane, so peripheral consumers
- * (QuotesPanel, BacklinksPanel, ScriptureHighlightsPanel, ReferenceBiblePanel, …) keep
- * reporting what's focused in the center without being rewritten. Scripture fields are only
- * included when a Bible pane is present, so closing/focusing other panes never clobbers them.
- */
-function reflectPanes(panes: Pane[], activeId: string | null): Partial<Store> {
-  const active = panes.find((p) => p.id === activeId)
-  const pdf = active?.kind === 'pdf' ? active : panes.find((p) => p.kind === 'pdf')
-  const notePanes = panes.filter((p) => p.kind === 'note')
-  const activeNote = active?.kind === 'note' ? active : notePanes[0]
-  const biblePanes = panes.filter((p) => p.kind === 'bible')
-  const activeBible = active?.kind === 'bible' ? active : biblePanes[0]
-  const patch: Partial<Store> = {
-    openBookId: pdf?.bookId ?? null,
-    activeNotePath: activeNote?.notePath ?? null
-  }
-  if (activeBible?.book && activeBible.chapter != null) {
-    patch.scripturePassage = {
-      book: activeBible.book,
-      chapter: activeBible.chapter,
-      highlight: activeBible.highlight ?? []
-    }
-    if (activeBible.translation) patch.scriptureTranslation = activeBible.translation
-  }
-  return patch
-}
-
-/** The note pane (if any) whose note is a Project — independent of which pane has focus, since
- *  a project's sibling pane (the sources surface) restricts based on this, not on focus. */
-function findProjectPane(panes: Pane[], standaloneNotes: NoteSummary[]): Pane | null {
-  return (
-    panes.find(
-      (p) =>
-        p.kind === 'note' &&
-        standaloneNotes.find((n) => n.path === p.notePath)?.type === 'project'
-    ) ?? null
-  )
+/** Rewrite a project note's `items:` frontmatter line, preserving everything else. */
+async function writeProjectItems(path: string, items: ProjectItem[]): Promise<void> {
+  const raw = await api.readNote(path)
+  const { fm, body } = parseNote(raw)
+  fm.items = items
+  await api.saveNote(path, `${serializeFrontMatter(fm)}\n\n${body}`)
 }
 
 function sameProjectItem(a: ProjectItem, b: ProjectItem): boolean {
@@ -121,19 +75,22 @@ function sameProjectItem(a: ProjectItem, b: ProjectItem): boolean {
   return false
 }
 
-/** Rewrite a project note's `items:` frontmatter line, preserving everything else. */
-async function writeProjectItems(path: string, items: ProjectItem[]): Promise<void> {
-  const raw = await api.readNote(path)
-  const { fm, body } = parseNote(raw)
-  fm.items = items
-  await api.saveNote(path, `${serializeFrontMatter(fm)}\n\n${body}`)
-}
+const queuePersist = createSequentialQueue()
 
-function persistWorkspace(panes: Pane[], activePaneId: string | null, paneRatio: number): void {
-  // Don't persist not-yet-filled (empty) panes — they'd restore as blank pickers.
-  const keep = panes.filter((p) => p.kind !== 'empty')
-  const active = keep.some((p) => p.id === activePaneId) ? activePaneId : (keep[0]?.id ?? null)
-  void api.setSession('workspace', JSON.stringify({ panes: keep, activePaneId: active, paneRatio }))
+function persistWorkspace(
+  tabs: Tab[],
+  paneOrder: PaneMeta[],
+  activePaneId: string | null,
+  paneRatio: number
+): void {
+  // Don't persist picker tabs — they'd restore as blank pickers with nothing chosen yet.
+  const sanitized = sanitizeWorkspace({
+    tabs: tabs.filter((t) => t.kind !== 'picker'),
+    paneOrder,
+    activePaneId
+  })
+  const payload = JSON.stringify({ ...sanitized, paneRatio })
+  queuePersist(() => api.setSession('workspace', payload))
 }
 
 interface Store {
@@ -194,12 +151,14 @@ interface Store {
   /** Results of that lookup, grouped by source in the reference sidebar. */
   commentaryMatches: CommentaryMatch[]
 
-  // --- Center workspace (Phase 8.7 Stage 3) ---
-  /** Up to two typed panes (note/bible/pdf) shown in the center; the source of truth. */
-  panes: Pane[]
+  // --- Center workspace ---
+  /** Every open tab across both panes; the source of truth. */
+  tabs: Tab[]
+  /** Up to two panes, in left-to-right order. */
+  paneOrder: PaneMeta[]
   /** Focused pane — receives "open" actions and feeds the derived context fields. */
   activePaneId: string | null
-  /** Split ratio between the two panes (0.2–0.8). */
+  /** Split ratio between the two panes (0.2-0.8). */
   paneRatio: number
   /** The Project note open in either pane, and its source collection, or null. */
   activeProject: { path: string; items: ProjectItem[] } | null
@@ -294,17 +253,27 @@ interface Store {
   deleteScriptureHighlight: (id: string) => Promise<void>
 
   // --- Center workspace ---
-  openInPane: (content: PaneContent, opts?: { split?: boolean }) => void
-  closePane: (id: string) => void
+  /** Create a new tab (duplicates allowed) and focus it; returns the new tab's id. */
+  openTab: (content: TabContent, opts?: { paneId?: string; activate?: boolean }) => string
+  /** Open a new tab beside the current one, splitting into a second pane if needed. */
+  openTabInSplit: (content: TabContent) => void
+  /** Move an existing tab into the other pane, creating it if needed. */
+  moveTabToSplit: (tabId: string) => void
+  closeTab: (tabId: string) => void
+  /** Reorder a tab within its own pane. */
+  reorderTab: (tabId: string, targetOrder: number) => void
+  /** Move a tab to an exact pane + position in one step (drag-and-drop drop handler). */
+  placeTab: (tabId: string, paneId: string, order: number) => void
+  setTabContent: (tabId: string, content: TabContent) => void
+  /** Reset a tab to the content picker without closing it. */
+  resetTabToPicker: (tabId: string) => void
+  /** Activate a specific tab (and its pane). */
+  focusTab: (tabId: string) => void
+  /** Focus a pane without changing which of its tabs is active. */
   focusPane: (id: string) => void
   setPaneRatio: (r: number) => void
-  setPaneContent: (id: string, content: PaneContent) => void
-  /** Append an empty second pane (the content picker), if there's room. */
-  addPane: () => void
-  /** Reset a pane to the content picker without closing it. */
-  setPaneEmpty: (id: string) => void
-  /** Create a note and place it into a specific pane (used by the picker). */
-  createNoteInPane: (id: string, title: string, type?: NoteType) => Promise<NoteSummary>
+  /** Create a note and place it into a specific tab (used by the picker). */
+  createNoteInTab: (id: string, title: string, type?: NoteType) => Promise<NoteSummary>
 
   // --- Project notes ---
   /** Recompute `activeProject` from the current panes; a no-op refetch if unchanged. */
@@ -403,7 +372,8 @@ export const useStore = create<Store>((set, get) => {
     scriptureCompareTranslation: '',
     commentaryLookup: null,
     commentaryMatches: [],
-    panes: [],
+    tabs: [],
+    paneOrder: [],
     activePaneId: null,
     paneRatio: 0.5,
     activeProject: null,
@@ -435,35 +405,44 @@ export const useStore = create<Store>((set, get) => {
       }
       const data = await loadAll()
       applyTheme(data.config.theme)
-      // Never auto-restore workspace panes on launch — landing back in a PDF/note pane (or with
-      // two panes still open) is exactly the clutter the user doesn't want. Instead, land on
-      // whatever *screen* they were last on: if that was the reading workspace itself, translate
-      // its last pane kind to the equivalent list view (a note pane -> the Notes list, anything
-      // else -> the Library) rather than reopening the pane.
-      let landingView = data.layout.activeLeftView
-      if (landingView === 'reading') {
-        landingView = 'library'
-        const ws = await api.getSession('workspace')
-        if (ws) {
-          try {
-            const parsed = JSON.parse(ws) as { panes?: Pane[]; activePaneId?: string | null }
-            const panes = Array.isArray(parsed.panes) ? parsed.panes : []
-            const lastPane = panes.find((p) => p.id === parsed.activePaneId) ?? panes[0]
-            if (lastPane?.kind === 'note') landingView = 'notes'
-          } catch {
-            /* ignore malformed value */
+      // Restore the workspace: validate every tab's reference against what's still in the
+      // library/notes list (a book or note can be deleted while the app is closed), then
+      // sanitize pane/active-tab bookkeeping around whatever survives.
+      let workspace: Workspace = EMPTY_WORKSPACE
+      let paneRatio = 0.5
+      const restoredRaw = await api.getSession('workspace')
+      if (restoredRaw) {
+        try {
+          const parsed = JSON.parse(restoredRaw) as Partial<Workspace> & { paneRatio?: number }
+          const tabs = validateRestoredTabs(
+            Array.isArray(parsed.tabs) ? parsed.tabs : [],
+            data.books,
+            data.standaloneNotes
+          )
+          workspace = sanitizeWorkspace({
+            tabs,
+            paneOrder: Array.isArray(parsed.paneOrder) ? parsed.paneOrder : [],
+            activePaneId: parsed.activePaneId ?? null
+          })
+          if (typeof parsed.paneRatio === 'number') {
+            paneRatio = Math.min(0.8, Math.max(0.2, parsed.paneRatio))
           }
+        } catch {
+          /* ignore malformed value */
         }
       }
+      let landingView = data.layout.activeLeftView
+      if (landingView === 'reading' && workspace.tabs.length === 0) landingView = 'library'
       const layout = { ...data.layout, activeLeftView: landingView }
-      const reflected = reflectPanes([], null)
+      const reflected = reflectWorkspace(workspace)
       set({
         appState,
         ...data,
         layout,
-        panes: [],
-        activePaneId: null,
-        paneRatio: 0.5,
+        tabs: workspace.tabs,
+        paneOrder: workspace.paneOrder,
+        activePaneId: workspace.activePaneId,
+        paneRatio,
         ...reflected,
         // Seed the selected translation from config so a Bible pane can render its
         // (offline-cached) text immediately, before the translation registry has resolved.
@@ -540,7 +519,7 @@ export const useStore = create<Store>((set, get) => {
     setToast: (msg) => set({ toast: msg }),
 
     openBook: (id) => {
-      get().openInPane({ kind: 'pdf', bookId: id })
+      get().openTab({ kind: 'pdf', bookId: id })
       set({ quotes: [], pendingPage: null })
       get().saveLayout({ activeLeftView: 'reading' })
       void api.setSession('lastOpenBook', id)
@@ -548,7 +527,7 @@ export const useStore = create<Store>((set, get) => {
     },
 
     openBookAt: (id, page) => {
-      get().openInPane({ kind: 'pdf', bookId: id })
+      get().openTab({ kind: 'pdf', bookId: id })
       set({
         quotes: [],
         pendingPage: { bookId: id, page },
@@ -566,8 +545,8 @@ export const useStore = create<Store>((set, get) => {
       set({ pendingPage: { bookId, page }, searchTerms: terms }),
 
     closeBook: () => {
-      const pdf = get().panes.find((p) => p.kind === 'pdf')
-      if (pdf) get().closePane(pdf.id)
+      const pdf = get().tabs.find((t) => t.kind === 'pdf')
+      if (pdf) get().closeTab(pdf.id)
       set({ quotes: [] })
       void api.setSession('lastOpenBook', '')
     },
@@ -579,17 +558,17 @@ export const useStore = create<Store>((set, get) => {
     createNote: async (title, type) => {
       const note = await api.createNote(title, type)
       await get().loadStandaloneNotes()
-      get().openInPane({ kind: 'note', notePath: note.path })
+      get().openTab({ kind: 'note', notePath: note.path })
       get().saveLayout({ activeLeftView: 'reading' })
     },
 
     openNote: (path) => {
-      get().openInPane({ kind: 'note', notePath: path })
+      get().openTab({ kind: 'note', notePath: path })
       get().saveLayout({ activeLeftView: 'reading' })
     },
 
     openNoteInSplit: (path) => {
-      get().openInPane({ kind: 'note', notePath: path }, { split: true })
+      get().openTabInSplit({ kind: 'note', notePath: path })
       get().saveLayout({ activeLeftView: 'reading' })
     },
 
@@ -597,9 +576,9 @@ export const useStore = create<Store>((set, get) => {
 
     deleteNote: async (path) => {
       await api.deleteNote(path)
-      // Close any center pane showing this note; clear the sidebar note if it matches.
-      for (const p of get().panes.filter((p) => p.kind === 'note' && p.notePath === path)) {
-        get().closePane(p.id)
+      // Close any tab showing this note; clear the sidebar note if it matches.
+      for (const t of get().tabs.filter((t) => t.kind === 'note' && t.notePath === path)) {
+        get().closeTab(t.id)
       }
       if (get().sidebarNotePath === path) {
         set({ sidebarNotePath: null })
@@ -653,7 +632,7 @@ export const useStore = create<Store>((set, get) => {
     },
 
     openQuotesGroup: (group) => {
-      get().openInPane({ kind: 'quotes', quotesGroup: group })
+      get().openTab({ kind: 'quotes', quotesGroup: group })
       get().saveLayout({ activeLeftView: 'reading' })
     },
 
@@ -906,24 +885,21 @@ export const useStore = create<Store>((set, get) => {
       void api.setConfig({ scriptureTranslation: id })
     },
 
-    // Route a passage into a Bible pane: reuse the existing Bible pane if there is one,
-    // otherwise open one (beside a single pane, or replacing the focused pane when full).
+    // In-place navigation, like clicking a link in a browser tab: if the active tab is already
+    // showing the Bible, it navigates there. Only explicit "open" actions create a new tab.
     navigateScripture: (book, chapter, highlight = []) => {
-      const { panes, scriptureTranslation } = get()
-      const bible = panes.find((p) => p.kind === 'bible')
-      if (bible) {
-        get().setPaneContent(bible.id, {
+      const { activePaneId, scriptureTranslation } = get()
+      const current = activePaneId ? activeTab({ tabs: get().tabs, paneOrder: get().paneOrder, activePaneId }, activePaneId) : undefined
+      if (current?.kind === 'bible') {
+        get().setTabContent(current.id, {
           kind: 'bible',
           book,
           chapter,
           highlight,
-          translation: bible.translation || scriptureTranslation
+          translation: current.translation || scriptureTranslation
         })
       } else {
-        get().openInPane(
-          { kind: 'bible', book, chapter, highlight, translation: scriptureTranslation },
-          { split: panes.length === 1 }
-        )
+        get().openTab({ kind: 'bible', book, chapter, highlight, translation: scriptureTranslation })
       }
       get().saveLayout({ activeLeftView: 'reading' })
       void api.setSession('lastScripture', JSON.stringify({ book, chapter }))
@@ -942,9 +918,9 @@ export const useStore = create<Store>((set, get) => {
     },
 
     showScripture: async () => {
-      const bible = get().panes.find((p) => p.kind === 'bible')
+      const bible = get().tabs.find((t) => t.kind === 'bible')
       if (bible) {
-        get().focusPane(bible.id)
+        get().focusTab(bible.id)
         get().saveLayout({ activeLeftView: 'reading' })
       } else {
         // Open the reader from local state right away. The translation registry can hit the
@@ -1009,109 +985,115 @@ export const useStore = create<Store>((set, get) => {
       set({ noteReloadToken: get().noteReloadToken + 1 })
     },
 
-    openInPane: (content, opts) => {
-      const { panes, activePaneId } = get()
-      let next: Pane[]
-      let activeId: string
-      if (opts?.split) {
-        if (panes.length >= 2) {
-          // Both panes full — replace the one that isn't focused.
-          const keep = activePaneId ?? panes[0].id
-          const target = panes.find((p) => p.id !== keep) ?? panes[1]
-          const np = { ...paneFromContent(content), id: target.id }
-          next = panes.map((p) => (p.id === target.id ? np : p))
-          activeId = target.id
-        } else {
-          const np = paneFromContent(content)
-          next = [...panes, np]
-          activeId = np.id
-        }
-      } else if (panes.length === 0) {
-        const np = paneFromContent(content)
-        next = [np]
-        activeId = np.id
-      } else {
-        // Replace the focused pane's content in place.
-        const target = panes.find((p) => p.id === activePaneId) ?? panes[0]
-        const np = { ...paneFromContent(content), id: target.id }
-        next = panes.map((p) => (p.id === target.id ? np : p))
-        activeId = target.id
-      }
-      set({ panes: next, activePaneId: activeId, ...reflectPanes(next, activeId) })
-      persistWorkspace(next, activeId, get().paneRatio)
+    openTab: (content, opts) => {
+      const currentWs: Workspace = { tabs: get().tabs, paneOrder: get().paneOrder, activePaneId: get().activePaneId }
+      const { ws: next, tabId } = pureOpenTab(currentWs, content, opts)
+      set({ tabs: next.tabs, paneOrder: next.paneOrder, activePaneId: next.activePaneId, ...reflectWorkspace(next) })
+      persistWorkspace(next.tabs, next.paneOrder, next.activePaneId, get().paneRatio)
+      void get().refreshActiveProject()
+      return tabId
+    },
+
+    openTabInSplit: (content) => {
+      const { activePaneId, tabs, paneOrder } = get()
+      const target =
+        (activePaneId ? otherPaneId({ tabs, paneOrder, activePaneId }, activePaneId) : null) ??
+        crypto.randomUUID()
+      get().openTab(content, { paneId: target })
+    },
+
+    moveTabToSplit: (tabId) => {
+      const { tabs, paneOrder, activePaneId } = get()
+      const tab = tabs.find((t) => t.id === tabId)
+      if (!tab) return
+      const target = otherPaneId({ tabs, paneOrder, activePaneId }, tab.paneId) ?? crypto.randomUUID()
+      const next = pureMoveTab({ tabs, paneOrder, activePaneId }, tabId, target)
+      set({ tabs: next.tabs, paneOrder: next.paneOrder, activePaneId: next.activePaneId, ...reflectWorkspace(next) })
+      persistWorkspace(next.tabs, next.paneOrder, next.activePaneId, get().paneRatio)
+    },
+
+    closeTab: (tabId) => {
+      const { tabs, paneOrder, activePaneId } = get()
+      const next = pureCloseTab({ tabs, paneOrder, activePaneId }, tabId)
+      set({ tabs: next.tabs, paneOrder: next.paneOrder, activePaneId: next.activePaneId, ...reflectWorkspace(next) })
+      persistWorkspace(next.tabs, next.paneOrder, next.activePaneId, get().paneRatio)
       void get().refreshActiveProject()
     },
 
-    closePane: (id) => {
-      const { panes, activePaneId } = get()
-      const next = panes.filter((p) => p.id !== id)
-      const activeId = activePaneId === id ? (next[0]?.id ?? null) : activePaneId
-      set({ panes: next, activePaneId: activeId, ...reflectPanes(next, activeId) })
-      persistWorkspace(next, activeId, get().paneRatio)
+    reorderTab: (tabId, targetOrder) => {
+      const { tabs, paneOrder, activePaneId } = get()
+      const next = pureReorderTab({ tabs, paneOrder, activePaneId }, tabId, targetOrder)
+      set({ tabs: next.tabs })
+      persistWorkspace(next.tabs, get().paneOrder, get().activePaneId, get().paneRatio)
+    },
+
+    placeTab: (tabId, paneId, order) => {
+      const { tabs, paneOrder, activePaneId } = get()
+      const ws0: Workspace = { tabs, paneOrder, activePaneId }
+      const tab = tabs.find((t) => t.id === tabId)
+      if (!tab) return
+      const ws1 = tab.paneId === paneId ? ws0 : pureMoveTab(ws0, tabId, paneId)
+      const next = pureReorderTab(ws1, tabId, order)
+      set({ tabs: next.tabs, paneOrder: next.paneOrder, activePaneId: next.activePaneId, ...reflectWorkspace(next) })
+      persistWorkspace(next.tabs, next.paneOrder, next.activePaneId, get().paneRatio)
+    },
+
+    setTabContent: (tabId, content) => {
+      const { tabs, paneOrder, activePaneId } = get()
+      const next = pureSetTabContent({ tabs, paneOrder, activePaneId }, tabId, content)
+      set({ tabs: next.tabs, ...reflectWorkspace(next) })
+      persistWorkspace(next.tabs, get().paneOrder, get().activePaneId, get().paneRatio)
       void get().refreshActiveProject()
+    },
+
+    resetTabToPicker: (tabId) => {
+      get().setTabContent(tabId, { kind: 'picker' })
+    },
+
+    focusTab: (tabId) => {
+      const { tabs, paneOrder, activePaneId } = get()
+      const next = pureFocusTab({ tabs, paneOrder, activePaneId }, tabId)
+      set({ paneOrder: next.paneOrder, activePaneId: next.activePaneId, ...reflectWorkspace(next) })
+      persistWorkspace(next.tabs, next.paneOrder, next.activePaneId, get().paneRatio)
     },
 
     focusPane: (id) => {
-      const { panes, activePaneId } = get()
-      if (id === activePaneId || !panes.some((p) => p.id === id)) return
-      set({ activePaneId: id, ...reflectPanes(panes, id) })
-      persistWorkspace(panes, id, get().paneRatio)
+      const { tabs, paneOrder, activePaneId } = get()
+      if (id === activePaneId) return
+      const next = pureFocusPane({ tabs, paneOrder, activePaneId }, id)
+      set({ activePaneId: next.activePaneId, ...reflectWorkspace(next) })
+      persistWorkspace(next.tabs, next.paneOrder, next.activePaneId, get().paneRatio)
     },
 
     setPaneRatio: (r) => {
       const ratio = Math.min(0.8, Math.max(0.2, r))
       set({ paneRatio: ratio })
-      persistWorkspace(get().panes, get().activePaneId, ratio)
+      persistWorkspace(get().tabs, get().paneOrder, get().activePaneId, ratio)
     },
 
-    setPaneContent: (id, content) => {
-      const { panes } = get()
-      const next = panes.map((p) => (p.id === id ? { ...paneFromContent(content), id } : p))
-      set({ panes: next, activePaneId: id, ...reflectPanes(next, id) })
-      persistWorkspace(next, id, get().paneRatio)
-      void get().refreshActiveProject()
-    },
-
-    addPane: () => {
-      const { panes } = get()
-      if (panes.length >= 2) return
-      const np: Pane = { id: crypto.randomUUID(), kind: 'empty' }
-      const next = [...panes, np]
-      set({ panes: next, activePaneId: np.id, ...reflectPanes(next, np.id) })
-      persistWorkspace(next, np.id, get().paneRatio)
-    },
-
-    setPaneEmpty: (id) => {
-      const { panes } = get()
-      const next = panes.map((p) => (p.id === id ? { id, kind: 'empty' as const } : p))
-      set({ panes: next, activePaneId: id, ...reflectPanes(next, id) })
-      persistWorkspace(next, id, get().paneRatio)
-      void get().refreshActiveProject()
-    },
-
-    createNoteInPane: async (id, title, type) => {
+    createNoteInTab: async (id, title, type) => {
       const note = await api.createNote(title, type)
       await get().loadStandaloneNotes()
-      get().setPaneContent(id, { kind: 'note', notePath: note.path })
+      get().setTabContent(id, { kind: 'note', notePath: note.path })
       return note
     },
 
     refreshActiveProject: async () => {
-      const { panes, standaloneNotes, activeProject } = get()
-      const projectPane = findProjectPane(panes, standaloneNotes)
-      if (!projectPane?.notePath) {
+      const { tabs, standaloneNotes, activeProject } = get()
+      const projectTab = findProjectTab(tabs, standaloneNotes)
+      if (!projectTab?.notePath) {
         if (activeProject) set({ activeProject: null })
         return
       }
       // Already tracking this exact project — don't clobber items just added/removed locally.
-      if (activeProject?.path === projectPane.notePath) return
-      const raw = await api.readNote(projectPane.notePath)
+      if (activeProject?.path === projectTab.notePath) return
+      const raw = await api.readNote(projectTab.notePath)
       const { fm } = parseNote(raw)
       // Guard against a stale response if the workspace changed again while this was in flight.
-      if (findProjectPane(get().panes, get().standaloneNotes)?.notePath !== projectPane.notePath) {
+      if (findProjectTab(get().tabs, get().standaloneNotes)?.notePath !== projectTab.notePath) {
         return
       }
-      set({ activeProject: { path: projectPane.notePath, items: fm.items } })
+      set({ activeProject: { path: projectTab.notePath, items: fm.items } })
     },
 
     addProjectItem: async (item) => {
