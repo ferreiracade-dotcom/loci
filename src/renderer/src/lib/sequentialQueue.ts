@@ -10,5 +10,10 @@ export function createSequentialQueue(): (task: () => Promise<void>) => void {
       () => task(),
       () => task()
     )
+    // Mark this promise as handled even if nothing pushes after it — otherwise a
+    // rejection on the last-ever-queued task is an unhandled rejection.
+    tail.catch(() => {
+      /* already retried via the chain above */
+    })
   }
 }

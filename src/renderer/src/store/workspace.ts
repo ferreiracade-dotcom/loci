@@ -134,7 +134,13 @@ export function moveTab(ws: Workspace, tabId: string, targetPaneId: string): Wor
   const tabs = ws.tabs.map((t) =>
     t.id === tabId ? { ...t, paneId: targetPaneId, order: nextOrder(ws.tabs, targetPaneId) } : t
   )
-  paneOrder = paneOrder.map((p) => (p.id === targetPaneId ? { ...p, activeTabId: tabId } : p))
+  paneOrder = paneOrder.map((p) => {
+    if (p.id === targetPaneId) return { ...p, activeTabId: tabId }
+    if (p.id === sourcePaneId && p.activeTabId === tabId) {
+      return { ...p, activeTabId: pickReplacementActiveTab(tabsForPane(tabs, sourcePaneId), tab.order) }
+    }
+    return p
+  })
 
   return collapseEmptyPanes({ tabs, paneOrder, activePaneId: targetPaneId }, sourcePaneId)
 }

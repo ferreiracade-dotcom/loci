@@ -36,4 +36,19 @@ describe('createSequentialQueue', () => {
     await new Promise((resolve) => setTimeout(resolve, 10))
     expect(results).toEqual(['after-failure'])
   })
+
+  it('does not produce an unhandled rejection when the last pushed task rejects', async () => {
+    const push = createSequentialQueue()
+    let unhandled = false
+    const onUnhandled = (): void => {
+      unhandled = true
+    }
+    process.on('unhandledRejection', onUnhandled)
+    push(async () => {
+      throw new Error('final task fails')
+    })
+    await new Promise((resolve) => setTimeout(resolve, 20))
+    process.off('unhandledRejection', onUnhandled)
+    expect(unhandled).toBe(false)
+  })
 })

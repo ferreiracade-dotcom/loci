@@ -86,6 +86,18 @@ describe('moveTab and collapse-on-empty', () => {
     const attempted = moveTab(ws, tabId, 'pane-3')
     expect(attempted).toBe(ws) // unchanged
   })
+
+  it('repoints the source pane\'s active tab when the moved tab was the one active there', () => {
+    let ws: Workspace = EMPTY_WORKSPACE
+    ;({ ws } = openTab(ws, { kind: 'pdf', bookId: 'a' }))
+    const paneId = ws.paneOrder[0].id
+    ;({ ws } = openTab(ws, { kind: 'pdf', bookId: 'b' }, { paneId })) // b becomes active
+    const [tabA, tabB] = tabsForPane(ws.tabs, paneId)
+    const moved = moveTab(ws, tabB.id, 'pane-2')
+    expect(moved.paneOrder.find((p) => p.id === paneId)?.activeTabId).toBe(tabA.id)
+    const stillThere = activeTab(moved, paneId)
+    expect(stillThere?.id).toBe(tabA.id)
+  })
 })
 
 describe('closeTab', () => {
