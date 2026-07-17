@@ -76,12 +76,16 @@ export function TabStrip({
   const moveTabToSplit = useStore((s) => s.moveTabToSplit)
 
   const [menuTabId, setMenuTabId] = useState<string | null>(null)
+  const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null)
 
   const tabs = tabsForPane(allTabs, paneId)
   const activeTabId = paneOrder.find((p) => p.id === paneId)?.activeTabId ?? null
 
   const handlePointerDown = (e: ReactPointerEvent, tabId: string): void => {
     if (e.button !== 0) return
+    // Don't capture the pointer for a close-button click — capture retargets the
+    // resulting 'click' event to the tab itself, so the button's own handler never fires.
+    if ((e.target as HTMLElement).closest('.tab-close')) return
     ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
     onDragStart(tabId)
   }
@@ -134,6 +138,8 @@ export function TabStrip({
               }}
               onContextMenu={(e) => {
                 e.preventDefault()
+                const rect = e.currentTarget.getBoundingClientRect()
+                setMenuPos({ top: rect.bottom, left: rect.left })
                 setMenuTabId(tab.id)
               }}
               title={label}
@@ -151,13 +157,21 @@ export function TabStrip({
                 <X size={12} />
               </button>
             </div>
-            {menuTabId === tab.id && (
-              <div className="tab-menu" onMouseLeave={() => setMenuTabId(null)}>
+            {menuTabId === tab.id && menuPos && (
+              <div
+                className="tab-menu"
+                style={{ position: 'fixed', top: menuPos.top, left: menuPos.left }}
+                onMouseLeave={() => {
+                  setMenuTabId(null)
+                  setMenuPos(null)
+                }}
+              >
                 <button
                   className="tab-menu-item"
                   onClick={() => {
                     moveTabToSplit(tab.id)
                     setMenuTabId(null)
+                    setMenuPos(null)
                   }}
                 >
                   Open in split pane

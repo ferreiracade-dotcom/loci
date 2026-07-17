@@ -47,6 +47,22 @@ export type TabContent =
   | { kind: 'quotes'; quotesGroup: QuoteGroupRef }
   | { kind: 'picker' }
 
+/** The content a tab is currently showing, independent of its id/pane/order. */
+export function tabContent(tab: Tab): TabContent {
+  switch (tab.kind) {
+    case 'note':
+      return { kind: 'note', notePath: tab.notePath! }
+    case 'pdf':
+      return { kind: 'pdf', bookId: tab.bookId! }
+    case 'bible':
+      return { kind: 'bible', book: tab.book!, chapter: tab.chapter!, highlight: tab.highlight, translation: tab.translation }
+    case 'quotes':
+      return { kind: 'quotes', quotesGroup: tab.quotesGroup! }
+    case 'picker':
+      return { kind: 'picker' }
+  }
+}
+
 export const EMPTY_WORKSPACE: Workspace = { tabs: [], paneOrder: [], activePaneId: null }
 
 export function tabsForPane(tabs: Tab[], paneId: string): Tab[] {

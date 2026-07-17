@@ -48,6 +48,7 @@ import {
   reorderTab as pureReorderTab,
   sanitizeWorkspace,
   setTabContent as pureSetTabContent,
+  tabContent,
   tabsForPane,
   validateRestoredTabs
 } from './workspace'
@@ -1007,6 +1008,12 @@ export const useStore = create<Store>((set, get) => {
       const tab = tabs.find((t) => t.id === tabId)
       if (!tab) return
       const target = otherPaneId({ tabs, paneOrder, activePaneId }, tab.paneId) ?? crypto.randomUUID()
+      // Moving a pane's only tab would just empty that pane and collapse it right back —
+      // duplicate instead, so the action is never a no-op.
+      if (tabsForPane(tabs, tab.paneId).length === 1) {
+        get().openTab(tabContent(tab), { paneId: target })
+        return
+      }
       const next = pureMoveTab({ tabs, paneOrder, activePaneId }, tabId, target)
       set({ tabs: next.tabs, paneOrder: next.paneOrder, activePaneId: next.activePaneId, ...reflectWorkspace(next) })
       persistWorkspace(next.tabs, next.paneOrder, next.activePaneId, get().paneRatio)

@@ -13,6 +13,7 @@ import {
   reorderTab,
   sanitizeWorkspace,
   setTabContent,
+  tabContent,
   tabsForPane,
   validateRestoredTabs
 } from './workspace'
@@ -195,6 +196,36 @@ describe('findProjectTab and reflectWorkspace', () => {
     expect(reflected.scripturePassage).toEqual({ book: 'JHN', chapter: 3, highlight: [16] })
     expect(reflected.scriptureTranslation).toBe('BSB')
     expect(reflected.openBookId).toBeNull()
+  })
+})
+
+describe('tabContent', () => {
+  it('extracts the content fields for each tab kind, dropping id/paneId/order', () => {
+    const base = { id: 't1', paneId: 'p1', order: 0 }
+    expect(tabContent({ ...base, kind: 'note', notePath: 'a.md' })).toEqual({
+      kind: 'note',
+      notePath: 'a.md'
+    })
+    expect(tabContent({ ...base, kind: 'pdf', bookId: 'b1' })).toEqual({ kind: 'pdf', bookId: 'b1' })
+    expect(
+      tabContent({ ...base, kind: 'bible', book: 'JHN', chapter: 3, highlight: [16], translation: 'BSB' })
+    ).toEqual({ kind: 'bible', book: 'JHN', chapter: 3, highlight: [16], translation: 'BSB' })
+    const group = { type: 'author', author: 'Calvin' } as const
+    expect(tabContent({ ...base, kind: 'quotes', quotesGroup: group })).toEqual({
+      kind: 'quotes',
+      quotesGroup: group
+    })
+    expect(tabContent({ ...base, kind: 'picker' })).toEqual({ kind: 'picker' })
+  })
+
+  it('round-trips through openTab: duplicating a lone tab produces an equivalent tab in the new pane', () => {
+    let ws: Workspace = EMPTY_WORKSPACE
+    ;({ ws } = openTab(ws, { kind: 'bible', book: 'JHN', chapter: 3, highlight: [16], translation: 'BSB' }))
+    const original = ws.tabs[0]
+    const { ws: duplicated } = openTab(ws, tabContent(original), { paneId: 'pane-2' })
+    const copy = duplicated.tabs.find((t) => t.paneId === 'pane-2')
+    expect(copy).toMatchObject({ kind: 'bible', book: 'JHN', chapter: 3, highlight: [16], translation: 'BSB' })
+    expect(copy?.id).not.toBe(original.id)
   })
 })
 

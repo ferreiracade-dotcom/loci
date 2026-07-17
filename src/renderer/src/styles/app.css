@@ -287,9 +287,8 @@ select.field {
   background: var(--accent-12);
 }
 .tab-menu {
-  position: absolute;
-  top: 100%;
-  left: 4px;
+  /* position/top/left are set inline (fixed, computed from the tab's rect) so the menu
+     escapes .tab-strip's overflow-y: hidden instead of being clipped by it. */
   z-index: 20;
   background: var(--card);
   border: 1px solid var(--border);
