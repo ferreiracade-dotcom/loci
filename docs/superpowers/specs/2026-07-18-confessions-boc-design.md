@@ -6,11 +6,16 @@ Status: Approved for planning
 ## Summary
 
 Add a new left-nav tab, "Confessions," presenting the Book of Concord as a
-reading experience that mirrors the Bible reader: a Document ↔ Article
-structure (analogous to Book ↔ Chapter), multiple translation sources,
-highlight-to-quote, sidebar notes, full-text search, clickable Scripture
-proof-text cross-references, and a Commentary panel fed by the Reader's
-Edition's per-article notes plus standalone expository books.
+reading experience that mirrors the Bible reader: a Document ↔ Section
+structure (analogous to Book ↔ Chapter, where a "section" is any navigable
+unit — Preface, Article, catechism part, Conclusion), multiple translation
+sources, paragraph-precise highlight-to-quote, sidebar notes, full-text
+search, clickable Scripture proof-text cross-references, and a Commentary
+panel fed by the Reader's Edition's per-section study notes and editor's
+introductions plus standalone expository books. The corpus is the full Book
+of Concord including its three appendices (Catalog of Testimonies, Brief
+Exhortation to Confession, Saxon Visitation Articles). Grounded in the actual
+Concordia Reader's Edition EPUB (CPH, 2nd ed. 2018), inspected during design.
 
 This is Phase 1 of a two-phase plan. Phase 2 (a separate future spec) adds a
 "Church Fathers" tab (Father → Work → Chapter, one level deeper) reusing the
@@ -31,20 +36,19 @@ reworked for Phase 2 to land — Phase 2 is additive.
   a rebuild, without over-building abstraction Phase 1 doesn't need.
 - Full feature parity with Bible reading: highlight → citeable quote, sidebar
   notes, full-text search, clickable proof-text cross-references into
-  Scripture, and a Commentary panel populated per-article.
-- Reuse existing converter infrastructure (`epub-to-md.mjs` / `pdf-to-md.mjs`)
-  for ingestion rather than hand-authoring a full book-length volume as
-  Markdown.
+  Scripture, and a Commentary panel populated per-section.
+- Reuse existing converter infrastructure (`epub-to-md.mjs`) for ingestion
+  rather than hand-authoring a full book-length volume as Markdown.
 
 ## Non-goals
 
 - Church Fathers content or its 3-level (Father → Work → Chapter) hierarchy —
   Phase 2, separate spec.
-- Reverse cross-references (a Bible chapter showing which Confession articles
+- Reverse cross-references (a Bible chapter showing which Confession sections
   cite it) — proof-text links are one-directional (Confession → Bible) only.
-- Resolving the Apology of the Augsburg Confession's German/Latin
-  dual-numbering quirk — flagged as a content-modeling detail to verify
-  against source material during implementation, not solved here.
+- Multi-source section-ordinal alignment (a second commentary source keyed to
+  traditional numbers) — Plan 1 targets the Reader's Edition only; see
+  "Remaining risks."
 - Reworking the pane/tab container model. This spec targets today's pane
   model on `main`. A separate, unmerged `worktree-tabbed-panes` branch
   replaces panes with tabs (`TabKind` there currently mirrors `PaneKind`
@@ -101,78 +105,101 @@ introducing a generic polymorphic schema.
 
 ## Data model
 
-### Static reference structure
+Grounded in the actual source: the Concordia Reader's Edition EPUB (CPH, 2nd
+ed. 2018), inspected during design. Its markup cleanly separates the two
+content layers — `<p class="ch_note">` paragraphs are the editorial study
+notes ("Note: …"), and `<p class="indent">`/`indent1`/`noindent` paragraphs
+are the confessional text, which already carries the traditional `[N]`
+paragraph numbers inline (`[1] Our churches teach…`). See "Ingestion."
 
-`src/shared/bookOfConcord.ts`, mirroring `scriptureRef.ts`'s `BOOKS` table.
-The Book of Concord's document/article structure is fixed and stable across
-translations (the same way Bible chapter/verse structure is stable across
-translations), so it is authored once as a compiled TypeScript table, not
-discovered dynamically:
+### Static reference structure — documents only
+
+`src/shared/bookOfConcord.ts`, mirroring `scriptureRef.ts`'s `BOOKS` table,
+but **listing only the documents, not their internal sections.** Unlike the
+Bible (whose whole canon must be navigable offline before any text is
+fetched), a BoC document is always read from a local source file that already
+contains its full structure — so sections are *discovered from the indexed
+source*, not pre-authored. This deliberately avoids hand-authoring every
+article/section of all 14 documents (and the Apology's dual-numbering, the
+Smalcald parts, the catechism sub-structure) into a static table that could
+drift from the real text.
 
 ```ts
-export interface BocArticleDef {
-  ordinal: number       // 1-based position — the canonical DB/range-query key
-  number: string        // "I", "IV", "III.2" — display numbering (Roman numerals,
-                        // part-qualified for SA), never used for ordering or storage
-  label: string         // "Of Justification", "The Ten Commandments"
-}
+export type BocDocumentCode =
+  | 'CR-AP' | 'CR-NI' | 'CR-ATH'          // the three Ecumenical Creeds
+  | 'AC' | 'AP' | 'SA' | 'TR'             // Augsburg, Apology, Smalcald, Treatise
+  | 'SC' | 'LC'                           // Small & Large Catechisms
+  | 'FC-EP' | 'FC-SD'                     // Formula of Concord: Epitome, Solid Declaration
+  | 'CT' | 'BEC' | 'SVA'                  // appendices (see below)
 
 export interface BocDocumentDef {
-  code: string          // 'CR-AP', 'CR-NI', 'CR-ATH' (the three creeds),
-                        // 'AC', 'AP', 'SA', 'TR', 'SC', 'LC', 'FC-EP', 'FC-SD'
-  title: string         // "Augsburg Confession"
-  abbreviation: string
-  articles: BocArticleDef[]
-  sortOrder: number
+  code: BocDocumentCode
+  title: string          // "Augsburg Confession"
+  abbreviation: string   // "AC"
+  sortOrder: number      // nav order; creeds first, appendices last
 }
 
-export const BOC_DOCUMENTS: BocDocumentDef[]
+export const BOC_DOCUMENTS: BocDocumentDef[]   // 14 entries (3 creeds + 8 confessions + 3 appendices)
 ```
 
-**Ordinal vs. display number.** All DB columns (`boc_texts.article_ordinal`,
-`boc_commentary_excerpts.article_start/article_end`) store the numeric
-`ordinal`; range queries compare integers, exactly like chapter/verse
-numbers. The Roman-numeral (or part-qualified) `number` string is resolved
-through `BOC_DOCUMENTS` for display and citations only. Documents whose
-internal structure isn't a flat article list — the Smalcald Articles (Parts
-I–III, with articles inside Part III) and the catechisms (parts/chief
-sections) — are flattened into one ordinal sequence per document, with the
-part encoded in the display `number`/`label`.
+The three **appendices** appear at the end of the Confessions nav, after the
+Formula of Concord: `CT` Catalog of Testimonies, `BEC` A Brief Exhortation to
+Confession, `SVA` Saxon Visitation Articles. All three ship in the Reader's
+Edition and are historic appended matter of the Book of Concord.
 
-Covers the three Ecumenical Creeds, Augsburg Confession, Apology, Smalcald
-Articles, Treatise on the Power and Primacy of the Pope, Small Catechism,
-Large Catechism, and the Formula of Concord (Epitome + Solid Declaration).
+### Sections (discovered) + primary text (translations)
 
-### Primary text (translations)
+A **section** is any navigable unit within a document — a Preface, a numbered
+Article, a catechism commandment/petition, a Part header's leaf, a Conclusion.
+Sections are discovered from the converted source during indexing, not
+pre-declared.
 
 - **`boc_sources`** — mirrors `commentary_sources`: id, display_name (e.g.
-  "Reader's Edition (CPH)", "Tappert", "Kolb-Wengert"), file_relative_path
+  "Reader's Edition (CPH)", "Tappert", "Kolb-Wengert"), md_relative_path
   (vault path), sort_order, status.
-- **`boc_texts`** — source_id (FK), document_code, article_ordinal, text
-  (Markdown, with paragraph-anchor markers embedded inline — the article-level
-  equivalent of verse markers inside a cached Bible chapter). One row per
-  (source, document, article); a translation switch just re-queries this
-  table for a different source_id, exactly like swapping Bible translations
-  re-queries `scripture_cache` for a different translation key.
+- **`boc_texts`** — source_id (FK), document_code, section_ordinal (1-based
+  nav position within the document, assigned in file order during
+  conversion — the canonical numeric key for range queries), section_number
+  (nullable display string: `"IV"`, `"II (I)"` for the Apology's dual
+  numbering, `"III.1"` for Smalcald Part III Article 1, or null for a
+  Preface), section_label (`"Justification"`, `"Preface"`), section_part
+  (nullable grouping label, e.g. `"Part III"` or `"The Ten Commandments"`,
+  for the reader to group sections under a heading), text (Markdown, with the
+  `[N]` paragraph markers preserved inline — the section-level equivalent of
+  verse markers in a cached Bible chapter). One row per (source, document,
+  section). A translation switch just re-queries this table for a different
+  source_id, exactly like swapping Bible translations re-queries
+  `scripture_cache`.
 
 The Reader's Edition is dual-purpose: its confessional text becomes a
-`boc_sources` row here, and its per-article notes (below) are extracted from
-the same conversion pass into the commentary tables.
+`boc_sources` row here, and its `ch_note` study notes are extracted from the
+same conversion pass into the commentary tables (below), sharing one
+`section_ordinal` space so a note lines up with its section.
 
 ### Confessions commentary
 
 - **`boc_commentary_sources`** — identical shape to `commentary_sources`.
 - **`boc_commentary_excerpts`** — source_id (FK), document_code,
-  article_start, article_end, text, page_number, confidence/flagged. Same
-  range-keyed shape as `commentary_excerpts`, just keyed to
-  (document_code, article_start/end) instead of (book,
-  chapter_start/verse_start/chapter_end/verse_end). A commentary source can
-  cover the whole Book of Concord (the Reader's Edition) or a single document
-  (an expository book on just the Augsburg Confession) — same pattern as
-  Kretzmann (whole Bible) vs. RHB's Hebrews commentary (one book) today.
+  section_start, section_end, text, header_raw. Same range-keyed shape as
+  `commentary_excerpts`, keyed to (document_code, section ordinal range)
+  instead of (book, chapter/verse range). A commentary source can cover the
+  whole Book of Concord (the Reader's Edition's study notes + editor's
+  introductions) or a single document (an expository book on just the
+  Augsburg Confession) — same pattern as Kretzmann (whole Bible) vs. RHB's
+  Hebrews commentary today. Each document's **Editor's Introduction** is
+  indexed here too, attached to the document's first section.
 
-Lookup: `lookupBocArticle(documentCode, articleOrdinal)` — same range-query
+Lookup: `lookupBocSection(documentCode, sectionOrdinal)` — same range-query
 shape as `lookupVerse`.
+
+**Cross-source ordinal alignment (flagged for later).** `section_ordinal` is
+defined by the primary source's file order. The Reader's Edition supplies both
+the primary text and its own notes in one conversion pass, so their ordinals
+align by construction. A *second* commentary source (an expository book) that
+refers to sections by traditional number would need its numbers mapped to the
+primary source's ordinals at index time. Plan 1 targets the Reader's Edition
+only (self-consistent); multi-source alignment is a documented follow-up, not
+a Plan 1 concern.
 
 ### Quotes (highlight-to-quote storage)
 
@@ -182,10 +209,14 @@ added by migration: `book_id` (book quotes), `scripture_ref` +
 `commentary_source_id` + `commentary_ref` (commentary quotes, migration
 v16). BoC highlights follow the same pattern with a new migration adding
 **`boc_source_id`** (FK → `boc_sources`, identifying which translation the
-quoted text came from) and **`boc_ref`** (canonical ref string, e.g.
-`AC:IV.2`). Citation auto-generation extends the existing book / scripture /
-commentary chain with a `bocCitation()` branch; `citation_override`
-(migration v17) applies unchanged.
+quoted text came from) and **`boc_ref`** (canonical ref string). The ref is
+paragraph-precise: `<CODE>:<sectionOrdinal>` locates the section, and the
+citation appends the highlighted `[N]` paragraph number(s), rendering as e.g.
+**"AC IV, 2 (Reader's Edition)"** — the traditional citation form, made
+possible because the `[N]` markers are preserved in the section text.
+Citation auto-generation extends the existing book / scripture / commentary
+chain with a `bocCitation()` branch; `citation_override` (migration v17)
+applies unchanged.
 
 **No copyright gate.** `ScriptureReader` gates highlight-to-quote to
 `provider === 'free-use'` because copyrighted API-served translations must
@@ -208,51 +239,61 @@ formatter to use. Two tables, one implementation.
 
 ## Ingestion
 
-Extend `epub-to-md.mjs` / `pdf-to-md.mjs` with a new detection mode for
-Document/Article-structured sources, using TOC parsing to find document
-boundaries — the same technique the tool already uses to detect Bible-book
-boundaries, and the same pattern it already uses to auto-detect RHB-style vs.
-ACCS-style commentary layouts internally. Output convention:
-`# Document` (must resolve to a `BOC_DOCUMENTS` code) → `## Article N`
-headings, mirroring the existing `# Book` / `## chap:verse` convention.
+Extend `epub-to-md.mjs` with a new detection mode for the Reader's Edition,
+reusing its EPUB machinery (unzip, TOC parse, HTML→Markdown). The
+text-vs-note detection rule — the open risk in the first draft — is now
+**settled by inspecting the actual EPUB.** The Reader's Edition's per-element
+CSS classes are unambiguous:
 
-**Known risk, flagged rather than solved here:** the Reader's Edition
-interleaves confessional text and editorial notes within the same source
-(footnotes, sidebars, or similarly-styled blocks). The converter must
-distinguish "this is confessional text" from "this is an editorial note"
-within one file — likely via CSS class or footnote markup, the same way the
-existing tool detects ACCS's structural markers (`<a class="apnf">`,
-`int_niv1` vs. other spine files). The exact detection rule can't be nailed
-down until the actual Reader's Edition EPUB/PDF structure is inspected.
-Expected output: two Markdown files from one conversion pass — a
-primary-text file (feeds `boc_texts`) and a commentary file (feeds
-`boc_commentary_excerpts`).
+| Class | Meaning | Routed to |
+|---|---|---|
+| `article` + `ch_h1a` | "ARTICLE IV" + "Justification" (number + title) | opens a section |
+| `ch_h` | Preface / Conclusion / part & section headers | opens a section |
+| `ch_note` | editorial study note ("Note: …") | commentary file |
+| `indent` / `indent1` / `noindent` / `left` / `bq` / `ext` | confessional text, with `[N]` markers | primary-text file |
+| `toc1` / `toc2` (in the ToC file only) | Editor's Introduction headings | drive intro extraction → commentary |
+
+**Output:** two Markdown files from one conversion pass, both using the
+contract `# <Document>` (resolves via `documentCodeFromName`) → `## <section
+heading>` (e.g. `## Article IV: Justification`, `## Preface`; the parser
+assigns `section_ordinal` by file order and parses the display number/label
+from the heading). The primary-text file's section bodies are the confessional
+paragraphs (with `[N]` preserved); the commentary file's section bodies are
+the `ch_note` study notes, plus each document's Editor's Introduction attached
+to its first section. Both share the same ordinal space by construction.
+
+The converter is validated by round-tripping its output through
+`parseBocMarkdown` and comparing per-document section counts against the
+Reader's Edition ToC (the ToC gives the authoritative section list) — a
+mismatch means a section was dropped or mis-split.
 
 ## Components & Integration Surfaces
 
 - **New pane kind `'boc'`** — added to the `PaneKind` union alongside `note`
   / `bible` / `pdf` / `quotes` / `empty`, with content fields
-  `{ documentCode, articleOrdinal, bocSourceId }` (mirroring how a `bible`
+  `{ documentCode, sectionOrdinal, bocSourceId }` (mirroring how a `bible`
   pane carries `book`/`chapter`/`translation`). Kept as its own concrete kind
   rather than a premature generic "document" kind; Phase 2 (Church Fathers)
   can add its own kind or extend this once its actual needs are known.
 - **`BocReader.tsx`**, modeled directly on `ScriptureReader.tsx`: Document
-  picker → Article picker (mirroring Book → Chapter), a translation dropdown
-  populated from `boc_sources` for the current document, article text
-  rendered with a paragraph-anchor gutter (mirroring verse numbers), inline
-  or margin clickable proof-text cross-references (reusing
-  `findReferences`/scripture navigation to jump into the Bible reader), and
-  highlight-to-quote reusing the existing selection→quote flow with a
-  generalized citation key (e.g. `AC:IV.2`). On article change, calls
-  `lookupBocArticle` to populate the right-sidebar Commentary panel — the
-  same flow as `verseClicked` → `lookupCommentary` today.
+  picker → Section picker (mirroring Book → Chapter; sections grouped under
+  their `section_part` heading where present, e.g. Smalcald's three Parts, the
+  catechisms' chief parts), a translation dropdown populated from `boc_sources`
+  for the current document, section text rendered with the `[N]` paragraph
+  numbers as a gutter (mirroring verse numbers), inline or margin clickable
+  proof-text cross-references (reusing `findReferences`/scripture navigation to
+  jump into the Bible reader), and highlight-to-quote reusing the existing
+  selection→quote flow with a paragraph-precise citation key. On section
+  change, calls `lookupBocSection` to populate the right-sidebar Commentary
+  panel — the same flow as `verseClicked` → `lookupCommentary` today.
 - **Left nav** — a `confessions` entry in `LEFT_VIEWS`, a `case` in
   `ThreePanel.centerNode()` rendering `BocLibraryView` (a picker grid of the
-  ~10 documents, like the Bible book grid), and its own `CENTER_EMPTY`
+  14 documents, like the Bible book grid), and its own `CENTER_EMPTY`
   placeholder entry.
 - **Citation format** — `bocCitation()` alongside `scriptureCitation()` in
-  `src/shared/citation.ts`, e.g. `"AC IV, 2 (Reader's Edition)"`.
-- **Notes** — same right-sidebar note editor, keyed to a boc article ref,
+  `src/shared/citation.ts`, e.g. `"AC IV, 2 (Reader's Edition)"` (document
+  abbreviation + section number + highlighted paragraph number).
+- **Notes** — same right-sidebar note editor, keyed to a boc section ref,
   following the existing Scripture-notes attachment pattern exactly.
 
 Beyond its own reader, every existing content kind (`note`/`bible`/`pdf`/
@@ -280,13 +321,13 @@ needs to reach the same surfaces, not just its own tab:
    the existing `search_fts` table.
 4. **Projects (`ProjectItem` union)** — Projects can currently hold
    `book`/`note`/`scripture` items (not even `quotes` yet). A `boc` variant
-   needs to be added here for a Confession article to be addable to a
+   needs to be added here for a Confession section to be addable to a
    Project at all — the data-level counterpart to #1's picker UI.
 5. **Drag-and-drop** — a new `application/x-loci-boc` MIME type, plumbed
    through the same set/read points as `-book`/`-note`/`-scripture`
    (`LibraryView.tsx`, `StandaloneNotesPanel.tsx`, `BacklinksPanel.tsx`,
    `ReferenceBiblePanel.tsx`, `ReferencePdfPanel.tsx`, and `PaneFrame.tsx`'s
-   drop handler), so a Confession article can be dragged onto a Project or a
+   drop handler), so a Confession section can be dragged onto a Project or a
    note the same way a Bible passage can today.
 
 **Targeted refactor, in scope:** there is no shared `contentKindIcon()`/
@@ -305,8 +346,9 @@ Matches this codebase's existing pattern — logic-level `vitest`, no
 component-rendering infra:
 
 - `parseBocMarkdown` / `bocIndex` tests mirroring
-  `commentaryMarkdown.test.ts` / `commentary.test.ts`.
-- `lookupBocArticle` range-query tests mirroring `lookupVerse` tests.
+  `commentaryMarkdown.test.ts` / `commentary.test.ts` — including section
+  discovery (ordinal-by-file-order, number/label parsing from the heading).
+- `lookupBocSection` range-query tests mirroring `lookupVerse` tests.
 - Store-level tests for the new `boc` pane kind and nav wiring.
 - Search indexing/removal tests for the new `SearchKind` value, written
   fresh against an in-memory DB (there is no existing `search.ts` test
@@ -317,20 +359,31 @@ component-rendering infra:
   is extracted into a small pure helper (content-from-hit) and that helper
   is tested directly.
 
-## Open questions / risks
+## Resolved during design (was: open risks)
 
-- **Converter text/note distinction** (see Ingestion) — needs the actual
-  Reader's Edition EPUB/PDF in hand to determine the detection rule.
-- **Numbering quirks across documents** — the Apology of the Augsburg
-  Confession has a well-known German/Latin article-numbering discrepancy
-  across editions; the Smalcald Articles and the catechisms have
-  part-based rather than flat-article structure (handled by the
-  ordinal-flattening rule in the data model, but the exact flattened lists
-  need authoring). `BOC_DOCUMENTS`'s article lists need to be checked
-  against the actual translation sources before being finalized, and
-  `bocCitation()`'s format may need a documented convention for showing
-  both Apology numberings.
-- **Article-count table authorship** — `BOC_DOCUMENTS` must be hand-verified
-  against a source text once during implementation (article counts, labels,
-  sort order), the same one-time authoring cost `scriptureRef.ts`'s `BOOKS`
-  table already paid for the Bible.
+- **Converter text/note distinction** — RESOLVED by inspecting the actual
+  Reader's Edition EPUB. The `ch_note` vs. `indent*` CSS-class split (see the
+  Ingestion table) is unambiguous; no heuristic guessing needed.
+- **Numbering quirks (Apology dual-numbering, Smalcald parts, catechism
+  structure)** — RESOLVED by the documents-only static table + discovered
+  sections. Because sections come from the source and store their own
+  `section_number` string, the Apology's `"II (I)"` dual numbering and
+  Smalcald's `"III.1"` part-qualified numbers are captured verbatim from the
+  text; nothing is hand-flattened into a static table that could drift.
+- **Article-count authorship** — ELIMINATED. `BOC_DOCUMENTS` lists only the
+  14 documents (titles + order), which are trivially verifiable; the per-
+  document section lists that would have needed source-verification are no
+  longer authored at all.
+
+## Remaining risks
+
+- **Cross-source ordinal alignment** — a second commentary source that refers
+  to sections by traditional number needs number→ordinal mapping at index
+  time. Plan 1 targets the Reader's Edition only (self-consistent); flagged
+  as a follow-up.
+- **Heading-parse coverage** — the converter must correctly open a section for
+  every navigable unit (Preface, each Article, Conclusion, part leaves,
+  appendix sections) across all 14 documents' varied layouts. Guarded by the
+  round-trip section-count check against the ToC, but the varied catechism /
+  Catalog-of-Testimonies / Saxon-Visitation layouts are where mis-splits are
+  most likely and warrant a manual spot-check after conversion.

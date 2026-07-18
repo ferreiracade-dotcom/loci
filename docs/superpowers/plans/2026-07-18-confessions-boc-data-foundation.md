@@ -2,61 +2,63 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build the backend that lets the app ingest, store, look up, and search Book of Concord (BoC) primary text and per-article commentary — no UI yet, everything provable by `vitest`.
+**Goal:** Build the backend that lets the app ingest, store, look up, and search Book of Concord (BoC) primary text and per-section commentary — no UI yet, everything provable by `vitest`.
 
-**Architecture:** Mirror the existing Bible + Commentary backend. A static compiled document/article table (`bookOfConcord.ts`, like `scriptureRef.ts`'s `BOOKS`), a new SQLite migration (four tables in the shape of `commentary_sources`/`commentary_excerpts`), a pure Markdown parser (`parseBocMarkdown`, like `parseCommentaryMarkdown`), a query service (`boc.ts`, like `commentary.ts`), a vault-folder indexer (`bocIndex.ts`, like `commentaryIndex.ts`), search indexing, and the IPC surface.
+**Architecture:** Mirror the existing Bible + Commentary backend. A small static *documents-only* table (`bookOfConcord.ts`, like `scriptureRef.ts`'s `BOOKS` but without per-document section lists — sections are discovered from the source), a new SQLite migration (four tables shaped like `commentary_sources`/`commentary_excerpts`), a pure Markdown parser (`parseBocMarkdown`, like `parseCommentaryMarkdown`), a query service (`boc.ts`, like `commentary.ts`), a vault-folder indexer (`bocIndex.ts`, like `commentaryIndex.ts`), search indexing, the IPC surface, and the offline EPUB converter.
 
-**Tech Stack:** TypeScript, Electron (main/preload/renderer split), `better-sqlite3`, `vitest` (logic-level, in-memory DB via `vi.mock('../db/connection')`).
+**Tech Stack:** TypeScript, Electron (main/preload/renderer split), `better-sqlite3`, `vitest` (logic-level, in-memory DB via `vi.mock('../db/connection')`). No Python available on this machine — the converter is Node (`.mjs`).
 
 ## This is Plan 1 of 3
 
-The full Confessions feature (spec: `docs/superpowers/specs/2026-07-18-confessions-boc-design.md`) is delivered in three sequential plans, each independently testable:
+Spec: `docs/superpowers/specs/2026-07-18-confessions-boc-design.md` (read the Data model + Ingestion sections before starting — they were rewritten against the actual Concordia Reader's Edition EPUB).
 
-- **Plan 1 — Data Foundation (this document):** static table, migration, parser, service, indexer, search indexing, IPC. Deliverable: drop a BoC Markdown file in the vault → it indexes → articles and commentary are queryable and searchable. Proven by tests + a manual IPC smoke check.
-- **Plan 2 — Reader & Nav (future):** `'boc'` pane kind + store, `BocReader`, `BocLibraryView`, left-nav wiring, `ReferenceBocPanel`, the `CommentaryPanel` parameterization, notes, `bocCitation()`, the quotes migration + highlight-to-quote flow. Deliverable: you can read the Book of Concord in the app with translations, commentary, notes, and citeable highlights.
-- **Plan 3 — Full Integration Surfaces (future):** `PanePicker`, search filter UI + result grouping, Projects (`ProjectItem`), drag-and-drop, and the shared `contentKindIcon()`/`kindLabel()` refactor. Deliverable: BoC appears everywhere other content kinds do.
+- **Plan 1 — Data Foundation (this document):** static documents table, migration, parser, service, indexer, search indexing, IPC, converter. Deliverable: convert the Reader's Edition EPUB → drop the Markdown in the vault → it indexes → sections and commentary are queryable and searchable.
+- **Plan 2 — Reader & Nav (future):** `'boc'` pane kind + store, `BocReader`, `BocLibraryView`, left-nav wiring, `ReferenceBocPanel`, `CommentaryPanel` parameterization, notes, `bocCitation()`, the quotes migration + highlight-to-quote flow.
+- **Plan 3 — Full Integration Surfaces (future):** `PanePicker`, search filter UI + result grouping, Projects (`ProjectItem`), drag-and-drop, shared `contentKindIcon()`/`kindLabel()` refactor.
 
-Plan 2 and Plan 3 depend on interfaces locked here (the `boc.ts` service signatures, the `BocDocumentCode` type, the ref-string format). They are written after Plan 1 lands so their file/line references are real.
+Plans 2–3 depend on interfaces locked here; they're written after Plan 1 lands so their file/line refs are real.
 
 ## Global Constraints
 
-- **Migration discipline:** append new migrations to the `migrations` array in `src/main/db/migrations.ts`; never edit a shipped migration. The next free version is **18** (current max is 17). The index is rebuildable from the vault, so forward-only is fine.
-- **Test command:** the whole suite runs via `npm test` (→ `node scripts/test-native.mjs`). A single file runs via `npx vitest run <path>`; a single test via `npx vitest run <path> -t "<name>"`.
-- **DB test harness:** unit tests never touch Electron. Use an in-memory DB and mock the connection module, exactly as `src/main/services/commentary.test.ts:14-17` does:
-  ```ts
-  vi.mock('../db/connection', () => ({ getDb: () => db, getDataDir: () => dataDir }))
-  ```
-  with `db = new Database(':memory:'); db.pragma('foreign_keys = ON'); runMigrations(db)` in `beforeEach`.
-- **Pure parsers:** parsing/format logic lives in pure, I/O-free functions so it is directly unit-testable (the `parseCommentaryMarkdown` precedent).
-- **Ref-string format (canonical, used across all three plans):** a BoC reference is `"<CODE>:<ordinal>"`, e.g. `"AC:4"`. The display form (`"AC IV"`) is resolved through `BOC_DOCUMENTS` and is never stored.
-- **Article ordinals are the storage/query key.** All DB columns store the integer `ordinal`; Roman-numeral / part-qualified display strings live only in `BOC_DOCUMENTS`.
-- **Document codes:** `CR-AP` (Apostles' Creed), `CR-NI` (Nicene Creed), `CR-ATH` (Athanasian Creed), `AC`, `AP`, `SA`, `TR`, `SC`, `LC`, `FC-EP`, `FC-SD`.
+- **Migration discipline:** append to the `migrations` array in `src/main/db/migrations.ts`; never edit a shipped migration. Next free version is **18** (current max 17). Index is rebuildable from the vault — forward-only is fine.
+- **Test command:** whole suite via `npm test` (→ `node scripts/test-native.mjs`). Single file: `npx vitest run <path>`. Single test: `npx vitest run <path> -t "<name>"`.
+- **DB test harness:** never touch Electron. In-memory DB + mock the connection module exactly as `src/main/services/commentary.test.ts:14-17` does: `vi.mock('../db/connection', () => ({ getDb: () => db, getDataDir: () => dataDir }))`, with `db = new Database(':memory:'); db.pragma('foreign_keys = ON'); runMigrations(db)` in `beforeEach`.
+- **Pure parsers:** parsing/format logic lives in pure, I/O-free functions (the `parseCommentaryMarkdown` precedent).
+- **Document codes (14, in nav order):** `CR-AP`, `CR-NI`, `CR-ATH`, `AC`, `AP`, `SA`, `TR`, `SC`, `LC`, `FC-EP`, `FC-SD`, `CT` (Catalog of Testimonies), `BEC` (Brief Exhortation to Confession), `SVA` (Saxon Visitation Articles). (3 creeds + 8 confessions + 3 appendices = 14.)
+- **Section model:** a *section* is any navigable unit (Preface, Article, catechism part, Conclusion, appendix section). Sections are **discovered from the source**, never pre-authored. The static table lists documents only.
+- **Ref-string format:** `"<CODE>:<sectionOrdinal>"`, e.g. `"AC:4"`. `sectionOrdinal` is a 1-based integer, the canonical storage/query key. The display number (`"IV"`, `"II (I)"`) and paragraph number come from stored fields / the highlighted `[N]` marker, resolved for citation only.
+- **Markdown heading contract (converter output ↔ parser input):** a section heading is
+  `## <ordinal> | <number> | <label> | <part>`
+  — pipe-separated, ordinal required (integer), the other three may be empty. Examples:
+  `## 4 | IV | Justification | Chief Articles of Faith` ,
+  `## 1 |  | Preface | ` ,
+  `## 5 | II (I) | Original Sin | ` .
+  The `[N]` paragraph markers stay inline in the body text.
+- **Source EPUB:** `D:/Theology/Concordia_ The Lutheran Confessions-A Readers Edition ... .epub` (extracted copy already in the session scratchpad under `boc-epub/`). Copyrighted — never commit the EPUB or its converted Markdown to git; converted `.md` files live in the user's vault, and `tools/sources/` is git-ignored (Task 8).
 
 ---
 
 ## File Structure
 
-- **Create** `src/shared/bookOfConcord.ts` — static `BOC_DOCUMENTS` table + pure helpers (`bocDocument`, `bocArticle`, `documentCodeFromName`, `parseBocRef`, `formatBocRef`). Shared by main + renderer, no I/O.
-- **Create** `src/shared/bookOfConcord.test.ts` — table-integrity + helper tests.
+- **Create** `src/shared/bookOfConcord.ts` — static `BOC_DOCUMENTS` (documents only) + pure helpers.
+- **Create** `src/shared/bookOfConcord.test.ts`.
 - **Modify** `src/main/db/migrations.ts` — append migration v18 (four BoC tables).
-- **Modify** `src/main/db/migrations.test.ts` if it exists, else assert schema inside the service test.
-- **Create** `src/main/services/bocMarkdown.ts` — pure `parseBocMarkdown(markdown)` → `BocChunk[]`.
+- **Create** `src/main/services/bocMarkdown.ts` — pure `parseBocMarkdown`.
 - **Create** `src/main/services/bocMarkdown.test.ts`.
-- **Create** `src/main/services/boc.ts` — source/text/commentary CRUD + `lookupBocArticle` + `getArticle`.
+- **Create** `src/main/services/boc.ts` — source/section/commentary CRUD + `lookupBocSection` + `getSection`.
 - **Create** `src/main/services/boc.test.ts`.
-- **Create** `src/main/services/bocIndex.ts` — `syncBocFolder`, `indexBocSource` (vault → DB).
+- **Create** `src/main/services/bocIndex.ts` — `syncBocFolder`, `indexBocSections`, `indexBocCommentary`.
 - **Create** `src/main/services/bocIndex.test.ts`.
-- **Modify** `src/main/services/search.ts` — add `'confession'` `SearchKind`, index/remove BoC rows.
-- **Modify** `src/main/services/search.test.ts` if it exists, else create `src/main/services/search.boc.test.ts`.
-- **Modify** `src/shared/ipc.ts` — `Channels` entries + `Api` methods for BoC lookup/list/index.
-- **Modify** `src/preload/index.ts` — preload bindings.
-- **Modify** `src/main/ipc/index.ts` — `ipcMain.handle` registrations.
-- **Modify** `src/main/index.ts` — call `syncBocFolder()` on startup (next to `syncCommentaryFolder`).
-- **Create** `tools/boc-epub-to-md.mjs` (Task 8) — offline converter producing the documented Markdown contract.
+- **Modify** `src/main/services/config.ts` — `bocVaultDir()`, `bocCommentaryVaultDir()`.
+- **Modify** `src/main/services/search.ts` — `'confession'` `SearchKind`, index/remove BoC rows.
+- **Create** `src/main/services/search.boc.test.ts`.
+- **Modify** `src/shared/ipc.ts` — `BocSource`/`BocCommentaryMatch` types, `Channels`, `Api`, `SearchKind`.
+- **Modify** `src/preload/index.ts`, `src/main/ipc/index.ts`, `src/main/index.ts`.
+- **Create** `tools/boc-epub-to-md.mjs` — offline converter.
 
 ---
 
-## Task 1: Static Book of Concord table
+## Task 1: Static documents table
 
 **Files:**
 - Create: `src/shared/bookOfConcord.ts`
@@ -64,15 +66,15 @@ Plan 2 and Plan 3 depend on interfaces locked here (the `boc.ts` service signatu
 
 **Interfaces:**
 - Produces:
-  - `type BocDocumentCode = 'CR-AP'|'CR-NI'|'CR-ATH'|'AC'|'AP'|'SA'|'TR'|'SC'|'LC'|'FC-EP'|'FC-SD'`
-  - `interface BocArticleDef { ordinal: number; number: string; label: string }`
-  - `interface BocDocumentDef { code: BocDocumentCode; title: string; abbreviation: string; sortOrder: number; articles: BocArticleDef[] }`
-  - `const BOC_DOCUMENTS: BocDocumentDef[]`
+  - `type BocDocumentCode = 'CR-AP'|'CR-NI'|'CR-ATH'|'AC'|'AP'|'SA'|'TR'|'SC'|'LC'|'FC-EP'|'FC-SD'|'CT'|'BEC'|'SVA'`
+  - `interface BocDocumentDef { code: BocDocumentCode; title: string; abbreviation: string; sortOrder: number }`
+  - `const BOC_DOCUMENTS: BocDocumentDef[]` (14 entries, sortOrder 1..14 in the order above)
   - `function bocDocument(code: string): BocDocumentDef | undefined`
-  - `function bocArticle(code: string, ordinal: number): BocArticleDef | undefined`
-  - `function documentCodeFromName(name: string): BocDocumentCode | undefined` (matches title or abbreviation, case-insensitive)
-  - `function parseBocRef(ref: string): { code: BocDocumentCode; ordinal: number } | null` (parses `"AC:4"`)
-  - `function formatBocRef(code: BocDocumentCode, ordinal: number): string` (returns `"AC:4"`)
+  - `function documentCodeFromName(name: string): BocDocumentCode | undefined` (matches title or abbreviation or code, case-insensitive; also accepts the Reader's Edition heading spellings — see the alias note in Step 3)
+  - `function parseBocRef(ref: string): { code: BocDocumentCode; ordinal: number } | null`
+  - `function formatBocRef(code: BocDocumentCode, ordinal: number): string`
+
+Note: no per-document section list, no `BocArticleDef` — sections are discovered by the indexer.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -81,48 +83,32 @@ Create `src/shared/bookOfConcord.test.ts`:
 ```ts
 import { describe, expect, it } from 'vitest'
 import {
-  BOC_DOCUMENTS,
-  bocDocument,
-  bocArticle,
-  documentCodeFromName,
-  parseBocRef,
-  formatBocRef
+  BOC_DOCUMENTS, bocDocument, documentCodeFromName, parseBocRef, formatBocRef
 } from './bookOfConcord'
 
-describe('BOC_DOCUMENTS table integrity', () => {
-  it('has all 11 documents with unique codes and sortOrders', () => {
-    const codes = BOC_DOCUMENTS.map((d) => d.code)
-    expect(codes).toEqual([
-      'CR-AP', 'CR-NI', 'CR-ATH', 'AC', 'AP', 'SA', 'TR', 'SC', 'LC', 'FC-EP', 'FC-SD'
+describe('BOC_DOCUMENTS', () => {
+  it('lists all 14 documents in nav order with unique codes and 1..14 sortOrder', () => {
+    expect(BOC_DOCUMENTS.map((d) => d.code)).toEqual([
+      'CR-AP','CR-NI','CR-ATH','AC','AP','SA','TR','SC','LC','FC-EP','FC-SD','CT','BEC','SVA'
     ])
-    expect(new Set(codes).size).toBe(codes.length)
-    const orders = BOC_DOCUMENTS.map((d) => d.sortOrder)
-    expect(new Set(orders).size).toBe(orders.length)
+    expect(new Set(BOC_DOCUMENTS.map((d) => d.code)).size).toBe(14)
+    expect(BOC_DOCUMENTS.map((d) => d.sortOrder)).toEqual([...Array(14)].map((_, i) => i + 1))
   })
-
-  it('gives every document a contiguous 1-based ordinal sequence', () => {
-    for (const doc of BOC_DOCUMENTS) {
-      expect(doc.articles.length).toBeGreaterThan(0)
-      doc.articles.forEach((a, i) => expect(a.ordinal).toBe(i + 1))
-    }
-  })
-
-  it('gives the Augsburg Confession its 28 articles', () => {
-    expect(bocDocument('AC')?.articles.length).toBe(28)
-    expect(bocArticle('AC', 4)?.label).toMatch(/justif/i)
-    expect(bocArticle('AC', 4)?.number).toBe('IV')
+  it('puts the three appendices last', () => {
+    expect(BOC_DOCUMENTS.slice(-3).map((d) => d.code)).toEqual(['CT','BEC','SVA'])
   })
 })
 
 describe('helpers', () => {
-  it('resolves a document by title or abbreviation, case-insensitively', () => {
+  it('resolves a document by title, abbreviation, code, or Reader\'s Edition heading spelling', () => {
     expect(documentCodeFromName('Augsburg Confession')).toBe('AC')
     expect(documentCodeFromName('augsburg confession')).toBe('AC')
     expect(documentCodeFromName('AC')).toBe('AC')
-    expect(documentCodeFromName('Nicene Creed')).toBe('CR-NI')
+    expect(documentCodeFromName('The Augsburg Confession (1530)')).toBe('AC')
+    expect(documentCodeFromName('The Creed of Athanasius')).toBe('CR-ATH')
+    expect(documentCodeFromName('Catalog of Testimonies')).toBe('CT')
     expect(documentCodeFromName('nonsense')).toBeUndefined()
   })
-
   it('round-trips a ref string', () => {
     expect(formatBocRef('AC', 4)).toBe('AC:4')
     expect(parseBocRef('AC:4')).toEqual({ code: 'AC', ordinal: 4 })
@@ -135,90 +121,67 @@ describe('helpers', () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `npx vitest run src/shared/bookOfConcord.test.ts`
-Expected: FAIL — `Cannot find module './bookOfConcord'`.
+Run: `npx vitest run src/shared/bookOfConcord.test.ts` → FAIL (module not found).
 
 - [ ] **Step 3: Write the implementation**
 
-Create `src/shared/bookOfConcord.ts`. Author the full table. The three creeds, the Augsburg Confession (28 articles), the Smalcald Articles, the Treatise, the catechisms, and the Formula (Epitome + Solid Declaration, 12 articles each) are authored here. **Author each document's article list against a printed Book of Concord (Kolb-Wengert or Tappert) and confirm the counts** — the test above pins AC=28 and the contiguous-ordinal rule; add equivalent count assertions per document as you author them. Part-structured documents (Smalcald Articles Parts I–III; the catechisms' chief parts) are flattened into one ordinal run per document, with the part encoded in the `number`/`label` display strings (e.g. `{ ordinal: 5, number: 'III.1', label: 'Part III, Article 1: Sin' }`).
+Create `src/shared/bookOfConcord.ts`:
 
 ```ts
-// Book of Concord reference grammar — shared by main (index/lookup) and renderer
-// (reader + citation). Pure, no I/O. Mirrors scriptureRef.ts's BOOKS table.
-//
-// The document/article structure is fixed across translations, so it's authored once
-// here. All storage/lookup uses the integer `ordinal`; the Roman-numeral / part-qualified
-// `number` string is display-only.
+// Book of Concord document registry — shared by main (index/lookup) and renderer
+// (reader + citation). Pure, no I/O. Mirrors scriptureRef.ts's BOOKS, but lists ONLY
+// the documents; a document's sections (Preface, Articles, Conclusion, catechism parts,
+// appendix sections) are discovered from the indexed source, not pre-authored here.
 
 export type BocDocumentCode =
   | 'CR-AP' | 'CR-NI' | 'CR-ATH'
   | 'AC' | 'AP' | 'SA' | 'TR' | 'SC' | 'LC' | 'FC-EP' | 'FC-SD'
-
-export interface BocArticleDef {
-  /** 1-based position within the document — the DB/lookup key. */
-  ordinal: number
-  /** Display numbering: Roman numeral, or part-qualified (e.g. "III.1"). Never stored. */
-  number: string
-  label: string
-}
+  | 'CT' | 'BEC' | 'SVA'
 
 export interface BocDocumentDef {
   code: BocDocumentCode
   title: string
   abbreviation: string
-  /** Order in the Book of Concord (creeds first). */
   sortOrder: number
-  articles: BocArticleDef[]
-}
-
-// Helper: build a plain Roman-numeral article run from [label, label, …].
-const roman = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV',
-  'XV','XVI','XVII','XVIII','XIX','XX','XXI','XXII','XXIII','XXIV','XXV','XXVI','XXVII','XXVIII']
-function articles(labels: string[]): BocArticleDef[] {
-  return labels.map((label, i) => ({ ordinal: i + 1, number: roman[i] ?? String(i + 1), label }))
+  /** Extra name spellings the converter's `# <Document>` heading may use (from the
+   *  Reader's Edition ToC), beyond title/abbreviation/code. Case-insensitive. */
+  aliases?: string[]
 }
 
 export const BOC_DOCUMENTS: BocDocumentDef[] = [
-  { code: 'CR-AP', title: "Apostles' Creed", abbreviation: 'Ap. Creed', sortOrder: 1,
-    articles: articles(['The First Article', 'The Second Article', 'The Third Article']) },
-  { code: 'CR-NI', title: 'Nicene Creed', abbreviation: 'Nic. Creed', sortOrder: 2,
-    articles: articles(['The First Article', 'The Second Article', 'The Third Article']) },
-  { code: 'CR-ATH', title: 'Athanasian Creed', abbreviation: 'Ath. Creed', sortOrder: 3,
-    // The Athanasian Creed is traditionally numbered as 40+ verses, not articles;
-    // author the ordinal run to match the chosen edition's verse numbering.
-    articles: articles(['…author per edition…']) },
-  { code: 'AC', title: 'Augsburg Confession', abbreviation: 'AC', sortOrder: 4,
-    articles: articles([
-      'Of God', 'Of Original Sin', 'Of the Son of God', 'Of Justification',
-      'Of the Ministry', 'Of the New Obedience', 'Of the Church',
-      'What the Church Is', 'Of Baptism', "Of the Lord's Supper", 'Of Confession',
-      'Of Repentance', 'Of the Use of the Sacraments', 'Of Ecclesiastical Order',
-      'Of Ecclesiastical Usages', 'Of Civil Affairs', "Of Christ's Return to Judgment",
-      'Of Free Will', 'Of the Cause of Sin', 'Of Good Works', 'Of the Worship of the Saints',
-      'Of Both Kinds in the Sacrament', 'Of the Marriage of Priests', 'Of the Mass',
-      'Of Confession', 'Of the Distinction of Meats', 'Of Monastic Vows',
-      'Of Ecclesiastical Power'
-    ]) },
-  // AP, SA, TR, SC, LC, FC-EP, FC-SD — author each against the printed Book of Concord,
-  // flattening parts into one ordinal run per document as described above. Each gets a
-  // count assertion in the test file.
+  { code: 'CR-AP',  title: "Apostles' Creed",       abbreviation: "Ap. Creed",  sortOrder: 1,  aliases: ["The Apostles' Creed"] },
+  { code: 'CR-NI',  title: 'Nicene Creed',          abbreviation: 'Nic. Creed', sortOrder: 2,  aliases: ['The Nicene Creed'] },
+  { code: 'CR-ATH', title: 'Athanasian Creed',      abbreviation: 'Ath. Creed', sortOrder: 3,  aliases: ['The Creed of Athanasius'] },
+  { code: 'AC',     title: 'Augsburg Confession',   abbreviation: 'AC',  sortOrder: 4,  aliases: ['The Augsburg Confession', 'The Augsburg Confession (1530)'] },
+  { code: 'AP',     title: 'Apology of the Augsburg Confession', abbreviation: 'Ap', sortOrder: 5, aliases: ['The Apology of the Augsburg Confession', 'The Apology of the Augsburg Confession (1531)'] },
+  { code: 'SA',     title: 'Smalcald Articles',     abbreviation: 'SA',  sortOrder: 6,  aliases: ['The Smalcald Articles', 'The Smalcald Articles (1537)'] },
+  { code: 'TR',     title: 'Treatise on the Power and Primacy of the Pope', abbreviation: 'Tr', sortOrder: 7, aliases: ['The Power and Primacy of the Pope', 'The Power and Primacy of the Pope (1537)'] },
+  { code: 'SC',     title: 'Small Catechism',       abbreviation: 'SC',  sortOrder: 8,  aliases: ['The Small Catechism', 'The Small Catechism (1529)', 'Enchiridion: The Small Catechism'] },
+  { code: 'LC',     title: 'Large Catechism',       abbreviation: 'LC',  sortOrder: 9,  aliases: ['The Large Catechism', 'The Large Catechism (1529)'] },
+  { code: 'FC-EP',  title: 'Formula of Concord: Epitome', abbreviation: 'FC Ep', sortOrder: 10, aliases: ['The Formula of Concord, Epitome', 'The Formula of Concord, Epitome (1577)', 'Epitome'] },
+  { code: 'FC-SD',  title: 'Formula of Concord: Solid Declaration', abbreviation: 'FC SD', sortOrder: 11, aliases: ['The Formula of Concord, Solid Declaration', 'The Formula of Concord, Solid Declaration (1577)', 'Solid Declaration'] },
+  { code: 'CT',     title: 'Catalog of Testimonies', abbreviation: 'Cat. Test.', sortOrder: 12, aliases: ['Appendix A: Catalog of Testimonies'] },
+  { code: 'BEC',    title: 'A Brief Exhortation to Confession', abbreviation: 'Brief Exh.', sortOrder: 13, aliases: ['Appendix B: A Brief Exhortation to Confession'] },
+  { code: 'SVA',    title: 'Saxon Visitation Articles', abbreviation: 'SVA', sortOrder: 14, aliases: ['Appendix C: Saxon Visitation Articles'] }
 ]
+// 14 documents: 3 Ecumenical Creeds + Augsburg/Apology/Smalcald/Treatise/Small Cat/
+// Large Cat/FC Epitome/FC Solid Declaration (8) + 3 appendices (CT/BEC/SVA).
+```
 
+```ts
 const byCode = new Map(BOC_DOCUMENTS.map((d) => [d.code, d]))
 
 export function bocDocument(code: string): BocDocumentDef | undefined {
   return byCode.get(code as BocDocumentCode)
 }
 
-export function bocArticle(code: string, ordinal: number): BocArticleDef | undefined {
-  return bocDocument(code)?.articles.find((a) => a.ordinal === ordinal)
-}
-
 export function documentCodeFromName(name: string): BocDocumentCode | undefined {
   const n = name.trim().toLowerCase()
-  const hit = BOC_DOCUMENTS.find(
-    (d) => d.title.toLowerCase() === n || d.abbreviation.toLowerCase() === n || d.code.toLowerCase() === n
-  )
+  const hit = BOC_DOCUMENTS.find((d) =>
+    d.title.toLowerCase() === n ||
+    d.abbreviation.toLowerCase() === n ||
+    d.code.toLowerCase() === n ||
+    (d.aliases ?? []).some((a) => a.toLowerCase() === n))
   return hit?.code
 }
 
@@ -231,25 +194,18 @@ export function parseBocRef(ref: string): { code: BocDocumentCode; ordinal: numb
   if (!m) return null
   const doc = bocDocument(m[1])
   const ordinal = Number(m[2])
-  if (!doc || ordinal < 1 || !doc.articles.some((a) => a.ordinal === ordinal)) return null
+  if (!doc || ordinal < 1) return null
   return { code: doc.code, ordinal }
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [ ] **Step 4: Run → PASS** (`npx vitest run src/shared/bookOfConcord.test.ts`).
 
-Run: `npx vitest run src/shared/bookOfConcord.test.ts`
-Expected: PASS. (The `CR-ATH` placeholder article list still satisfies the contiguous-ordinal rule; replace `'…author per edition…'` with the real verse list before Step 5.)
-
-- [ ] **Step 5: Author the remaining documents and their count assertions**
-
-Fill in `AP`, `SA`, `TR`, `SC`, `LC`, `FC-EP`, `FC-SD` and the Athanasian Creed's real numbering. For each, add a count assertion to the test file mirroring the AC one (e.g. `expect(bocDocument('FC-EP')?.articles.length).toBe(12)`). Re-run the test file; expected PASS with no `'…author per edition…'` strings remaining.
-
-- [ ] **Step 6: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add src/shared/bookOfConcord.ts src/shared/bookOfConcord.test.ts
-git commit -m "Add static Book of Concord document/article table"
+git commit -m "Add Book of Concord documents registry"
 ```
 
 ---
@@ -258,14 +214,14 @@ git commit -m "Add static Book of Concord document/article table"
 
 **Files:**
 - Modify: `src/main/db/migrations.ts` (append after the v17 object at line ~336)
-- Test: `src/main/services/boc.test.ts` (created here; the migration is asserted via its schema)
+- Test: `src/main/services/boc.test.ts` (created here; schema asserted)
 
 **Interfaces:**
-- Produces four tables: `boc_sources`, `boc_texts`, `boc_commentary_sources`, `boc_commentary_excerpts`, at `user_version = 18`.
+- Produces `boc_sources`, `boc_texts`, `boc_commentary_sources`, `boc_commentary_excerpts` at `user_version = 18`.
 
 - [ ] **Step 1: Write the failing test**
 
-Create `src/main/services/boc.test.ts` with only the schema check for now:
+Create `src/main/services/boc.test.ts`:
 
 ```ts
 import Database from 'better-sqlite3'
@@ -274,99 +230,86 @@ import { runMigrations } from '../db/migrations'
 
 let db: Database.Database
 beforeEach(() => {
-  db = new Database(':memory:')
-  db.pragma('foreign_keys = ON')
-  runMigrations(db)
+  db = new Database(':memory:'); db.pragma('foreign_keys = ON'); runMigrations(db)
 })
 
 describe('migration v18', () => {
   it('creates the four BoC tables and reaches version 18+', () => {
     expect(db.pragma('user_version', { simple: true })).toBeGreaterThanOrEqual(18)
-    const tables = db
-      .prepare("SELECT name FROM sqlite_master WHERE type='table'")
-      .all()
-      .map((r: any) => r.name)
-    expect(tables).toContain('boc_sources')
-    expect(tables).toContain('boc_texts')
-    expect(tables).toContain('boc_commentary_sources')
-    expect(tables).toContain('boc_commentary_excerpts')
+    const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all().map((r: any) => r.name)
+    for (const t of ['boc_sources','boc_texts','boc_commentary_sources','boc_commentary_excerpts'])
+      expect(tables).toContain(t)
   })
 })
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
-
-Run: `npx vitest run src/main/services/boc.test.ts`
-Expected: FAIL — tables not found.
+- [ ] **Step 2: Run → FAIL** (`npx vitest run src/main/services/boc.test.ts`).
 
 - [ ] **Step 3: Append the migration**
 
-In `src/main/db/migrations.ts`, add after the version-17 object (before the closing `]` at line 337):
+In `src/main/db/migrations.ts`, add after the version-17 object (match the array's existing comma style):
 
 ```ts
-  ,{
+  {
     version: 18,
     name: 'book-of-concord',
     up: (db) => {
-      // Book of Concord: primary text (one row per translation × document × article) and
-      // per-article commentary, both rebuildable from the vault. Mirrors the commentary
-      // tables but keyed to (document_code, article ordinal) instead of USFM book +
-      // chapter/verse. Kept as separate tables so Bible-only invariants (66-book bounds,
-      // testament grouping) never see a BoC document code.
+      // Book of Concord: primary text (one row per translation × document × section) and
+      // per-section commentary. Sections are discovered from the source, so section_number
+      // and section_label are stored per row rather than derived from a static table.
+      // Kept separate from the Bible commentary tables so 66-book invariants never see a
+      // BoC document code.
       db.exec(`
         CREATE TABLE boc_sources (
-          id                  TEXT PRIMARY KEY,
-          display_name        TEXT NOT NULL,
-          author              TEXT,
-          md_relative_path    TEXT NOT NULL UNIQUE,
-          sort_order          INTEGER NOT NULL DEFAULT 0,
-          indexed_at          TEXT,
-          status              TEXT NOT NULL DEFAULT 'unindexed'
+          id                TEXT PRIMARY KEY,
+          display_name      TEXT NOT NULL,
+          author            TEXT,
+          md_relative_path  TEXT NOT NULL UNIQUE,
+          sort_order        INTEGER NOT NULL DEFAULT 0,
+          indexed_at        TEXT,
+          status            TEXT NOT NULL DEFAULT 'unindexed'
         );
 
         CREATE TABLE boc_texts (
           id               TEXT PRIMARY KEY,
           source_id        TEXT NOT NULL REFERENCES boc_sources(id) ON DELETE CASCADE,
           document_code    TEXT NOT NULL,
-          article_ordinal  INTEGER NOT NULL,
+          section_ordinal  INTEGER NOT NULL,
+          section_number   TEXT,
+          section_label    TEXT NOT NULL,
+          section_part     TEXT,
           text             TEXT NOT NULL
         );
-        CREATE UNIQUE INDEX idx_boc_texts_key ON boc_texts(source_id, document_code, article_ordinal);
-        CREATE INDEX idx_boc_texts_lookup ON boc_texts(document_code, article_ordinal);
+        CREATE UNIQUE INDEX idx_boc_texts_key ON boc_texts(source_id, document_code, section_ordinal);
+        CREATE INDEX idx_boc_texts_lookup ON boc_texts(document_code, section_ordinal);
 
         CREATE TABLE boc_commentary_sources (
-          id                  TEXT PRIMARY KEY,
-          display_name        TEXT NOT NULL,
-          author              TEXT,
-          md_relative_path    TEXT NOT NULL UNIQUE,
-          sort_order          INTEGER NOT NULL DEFAULT 0,
-          indexed_at          TEXT,
-          status              TEXT NOT NULL DEFAULT 'unindexed'
+          id                TEXT PRIMARY KEY,
+          display_name      TEXT NOT NULL,
+          author            TEXT,
+          md_relative_path  TEXT NOT NULL UNIQUE,
+          sort_order        INTEGER NOT NULL DEFAULT 0,
+          indexed_at        TEXT,
+          status            TEXT NOT NULL DEFAULT 'unindexed'
         );
 
         CREATE TABLE boc_commentary_excerpts (
           id               TEXT PRIMARY KEY,
           source_id        TEXT NOT NULL REFERENCES boc_commentary_sources(id) ON DELETE CASCADE,
           document_code    TEXT NOT NULL,
-          article_start    INTEGER NOT NULL,
-          article_end      INTEGER NOT NULL,
+          section_start    INTEGER NOT NULL,
+          section_end      INTEGER NOT NULL,
           text             TEXT NOT NULL,
           header_raw       TEXT
         );
-        CREATE INDEX idx_boc_excerpts_lookup ON boc_commentary_excerpts(document_code, article_start, article_end);
+        CREATE INDEX idx_boc_excerpts_lookup ON boc_commentary_excerpts(document_code, section_start, section_end);
         CREATE INDEX idx_boc_excerpts_source ON boc_commentary_excerpts(source_id);
       `)
     }
   }
 ```
 
-(Note: the leading `,` joins the previous array element. If you prefer, drop the leading comma and add a trailing comma to the v17 object instead — match whichever the surrounding code uses.)
-
-- [ ] **Step 4: Run test to verify it passes**
-
-Run: `npx vitest run src/main/services/boc.test.ts`
-Expected: PASS.
-
+- [ ] **Step 4: Run → PASS.**
 - [ ] **Step 5: Commit**
 
 ```bash
@@ -383,18 +326,12 @@ git commit -m "Add Book of Concord DB migration (v18)"
 - Test: `src/main/services/bocMarkdown.test.ts`
 
 **Interfaces:**
-- Consumes: `documentCodeFromName` from `../../shared/bookOfConcord`.
+- Consumes: `documentCodeFromName`, `type BocDocumentCode` from `../../shared/bookOfConcord`.
 - Produces:
-  - `interface BocChunk { documentCode: BocDocumentCode; articleStart: number; articleEnd: number; text: string; headerRaw: string }`
-  - `function parseBocMarkdown(markdown: string): BocChunk[]`
+  - `interface BocSection { documentCode: BocDocumentCode; ordinal: number; number: string | null; label: string; part: string | null; text: string; headerRaw: string }`
+  - `function parseBocMarkdown(markdown: string): BocSection[]`
 
-**Markdown contract** (the tested seam between the converter and the app):
-```
-# Augsburg Confession        <- level-1 heading sets the current document (name or code)
-## 1                         <- an article ordinal opens an excerpt; body runs to next heading
-## 1-3                       <- an ordinal range is allowed (article_start..article_end)
-```
-A `##` heading that isn't an integer or integer-range, under a known document, ends the current chunk without opening a new one (matches `parseCommentaryMarkdown`'s stray-heading handling). Text before the first article is dropped as front matter.
+Contract: `# <Document>` (level-1) sets the current document via `documentCodeFromName`. `## <ordinal> | <number> | <label> | <part>` opens a section (see Global Constraints). Empty `number`/`part` fields → `null`. Body text (including `[N]` markers) runs to the next heading. A `##` heading that doesn't match the pipe contract, or any heading before a document is set, ends the current section without opening one. Sections with empty bodies are still returned (the commentary indexer may emit note-less section headings for ordinal alignment — callers filter as needed).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -405,46 +342,50 @@ import { describe, expect, it } from 'vitest'
 import { parseBocMarkdown } from './bocMarkdown'
 
 describe('parseBocMarkdown', () => {
-  it('parses documents and single-article excerpts', () => {
+  it('parses sections with ordinal/number/label/part and preserves [N] markers', () => {
     const md = [
       '# Augsburg Confession',
-      '## 1',
-      'Our churches teach that there is one divine essence…',
-      '## 2',
-      'Original sin is truly sin…'
+      '## 1 |  | Preface | ',
+      '[1] Most invincible Emperor…',
+      '## 4 | IV | Justification | Chief Articles of Faith',
+      '[1] Our churches teach that people cannot be justified… [2] People are…'
     ].join('\n')
-    const chunks = parseBocMarkdown(md)
-    expect(chunks).toEqual([
-      { documentCode: 'AC', articleStart: 1, articleEnd: 1,
-        text: 'Our churches teach that there is one divine essence…', headerRaw: '1' },
-      { documentCode: 'AC', articleStart: 2, articleEnd: 2,
-        text: 'Original sin is truly sin…', headerRaw: '2' }
+    expect(parseBocMarkdown(md)).toEqual([
+      { documentCode: 'AC', ordinal: 1, number: null, label: 'Preface', part: null,
+        text: '[1] Most invincible Emperor…', headerRaw: '1 |  | Preface | ' },
+      { documentCode: 'AC', ordinal: 4, number: 'IV', label: 'Justification', part: 'Chief Articles of Faith',
+        text: '[1] Our churches teach that people cannot be justified… [2] People are…',
+        headerRaw: '4 | IV | Justification | Chief Articles of Faith' }
     ])
   })
 
-  it('parses an article range', () => {
-    const chunks = parseBocMarkdown('# Augsburg Confession\n## 22-24\nCovered together.')
-    expect(chunks[0]).toMatchObject({ documentCode: 'AC', articleStart: 22, articleEnd: 24 })
+  it('keeps the Apology dual-numbering verbatim in section_number', () => {
+    const s = parseBocMarkdown('# Apology of the Augsburg Confession\n## 5 | II (I) | Original Sin | \nbody')
+    expect(s[0]).toMatchObject({ documentCode: 'AP', ordinal: 5, number: 'II (I)', label: 'Original Sin' })
   })
 
   it('switches documents on a new level-1 heading', () => {
-    const chunks = parseBocMarkdown('# Nicene Creed\n## 1\nA\n# Augsburg Confession\n## 1\nB')
-    expect(chunks.map((c) => c.documentCode)).toEqual(['CR-NI', 'AC'])
+    const s = parseBocMarkdown('# Nicene Creed\n## 1 | I | First Article | \nA\n# Augsburg Confession\n## 1 | I | God | \nB')
+    expect(s.map((x) => x.documentCode)).toEqual(['CR-NI', 'AC'])
   })
 
-  it('drops front matter and stray headings, and ignores unknown documents', () => {
-    expect(parseBocMarkdown('preamble\n## 1\nno document set yet')).toEqual([])
-    const chunks = parseBocMarkdown('# Augsburg Confession\n## 1\nA\n## Notes\nstray\n## 2\nB')
-    expect(chunks.map((c) => c.articleStart)).toEqual([1, 2])
-    expect(chunks[0].text).toBe('A')
+  it('drops content before any document and ignores non-contract headings', () => {
+    expect(parseBocMarkdown('preamble\n## 4 | IV | Justification | \nno document set')).toEqual([])
+    const s = parseBocMarkdown('# Augsburg Confession\n## 1 | I | God | \nA\n## Random Title\nstray\n## 2 | II | Original Sin | \nB')
+    expect(s.map((x) => x.ordinal)).toEqual([1, 2])
+    expect(s[0].text).toBe('A')
+  })
+
+  it('returns empty-body sections (ordinal alignment for the commentary file)', () => {
+    const s = parseBocMarkdown('# Augsburg Confession\n## 3 | III | The Son of God | \n## 4 | IV | Justification | \nnote')
+    expect(s.map((x) => ({ ord: x.ordinal, text: x.text }))).toEqual([
+      { ord: 3, text: '' }, { ord: 4, text: 'note' }
+    ])
   })
 })
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
-
-Run: `npx vitest run src/main/services/bocMarkdown.test.ts`
-Expected: FAIL — module not found.
+- [ ] **Step 2: Run → FAIL** (module not found).
 
 - [ ] **Step 3: Write the implementation**
 
@@ -453,30 +394,25 @@ Create `src/main/services/bocMarkdown.ts`:
 ```ts
 import { documentCodeFromName, type BocDocumentCode } from '../../shared/bookOfConcord'
 
-/** One article-keyed BoC chunk (primary text or commentary body). Pure output of
- *  parseBocMarkdown; the indexer supplies the file text and persists the result. */
-export interface BocChunk {
+export interface BocSection {
   documentCode: BocDocumentCode
-  articleStart: number
-  articleEnd: number
+  ordinal: number
+  number: string | null
+  label: string
+  part: string | null
   text: string
   headerRaw: string
 }
 
 const HEADING_RE = /^(#{1,6})\s+(.*\S)\s*$/
-const ARTICLE_RE = /^(\d+)(?:-(\d+))?$/
 
-export function parseBocMarkdown(markdown: string): BocChunk[] {
+export function parseBocMarkdown(markdown: string): BocSection[] {
   let document: BocDocumentCode | null = null
-  const chunks: BocChunk[] = []
-  let current: BocChunk | null = null
+  const sections: BocSection[] = []
+  let current: BocSection | null = null
 
   const flush = (): void => {
-    if (current) {
-      current.text = current.text.trim()
-      chunks.push(current)
-      current = null
-    }
+    if (current) { current.text = current.text.trim(); sections.push(current); current = null }
   }
 
   for (const rawLine of markdown.split(/\r?\n/)) {
@@ -494,36 +430,38 @@ export function parseBocMarkdown(markdown: string): BocChunk[] {
       continue
     }
 
-    // level >= 2: an article ordinal / range opens an excerpt against the current document.
-    const m = ARTICLE_RE.exec(content)
-    if (document && m) {
+    // level >= 2: try the pipe contract "ordinal | number | label | part".
+    const parts = content.split('|').map((s) => s.trim())
+    const ordinal = Number(parts[0])
+    if (document && parts.length >= 3 && Number.isInteger(ordinal) && ordinal >= 1 && parts[2]) {
       flush()
-      const start = Number(m[1])
-      const end = m[2] ? Number(m[2]) : start
-      current = { documentCode: document, articleStart: start, articleEnd: end, text: '', headerRaw: content }
+      current = {
+        documentCode: document,
+        ordinal,
+        number: parts[1] ? parts[1] : null,
+        label: parts[2],
+        part: parts[3] ? parts[3] : null,
+        text: '',
+        headerRaw: content
+      }
       continue
     }
 
-    // Stray heading (a section title, or an ordinal with no document set): end the current
-    // excerpt so its title doesn't leak into the previous article; open nothing.
+    // Non-contract heading (stray title, or no document set): end current, open nothing.
     flush()
   }
 
   flush()
-  return chunks
+  return sections
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
-
-Run: `npx vitest run src/main/services/bocMarkdown.test.ts`
-Expected: PASS.
-
+- [ ] **Step 4: Run → PASS.**
 - [ ] **Step 5: Commit**
 
 ```bash
 git add src/main/services/bocMarkdown.ts src/main/services/bocMarkdown.test.ts
-git commit -m "Add pure Book of Concord Markdown parser"
+git commit -m "Add pure Book of Concord Markdown parser (discovered sections)"
 ```
 
 ---
@@ -532,217 +470,180 @@ git commit -m "Add pure Book of Concord Markdown parser"
 
 **Files:**
 - Create: `src/main/services/boc.ts`
-- Test: extend `src/main/services/boc.test.ts` (created in Task 2)
+- Modify: `src/shared/ipc.ts` (add `BocSource` + `BocCommentaryMatch` interfaces next to `CommentaryMatch` at line ~699)
+- Test: extend `src/main/services/boc.test.ts`
 
 **Interfaces:**
-- Consumes: `getDb` from `../db/connection`; `crypto.randomUUID`; `BocSource` and `BocCommentaryMatch` imported from `../../shared/ipc` (defined there in Step 3 below, next to `CommentaryMatch` at `ipc.ts:699` — this matches how `commentary.ts:10-14` imports `CommentaryMatch` from `ipc.ts`, keeping the types on the renderer-reachable side of the main/renderer boundary).
-- Produces (types, added to `src/shared/ipc.ts`):
+- Consumes: `getDb` from `../db/connection`; `randomUUID` from `crypto`; `BocSource`, `BocCommentaryMatch` from `../../shared/ipc` (the `commentary.ts:10-14` arrangement — types on the renderer-reachable side).
+- Produces (types in `ipc.ts`):
   - `interface BocSource { id: string; displayName: string; author: string | null; mdRelativePath: string; sortOrder: number; status: string }`
-  - `interface BocCommentaryMatch { excerptId: string; sourceId: string; sourceDisplayName: string; sourceAuthor: string | null; sortOrder: number; text: string; articleStart: number; articleEnd: number }`
-- Produces (functions, in `boc.ts`):
-  - `createSource(input): BocSource` and `createCommentarySource(input): BocSource`
-  - `replaceTexts(sourceId, chunks: { documentCode; articleStart; articleEnd; text }[]): void` (writes one `boc_texts` row per ordinal in each chunk's range)
-  - `replaceCommentaryExcerpts(sourceId, chunks): void`
-  - `getArticle(documentCode, ordinal, sourceId): string | null`
-  - `listSources(): BocSource[]` and `listCommentarySources(): BocSource[]`
-  - `lookupBocArticle(documentCode: string, ordinal: number): BocCommentaryMatch[]`
+  - `interface BocSectionRow { ordinal: number; number: string | null; label: string; part: string | null; text: string }`
+  - `interface BocCommentaryMatch { excerptId: string; sourceId: string; sourceDisplayName: string; sourceAuthor: string | null; sortOrder: number; text: string; sectionStart: number; sectionEnd: number }`
+- Produces (functions in `boc.ts`):
+  - `createSource(input): BocSource`, `createCommentarySource(input): BocSource`
+  - `replaceSections(sourceId, sections: { documentCode; ordinal; number; label; part; text }[]): void`
+  - `replaceCommentaryExcerpts(sourceId, excerpts: { documentCode; sectionStart; sectionEnd; text; headerRaw }[]): void`
+  - `getSection(documentCode, ordinal, sourceId): BocSectionRow | null`
+  - `listSections(documentCode, sourceId): BocSectionRow[]` (ordered by ordinal — powers the reader's section picker)
+  - `listSources(): BocSource[]`, `listCommentarySources(): BocSource[]`
+  - `lookupBocSection(documentCode, ordinal): BocCommentaryMatch[]`
 
 - [ ] **Step 1: Write the failing tests**
 
-Append to `src/main/services/boc.test.ts` (after the migration `describe`). First add the connection mock at the top of the file — insert these lines **above** the existing `import { runMigrations }` line and adjust imports:
+Add the connection mock + temp dir to `boc.test.ts`'s top (above `import { runMigrations }`), extend `beforeEach`/`afterEach` with `dataDir`, then append:
 
 ```ts
-import { mkdtempSync, rmSync } from 'fs'
-import { tmpdir } from 'os'
-import { join } from 'path'
+import { mkdtempSync, rmSync } from 'fs'; import { tmpdir } from 'os'; import { join } from 'path'
 import { afterEach, vi } from 'vitest'
-
 let dataDir: string
 vi.mock('../db/connection', () => ({ getDb: () => db, getDataDir: () => dataDir }))
-```
+// beforeEach: dataDir = mkdtempSync(join(tmpdir(), 'loci-boc-'))   afterEach: rmSync(dataDir, {recursive:true,force:true})
 
-Extend `beforeEach`/`afterEach` to set `dataDir = mkdtempSync(join(tmpdir(), 'loci-boc-'))` and `rmSync(dataDir, { recursive: true, force: true })`. Then add:
-
-```ts
 import * as boc from './boc'
 
 describe('boc service', () => {
-  it('stores texts per ordinal and reads one back', () => {
+  it('stores sections and reads one back with its display fields', () => {
     const src = boc.createSource({ displayName: "Reader's Edition", author: 'CPH', mdRelativePath: 're.md' })
-    boc.replaceTexts(src.id, [
-      { documentCode: 'AC', articleStart: 1, articleEnd: 1, text: 'One divine essence.' },
-      { documentCode: 'AC', articleStart: 2, articleEnd: 2, text: 'Original sin.' }
+    boc.replaceSections(src.id, [
+      { documentCode: 'AC', ordinal: 1, number: null, label: 'Preface', part: null, text: 'Most invincible…' },
+      { documentCode: 'AC', ordinal: 4, number: 'IV', label: 'Justification', part: 'Chief Articles of Faith', text: '[1] Our churches…' }
     ])
-    expect(boc.getArticle('AC', 1, src.id)).toBe('One divine essence.')
-    expect(boc.getArticle('AC', 99, src.id)).toBeNull()
+    expect(boc.getSection('AC', 4, src.id)).toEqual({
+      ordinal: 4, number: 'IV', label: 'Justification', part: 'Chief Articles of Faith', text: '[1] Our churches…'
+    })
+    expect(boc.getSection('AC', 99, src.id)).toBeNull()
+    expect(boc.listSections('AC', src.id).map((s) => s.ordinal)).toEqual([1, 4])
   })
 
-  it('expands an article range into one text row per ordinal', () => {
+  it('replaceSections is idempotent per source', () => {
     const src = boc.createSource({ displayName: 'T', author: null, mdRelativePath: 't.md' })
-    boc.replaceTexts(src.id, [{ documentCode: 'AC', articleStart: 22, articleEnd: 24, text: 'Shared.' }])
-    expect(boc.getArticle('AC', 22, src.id)).toBe('Shared.')
-    expect(boc.getArticle('AC', 24, src.id)).toBe('Shared.')
+    boc.replaceSections(src.id, [{ documentCode: 'AC', ordinal: 1, number: 'I', label: 'God', part: null, text: 'first' }])
+    boc.replaceSections(src.id, [{ documentCode: 'AC', ordinal: 1, number: 'I', label: 'God', part: null, text: 'second' }])
+    expect(boc.getSection('AC', 1, src.id)?.text).toBe('second')
   })
 
-  it('looks up commentary whose range covers an article, ordered by source sort_order', () => {
+  it('looks up commentary whose range covers a section, ordered by source sort_order', () => {
     const a = boc.createCommentarySource({ displayName: 'A', author: null, mdRelativePath: 'a.md', sortOrder: 1 })
     const b = boc.createCommentarySource({ displayName: 'B', author: null, mdRelativePath: 'b.md', sortOrder: 0 })
-    boc.replaceCommentaryExcerpts(a.id, [{ documentCode: 'AC', articleStart: 1, articleEnd: 5, text: 'A on 1-5', headerRaw: '1-5' }])
-    boc.replaceCommentaryExcerpts(b.id, [{ documentCode: 'AC', articleStart: 4, articleEnd: 4, text: 'B on 4', headerRaw: '4' }])
-    const matches = boc.lookupBocArticle('AC', 4)
-    expect(matches.map((m) => m.text)).toEqual(['B on 4', 'A on 1-5'])
-    expect(boc.lookupBocArticle('AC', 10)).toEqual([])
-  })
-
-  it('replaceTexts is idempotent for a source (re-index replaces, not appends)', () => {
-    const src = boc.createSource({ displayName: 'T', author: null, mdRelativePath: 't2.md' })
-    boc.replaceTexts(src.id, [{ documentCode: 'AC', articleStart: 1, articleEnd: 1, text: 'first' }])
-    boc.replaceTexts(src.id, [{ documentCode: 'AC', articleStart: 1, articleEnd: 1, text: 'second' }])
-    expect(boc.getArticle('AC', 1, src.id)).toBe('second')
+    boc.replaceCommentaryExcerpts(a.id, [{ documentCode: 'AC', sectionStart: 1, sectionEnd: 5, text: 'A on 1-5', headerRaw: '' }])
+    boc.replaceCommentaryExcerpts(b.id, [{ documentCode: 'AC', sectionStart: 4, sectionEnd: 4, text: 'B on 4', headerRaw: '' }])
+    expect(boc.lookupBocSection('AC', 4).map((m) => m.text)).toEqual(['B on 4', 'A on 1-5'])
+    expect(boc.lookupBocSection('AC', 10)).toEqual([])
   })
 })
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [ ] **Step 2: Run → FAIL** (`./boc` not found).
 
-Run: `npx vitest run src/main/services/boc.test.ts`
-Expected: FAIL — `./boc` not found.
+- [ ] **Step 3: Add the shared types, then implement the service**
 
-- [ ] **Step 3: Write the implementation**
-
-First add the two interfaces to `src/shared/ipc.ts`, next to `CommentaryMatch` (line 699):
+In `src/shared/ipc.ts`, next to `CommentaryMatch` (line ~699), add:
 
 ```ts
 export interface BocSource {
-  id: string
-  displayName: string
-  author: string | null
-  mdRelativePath: string
-  sortOrder: number
-  status: string
+  id: string; displayName: string; author: string | null
+  mdRelativePath: string; sortOrder: number; status: string
 }
-
+export interface BocSectionRow {
+  ordinal: number; number: string | null; label: string; part: string | null; text: string
+}
 export interface BocCommentaryMatch {
-  excerptId: string
-  sourceId: string
-  sourceDisplayName: string
-  sourceAuthor: string | null
-  sortOrder: number
-  text: string
-  articleStart: number
-  articleEnd: number
+  excerptId: string; sourceId: string; sourceDisplayName: string; sourceAuthor: string | null
+  sortOrder: number; text: string; sectionStart: number; sectionEnd: number
 }
 ```
 
-Then create `src/main/services/boc.ts`:
+Create `src/main/services/boc.ts`:
 
 ```ts
 import { randomUUID } from 'crypto'
 import { getDb } from '../db/connection'
-import type { BocSource, BocCommentaryMatch } from '../../shared/ipc'
+import type { BocSource, BocSectionRow, BocCommentaryMatch } from '../../shared/ipc'
 
-interface NewSource {
-  displayName: string
-  author: string | null
-  mdRelativePath: string
-  sortOrder?: number
-}
-
-interface TextChunk { documentCode: string; articleStart: number; articleEnd: number; text: string }
-interface CommentaryChunk extends TextChunk { headerRaw: string }
+interface NewSource { displayName: string; author: string | null; mdRelativePath: string; sortOrder?: number }
+interface SectionInput { documentCode: string; ordinal: number; number: string | null; label: string; part: string | null; text: string }
+interface ExcerptInput { documentCode: string; sectionStart: number; sectionEnd: number; text: string; headerRaw: string }
 
 function insertSource(table: 'boc_sources' | 'boc_commentary_sources', input: NewSource): BocSource {
   const id = randomUUID()
-  getDb()
-    .prepare(`INSERT INTO ${table} (id, display_name, author, md_relative_path, sort_order) VALUES (?, ?, ?, ?, ?)`)
+  getDb().prepare(`INSERT INTO ${table} (id, display_name, author, md_relative_path, sort_order) VALUES (?,?,?,?,?)`)
     .run(id, input.displayName, input.author, input.mdRelativePath, input.sortOrder ?? 0)
   return { id, displayName: input.displayName, author: input.author, mdRelativePath: input.mdRelativePath, sortOrder: input.sortOrder ?? 0, status: 'unindexed' }
 }
+export function createSource(i: NewSource): BocSource { return insertSource('boc_sources', i) }
+export function createCommentarySource(i: NewSource): BocSource { return insertSource('boc_commentary_sources', i) }
 
-export function createSource(input: NewSource): BocSource {
-  return insertSource('boc_sources', input)
-}
-export function createCommentarySource(input: NewSource): BocSource {
-  return insertSource('boc_commentary_sources', input)
-}
-
-export function replaceTexts(sourceId: string, chunks: TextChunk[]): void {
+export function replaceSections(sourceId: string, sections: SectionInput[]): void {
   const db = getDb()
-  const tx = db.transaction(() => {
+  db.transaction(() => {
     db.prepare('DELETE FROM boc_texts WHERE source_id = ?').run(sourceId)
-    const ins = db.prepare(
-      'INSERT OR REPLACE INTO boc_texts (id, source_id, document_code, article_ordinal, text) VALUES (?, ?, ?, ?, ?)'
-    )
-    for (const c of chunks) {
-      for (let ord = c.articleStart; ord <= c.articleEnd; ord++) {
-        ins.run(randomUUID(), sourceId, c.documentCode, ord, c.text)
-      }
-    }
-  })
-  tx()
+    const ins = db.prepare(`INSERT INTO boc_texts
+      (id, source_id, document_code, section_ordinal, section_number, section_label, section_part, text)
+      VALUES (?,?,?,?,?,?,?,?)`)
+    for (const s of sections)
+      ins.run(randomUUID(), sourceId, s.documentCode, s.ordinal, s.number, s.label, s.part, s.text)
+  })()
 }
 
-export function replaceCommentaryExcerpts(sourceId: string, chunks: CommentaryChunk[]): void {
+export function replaceCommentaryExcerpts(sourceId: string, excerpts: ExcerptInput[]): void {
   const db = getDb()
-  const tx = db.transaction(() => {
+  db.transaction(() => {
     db.prepare('DELETE FROM boc_commentary_excerpts WHERE source_id = ?').run(sourceId)
-    const ins = db.prepare(
-      `INSERT INTO boc_commentary_excerpts (id, source_id, document_code, article_start, article_end, text, header_raw)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`
-    )
-    for (const c of chunks) {
-      ins.run(randomUUID(), sourceId, c.documentCode, c.articleStart, c.articleEnd, c.text, c.headerRaw)
-    }
-  })
-  tx()
+    const ins = db.prepare(`INSERT INTO boc_commentary_excerpts
+      (id, source_id, document_code, section_start, section_end, text, header_raw) VALUES (?,?,?,?,?,?,?)`)
+    for (const e of excerpts)
+      ins.run(randomUUID(), sourceId, e.documentCode, e.sectionStart, e.sectionEnd, e.text, e.headerRaw)
+  })()
 }
 
-export function getArticle(documentCode: string, ordinal: number, sourceId: string): string | null {
-  const row = getDb()
-    .prepare('SELECT text FROM boc_texts WHERE document_code = ? AND article_ordinal = ? AND source_id = ?')
-    .get(documentCode, ordinal, sourceId) as { text: string } | undefined
-  return row?.text ?? null
+function rowToSection(r: any): BocSectionRow {
+  return { ordinal: r.section_ordinal, number: r.section_number, label: r.section_label, part: r.section_part, text: r.text }
+}
+
+export function getSection(documentCode: string, ordinal: number, sourceId: string): BocSectionRow | null {
+  const r = getDb().prepare(
+    `SELECT section_ordinal, section_number, section_label, section_part, text
+     FROM boc_texts WHERE document_code = ? AND section_ordinal = ? AND source_id = ?`
+  ).get(documentCode, ordinal, sourceId)
+  return r ? rowToSection(r) : null
+}
+
+export function listSections(documentCode: string, sourceId: string): BocSectionRow[] {
+  return (getDb().prepare(
+    `SELECT section_ordinal, section_number, section_label, section_part, text
+     FROM boc_texts WHERE document_code = ? AND source_id = ? ORDER BY section_ordinal`
+  ).all(documentCode, sourceId) as any[]).map(rowToSection)
 }
 
 function listFrom(table: 'boc_sources' | 'boc_commentary_sources'): BocSource[] {
-  return (getDb()
-    .prepare(`SELECT id, display_name, author, md_relative_path, sort_order, status FROM ${table} ORDER BY sort_order, display_name`)
-    .all() as any[])
-    .map((r) => ({ id: r.id, displayName: r.display_name, author: r.author, mdRelativePath: r.md_relative_path, sortOrder: r.sort_order, status: r.status }))
+  return (getDb().prepare(
+    `SELECT id, display_name, author, md_relative_path, sort_order, status FROM ${table} ORDER BY sort_order, display_name`
+  ).all() as any[]).map((r) => ({
+    id: r.id, displayName: r.display_name, author: r.author, mdRelativePath: r.md_relative_path, sortOrder: r.sort_order, status: r.status
+  }))
 }
-
 export function listSources(): BocSource[] { return listFrom('boc_sources') }
 export function listCommentarySources(): BocSource[] { return listFrom('boc_commentary_sources') }
 
-export function lookupBocArticle(documentCode: string, ordinal: number): BocCommentaryMatch[] {
-  const rows = getDb()
-    .prepare(
-      `SELECT e.id, e.source_id, s.display_name, s.author, s.sort_order,
-              e.text, e.article_start, e.article_end
-       FROM boc_commentary_excerpts e
-       JOIN boc_commentary_sources s ON s.id = e.source_id
-       WHERE e.document_code = ? AND e.article_start <= ? AND e.article_end >= ?
-       ORDER BY s.sort_order, e.article_start`
-    )
-    .all(documentCode, ordinal, ordinal) as any[]
-  return rows.map((r) => ({
-    excerptId: r.id, sourceId: r.source_id, sourceDisplayName: r.display_name,
-    sourceAuthor: r.author, sortOrder: r.sort_order, text: r.text,
-    articleStart: r.article_start, articleEnd: r.article_end
+export function lookupBocSection(documentCode: string, ordinal: number): BocCommentaryMatch[] {
+  return (getDb().prepare(
+    `SELECT e.id, e.source_id, s.display_name, s.author, s.sort_order, e.text, e.section_start, e.section_end
+     FROM boc_commentary_excerpts e JOIN boc_commentary_sources s ON s.id = e.source_id
+     WHERE e.document_code = ? AND e.section_start <= ? AND e.section_end >= ?
+     ORDER BY s.sort_order, e.section_start`
+  ).all(documentCode, ordinal, ordinal) as any[]).map((r) => ({
+    excerptId: r.id, sourceId: r.source_id, sourceDisplayName: r.display_name, sourceAuthor: r.author,
+    sortOrder: r.sort_order, text: r.text, sectionStart: r.section_start, sectionEnd: r.section_end
   }))
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
-
-Run: `npx vitest run src/main/services/boc.test.ts`
-Expected: PASS (all describes).
-
+- [ ] **Step 4: Run → PASS** (`npx vitest run src/main/services/boc.test.ts`).
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/services/boc.ts src/main/services/boc.test.ts
-git commit -m "Add Book of Concord query service (texts + commentary lookup)"
+git add src/main/services/boc.ts src/main/services/boc.test.ts src/shared/ipc.ts
+git commit -m "Add Book of Concord query service (sections + commentary lookup)"
 ```
 
 ---
@@ -751,186 +652,166 @@ git commit -m "Add Book of Concord query service (texts + commentary lookup)"
 
 **Files:**
 - Create: `src/main/services/bocIndex.ts`
+- Modify: `src/main/services/config.ts` (add `bocVaultDir`, `bocCommentaryVaultDir`)
+- Modify: `src/main/index.ts` (startup sync)
 - Test: `src/main/services/bocIndex.test.ts`
 
 **Interfaces:**
-- Consumes: `parseBocMarkdown` (Task 3); `boc.ts` service (Task 4); `getDb`, `getDataDir` from `../db/connection`; new folder accessors added to `../services/config`.
+- Consumes: `parseBocMarkdown` (Task 3); `boc.ts` (Task 4); `getDataDir` from `../db/connection`; `localVaultDir` from `./config`.
 - Produces:
-  - In `src/main/services/config.ts`, two new accessors modeled exactly on `commentaryVaultDir()` (line 63): `bocVaultDir()` → `join(localVaultDir(), 'confessions')` and `bocCommentaryVaultDir()` → `join(localVaultDir(), 'confessions-commentary')`.
-  - `interface BocIndexSummary { textRows: number; excerptRows: number }`
-  - `async function indexBocText(sourceId: string, absPath: string): Promise<BocIndexSummary>`
-  - `async function indexBocCommentary(sourceId: string, absPath: string): Promise<BocIndexSummary>`
-  - `async function syncBocFolder(): Promise<void>` — scan `bocVaultDir()` (primary text) and `bocCommentaryVaultDir()` (commentary), register unseen files, (re)index by mtime.
+  - In `config.ts`, modeled on `commentaryVaultDir()` (line 63): `bocVaultDir()` → `join(localVaultDir(), 'confessions')`; `bocCommentaryVaultDir()` → `join(localVaultDir(), 'confessions-commentary')`.
+  - `interface BocIndexSummary { sections: number; excerpts: number }`
+  - `async function indexBocSections(sourceId, absPath): Promise<BocIndexSummary>` — parse → `replaceSections` (drops empty-body sections: primary text always has a body) → `indexBocForSearch(sourceId)` (Task 6).
+  - `async function indexBocCommentary(sourceId, absPath): Promise<BocIndexSummary>` — parse → `replaceCommentaryExcerpts` for non-empty-body sections (single-section excerpts: sectionStart = sectionEnd = ordinal).
+  - `async function syncBocFolder(): Promise<void>` — scan `bocVaultDir()` (primary) + `bocCommentaryVaultDir()` (commentary), register unseen files as sources, (re)index by mtime. Mirror `syncCommentaryFolder` (`commentaryIndex.ts:64`) exactly — same `loadIndexMtimes` skip logic and createSource-on-first-sight. Read that function before writing.
 
-The vault layout is settled: `commentaryVaultDir()` in `src/main/services/config.ts:63` returns `join(localVaultDir(), 'commentaries')`, and `localVaultDir()` (line 57) is `join(getDataDir(), 'vault')`. The two BoC folders are siblings of `commentaries/` under the same vault. `syncBocFolder` mirrors `syncCommentaryFolder` in `commentaryIndex.ts:64` (same mtime-skip via `loadIndexMtimes`, same createSource-on-first-sight). Read that function fully before writing.
+The vault layout is settled: `commentaryVaultDir()` (`config.ts:63`) = `join(localVaultDir(), 'commentaries')`; `localVaultDir()` (line 57) = `join(getDataDir(), 'vault')`. The two BoC folders are siblings of `commentaries/`.
 
 - [ ] **Step 1: Write the failing test**
 
-Create `src/main/services/bocIndex.test.ts` using the in-memory-DB + mock pattern, writing a temp `.md` file and asserting rows land:
+Create `src/main/services/bocIndex.test.ts`. `indexBocSections` takes an absolute path, so only `getDataDir` needs mocking here:
 
 ```ts
 import Database from 'better-sqlite3'
-import { mkdtempSync, rmSync, writeFileSync, mkdirSync } from 'fs'
-import { tmpdir } from 'os'
-import { join } from 'path'
+import { mkdtempSync, rmSync, writeFileSync } from 'fs'
+import { tmpdir } from 'os'; import { join } from 'path'
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest'
 import { runMigrations } from '../db/migrations'
 
-let db: Database.Database
-let vaultDir: string
-
-// indexBocText takes an absolute path directly, so the vault-dir accessor doesn't matter
-// for this test — mock only what boc.ts needs. (syncBocFolder's folder-scan test, added
-// alongside, additionally sets getDataDir so join(getDataDir(),'vault','confessions') resolves
-// into a temp dir the test populates.)
-vi.mock('../db/connection', () => ({ getDb: () => db, getDataDir: () => vaultDir }))
-
-beforeEach(() => {
-  db = new Database(':memory:')
-  db.pragma('foreign_keys = ON')
-  runMigrations(db)
-  vaultDir = mkdtempSync(join(tmpdir(), 'loci-boc-vault-'))
-})
-afterEach(() => rmSync(vaultDir, { recursive: true, force: true }))
+let db: Database.Database; let dataDir: string
+vi.mock('../db/connection', () => ({ getDb: () => db, getDataDir: () => dataDir }))
+beforeEach(() => { db = new Database(':memory:'); db.pragma('foreign_keys = ON'); runMigrations(db); dataDir = mkdtempSync(join(tmpdir(),'loci-boc-')) })
+afterEach(() => rmSync(dataDir, { recursive: true, force: true }))
 
 import * as boc from './boc'
-import { indexBocText } from './bocIndex'
+import { indexBocSections, indexBocCommentary } from './bocIndex'
 
-describe('indexBocText', () => {
-  it('parses a file and writes text rows', async () => {
+describe('bocIndex', () => {
+  it('indexes primary-text sections', async () => {
     const src = boc.createSource({ displayName: 'RE', author: null, mdRelativePath: 'confessions/re.md' })
-    const p = join(vaultDir, 're.md')
-    writeFileSync(p, '# Augsburg Confession\n## 1\nOne divine essence.\n## 2\nOriginal sin.')
-    const summary = await indexBocText(src.id, p)
-    expect(summary.textRows).toBe(2)
-    expect(boc.getArticle('AC', 1, src.id)).toBe('One divine essence.')
+    const p = join(dataDir, 're.md')
+    writeFileSync(p, '# Augsburg Confession\n## 4 | IV | Justification | \n[1] Our churches teach…')
+    expect((await indexBocSections(src.id, p)).sections).toBe(1)
+    expect(boc.getSection('AC', 4, src.id)?.label).toBe('Justification')
+  })
+
+  it('indexes commentary, skipping note-less sections', async () => {
+    const src = boc.createCommentarySource({ displayName: 'RE-notes', author: null, mdRelativePath: 'confessions-commentary/re.md' })
+    const p = join(dataDir, 're-notes.md')
+    writeFileSync(p, '# Augsburg Confession\n## 3 | III | The Son of God | \n## 4 | IV | Justification | \nNote: the church stands or falls…')
+    expect((await indexBocCommentary(src.id, p)).excerpts).toBe(1)
+    expect(boc.lookupBocSection('AC', 4)[0].text).toContain('stands or falls')
+    expect(boc.lookupBocSection('AC', 3)).toEqual([])
   })
 })
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [ ] **Step 2: Run → FAIL.**
 
-Run: `npx vitest run src/main/services/bocIndex.test.ts`
-Expected: FAIL — `./bocIndex` not found.
+- [ ] **Step 3: Implement**
 
-- [ ] **Step 3: Write the implementation**
-
-Create `src/main/services/bocIndex.ts`. Model `syncBocFolder` on `commentaryIndex.ts`'s `syncCommentaryFolder` (read that file first for the exact fs/mtime/registration idiom). Minimum for the test:
+Add to `config.ts` the two accessors. Create `bocIndex.ts`:
 
 ```ts
 import { readFile } from 'fs/promises'
 import { parseBocMarkdown } from './bocMarkdown'
-import { replaceTexts, replaceCommentaryExcerpts } from './boc'
+import { replaceSections, replaceCommentaryExcerpts } from './boc'
+import { indexBocForSearch } from './search'
 
-export interface BocIndexSummary { textRows: number; excerptRows: number }
+export interface BocIndexSummary { sections: number; excerpts: number }
 
-export async function indexBocText(sourceId: string, absPath: string): Promise<BocIndexSummary> {
-  const md = await readFile(absPath, 'utf8')
-  const chunks = parseBocMarkdown(md)
-  replaceTexts(sourceId, chunks.map((c) => ({
-    documentCode: c.documentCode, articleStart: c.articleStart, articleEnd: c.articleEnd, text: c.text
+export async function indexBocSections(sourceId: string, absPath: string): Promise<BocIndexSummary> {
+  const parsed = parseBocMarkdown(await readFile(absPath, 'utf8')).filter((s) => s.text)
+  replaceSections(sourceId, parsed.map((s) => ({
+    documentCode: s.documentCode, ordinal: s.ordinal, number: s.number, label: s.label, part: s.part, text: s.text
   })))
-  const textRows = chunks.reduce((n, c) => n + (c.articleEnd - c.articleStart + 1), 0)
-  return { textRows, excerptRows: 0 }
+  indexBocForSearch(sourceId)
+  return { sections: parsed.length, excerpts: 0 }
 }
 
 export async function indexBocCommentary(sourceId: string, absPath: string): Promise<BocIndexSummary> {
-  const md = await readFile(absPath, 'utf8')
-  const chunks = parseBocMarkdown(md)
-  replaceCommentaryExcerpts(sourceId, chunks)
-  return { textRows: 0, excerptRows: chunks.length }
+  const parsed = parseBocMarkdown(await readFile(absPath, 'utf8')).filter((s) => s.text)
+  replaceCommentaryExcerpts(sourceId, parsed.map((s) => ({
+    documentCode: s.documentCode, sectionStart: s.ordinal, sectionEnd: s.ordinal, text: s.text, headerRaw: s.headerRaw
+  })))
+  return { sections: 0, excerpts: parsed.length }
 }
 
-// syncBocFolder(): discover/register/re-index the two vault folders. Mirror
-// syncCommentaryFolder in commentaryIndex.ts — same mtime > indexed_at skip logic,
-// same createSource-on-first-sight registration, then call indexBocText /
-// indexBocCommentary and stamp indexed_at. Left to implement against that file's
-// exact accessors.
+// syncBocFolder(): mirror syncCommentaryFolder in commentaryIndex.ts — scan bocVaultDir()
+// (→ createSource + indexBocSections) and bocCommentaryVaultDir() (→ createCommentarySource
+// + indexBocCommentary), skipping files whose mtime <= indexed_at. Implement fully against
+// that file's idiom; do not ship a stub.
 export async function syncBocFolder(): Promise<void> {
   // …author following commentaryIndex.ts…
 }
 ```
 
-Implement `syncBocFolder` fully following the commentary precedent (don't ship the stub). Add a test for it mirroring `commentaryIndex.test.ts` if that file demonstrates the folder-scan assertions.
+> `indexBocForSearch` doesn't exist until Task 6. To keep Task 5's test green now, either implement Task 6 first, or add a temporary no-op `export function indexBocForSearch(_: string): void {}` in `search.ts` and replace it in Task 6. Prefer doing Task 6 immediately after this step so the import resolves against the real function.
 
-- [ ] **Step 4: Run test to verify it passes**
+Implement `syncBocFolder` fully. Add a `syncBocFolder` folder-scan test mirroring `commentaryIndex.test.ts` (write files into `join(getDataDir(),'vault','confessions')`, call it, assert sources + rows).
 
-Run: `npx vitest run src/main/services/bocIndex.test.ts`
-Expected: PASS.
+- [ ] **Step 4: Run → PASS.**
 
 - [ ] **Step 5: Wire startup sync**
 
-In `src/main/index.ts`, next to the existing `syncCommentaryFolder` call (line ~145), add:
+In `src/main/index.ts`, next to `syncCommentaryFolder` (line ~145):
 
 ```ts
 import { syncBocFolder } from './services/bocIndex'
-// …
   setTimeout(() => void syncBocFolder().catch(() => {}), 2500)
 ```
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/main/services/bocIndex.ts src/main/services/bocIndex.test.ts src/main/index.ts
+git add src/main/services/bocIndex.ts src/main/services/bocIndex.test.ts src/main/services/config.ts src/main/index.ts
 git commit -m "Add Book of Concord vault indexer + startup sync"
 ```
 
 ---
 
-## Task 6: Search indexing for BoC content
+## Task 6: Search indexing
 
 **Files:**
-- Modify: `src/shared/ipc.ts` (`SearchKind` union, line ~524)
-- Modify: `src/main/services/search.ts` (add index/remove for the `'confession'` kind)
-- Test: create `src/main/services/search.boc.test.ts`
+- Modify: `src/shared/ipc.ts` (`SearchKind`, line ~524)
+- Modify: `src/main/services/search.ts`
+- Test: `src/main/services/search.boc.test.ts`
 
 **Interfaces:**
-- Consumes: the `search_fts` table (existing) and its `kind`/`ref` columns; `boc.ts` data.
-- Produces: `'confession'` added to `SearchKind`; `indexBocForSearch(sourceId)` / `removeBocFromSearch(sourceId)` (match the naming of the existing per-kind functions in `search.ts` — read the file first and mirror them exactly).
-
-Read `src/main/services/search.ts` end-to-end first. It defines the FTS `kind` literals and per-kind index/remove helpers; add a `'confession'` branch that indexes each `boc_texts` row's `text` with `kind = 'confession'` and `ref = formatBocRef(documentCode, ordinal)`. Wire the index call into `indexBocText` (Task 5) so re-indexing a source refreshes its search rows.
+- Produces: `'confession'` added to `SearchKind`; `indexBocForSearch(sourceId: string): void` / `removeBocFromSearch(sourceId: string): void` (mirror the existing per-kind helpers in `search.ts` — read it first). Index each `boc_texts` row for the source with `kind = 'confession'`, `ref = formatBocRef(documentCode, section_ordinal)`, and the section text as the searchable content.
 
 - [ ] **Step 1: Write the failing test**
 
-Create `src/main/services/search.boc.test.ts` mirroring the in-memory-DB harness. Insert a `boc_texts` row via the `boc` service, call the new index function, then assert `search(query, { kind: 'confession' })` (or the service's search entry point — confirm its name in `search.ts`) returns the row. Model the assertions on how `commentary` content is asserted in the existing search tests if present; otherwise assert directly against `search_fts`.
+Create `src/main/services/search.boc.test.ts` (in-memory-DB harness as in `boc.test.ts`):
 
 ```ts
-// harness identical to boc.test.ts (in-memory db + connection mock) …
+// harness: db + vi.mock('../db/connection', {getDb, getDataDir}) + runMigrations …
 import * as boc from './boc'
 import { indexBocForSearch } from './search'
 
-it('indexes BoC text into search_fts under the confession kind', () => {
+it('indexes BoC section text into search_fts under the confession kind', () => {
   const src = boc.createSource({ displayName: 'RE', author: null, mdRelativePath: 're.md' })
-  boc.replaceTexts(src.id, [{ documentCode: 'AC', articleStart: 4, articleEnd: 4, text: 'Justification by faith alone' }])
+  boc.replaceSections(src.id, [{ documentCode: 'AC', ordinal: 4, number: 'IV', label: 'Justification', part: null, text: 'Justification by faith alone' }])
   indexBocForSearch(src.id)
-  const rows = db.prepare("SELECT ref FROM search_fts WHERE kind = 'confession' AND search_fts MATCH 'justification'").all()
+  const rows = db.prepare("SELECT ref FROM search_fts WHERE kind='confession' AND search_fts MATCH 'justification'").all()
   expect(rows).toContainEqual({ ref: 'AC:4' })
 })
 ```
 
-(Adjust the assertion to `search_fts`'s real column set — check whether `ref` is a stored column or reconstructed; the existing commentary indexing in `search.ts` is the template.)
+Adjust the assertion to `search_fts`'s real columns — read `search.ts`'s existing commentary/scripture indexing and mirror its row shape exactly (the `ref`/`kind` columns already exist; confirm whether `ref` is stored or reconstructed).
 
-- [ ] **Step 2: Run test to verify it fails**
+- [ ] **Step 2: Run → FAIL** (`indexBocForSearch` not exported).
 
-Run: `npx vitest run src/main/services/search.boc.test.ts`
-Expected: FAIL — `indexBocForSearch` not exported.
+- [ ] **Step 3: Implement**
 
-- [ ] **Step 3: Add `'confession'` to `SearchKind` and implement indexing**
+`SearchKind` in `ipc.ts` → add `'confession'`. In `search.ts`, add `indexBocForSearch`/`removeBocFromSearch` mirroring the per-kind helpers, and include `'confession'` wherever the `kind` filter is applied. If Task 5 added a temporary no-op, replace it.
 
-In `src/shared/ipc.ts` extend the union (line ~524): `export type SearchKind = 'all' | 'page' | 'quote' | 'note' | 'scripture' | 'confession'`. In `src/main/services/search.ts` add `indexBocForSearch` / `removeBocFromSearch` following the existing per-kind helpers, and include `'confession'` wherever the `kind` filter is applied.
-
-- [ ] **Step 4: Run test to verify it passes**
-
-Run: `npx vitest run src/main/services/search.boc.test.ts`
-Expected: PASS.
-
-- [ ] **Step 5: Wire the index call into the indexer and commit**
-
-Call `indexBocForSearch(sourceId)` at the end of `indexBocText` (Task 5's file). Re-run `npx vitest run src/main/services/bocIndex.test.ts src/main/services/search.boc.test.ts`; expected PASS.
+- [ ] **Step 4: Run → PASS.** Re-run Task 5's suite too: `npx vitest run src/main/services/bocIndex.test.ts src/main/services/search.boc.test.ts`.
+- [ ] **Step 5: Commit**
 
 ```bash
-git add src/shared/ipc.ts src/main/services/search.ts src/main/services/search.boc.test.ts src/main/services/bocIndex.ts
-git commit -m "Index Book of Concord text into full-text search"
+git add src/shared/ipc.ts src/main/services/search.ts src/main/services/search.boc.test.ts
+git commit -m "Index Book of Concord sections into full-text search"
 ```
 
 ---
@@ -938,76 +819,45 @@ git commit -m "Index Book of Concord text into full-text search"
 ## Task 7: IPC surface
 
 **Files:**
-- Modify: `src/shared/ipc.ts` (`Channels` map ~line 86; `Api` interface ~line 331)
-- Modify: `src/preload/index.ts` (~line 99)
-- Modify: `src/main/ipc/index.ts` (~line 357)
+- Modify: `src/shared/ipc.ts` (`Channels` ~line 86; `Api` ~line 331)
+- Modify: `src/preload/index.ts` (~line 99); `src/main/ipc/index.ts` (~line 357)
 
-**Interfaces:**
-- Produces on `window.api`:
-  - `lookupBocArticle(documentCode: string, ordinal: number): Promise<BocCommentaryMatch[]>`
-  - `getBocArticle(documentCode: string, ordinal: number, sourceId: string): Promise<string | null>`
-  - `listBocSources(): Promise<BocSource[]>`
-  - `listBocCommentarySources(): Promise<BocSource[]>`
+**Interfaces (on `window.api`):**
+- `lookupBocSection(documentCode: string, ordinal: number): Promise<BocCommentaryMatch[]>`
+- `getBocSection(documentCode: string, ordinal: number, sourceId: string): Promise<BocSectionRow | null>`
+- `listBocDocumentSections(documentCode: string, sourceId: string): Promise<BocSectionRow[]>`
+- `listBocSources(): Promise<BocSource[]>`
+- `listBocCommentarySources(): Promise<BocSource[]>`
 
-Read the three files' commentary entries first (`lookupCommentary` is the exact template across all three) and mirror them. `BocSource`/`BocCommentaryMatch` already live in `src/shared/ipc.ts` (added in Task 4), so both the `Api` interface here and the renderer consumers in Plan 2 can import them directly — the same arrangement as `CommentaryMatch`.
+`BocSource`/`BocSectionRow`/`BocCommentaryMatch` are already in `ipc.ts` (Task 4). `lookupCommentary` (all three files) is the exact template.
 
-- [ ] **Step 1: Add the channel constants**
-
-In `src/shared/ipc.ts` `Channels`:
-
-```ts
-  lookupBocArticle: 'boc:lookupArticle',
-  getBocArticle: 'boc:getArticle',
-  listBocSources: 'boc:listSources',
-  listBocCommentarySources: 'boc:listCommentarySources',
-```
-
-- [ ] **Step 2: Add the `Api` methods**
-
-In the `Api` interface (mirror the `lookupCommentary` line), using the shared types:
+- [ ] **Step 1: `Channels`** — add `lookupBocSection: 'boc:lookupSection'`, `getBocSection: 'boc:getSection'`, `listBocDocumentSections: 'boc:listDocumentSections'`, `listBocSources: 'boc:listSources'`, `listBocCommentarySources: 'boc:listCommentarySources'`.
+- [ ] **Step 2: `Api`** — add the five method signatures above (import the types if not already in scope).
+- [ ] **Step 3: preload** — mirror `lookupCommentary`:
 
 ```ts
-  lookupBocArticle(documentCode: string, ordinal: number): Promise<BocCommentaryMatch[]>
-  getBocArticle(documentCode: string, ordinal: number, sourceId: string): Promise<string | null>
-  listBocSources(): Promise<BocSource[]>
-  listBocCommentarySources(): Promise<BocSource[]>
-```
-
-`BocSource` and `BocCommentaryMatch` were already added to `ipc.ts` in Task 4 Step 3, so they're in scope here — no new type definitions needed.
-
-- [ ] **Step 3: Add the preload bindings**
-
-In `src/preload/index.ts` (mirror `lookupCommentary`):
-
-```ts
-  lookupBocArticle: (documentCode, ordinal) => ipcRenderer.invoke(Channels.lookupBocArticle, documentCode, ordinal),
-  getBocArticle: (documentCode, ordinal, sourceId) => ipcRenderer.invoke(Channels.getBocArticle, documentCode, ordinal, sourceId),
+  lookupBocSection: (d, o) => ipcRenderer.invoke(Channels.lookupBocSection, d, o),
+  getBocSection: (d, o, s) => ipcRenderer.invoke(Channels.getBocSection, d, o, s),
+  listBocDocumentSections: (d, s) => ipcRenderer.invoke(Channels.listBocDocumentSections, d, s),
   listBocSources: () => ipcRenderer.invoke(Channels.listBocSources),
   listBocCommentarySources: () => ipcRenderer.invoke(Channels.listBocCommentarySources),
 ```
 
-- [ ] **Step 4: Add the main handlers**
-
-In `src/main/ipc/index.ts` (mirror the `lookupCommentary` handler at line 357), importing from `../services/boc`:
+- [ ] **Step 4: main handlers** — import `* as boc from '../services/boc'`, mirror the `lookupCommentary` handler:
 
 ```ts
-  ipcMain.handle(Channels.lookupBocArticle, (_e, documentCode: string, ordinal: number) =>
-    boc.lookupBocArticle(documentCode, ordinal))
-  ipcMain.handle(Channels.getBocArticle, (_e, documentCode: string, ordinal: number, sourceId: string) =>
-    boc.getArticle(documentCode, ordinal, sourceId))
+  ipcMain.handle(Channels.lookupBocSection, (_e, d: string, o: number) => boc.lookupBocSection(d, o))
+  ipcMain.handle(Channels.getBocSection, (_e, d: string, o: number, s: string) => boc.getSection(d, o, s))
+  ipcMain.handle(Channels.listBocDocumentSections, (_e, d: string, s: string) => boc.listSections(d, s))
   ipcMain.handle(Channels.listBocSources, () => boc.listSources())
   ipcMain.handle(Channels.listBocCommentarySources, () => boc.listCommentarySources())
 ```
 
-- [ ] **Step 5: Typecheck**
-
-Run: `npm run typecheck`
-Expected: no errors. (This is the acceptance test for the IPC wiring — it has no runtime unit test; the renderer consumers arrive in Plan 2.)
-
+- [ ] **Step 5: Typecheck** — `npm run typecheck` → no errors (acceptance test for the wiring; renderer consumers are Plan 2).
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/shared/ipc.ts src/preload/index.ts src/main/ipc/index.ts src/main/services/boc.ts
+git add src/shared/ipc.ts src/preload/index.ts src/main/ipc/index.ts
 git commit -m "Expose Book of Concord lookup/list over IPC"
 ```
 
@@ -1017,34 +867,29 @@ git commit -m "Expose Book of Concord lookup/list over IPC"
 
 **Files:**
 - Create: `tools/boc-epub-to-md.mjs`
-- (No unit test — the tool's *output contract* is already tested by `parseBocMarkdown`; this task is validated by round-tripping a real sample.)
+- Modify: `.gitignore` (add `tools/sources/`)
+- No unit test — validated by round-tripping real output through `parseBocMarkdown` and comparing section counts to the ToC.
 
 **Interfaces:**
-- Produces two Markdown files from one source EPUB/PDF: a primary-text file (the `# Document` / `## ordinal` contract from Task 3) and a commentary file (same contract, bodies = editorial notes).
+- Input: the Reader's Edition EPUB. Output: two Markdown files following the heading contract — a primary-text file (→ `confessions/` vault folder) and a commentary file (→ `confessions-commentary/`).
 
-**Known risk (from the spec):** the exact rule for separating confessional text from editorial notes depends on the actual Reader's Edition file's markup and can't be finalized until that file is inspected. This task is therefore validated against a real sample, not a fixture.
+**Detection rule (settled from the actual EPUB — see spec Ingestion table):**
+- Document boundary: a `ch_h`/heading whose text resolves via `documentCodeFromName` (use the `aliases`).
+- Section boundary: `<p class="article">` (number, e.g. "ARTICLE IV") + following `<p class="ch_h1a">` (label); or a `<p class="ch_h">` for Preface/Conclusion/part & section headers. Assign `ordinal` by increasing counter within the document; carry the last part header into the `part` field.
+- `<p class="ch_note">` → commentary file body for the current section.
+- `<p class="indent">`/`indent1`/`noindent`/`left`/`bq`/`ext` → primary-text body for the current section, preserving `[N]` markers.
+- Each document's Editor's Introduction (its intro spine section) → commentary body attached to the document's first section.
 
-- [ ] **Step 1: Scaffold from the existing converter**
+- [ ] **Step 1: Scaffold from `tools/epub-to-md.mjs`** — read it first; reuse unzip / TOC parse / HTML→Markdown / entity handling. Import `documentCodeFromName` (or inline the alias map if importing TS from `.mjs` is awkward — the existing tool's approach governs).
 
-Copy the structure of `tools/epub-to-md.mjs` (EPUB unzip, TOC parse, HTML→Markdown, noise stripping). Read it first. Reuse its machinery; replace the Bible-book heading detection with document detection via `documentCodeFromName`, and article-ordinal detection.
+- [ ] **Step 2: Emit both files** per the contract and detection rule. Extracted copy of the EPUB is already in the session scratchpad (`boc-epub/`); point the tool at `D:/Theology/Concordia_…Readers Edition….epub` for real runs.
 
-- [ ] **Step 2: Emit the two-file output**
+- [ ] **Step 3: Round-trip validation** — write a throwaway Node script that runs each produced `.md` through `parseBocMarkdown` and prints per-document section counts. Compare against the ToC section list (dump it from `boc-epub/toc.ncx`). Manually spot-check the catechisms, the Catalog of Testimonies, and the Saxon Visitation Articles (varied layouts — likeliest mis-splits). Iterate the detection rule until counts match and spot-checks read correctly.
 
-Emit `# <Document title>` at each document boundary and `## <ordinal>` at each article, to the primary file. Route editorial-note blocks (detected via the source's footnote/sidebar markup — determine the selector by inspecting the real file, as the existing tool does for ACCS's `<a class="apnf">`) to the commentary file under the same `## <ordinal>` heading.
-
-- [ ] **Step 3: Round-trip validation**
-
-Convert a real Reader's Edition sample, then run the output through the parser to confirm it's well-formed:
-
-```bash
-node -e "import('./src/main/services/bocMarkdown.js')" # (or a tiny scratch script)
-```
-Concretely: write a throwaway script that reads the produced `.md`, calls `parseBocMarkdown`, and prints per-document article counts. Compare those counts against `BOC_DOCUMENTS` — a mismatch means the converter dropped or mis-split articles. Iterate the detection rule until counts match.
-
-- [ ] **Step 4: Commit**
+- [ ] **Step 4: `.gitignore`** — add `tools/sources/` so no copyrighted EPUB/derived Markdown is committed. Commit only the tool:
 
 ```bash
-git add tools/boc-epub-to-md.mjs
+git add tools/boc-epub-to-md.mjs .gitignore
 git commit -m "Add Book of Concord EPUB-to-Markdown converter"
 ```
 
@@ -1052,19 +897,21 @@ git commit -m "Add Book of Concord EPUB-to-Markdown converter"
 
 ## Self-Review
 
-**Spec coverage (Plan 1 scope only — Reader/Nav and Integration Surfaces are Plans 2–3):**
-- Static reference structure → Task 1 ✓
-- Four DB tables → Task 2 ✓
-- `parseBocMarkdown` → Task 3 ✓
-- `lookupBocArticle` + text storage/translations → Task 4 ✓
+**Spec coverage (Plan 1 scope):**
+- Documents-only static table → Task 1 ✓
+- Four DB tables (section columns) → Task 2 ✓
+- `parseBocMarkdown` (discovered sections, pipe contract) → Task 3 ✓
+- `boc.ts` (sections, translations, `lookupBocSection`) → Task 4 ✓
 - Vault indexer + startup sync → Task 5 ✓
-- Search backend (`SearchKind` + indexing) → Task 6 ✓ (search *UI* is Plan 3)
-- IPC surface → Task 7 ✓
-- Ingestion converter → Task 8 ✓ (with the flagged detection-rule risk)
-- Quotes migration (`boc_source_id`/`boc_ref`) → **deferred to Plan 2**, where the highlight-to-quote flow that writes those columns lives. Noted here so it isn't lost.
-- `bocCitation()`, `BocReader`, pane kind, nav, Reference panel, notes → **Plan 2.**
-- PanePicker, Projects, drag-and-drop, shared icon/label helper → **Plan 3.**
+- Search backend (`'confession'` kind) → Task 6 ✓ (search UI is Plan 3)
+- IPC → Task 7 ✓
+- Converter with settled detection rule → Task 8 ✓
+- Appendices (CT/BEC/SVA) → in the Task 1 table + Task 8 conversion ✓
+- Editor's Introductions → commentary → Task 8 detection rule + Task 5 commentary indexing ✓
+- Paragraph-precise citation → `[N]` markers preserved through Tasks 3–5; `bocCitation()` itself is **Plan 2** (quotes) ✓
+- Quotes migration (`boc_source_id`/`boc_ref`), `BocReader`, pane kind, nav, Reference panel, notes → **Plan 2**
+- PanePicker, Projects, drag-and-drop, shared icon/label helper → **Plan 3**
 
-**Type consistency:** `BocDocumentCode`, `BocChunk`, `BocSource`, `BocCommentaryMatch`, and the `"CODE:ordinal"` ref format are used identically across Tasks 1→7. `replaceTexts`/`replaceCommentaryExcerpts`/`lookupBocArticle`/`getArticle` signatures match between the Task 4 interface block, its implementation, and the Task 7 handlers.
+**Type consistency:** `BocDocumentCode`, `BocSection` (parser) vs `BocSectionRow` (service/IPC row) vs `SectionInput` (service arg) are distinct-by-design and used consistently. `lookupBocSection` / `getSection` / `listSections` signatures match across Task 4 impl, Task 5 caller, and Task 7 handlers. Ref format `CODE:ordinal` identical in Tasks 1, 6, 7.
 
-**Placeholder note:** the only intentionally-unfilled content is the per-document article authoring in Task 1 (Steps 3+5) and the converter's note-detection selector in Task 8 — both are genuine source-verification/inspection steps with concrete acceptance tests (article counts pinned in the test file; parser round-trip counts), not hand-waves. The `syncBocFolder` body and the search index/remove helpers are marked "author following <existing file>" because their exact idiom must match code the implementer will read; each still has a passing test as its gate.
+**Known soft spots flagged in-plan, not placeholders:** Task 5's `indexBocForSearch` ordering dependency on Task 6 (do Task 6 immediately after Task 5, or use the temporary no-op), and Task 8's manual spot-checks (no automated gate — inherent to converting a real copyrighted source). Each has a concrete resolution instruction.
