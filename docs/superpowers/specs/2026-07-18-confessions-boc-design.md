@@ -22,6 +22,11 @@ reworked for Phase 2 to land — Phase 2 is additive.
 - A new nav tab that behaves like a first-class sibling to Scripture, not a
   bolted-on afterthought — same picker style, same translation switcher, same
   highlight/notes/commentary/search UX users already know from Bible reading.
+- **Full parity across every surface that already lists note/bible/pdf/quotes
+  content** — not just its own reader. This includes the new-tab/empty-state/
+  Projects-add-source picker, the right-sidebar "Reference" tab, search (type,
+  backend indexing, filter UI, result grouping), Projects' addable-item types,
+  and drag-and-drop — see "Components & Integration Surfaces" below.
 - A data model general enough that Phase 2 (Church Fathers) is additive, not
   a rebuild, without over-building abstraction Phase 1 doesn't need.
 - Full feature parity with Bible reading: highlight → citeable quote, sidebar
@@ -42,9 +47,12 @@ reworked for Phase 2 to land — Phase 2 is additive.
   against source material during implementation, not solved here.
 - Reworking the pane/tab container model. This spec targets today's pane
   model on `main`. A separate, unmerged `worktree-tabbed-panes` branch
-  replaces panes with tabs; if that lands first, `BocReader` becomes a tab
-  `kind` instead of a pane `kind`, with no change to the reader or data model
-  itself.
+  replaces panes with tabs (`TabKind` there currently mirrors `PaneKind`
+  minus `'empty'`, plus `'picker'`); if that branch merges first, every
+  integration surface in this spec that touches `PaneKind` needs an
+  equivalent, separately-applied change to `TabKind` and that branch's own
+  copies of the picker/reference/search wiring — no change to the reader or
+  data model itself, just where `'boc'` gets registered.
 
 ## Current state (for context)
 
@@ -187,7 +195,7 @@ Expected output: two Markdown files from one conversion pass — a
 primary-text file (feeds `boc_texts`) and a commentary file (feeds
 `boc_commentary_excerpts`).
 
-## Components
+## Components & Integration Surfaces
 
 - **New pane kind `'boc'`** — added to the `PaneKind` union alongside `note`
   / `bible` / `pdf` / `quotes` / `empty`. Kept as its own concrete kind rather
@@ -203,19 +211,58 @@ primary-text file (feeds `boc_texts`) and a commentary file (feeds
   generalized citation key (e.g. `AC:IV.2`). On article change, calls
   `lookupBocArticle` to populate the right-sidebar Commentary panel — the
   same flow as `verseClicked` → `lookupCommentary` today.
-- **Nav wiring** — a `confessions` entry added to `LEFT_VIEWS`, a `case` in
+- **Left nav** — a `confessions` entry in `LEFT_VIEWS`, a `case` in
   `ThreePanel.centerNode()` rendering `BocLibraryView` (a picker grid of the
-  ~10 documents, like the Bible book grid), a "Confessions" section added to
-  `PanePicker`, and `RIGHT_TABS`'s notes/commentary resolution extended to
-  resolve against `boc` pane content the same way it resolves `bible` pane
-  content today.
+  ~10 documents, like the Bible book grid), and its own `CENTER_EMPTY`
+  placeholder entry.
 - **Citation format** — `bocCitation()` alongside `scriptureCitation()` in
   `src/shared/citation.ts`, e.g. `"AC IV, 2 (Reader's Edition)"`.
-- **Search** — `boc_texts` and `boc_commentary_excerpts` indexed into the
-  existing `search_fts` table using its generic `kind`/`ref` columns,
-  alongside notes/quotes/commentary.
 - **Notes** — same right-sidebar note editor, keyed to a boc article ref,
   following the existing Scripture-notes attachment pattern exactly.
+
+Beyond its own reader, every existing content kind (`note`/`bible`/`pdf`/
+`quotes`) also surfaces in several shared places across the app. `'boc'`
+needs to reach the same surfaces, not just its own tab:
+
+1. **`PanePicker.tsx`** — the single component behind *all three* of the
+   new-tab picker, the whole-workspace-empty picker
+   (`CenterWorkspace.tsx`, when no panes are open), and the Projects
+   add-source picker (`PaneFrame.tsx`'s empty-pane case, with
+   `restrictToProject` set). Needs a `'boc'` entry in the `AddTab` union, a
+   "Confessions" browse section, a tab-strip button, and a dispatch branch
+   in `onHit`/`place`.
+2. **Right sidebar "Reference" tab strip (`RIGHT_TABS`)** — a new
+   `reference-boc` tab id, a new `ReferenceBocPanel.tsx` (mirroring
+   `ReferenceBiblePanel`/`ReferencePdfPanel` — a full-article reference view
+   alongside whatever's open in the center), a branch in `ThreePanel.tsx`'s
+   tab switch, and inclusion in the sidebar-widening logic that today
+   special-cases `reference-pdf`/`reference-bible`/`commentary`.
+3. **Search** — a new `SearchKind` value end-to-end: the type in
+   `shared/ipc.ts`, indexing/removal functions in `main/services/search.ts`,
+   a "Confessions" option in `SearchView.tsx`'s All/Books/Quotes/Notes/
+   Scripture filter strip, and grouping/icon/label branches in
+   `SearchResults.tsx`. `boc_texts` and `boc_commentary_excerpts` both feed
+   the existing `search_fts` table.
+4. **Projects (`ProjectItem` union)** — Projects can currently hold
+   `book`/`note`/`scripture` items (not even `quotes` yet). A `boc` variant
+   needs to be added here for a Confession article to be addable to a
+   Project at all — the data-level counterpart to #1's picker UI.
+5. **Drag-and-drop** — a new `application/x-loci-boc` MIME type, plumbed
+   through the same set/read points as `-book`/`-note`/`-scripture`
+   (`LibraryView.tsx`, `StandaloneNotesPanel.tsx`, `BacklinksPanel.tsx`,
+   `ReferenceBiblePanel.tsx`, `ReferencePdfPanel.tsx`, and `PaneFrame.tsx`'s
+   drop handler), so a Confession article can be dragged onto a Project or a
+   note the same way a Bible passage can today.
+
+**Targeted refactor, in scope:** there is no shared `contentKindIcon()`/
+`kindLabel()` helper anywhere — every surface above (`PanePicker`,
+`SearchResults`' `GroupThumb`, `PaneFrame`'s icon/title chain,
+`QuoteGroupPane`'s title logic) duplicates its own ad hoc kind→icon/label
+mapping. Adding `'boc'` means touching all of them by hand regardless of
+whether this refactor happens; Phase 2 will be a *third* kind hitting the
+same duplication. Extracting one shared helper is small, bounded, and
+directly serves "appears everywhere consistently" — done as part of this
+work, not deferred.
 
 ## Testing approach
 
@@ -226,6 +273,10 @@ component-rendering infra:
   `commentaryMarkdown.test.ts` / `commentary.test.ts`.
 - `lookupBocArticle` range-query tests mirroring `lookupVerse` tests.
 - Store-level tests for the new `boc` pane kind and nav wiring.
+- Search indexing/removal tests for the new `SearchKind` value, mirroring
+  existing per-kind tests in `search.ts`'s test suite.
+- `PanePicker` dispatch tests covering the new `'boc'` `AddTab`/`onHit`
+  branches (browse, add-to-project, and open-in-pane paths).
 
 ## Open questions / risks
 
