@@ -111,14 +111,16 @@ discovered dynamically:
 
 ```ts
 export interface BocArticleDef {
-  number: string       // "I", "IV", "1" — display numbering, not always a plain int
+  ordinal: number       // 1-based position — the canonical DB/range-query key
+  number: string        // "I", "IV", "III.2" — display numbering (Roman numerals,
+                        // part-qualified for SA), never used for ordering or storage
   label: string         // "Of Justification", "The Ten Commandments"
-  sortOrder: number      // numeric ordering key, since `number` doesn't always sort naturally
 }
 
 export interface BocDocumentDef {
-  code: string           // 'AC', 'AP', 'SA', 'TR', 'SC', 'LC', 'FC-EP', 'FC-SD', 'CA', 'CN', 'CAT'
-  title: string          // "Augsburg Confession"
+  code: string          // 'CR-AP', 'CR-NI', 'CR-ATH' (the three creeds),
+                        // 'AC', 'AP', 'SA', 'TR', 'SC', 'LC', 'FC-EP', 'FC-SD'
+  title: string         // "Augsburg Confession"
   abbreviation: string
   articles: BocArticleDef[]
   sortOrder: number
@@ -126,6 +128,16 @@ export interface BocDocumentDef {
 
 export const BOC_DOCUMENTS: BocDocumentDef[]
 ```
+
+**Ordinal vs. display number.** All DB columns (`boc_texts.article_ordinal`,
+`boc_commentary_excerpts.article_start/article_end`) store the numeric
+`ordinal`; range queries compare integers, exactly like chapter/verse
+numbers. The Roman-numeral (or part-qualified) `number` string is resolved
+through `BOC_DOCUMENTS` for display and citations only. Documents whose
+internal structure isn't a flat article list — the Smalcald Articles (Parts
+I–III, with articles inside Part III) and the catechisms (parts/chief
+sections) — are flattened into one ordinal sequence per document, with the
+part encoded in the display `number`/`label`.
 
 Covers the three Ecumenical Creeds, Augsburg Confession, Apology, Smalcald
 Articles, Treatise on the Power and Primacy of the Pope, Small Catechism,
@@ -136,7 +148,7 @@ Large Catechism, and the Formula of Concord (Epitome + Solid Declaration).
 - **`boc_sources`** — mirrors `commentary_sources`: id, display_name (e.g.
   "Reader's Edition (CPH)", "Tappert", "Kolb-Wengert"), file_relative_path
   (vault path), sort_order, status.
-- **`boc_texts`** — source_id (FK), document_code, article_number, text
+- **`boc_texts`** — source_id (FK), document_code, article_ordinal, text
   (Markdown, with paragraph-anchor markers embedded inline — the article-level
   equivalent of verse markers inside a cached Bible chapter). One row per
   (source, document, article); a translation switch just re-queries this
@@ -159,8 +171,29 @@ the same conversion pass into the commentary tables.
   (an expository book on just the Augsburg Confession) — same pattern as
   Kretzmann (whole Bible) vs. RHB's Hebrews commentary (one book) today.
 
-Lookup: `lookupBocArticle(documentCode, articleNumber)` — same range-query
+Lookup: `lookupBocArticle(documentCode, articleOrdinal)` — same range-query
 shape as `lookupVerse`.
+
+### Quotes (highlight-to-quote storage)
+
+The `quotes` table is not generic — each quote family has its own columns,
+added by migration: `book_id` (book quotes), `scripture_ref` +
+`scripture_translation` (scripture highlights, migration v11),
+`commentary_source_id` + `commentary_ref` (commentary quotes, migration
+v16). BoC highlights follow the same pattern with a new migration adding
+**`boc_source_id`** (FK → `boc_sources`, identifying which translation the
+quoted text came from) and **`boc_ref`** (canonical ref string, e.g.
+`AC:IV.2`). Citation auto-generation extends the existing book / scripture /
+commentary chain with a `bocCitation()` branch; `citation_override`
+(migration v17) applies unchanged.
+
+**No copyright gate.** `ScriptureReader` gates highlight-to-quote to
+`provider === 'free-use'` because copyrighted API-served translations must
+never be persisted (API terms). That gate must NOT be copied into
+`BocReader`: BoC sources are user-owned local files, and migration v16's
+commentary quotes already set the precedent — copyrighted text captured as a
+quote "stays local, just like the vault + index it's drawn from." All BoC
+translations are quotable.
 
 **Shared code, separate tables.** Bible commentary and Confessions
 commentary have identical shapes (source registry + range-keyed excerpts +
@@ -198,9 +231,11 @@ primary-text file (feeds `boc_texts`) and a commentary file (feeds
 ## Components & Integration Surfaces
 
 - **New pane kind `'boc'`** — added to the `PaneKind` union alongside `note`
-  / `bible` / `pdf` / `quotes` / `empty`. Kept as its own concrete kind rather
-  than a premature generic "document" kind; Phase 2 (Church Fathers) can add
-  its own kind or extend this once its actual needs are known.
+  / `bible` / `pdf` / `quotes` / `empty`, with content fields
+  `{ documentCode, articleOrdinal, bocSourceId }` (mirroring how a `bible`
+  pane carries `book`/`chapter`/`translation`). Kept as its own concrete kind
+  rather than a premature generic "document" kind; Phase 2 (Church Fathers)
+  can add its own kind or extend this once its actual needs are known.
 - **`BocReader.tsx`**, modeled directly on `ScriptureReader.tsx`: Document
   picker → Article picker (mirroring Book → Chapter), a translation dropdown
   populated from `boc_sources` for the current document, article text
@@ -273,20 +308,28 @@ component-rendering infra:
   `commentaryMarkdown.test.ts` / `commentary.test.ts`.
 - `lookupBocArticle` range-query tests mirroring `lookupVerse` tests.
 - Store-level tests for the new `boc` pane kind and nav wiring.
-- Search indexing/removal tests for the new `SearchKind` value, mirroring
-  existing per-kind tests in `search.ts`'s test suite.
-- `PanePicker` dispatch tests covering the new `'boc'` `AddTab`/`onHit`
-  branches (browse, add-to-project, and open-in-pane paths).
+- Search indexing/removal tests for the new `SearchKind` value, written
+  fresh against an in-memory DB (there is no existing `search.ts` test
+  suite to mirror — `library.test.ts`'s in-memory-DB setup is the pattern
+  to follow).
+- `PanePicker`'s new `'boc'` hit/place dispatch is a React component and
+  can't be tested with the existing logic-level infra; its dispatch mapping
+  is extracted into a small pure helper (content-from-hit) and that helper
+  is tested directly.
 
 ## Open questions / risks
 
 - **Converter text/note distinction** (see Ingestion) — needs the actual
   Reader's Edition EPUB/PDF in hand to determine the detection rule.
-- **Apology dual-numbering** — the Apology of the Augsburg Confession has a
-  well-known German/Latin article-numbering discrepancy across editions.
-  `BOC_DOCUMENTS`'s article list for AP needs to be checked against the
-  actual translation sources before being finalized, and `bocCitation()`'s
-  format may need a documented convention for showing both numbers.
+- **Numbering quirks across documents** — the Apology of the Augsburg
+  Confession has a well-known German/Latin article-numbering discrepancy
+  across editions; the Smalcald Articles and the catechisms have
+  part-based rather than flat-article structure (handled by the
+  ordinal-flattening rule in the data model, but the exact flattened lists
+  need authoring). `BOC_DOCUMENTS`'s article lists need to be checked
+  against the actual translation sources before being finalized, and
+  `bocCitation()`'s format may need a documented convention for showing
+  both Apology numberings.
 - **Article-count table authorship** — `BOC_DOCUMENTS` must be hand-verified
   against a source text once during implementation (article counts, labels,
   sort order), the same one-time authoring cost `scriptureRef.ts`'s `BOOKS`
