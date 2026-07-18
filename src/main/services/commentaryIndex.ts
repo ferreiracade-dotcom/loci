@@ -91,6 +91,21 @@ function saveIndexMtimes(mtimes: Record<string, number>): void {
   renameSync(tmp, path)
 }
 
+/** True when a discovered commentary file needs (re-)indexing: its mtime doesn't match what was
+ *  last recorded, OR the database's own status says it was never actually indexed. The mtime
+ *  cache lives in a plain JSON file outside the SQLite database, so a DB restore/corruption that
+ *  rolls commentary_sources back to 'unindexed' (independent of the vault files, which are
+ *  untouched) leaves the cache pointing at a state the database no longer has — without the
+ *  status check, the file's mtime still matches and it would be skipped forever, silently
+ *  indexing 0 excerpts on every launch. */
+export function shouldReindex(
+  cachedMtime: number | undefined,
+  currentMtime: number,
+  status: string
+): boolean {
+  return cachedMtime !== currentMtime || status === 'unindexed'
+}
+
 /** Discover and index commentary-Markdown files sitting in the vault's `commentaries/` folder.
  *  Called at startup (after the vault sync pulls them down from Drive) so that on any device
  *  the vault reaches, its `.md` commentaries auto-register and index without manual re-adding —
@@ -123,8 +138,7 @@ export async function syncCommentaryFolder(): Promise<void> {
         bookId: null,
         pdfRelativePath: storedPath
       })
-    // Skip only when this exact file (by its own mtime) was already indexed here.
-    if (mtimes[storedPath] === mtime) continue
+    if (!shouldReindex(mtimes[storedPath], mtime, source.status)) continue
     try {
       await indexSource(source.id)
       mtimes[storedPath] = mtime
