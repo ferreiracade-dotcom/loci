@@ -63,7 +63,7 @@ function excerpt(patch: Partial<NewCommentaryExcerpt>): NewCommentaryExcerpt {
 describe('migrations', () => {
   it('runs twice without error and lands on the latest version', () => {
     expect(() => runMigrations(db)).not.toThrow()
-    expect(db.pragma('user_version', { simple: true })).toBe(17)
+    expect(db.pragma('user_version', { simple: true })).toBe(18)
   })
 
   it('migration 14 does not fail when the user already created a "commentary" tag', () => {
