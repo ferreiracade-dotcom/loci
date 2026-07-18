@@ -3958,11 +3958,12 @@ select.field {
   border-color: var(--gold);
 }
 .nt-project-badge {
+  width: auto !important;
   display: inline-flex;
   align-items: center;
   gap: 5px;
   font-size: 11px;
-  padding: 0 8px;
+  padding: 0 8px !important;
   color: var(--accent);
   background: var(--accent-12);
   border-radius: 999px;
