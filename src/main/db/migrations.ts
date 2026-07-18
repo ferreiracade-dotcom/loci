@@ -333,6 +333,63 @@ const migrations: Migration[] = [
       // scripture ref / commentary source as before.
       db.exec(`ALTER TABLE quotes ADD COLUMN citation_override TEXT;`)
     }
+  },
+  {
+    version: 18,
+    name: 'book-of-concord',
+    up: (db) => {
+      // Book of Concord: primary text (one row per translation × document × section) and
+      // per-section commentary. Sections are discovered from the source, so section_number
+      // and section_label are stored per row rather than derived from a static table.
+      // Kept separate from the Bible commentary tables so 66-book invariants never see a
+      // BoC document code.
+      db.exec(`
+        CREATE TABLE boc_sources (
+          id                TEXT PRIMARY KEY,
+          display_name      TEXT NOT NULL,
+          author            TEXT,
+          md_relative_path  TEXT NOT NULL UNIQUE,
+          sort_order        INTEGER NOT NULL DEFAULT 0,
+          indexed_at        TEXT,
+          status            TEXT NOT NULL DEFAULT 'unindexed'
+        );
+
+        CREATE TABLE boc_texts (
+          id               TEXT PRIMARY KEY,
+          source_id        TEXT NOT NULL REFERENCES boc_sources(id) ON DELETE CASCADE,
+          document_code    TEXT NOT NULL,
+          section_ordinal  INTEGER NOT NULL,
+          section_number   TEXT,
+          section_label    TEXT NOT NULL,
+          section_part     TEXT,
+          text             TEXT NOT NULL
+        );
+        CREATE UNIQUE INDEX idx_boc_texts_key ON boc_texts(source_id, document_code, section_ordinal);
+        CREATE INDEX idx_boc_texts_lookup ON boc_texts(document_code, section_ordinal);
+
+        CREATE TABLE boc_commentary_sources (
+          id                TEXT PRIMARY KEY,
+          display_name      TEXT NOT NULL,
+          author            TEXT,
+          md_relative_path  TEXT NOT NULL UNIQUE,
+          sort_order        INTEGER NOT NULL DEFAULT 0,
+          indexed_at        TEXT,
+          status            TEXT NOT NULL DEFAULT 'unindexed'
+        );
+
+        CREATE TABLE boc_commentary_excerpts (
+          id               TEXT PRIMARY KEY,
+          source_id        TEXT NOT NULL REFERENCES boc_commentary_sources(id) ON DELETE CASCADE,
+          document_code    TEXT NOT NULL,
+          section_start    INTEGER NOT NULL,
+          section_end      INTEGER NOT NULL,
+          text             TEXT NOT NULL,
+          header_raw       TEXT
+        );
+        CREATE INDEX idx_boc_excerpts_lookup ON boc_commentary_excerpts(document_code, section_start, section_end);
+        CREATE INDEX idx_boc_excerpts_source ON boc_commentary_excerpts(source_id);
+      `)
+    }
   }
 ]
 
