@@ -776,6 +776,18 @@ export function vaultScanLooksIncomplete(foundCount: number, catalogedCount: num
   return catalogedCount > 20 && foundCount < catalogedCount * 0.8
 }
 
+/** True when Pass C should actually delete a catalog row: its Drive copy is confirmed gone AND
+ *  no local fallback agrees it's gone too. A single missing existsSync() on the Drive path isn't
+ *  proof enough on its own — the 80% scan-completeness guard above only catches a *badly*
+ *  incomplete scan (e.g. a whole library's worth of files), but a near-miss scan (found 391 of
+ *  462, ~85%) still clears that bar while genuinely mismeasuring a handful of files, usually
+ *  because the Drive desktop client hadn't finished re-listing them. Requiring the local copy
+ *  (exact local_path, or a name match in the primary library folder) to also be missing is a
+ *  second, independent signal before this destructive, quotes/notes-cascading step. */
+export function shouldPruneBook(driveExists: boolean, localExists: boolean, primaryHit: boolean): boolean {
+  return !driveExists && !localExists && !primaryHit
+}
+
 /**
  * Reconcile the catalog with the two book folders — the Drive vault's `pdfs/Books` and the local
  * library folder — so books added to either place show up automatically and the folders mirror
@@ -892,17 +904,22 @@ export async function syncLibrary(
           `${catalogedInVault} are catalogued — Drive may still be mounting`
       )
     } else {
-      const rows = getDb().prepare('SELECT id, pdf_path FROM books').all() as {
+      const rows = getDb().prepare('SELECT id, pdf_path, local_path FROM books').all() as {
         id: string
         pdf_path: string | null
+        local_path: string | null
       }[]
       const del = getDb().prepare('DELETE FROM books WHERE id = ?')
       for (let i = 0; i < rows.length; i++) {
         const r = rows[i]
         if (r.pdf_path && !existsSync(r.pdf_path)) {
-          del.run(r.id)
-          search.removeBook(r.id)
-          removed++
+          const localExists = !!(r.local_path && existsSync(r.local_path))
+          const primaryHit = !!findInPrimary(r.pdf_path, r.local_path)
+          if (shouldPruneBook(/* driveExists */ false, localExists, primaryHit)) {
+            del.run(r.id)
+            search.removeBook(r.id)
+            removed++
+          }
         }
         if (i % 50 === 0) await yieldToLoop()
       }

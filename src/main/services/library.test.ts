@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { groupValuesById, vaultScanLooksIncomplete } from './library'
+import { groupValuesById, shouldPruneBook, vaultScanLooksIncomplete } from './library'
 
 describe('groupValuesById', () => {
   it('buckets multiple values under one id, preserving input order', () => {
@@ -55,5 +55,24 @@ describe('vaultScanLooksIncomplete', () => {
 
   it('does not treat an empty catalog as incomplete', () => {
     expect(vaultScanLooksIncomplete(0, 0)).toBe(false)
+  })
+})
+
+// Second, independent guard on top of vaultScanLooksIncomplete: a near-miss scan (e.g. 391/462,
+// ~85%) still clears the 80% completeness bar while mismeasuring a handful of files, usually
+// because Drive hadn't finished re-listing them yet. This is the incident that actually happened
+// (2026-07-18): 71 books with live local copies got pruned because their Drive existsSync()
+// briefly read false. Pruning should require the local copy to be gone too.
+describe('shouldPruneBook', () => {
+  it('does not prune when the Drive file is missing but a local copy exists at local_path', () => {
+    expect(shouldPruneBook(false, true, false)).toBe(false)
+  })
+
+  it('does not prune when the Drive file is missing but a local copy is found by name', () => {
+    expect(shouldPruneBook(false, false, true)).toBe(false)
+  })
+
+  it('prunes only when Drive, local_path, and the primary library all agree the file is gone', () => {
+    expect(shouldPruneBook(false, false, false)).toBe(true)
   })
 })
