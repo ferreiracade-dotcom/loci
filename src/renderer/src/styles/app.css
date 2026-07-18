@@ -473,6 +473,14 @@ select.field {
   max-height: 260px;
   overflow-y: auto;
 }
+.pp-browse {
+  /* The default (non-restricted) picker's Notes/Library/Bible/Quotes tabs are its primary
+     content, not a nested sub-section — same tab/scroll structure as .pp-add-source, but
+     without the card border/background/height cap. */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 .pp-search-sm {
   padding: 7px 10px;
   font-size: 12.5px;
