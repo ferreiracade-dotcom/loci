@@ -372,7 +372,7 @@ export function PanePicker({
                   onClick={() =>
                     restrictToProject ? void addProjectItem({ kind: 'note', path: n.path }) : place({ kind: 'note', notePath: n.path })
                   }
-                  onContextMenu={(e) => onContextMenu(e, { kind: 'note', notePath: n.path })}
+                  onContextMenu={(e) => (restrictToProject ? e.preventDefault() : onContextMenu(e, { kind: 'note', notePath: n.path }))}
                 >
                   <FolderKanban size={14} />
                   <span className="pp-item-title">{n.title}</span>
@@ -387,7 +387,7 @@ export function PanePicker({
                   onClick={() =>
                     restrictToProject ? void addProjectItem({ kind: 'note', path: n.path }) : place({ kind: 'note', notePath: n.path })
                   }
-                  onContextMenu={(e) => onContextMenu(e, { kind: 'note', notePath: n.path })}
+                  onContextMenu={(e) => (restrictToProject ? e.preventDefault() : onContextMenu(e, { kind: 'note', notePath: n.path }))}
                 >
                   <FileText size={14} />
                   <span className="pp-item-title">{n.title}</span>
@@ -540,13 +540,15 @@ export function PanePicker({
                                   restrictToProject ? setPreviewChapter({ book: b.code, chapter: c }) : placeBible(b.code, c)
                                 }
                                 onContextMenu={(e) =>
-                                  onContextMenu(e, {
-                                    kind: 'bible',
-                                    book: b.code,
-                                    chapter: c,
-                                    highlight: [],
-                                    translation: scriptureTranslation
-                                  })
+                                  restrictToProject
+                                    ? e.preventDefault()
+                                    : onContextMenu(e, {
+                                        kind: 'bible',
+                                        book: b.code,
+                                        chapter: c,
+                                        highlight: [],
+                                        translation: scriptureTranslation
+                                      })
                                 }
                               >
                                 {c}
