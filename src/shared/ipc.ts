@@ -711,6 +711,32 @@ export interface CommentaryMatch {
   verseEnd: number
 }
 
+export interface BocSource {
+  id: string
+  displayName: string
+  author: string | null
+  mdRelativePath: string
+  sortOrder: number
+  status: string
+}
+export interface BocSectionRow {
+  ordinal: number
+  number: string | null
+  label: string
+  part: string | null
+  text: string
+}
+export interface BocCommentaryMatch {
+  excerptId: string
+  sourceId: string
+  sourceDisplayName: string
+  sourceAuthor: string | null
+  sortOrder: number
+  text: string
+  sectionStart: number
+  sectionEnd: number
+}
+
 export interface Quote {
   id: string
   bookId: string
