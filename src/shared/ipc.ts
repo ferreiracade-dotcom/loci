@@ -1,8 +1,6 @@
 // Shared IPC contract — imported by main, preload, and renderer.
 // The renderer never touches Node/fs directly; everything goes through this surface.
 
-import type { HeaderShape } from './scriptureRef'
-
 export const Channels = {
   getAppState: 'app:getState',
   chooseFolder: 'dialog:chooseFolder',
@@ -81,7 +79,6 @@ export const Channels = {
 
   listCommentarySources: 'commentary:listSources',
   createCommentarySource: 'commentary:createSource',
-  createCommentarySourceFromBook: 'commentary:createSourceFromBook',
   addMarkdownCommentarySource: 'commentary:addMarkdownSource',
   updateCommentarySource: 'commentary:updateSource',
   deleteCommentarySource: 'commentary:deleteSource',
@@ -90,9 +87,7 @@ export const Channels = {
   listFlaggedCommentary: 'commentary:listFlagged',
   setCommentaryExcerptFlag: 'commentary:setExcerptFlag',
   reassignCommentaryExcerpt: 'commentary:reassignExcerpt',
-  profileCommentarySource: 'commentary:profileSource',
   indexCommentarySource: 'commentary:indexSource',
-  cancelCommentaryIndexing: 'commentary:cancelIndexing',
   reviewConfirmCommentaryExcerpt: 'commentary:reviewConfirm',
   reviewReassignCommentaryExcerpt: 'commentary:reviewReassign',
   reviewDiscardCommentaryExcerpt: 'commentary:reviewDiscard',
@@ -325,14 +320,8 @@ export interface LociApi {
 
   listCommentarySources(): Promise<CommentarySource[]>
   createCommentarySource(input: NewCommentarySource): Promise<CommentarySource>
-  /** Register a source from an already-imported, already-tagged library book. */
-  createCommentarySourceFromBook(
-    bookId: string,
-    displayName: string,
-    author: string | null
-  ): Promise<CommentarySource>
-  /** Prompt for a canonical commentary-Markdown (.md) file and register it as a source (no
-   *  library book, no profiling — headings are the excerpt boundaries). Null if cancelled. */
+  /** Prompt for a canonical commentary-Markdown (.md) file and register it as a source —
+   *  headings are the excerpt boundaries, nothing to profile. Null if cancelled. */
   addMarkdownCommentarySource(): Promise<CommentarySource | null>
   updateCommentarySource(id: string, patch: CommentarySourceUpdate): Promise<void>
   deleteCommentarySource(id: string): Promise<void>
@@ -343,12 +332,8 @@ export interface LociApi {
   listFlaggedCommentary(sourceId?: string): Promise<CommentaryExcerpt[]>
   setCommentaryExcerptFlag(id: string, flagged: boolean): Promise<void>
   reassignCommentaryExcerpt(id: string, patch: CommentaryExcerptReassign): Promise<void>
-  /** Sample the source's PDF and infer its header shape/structural signal for confirmation. */
-  profileCommentarySource(sourceId: string): Promise<CommentaryProfileResult>
-  /** Run full extraction + validation + corrections replay, writing excerpts to the index.
-   *  Requires the source to have a confirmed `parserConfig` already saved. */
+  /** Parse + validate + persist excerpts for a Markdown source, replaying any saved corrections. */
   indexCommentarySource(sourceId: string): Promise<CommentaryIndexSummary>
-  cancelCommentaryIndexing(sourceId: string): Promise<void>
   /** Review-queue actions: each both updates the excerpt and records a correction so the
    *  decision survives a re-index. */
   reviewConfirmCommentaryExcerpt(excerptId: string): Promise<void>
@@ -639,7 +624,8 @@ export interface ScriptureQuoteBook {
   count: number
 }
 
-/** Registered verse-keyed commentary PDF. */
+/** Registered verse-keyed commentary source (a canonical Markdown file in the vault). `bookId`
+ *  is vestigial — always null now — kept because it's still a real, indexed schema column. */
 export interface CommentarySource {
   id: string
   bookId: string | null
@@ -647,9 +633,8 @@ export interface CommentarySource {
   author: string | null
   pdfRelativePath: string
   sortOrder: number
-  parserConfig: string | null
   indexedAt: string | null
-  status: 'unindexed' | 'profiling' | 'indexing' | 'indexed' | 'needs_review' | 'error'
+  status: 'unindexed' | 'indexing' | 'indexed' | 'needs_review' | 'error'
 }
 
 export interface NewCommentarySource {
@@ -664,7 +649,6 @@ export interface CommentarySourceUpdate {
   author?: string | null
   sortOrder?: number
   status?: CommentarySource['status']
-  parserConfig?: string | null
   indexedAt?: string | null
 }
 
@@ -692,38 +676,6 @@ export interface CommentaryExcerptReassign {
   verseStart: number
   chapterEnd: number
   verseEnd: number
-}
-
-/** Learned per-source header profile (font/margin/font-switch signal), confirmed by the
- *  user before full extraction runs (Phase 2c). */
-export interface CommentaryProfile {
-  shape: HeaderShape
-  bodyFontSize: number
-  headerFontSize: number
-  bodyMarginX: number
-  headerMarginX: number
-  headerMultiFontRate: number
-  bodyMultiFontRate: number
-}
-
-/** One sampled header match shown to the user for confirmation. */
-export interface CommentaryProfileSample {
-  page: number
-  headerRaw: string
-  snippetAfter: string
-}
-
-export interface CommentaryProfileResult {
-  profile: CommentaryProfile
-  samples: CommentaryProfileSample[]
-}
-
-/** Saved alongside the confirmed profile — where a source with bare verse/range headers
- *  starts (needed since those headers never restate the book/chapter themselves). */
-export interface CommentaryParserConfig {
-  profile: CommentaryProfile
-  seedBook: string | null
-  seedChapter: number | null
 }
 
 export type CommentaryIndexPhase = 'extracting' | 'validating' | 'done'

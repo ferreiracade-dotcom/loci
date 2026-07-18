@@ -3,7 +3,20 @@ import {
   parseCommentaryHeader,
   type HeaderParseState
 } from '../../shared/scriptureRef'
-import type { ExtractedChunk } from './commentaryExtract'
+
+/** One verse-keyed commentary excerpt, as produced by parseCommentaryMarkdown and persisted
+ *  (after validation) to commentary_excerpts. `page` is always 0 for Markdown sources — there's
+ *  no PDF page to jump back to; the excerpt text is already the full comment. */
+export interface ExtractedChunk {
+  headerRaw: string
+  book: string
+  chapterStart: number
+  verseStart: number
+  chapterEnd: number
+  verseEnd: number
+  text: string
+  page: number
+}
 
 // Canonical commentary-Markdown format (see the conversion pipeline / docs):
 //

@@ -3,7 +3,7 @@ import { copyFileSync, mkdirSync } from 'fs'
 import { basename, join, relative } from 'path'
 import { getDb } from '../db/connection'
 import { newCorrection, saveCorrection } from './commentaryCorrections'
-import { commentaryVaultDir, readConfig } from './config'
+import { commentaryVaultDir } from './config'
 import type {
   CommentaryExcerpt,
   CommentaryExcerptReassign,
@@ -33,7 +33,6 @@ function toSource(r: SourceRow): CommentarySource {
     author: r.author,
     pdfRelativePath: r.pdf_relative_path,
     sortOrder: r.sort_order,
-    parserConfig: r.parser_config,
     indexedAt: r.indexed_at,
     status: r.status as CommentarySource['status']
   }
@@ -74,7 +73,6 @@ const UPDATABLE_COLUMNS: Record<keyof CommentarySourceUpdate, string> = {
   author: 'author',
   sortOrder: 'sort_order',
   status: 'status',
-  parserConfig: 'parser_config',
   indexedAt: 'indexed_at'
 }
 
@@ -94,24 +92,6 @@ export function updateSource(id: string, patch: CommentarySourceUpdate): void {
 export function deleteSource(id: string): void {
   // commentary_excerpts rows cascade via the foreign key.
   getDb().prepare('DELETE FROM commentary_sources WHERE id = ?').run(id)
-}
-
-/** Register a commentary source from an already-imported library book — resolves the
- *  vault-relative PDF path server-side so the renderer never needs to see raw filesystem
- *  paths (the app's existing IPC boundary convention). */
-export function createSourceFromBook(
-  bookId: string,
-  displayName: string,
-  author: string | null
-): CommentarySource {
-  const row = getDb().prepare('SELECT pdf_path, local_path FROM books WHERE id = ?').get(bookId) as
-    | { pdf_path: string | null; local_path: string | null }
-    | undefined
-  const absolutePath = row?.pdf_path ?? row?.local_path
-  if (!absolutePath) throw new Error("Could not locate this book's PDF")
-  const vaultPath = readConfig().vaultPath
-  const pdfRelativePath = vaultPath ? relative(vaultPath, absolutePath) : absolutePath
-  return createSource({ displayName, author, bookId, pdfRelativePath })
 }
 
 /** Find a source by its stored (vault-relative) path, if any. */

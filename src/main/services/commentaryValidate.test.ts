@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { validateChunk, validateSource } from './commentaryValidate'
-import type { ExtractedChunk } from './commentaryExtract'
+import type { ExtractedChunk } from './commentaryMarkdown'
 import type { VersificationTable } from '../../shared/versification'
 
 // Synthetic table: ROM ch.1 has 32 verses, ch.2 has 29; JHN ch.3 has 36.

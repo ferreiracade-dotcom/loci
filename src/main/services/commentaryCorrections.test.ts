@@ -2,7 +2,7 @@ import { mkdtempSync, rmSync } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { ExtractedChunk } from './commentaryExtract'
+import type { ExtractedChunk } from './commentaryMarkdown'
 
 let dataDir: string
 

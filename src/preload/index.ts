@@ -90,8 +90,6 @@ const api: LociApi = {
 
   listCommentarySources: () => ipcRenderer.invoke(Channels.listCommentarySources),
   createCommentarySource: (input) => ipcRenderer.invoke(Channels.createCommentarySource, input),
-  createCommentarySourceFromBook: (bookId, displayName, author) =>
-    ipcRenderer.invoke(Channels.createCommentarySourceFromBook, bookId, displayName, author),
   addMarkdownCommentarySource: () => ipcRenderer.invoke(Channels.addMarkdownCommentarySource),
   updateCommentarySource: (id, patch) =>
     ipcRenderer.invoke(Channels.updateCommentarySource, id, patch),
@@ -106,11 +104,7 @@ const api: LociApi = {
     ipcRenderer.invoke(Channels.setCommentaryExcerptFlag, id, flagged),
   reassignCommentaryExcerpt: (id, patch) =>
     ipcRenderer.invoke(Channels.reassignCommentaryExcerpt, id, patch),
-  profileCommentarySource: (sourceId) =>
-    ipcRenderer.invoke(Channels.profileCommentarySource, sourceId),
   indexCommentarySource: (sourceId) => ipcRenderer.invoke(Channels.indexCommentarySource, sourceId),
-  cancelCommentaryIndexing: (sourceId) =>
-    ipcRenderer.invoke(Channels.cancelCommentaryIndexing, sourceId),
   reviewConfirmCommentaryExcerpt: (excerptId) =>
     ipcRenderer.invoke(Channels.reviewConfirmCommentaryExcerpt, excerptId),
   reviewReassignCommentaryExcerpt: (excerptId, patch) =>

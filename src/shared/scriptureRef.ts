@@ -260,14 +260,17 @@ export function refLabel(ref: {
   return s
 }
 
-// --- Commentary header parsing (Phase 2a) --------------------------------------------
+// --- Commentary header parsing ---------------------------------------------------------
 //
-// A distinct grammar from the free-text reference scanner above: commentary PDFs mark
-// excerpt boundaries with a huge variety of bare verse/range headers ("[16]", "Verse 16.",
-// "16)", "3:16", "15-18.", "False discipleship: V. 21.") that a real corpus survey turned
-// up — none of which name the book, and several of which don't even restate the chapter.
-// So parsing here is stateful: the caller (the per-source chunker in Phase 2d) tracks
-// which book/chapter is "current" and this module only supplies the per-line grammar.
+// A distinct grammar from the free-text reference scanner above: a canonical commentary-
+// Markdown heading is either a full "Book chap:verse" reference or a bare "chap:verse"
+// relying on the current book (see commentaryMarkdown.ts). Parsing here is stateful: the
+// caller tracks which book/chapter is "current" and this module only supplies the per-line
+// grammar. (A wider PDF-sourced header grammar — bracketed/roman/word-label verse markers,
+// glyph-mangled numerals, chapter-title tracking — used to live here too; it moved to
+// tools/pdf-to-md.mjs, a standalone converter that emits this same canonical Markdown rather
+// than indexing a PDF's heuristically-detected headers directly. See that file for the
+// fuller grammar if you're maintaining it.)
 
 export interface HeaderParseState {
   /** USFM code of the book currently being commented on, or null before the first header. */
@@ -288,79 +291,17 @@ export interface ParsedHeader {
   /** True when this header only gave a bare verse/range and relied on carried-over state
    *  for book/chapter (as opposed to restating them itself). */
   contextual: boolean
-  /** True when verseStart came from a glyph-mangled numeral (see GLITCHED_ONE) whose actual
-   *  value this parser can't read — the glyph-run's length doesn't reliably indicate how
-   *  many digits it stands for (real: Gerhard's "Verse LI." is genuinely verse 11, not 1,
-   *  despite being the same two-character run as "Verse lL." for verse 1 elsewhere).
-   *  verseStart is left as a 1 placeholder; the caller (which tracks the previous chunk's
-   *  verseEnd) should resolve the real value contextually instead of trusting this. */
-  verseStartGlitched?: boolean
 }
 
-/** The header conventions observed across real commentary PDFs (spec Phase 2c: a source's
- *  shape is inferred by profiling, confirmed by the user, then applied strictly). */
+/** The two heading conventions a canonical commentary-Markdown file uses. */
 export type HeaderShape =
   | 'book-chapter-verse' // "Romans 3:16", "Rom. 3:16-21" — resets book and chapter
   | 'chapter-verse' // "3:16", "3:16-18", "3:25-4:2" — needs state.book; sets state.chapter
-  | 'chapter-verse-roman' // "i. 15-18", "(i. 15-18)", "Cap. III, v. 5" — needs state.book
-  | 'bracket-number' // "[16]", "[16-18]" — needs state.book + state.chapter
-  | 'paren-number' // "16)", "16-18)" — needs state.book + state.chapter
-  | 'word-label' // "Verse 16.", "Verses 16-18.", "V. 16.", "Vv. 16-18.", "Vers. 16."
-  | 'phrase-label' // "False discipleship: V. 21." — a lead-in phrase before the label
-  | 'bare-range' // "16.", "16-18." — needs state.book + state.chapter
 
 const N = '\\d{1,3}'
-/** Some sources' embedded fonts mangle the glyph for a lone numeral "1" into a look-alike
- *  ("l", "L", "I", "|", "]") — an old-style-figure rendering quirk seen only on standalone
- *  "1"s, never other digits (real: Gerhard's "Verse lL." / "Verse l." for "Verse 1."). RANGE
- *  accepts these interchangeably with real digits at the exact same anchored numeral
- *  position (never as a blind substring replace elsewhere in the line) — parseNumeral()
- *  below resolves whichever alternative actually matched back to a number. */
-const GLITCHED_ONE = '[lLI|\\]]{1,2}'
-const NUM = `(?:${N}|${GLITCHED_ONE})`
 const DASH = '[-–—]'
-/** "16" or "16-18" — a single-chapter verse or range, as two optional capture groups. */
-const RANGE = `(${NUM})(?:\\s*${DASH}\\s*(${NUM}))?`
 
-function parseNumeral(s: string): number {
-  return /^\d+$/.test(s) ? Number(s) : 1
-}
-
-const ROMAN_RE = /^[ivxlcdm]+$/i
-const ROMAN_VALUES: Record<string, number> = { i: 1, v: 5, x: 10, l: 50, c: 100, d: 500, m: 1000 }
-
-/** Parse a Roman numeral (any case) to an integer, or null if it isn't one. */
-export function romanToInt(s: string): number | null {
-  const clean = s.trim().toLowerCase()
-  if (!clean || !ROMAN_RE.test(clean)) return null
-  // V, L, and D never repeat in a valid Roman numeral (only I, X, C, M can) — reject "ll",
-  // "vv", "dd" rather than silently computing a technically-parseable but nonsensical value
-  // (real: Lenski's "CHAPTER ll" / "CHAPTER Xll" are glyph-mangled "II" / "XII" — the same
-  // font quirk that renders a lone "1" as a lookalike letter — not a genuine repeated "L").
-  if (/([vld])\1/.test(clean)) return null
-  let total = 0
-  for (let i = 0; i < clean.length; i++) {
-    const cur = ROMAN_VALUES[clean[i]]
-    const next = i + 1 < clean.length ? ROMAN_VALUES[clean[i + 1]] : 0
-    total += cur < next ? -cur : cur
-  }
-  return total > 0 ? total : null
-}
-
-const SHAPE_PATTERNS: Partial<Record<HeaderShape, RegExp>> = {
-  'chapter-verse': new RegExp(
-    `^\\(?(${N})\\s*:\\s*(${N})(?:\\s*${DASH}\\s*(?:(${N})\\s*:\\s*)?(${N}))?\\)?`
-  ),
-  'chapter-verse-roman': new RegExp(
-    `^\\(?(?:Chapter|Chap\\.?|Cap\\.?)?\\s*([ivxlcdm]+)\\b[.,]?\\s*(?:v\\.?|vv\\.?|vers\\.?)?\\s*(${N})?(?:\\s*${DASH}\\s*(${N}))?\\)?`,
-    'i'
-  ),
-  'bracket-number': new RegExp(`^\\[${RANGE}\\]`),
-  'paren-number': new RegExp(`^${RANGE}\\)`),
-  'word-label': new RegExp(`^(?:Verses?|Vers\\.?|Vv\\.?|V\\.?)\\s+${RANGE}\\.?`, 'i'),
-  'phrase-label': new RegExp(`^[^:\\n]{1,80}:\\s*(?:Verses?|Vers\\.?|Vv\\.?|V\\.?)\\s+${RANGE}\\.?`, 'i'),
-  'bare-range': new RegExp(`^${RANGE}\\.`)
-}
+const CHAPTER_VERSE_RE = new RegExp(`^\\(?(${N})\\s*:\\s*(${N})(?:\\s*${DASH}\\s*(?:(${N})\\s*:\\s*)?(${N}))?\\)?`)
 
 /** Parse one candidate header line against carried context. Returns null if `line` doesn't
  *  match `shape` (or the shape needs context that hasn't been established yet). Does not
@@ -389,88 +330,21 @@ export function parseCommentaryHeader(
     }
   }
 
-  if (shape === 'chapter-verse') {
-    if (!state.book) return null
-    const m = SHAPE_PATTERNS['chapter-verse']!.exec(trimmed)
-    if (!m) return null
-    const chapterStart = Number(m[1])
-    const verseStart = Number(m[2])
-    const chapterEnd = m[3] ? Number(m[3]) : chapterStart
-    const verseEnd = m[4] ? Number(m[4]) : verseStart
-    return {
-      raw: m[0],
-      book: state.book,
-      chapterStart,
-      verseStart,
-      chapterEnd,
-      verseEnd,
-      contextual: false
-    }
-  }
-
-  if (shape === 'chapter-verse-roman') {
-    if (!state.book) return null
-    const m = SHAPE_PATTERNS['chapter-verse-roman']!.exec(trimmed)
-    if (!m || !m[2]) return null // no verse number captured — treat as unparseable here
-    const chapter = romanToInt(m[1])
-    if (chapter == null) return null
-    const verseStart = Number(m[2])
-    const verseEnd = m[3] ? Number(m[3]) : verseStart
-    return {
-      raw: m[0],
-      book: state.book,
-      chapterStart: chapter,
-      verseStart,
-      chapterEnd: chapter,
-      verseEnd,
-      contextual: false
-    }
-  }
-
-  // Remaining shapes are all "bare verse/range" forms that require a fully-established
-  // book + chapter from prior headers.
-  if (!state.book || state.chapter == null) return null
-  const pattern = SHAPE_PATTERNS[shape]
-  if (!pattern) return null
-  const m = pattern.exec(trimmed)
+  // shape === 'chapter-verse'
+  if (!state.book) return null
+  const m = CHAPTER_VERSE_RE.exec(trimmed)
   if (!m) return null
-  const verseStart = parseNumeral(m[1])
-  // A glyph-mangled range END can't be read, and parseNumeral's 1 placeholder would make an
-  // inverted range (e.g. "9-ll." -> 9-1) that no verse lookup can ever match. Collapse to the
-  // start so the excerpt stays findable; the true end is lost but recoverable on review.
-  const endGlitched = !!m[2] && !/^\d+$/.test(m[2])
-  const verseEnd = !m[2] || endGlitched ? verseStart : parseNumeral(m[2])
+  const chapterStart = Number(m[1])
+  const verseStart = Number(m[2])
+  const chapterEnd = m[3] ? Number(m[3]) : chapterStart
+  const verseEnd = m[4] ? Number(m[4]) : verseStart
   return {
     raw: m[0],
     book: state.book,
-    chapterStart: state.chapter,
+    chapterStart,
     verseStart,
-    chapterEnd: state.chapter,
+    chapterEnd,
     verseEnd,
-    contextual: true,
-    verseStartGlitched: !/^\d+$/.test(m[1])
+    contextual: false
   }
-}
-
-/** A standalone chapter heading with no verse component ("Chapter III", "Cap. III") — just
- *  updates carried context for subsequent bare-verse headers; not an excerpt boundary
- *  itself. Returns null if `line` isn't one. */
-export function parseChapterOnlyHeader(line: string): { chapter: number } | null {
-  const m = /^(?:Chapter|Chap\.?|Cap\.?)\s+([ivxlcdm]+)\s*\.?$/i.exec(line.trim())
-  if (!m) return null
-  const chapter = romanToInt(m[1])
-  return chapter != null ? { chapter } : null
-}
-
-const CHAPTER_TITLE_LOOSE_RE = /^(?:Chapter|Chap\.?|Cap\.?)\s+\S+$/i
-
-/** True when `line` clearly reads as a chapter-title marker ("Chapter III") even though its
- *  numeral doesn't parse as a clean Roman numeral. Some sources' embedded fonts mangle the
- *  glyph for Roman "I" into look-alike punctuation ("|", "]") inconsistently by font subset,
- *  and can do so *mid-numeral* (real: Gerhard's "CHAPTER |" for "CHAPTER I", "CHAPTER II]"
- *  for "CHAPTER III") — there's no reliable way to recover the intended value character by
- *  character. Callers that see this without a successful parseChapterOnlyHeader match should
- *  fall back to "the next chapter" instead (chapters are always sequential, never skipped). */
-export function looksLikeChapterTitle(line: string): boolean {
-  return CHAPTER_TITLE_LOOSE_RE.test(line.trim())
 }

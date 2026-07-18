@@ -2,7 +2,7 @@ import { createHash, randomUUID } from 'crypto'
 import { existsSync, readFileSync, renameSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { getDataDir } from '../db/connection'
-import type { ExtractedChunk } from './commentaryExtract'
+import type { ExtractedChunk } from './commentaryMarkdown'
 
 export type CorrectionAction = 'confirm' | 'reassign' | 'discard'
 

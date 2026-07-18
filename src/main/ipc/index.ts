@@ -330,11 +330,6 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.createCommentarySource, (_e, input: NewCommentarySource) =>
     commentary.createSource(input)
   )
-  ipcMain.handle(
-    Channels.createCommentarySourceFromBook,
-    (_e, bookId: string, displayName: string, author: string | null) =>
-      commentary.createSourceFromBook(bookId, displayName, author)
-  )
   ipcMain.handle(Channels.addMarkdownCommentarySource, async (e) => {
     const win = BrowserWindow.fromWebContents(e.sender)
     const opts: OpenDialogOptions = {
@@ -372,18 +367,12 @@ export function registerIpc(): void {
     Channels.reassignCommentaryExcerpt,
     (_e, id: string, patch: CommentaryExcerptReassign) => commentary.reassignExcerpt(id, patch)
   )
-  ipcMain.handle(Channels.profileCommentarySource, (_e, sourceId: string) =>
-    commentaryIndex.profileCommentarySource(sourceId)
-  )
   ipcMain.handle(Channels.indexCommentarySource, async (e, sourceId: string) => {
     const notify = (p: CommentaryIndexProgress): void => e.sender.send(Channels.commentaryIndexProgress, p)
     const result = await commentaryIndex.indexSource(sourceId, notify)
     e.sender.send(Channels.libraryChanged)
     return result
   })
-  ipcMain.handle(Channels.cancelCommentaryIndexing, (_e, sourceId: string) =>
-    commentaryIndex.cancelIndexing(sourceId)
-  )
   ipcMain.handle(Channels.reviewConfirmCommentaryExcerpt, (_e, excerptId: string) =>
     commentary.reviewConfirm(excerptId)
   )

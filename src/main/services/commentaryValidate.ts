@@ -1,5 +1,5 @@
 import type { VersificationTable } from '../../shared/versification'
-import type { ExtractedChunk } from './commentaryExtract'
+import type { ExtractedChunk } from './commentaryMarkdown'
 
 export interface ValidationResult {
   confidence: number

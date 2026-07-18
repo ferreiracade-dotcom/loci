@@ -1,13 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  findReferences,
-  looksLikeChapterTitle,
-  matchBareBookName,
-  parseChapterOnlyHeader,
-  parseCommentaryHeader,
-  romanToInt,
-  type HeaderParseState
-} from './scriptureRef'
+import { findReferences, parseCommentaryHeader, type HeaderParseState } from './scriptureRef'
 
 describe('findReferences (regression: case-sensitive scan must still match real prose)', () => {
   it('matches a capitalized reference embedded in a sentence', () => {
@@ -24,57 +16,6 @@ describe('findReferences (regression: case-sensitive scan must still match real 
     const refs = findReferences('See Rom 8:28 for encouragement.')
     expect(refs).toHaveLength(1)
     expect(refs[0]).toMatchObject({ book: 'ROM', chapter: 8, verseStart: 28 })
-  })
-})
-
-describe('romanToInt', () => {
-  it('parses standard numerals', () => {
-    expect(romanToInt('I')).toBe(1)
-    expect(romanToInt('iv')).toBe(4)
-    expect(romanToInt('IX')).toBe(9)
-    expect(romanToInt('XIV')).toBe(14)
-    expect(romanToInt('XIX')).toBe(19)
-    expect(romanToInt('XL')).toBe(40)
-    expect(romanToInt('L')).toBe(50)
-    expect(romanToInt('XCIX')).toBe(99)
-  })
-
-  it('returns null for non-numerals', () => {
-    expect(romanToInt('')).toBeNull()
-    expect(romanToInt('verse')).toBeNull()
-    expect(romanToInt('16')).toBeNull()
-  })
-
-  it('rejects a repeated V/L/D as nonsensical rather than computing a bogus value (real: Lenski\'s "CHAPTER ll" is glyph-mangled "II", not "LL" = 100)', () => {
-    expect(romanToInt('ll')).toBeNull()
-    expect(romanToInt('xll')).toBeNull()
-    expect(romanToInt('vv')).toBeNull()
-    expect(romanToInt('dd')).toBeNull()
-    // I, X, C, M legitimately repeat.
-    expect(romanToInt('iii')).toBe(3)
-    expect(romanToInt('xxx')).toBe(30)
-  })
-})
-
-describe('matchBareBookName', () => {
-  it('finds a bare book name with no chapter/verse (real: Lenski\'s "Interpretation of Second Corinthians")', () => {
-    expect(matchBareBookName('Interpretation of Second Corinthians')).toBe('2CO')
-    expect(matchBareBookName('Interpretation of First Corinthians')).toBe('1CO')
-  })
-
-  it('returns null when no known book name appears', () => {
-    expect(matchBareBookName('Just some ordinary prose')).toBeNull()
-  })
-
-  it('does not match a short abbreviation, since those collide with footnote/cross-reference citations elsewhere in the text (real: Lenski\'s Corinthians commentary has recurring citations like "cf. Jn 5:22")', () => {
-    expect(matchBareBookName('cf. Jn 5:22')).toBeNull()
-    expect(matchBareBookName('See Rm 8:38 and Mt 6:24')).toBeNull()
-  })
-
-  it('does not match a full book name mentioned mid-sentence, only one trailing the whole line (real: Lenski\'s Corinthians commentary discursively cross-references other books by full name — "as Paul says in Romans 8, we..." — which recurs near page edges often enough to otherwise hijack book tracking)', () => {
-    expect(matchBareBookName('as Paul says in Romans 8, we know this')).toBeNull()
-    expect(matchBareBookName('recall the account in Genesis of the flood')).toBeNull()
-    expect(matchBareBookName('900 Interpretation of Second Corinthians')).toBe('2CO')
   })
 })
 
@@ -117,142 +58,20 @@ describe('parseCommentaryHeader — chapter-verse (real: Armstrong-style "1:9 ex
   })
 })
 
-describe('parseCommentaryHeader — chapter-verse-roman (real: Spaeth-style "(i. 15-18)")', () => {
-  it('parses a parenthetical roman chapter + range', () => {
-    const state: HeaderParseState = { book: 'JHN', chapter: null }
-    const h = parseCommentaryHeader('(i. 15-18)', state, 'chapter-verse-roman')
-    expect(h).toMatchObject({ chapterStart: 1, verseStart: 15, chapterEnd: 1, verseEnd: 18 })
-  })
-
-  it('parses "Cap. III, v. 5" (spec example)', () => {
-    const state: HeaderParseState = { book: 'ROM', chapter: null }
-    const h = parseCommentaryHeader('Cap. III, v. 5', state, 'chapter-verse-roman')
-    expect(h).toMatchObject({ chapterStart: 3, verseStart: 5, chapterEnd: 3, verseEnd: 5 })
-  })
-
-  it('returns null when no verse number is present (chapter-only, not an excerpt boundary)', () => {
-    const state: HeaderParseState = { book: 'ROM', chapter: null }
-    expect(parseCommentaryHeader('Cap. III', state, 'chapter-verse-roman')).toBeNull()
-  })
-})
-
-describe('parseCommentaryHeader — bare shapes requiring carried context', () => {
-  const withContext: HeaderParseState = { book: 'JHN', chapter: 3 }
-
-  it('bracket-number (real: Calov "[9]")', () => {
-    expect(parseCommentaryHeader('[9]', withContext, 'bracket-number')).toMatchObject({
-      book: 'JHN',
-      chapterStart: 3,
-      verseStart: 9,
-      verseEnd: 9,
-      contextual: true
-    })
-    expect(parseCommentaryHeader('[9-11]', withContext, 'bracket-number')).toMatchObject({
-      verseStart: 9,
-      verseEnd: 11
-    })
-  })
-
-  it('paren-number (real: Lenski "20)")', () => {
-    expect(parseCommentaryHeader('20)', withContext, 'paren-number')).toMatchObject({
-      verseStart: 20,
-      verseEnd: 20
-    })
-  })
-
-  it('word-label (real: Gerhard "Verse 11.")', () => {
-    expect(parseCommentaryHeader('Verse 11.', withContext, 'word-label')).toMatchObject({
-      verseStart: 11,
-      verseEnd: 11
-    })
-    expect(parseCommentaryHeader('Verses 16-18.', withContext, 'word-label')).toMatchObject({
-      verseStart: 16,
-      verseEnd: 18
-    })
-    expect(parseCommentaryHeader('Vv. 16-18', withContext, 'word-label')).toMatchObject({
-      verseStart: 16,
-      verseEnd: 18
-    })
-    expect(parseCommentaryHeader('Vers. 16', withContext, 'word-label')).toMatchObject({
-      verseStart: 16
-    })
-  })
-
-  it('flags a glyph-mangled numeral rather than guessing its value from run length (real: Gerhard "Verse lL." for verse 1, "Verse LI." for verse 11 — same run length, different values)', () => {
-    // The parser can't tell these apart from the glyphs alone (see verseStartGlitched) — it
-    // marks them and leaves resolution to the caller, which knows the surrounding sequence.
-    expect(parseCommentaryHeader('Verse lL.', withContext, 'word-label')).toMatchObject({
-      verseStartGlitched: true
-    })
-    expect(parseCommentaryHeader('Verse l.', withContext, 'word-label')).toMatchObject({
-      verseStartGlitched: true
-    })
-    expect(parseCommentaryHeader('Verse LI.', withContext, 'word-label')).toMatchObject({
-      verseStartGlitched: true
-    })
-    expect(parseCommentaryHeader('Verse 11.', withContext, 'word-label')).toMatchObject({
-      verseStartGlitched: false
-    })
-  })
-
-  it('does not emit an inverted range when the range END numeral is glyph-mangled (real: "Verses 9-ll." for 9-11)', () => {
-    // parseNumeral resolves an unreadable numeral to a 1 placeholder. For a range end that would
-    // make verseEnd < verseStart (9-1), an inverted range no verse lookup can ever match. Collapse
-    // to the start instead so the excerpt stays findable at verse 9.
-    const h = parseCommentaryHeader('Verses 9-ll.', withContext, 'word-label')
-    expect(h).not.toBeNull()
-    expect(h!.verseEnd).toBeGreaterThanOrEqual(h!.verseStart)
-    expect(h).toMatchObject({ verseStart: 9, verseEnd: 9 })
-  })
-
-  it('phrase-label (real: Kretzmann "False discipleship: V. 21.")', () => {
-    expect(
-      parseCommentaryHeader('False discipleship: V. 21.', withContext, 'phrase-label')
-    ).toMatchObject({ verseStart: 21, verseEnd: 21 })
-  })
-
-  it('bare-range (real: Spaeth "15-18.")', () => {
-    expect(parseCommentaryHeader('15-18.', withContext, 'bare-range')).toMatchObject({
-      verseStart: 15,
-      verseEnd: 18
-    })
-    expect(parseCommentaryHeader('19-28.', withContext, 'bare-range')).toMatchObject({
-      verseStart: 19,
-      verseEnd: 28
-    })
-  })
-
-  it('returns null without carried book/chapter', () => {
-    const empty: HeaderParseState = { book: null, chapter: null }
-    expect(parseCommentaryHeader('[9]', empty, 'bracket-number')).toBeNull()
-    expect(parseCommentaryHeader('20)', empty, 'paren-number')).toBeNull()
-    expect(parseCommentaryHeader('Verse 11.', empty, 'word-label')).toBeNull()
-    expect(parseCommentaryHeader('15-18.', empty, 'bare-range')).toBeNull()
-  })
-
-  it('does not match an inline cross-reference mid-sentence (regex is anchored at line start)', () => {
-    // 2b's structural-signal gate is what actually protects prose in practice — this just
-    // confirms the pure regex doesn't accidentally match text with a leading offset.
-    expect(
-      parseCommentaryHeader('see the note at v. 16 above', withContext, 'word-label')
-    ).toBeNull()
-  })
-})
-
 describe('parseCommentaryHeader — contextual state machine over a document stream', () => {
-  it('carries book/chapter forward across bare headers, and resets on a full reference', () => {
+  it('carries book forward across bare chapter:verse headers, and resets on a full reference', () => {
     const state: HeaderParseState = { book: null, chapter: null }
 
-    let h = parseCommentaryHeader('Romans 3', state, 'book-chapter-verse')
-    expect(h).toMatchObject({ book: 'ROM', chapterStart: 3 })
+    let h = parseCommentaryHeader('Romans 3:16', state, 'book-chapter-verse')
+    expect(h).toMatchObject({ book: 'ROM', chapterStart: 3, verseStart: 16 })
     state.book = h!.book
     state.chapter = h!.chapterEnd
 
-    h = parseCommentaryHeader('16.', state, 'bare-range')
-    expect(h).toMatchObject({ book: 'ROM', chapterStart: 3, verseStart: 16 })
+    h = parseCommentaryHeader('3:17', state, 'chapter-verse')
+    expect(h).toMatchObject({ book: 'ROM', chapterStart: 3, verseStart: 17 })
 
-    h = parseCommentaryHeader('17-18.', state, 'bare-range')
-    expect(h).toMatchObject({ book: 'ROM', chapterStart: 3, verseStart: 17, verseEnd: 18 })
+    h = parseCommentaryHeader('4:1', state, 'chapter-verse')
+    expect(h).toMatchObject({ book: 'ROM', chapterStart: 4, verseStart: 1 })
 
     // A fresh full reference resets book/chapter for subsequent bare headers.
     h = parseCommentaryHeader('1 Corinthians 5:1', state, 'book-chapter-verse')
@@ -260,38 +79,7 @@ describe('parseCommentaryHeader — contextual state machine over a document str
     state.book = h!.book
     state.chapter = h!.chapterEnd
 
-    h = parseCommentaryHeader('2.', state, 'bare-range')
+    h = parseCommentaryHeader('5:2', state, 'chapter-verse')
     expect(h).toMatchObject({ book: '1CO', chapterStart: 5, verseStart: 2 })
-  })
-})
-
-describe('parseChapterOnlyHeader', () => {
-  it('parses "Chapter III" / "Cap. III" as a chapter-only context update', () => {
-    expect(parseChapterOnlyHeader('Chapter III')).toEqual({ chapter: 3 })
-    expect(parseChapterOnlyHeader('Cap. III')).toEqual({ chapter: 3 })
-    expect(parseChapterOnlyHeader('Chap. IV')).toEqual({ chapter: 4 })
-  })
-
-  it('returns null for non-chapter-heading lines', () => {
-    expect(parseChapterOnlyHeader('Verse 11.')).toBeNull()
-    expect(parseChapterOnlyHeader('This is just prose.')).toBeNull()
-  })
-
-  it('returns null for a glyph-mangled numeral it cannot cleanly decode (real: Gerhard "CHAPTER |" / "CHAPTER II]")', () => {
-    expect(parseChapterOnlyHeader('CHAPTER |')).toBeNull()
-    expect(parseChapterOnlyHeader('CHAPTER II]')).toBeNull()
-  })
-})
-
-describe('looksLikeChapterTitle', () => {
-  it('recognizes glyph-mangled chapter titles that parseChapterOnlyHeader could not decode', () => {
-    expect(looksLikeChapterTitle('CHAPTER |')).toBe(true)
-    expect(looksLikeChapterTitle('CHAPTER II]')).toBe(true)
-    expect(looksLikeChapterTitle('Chapter III')).toBe(true)
-  })
-
-  it('returns false for ordinary prose', () => {
-    expect(looksLikeChapterTitle('This is just prose.')).toBe(false)
-    expect(looksLikeChapterTitle('Verse 11.')).toBe(false)
   })
 })
