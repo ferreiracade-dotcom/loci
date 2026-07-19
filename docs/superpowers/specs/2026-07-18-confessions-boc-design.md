@@ -346,8 +346,10 @@ needs to reach the same surfaces, not just its own tab:
    `shared/ipc.ts`, indexing/removal functions in `main/services/search.ts`,
    a "Confessions" option in `SearchView.tsx`'s All/Books/Quotes/Notes/
    Scripture filter strip, and grouping/icon/label branches in
-   `SearchResults.tsx`. `boc_texts` and `boc_commentary_excerpts` both feed
-   the existing `search_fts` table.
+   `SearchResults.tsx`. Only `boc_texts` (the primary text) feeds the existing
+   `search_fts` table — `boc_commentary_excerpts` stays lookup-only, mirroring
+   the Bible precedent where `commentary_excerpts` is reached via `lookupVerse`
+   and is not full-text indexed either.
    **Plan 1 built the backend half** (the `'confession'` `SearchKind` value +
    `indexBocForSearch`/`removeBocFromSearch`, which store rows with the BoC
    source id in the reused `book_id` column and `ref` = `formatBocRef(...)`).
