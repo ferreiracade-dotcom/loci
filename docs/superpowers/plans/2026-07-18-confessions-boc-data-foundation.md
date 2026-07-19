@@ -895,6 +895,40 @@ git commit -m "Add Book of Concord EPUB-to-Markdown converter"
 
 ---
 
+## Task 9: PDF converter (`boc-pdf-to-md.mjs`) — added after the EPUB path
+
+**Context:** many BoC translations and commentaries are PDFs, not EPUBs. The app
+side is format-agnostic (it consumes the Markdown contract), so this is
+converter-only tooling. Build this AFTER Task 8 validates, and once the specific
+PDF source files are identified (they live under `D:/Theology`).
+
+**Files:**
+- Create: `tools/boc-pdf-to-md.mjs` (scaffold from the existing `tools/pdf-to-md.mjs`).
+- No unit test — validated by round-trip vs the source's ToC, same as Task 8.
+
+**Design (single-purpose sources — the common case the user expects):**
+- The user picks the source TYPE at convert time: `--type=translation` (all body
+  text → primary-text file) or `--type=commentary` (all body text → commentary
+  file). No in-file text/note split — that's the whole simplification vs. the EPUB.
+- Detect document + section boundaries from text/font patterns, reusing
+  `pdf-to-md.mjs`'s existing heading/line-grouping machinery: document titles
+  (the same 14 name→code aliases as Task 8) and section headers ("ARTICLE
+  <roman>", "PART <n>", catechism headings, "Preface"/"Conclusion"). Emit the
+  same `# Document` / `## ordinal | number | label | part` contract.
+- Preserve any traditional `[N]` paragraph numbers the PDF text carries.
+
+**Dual-purpose PDFs (the hard case, deferred per-source):** if a specific PDF
+turns out to interleave confessional text and notes without markup to separate
+them, it needs font/geometry heuristics or hand-tuned per-source rules — inspect
+that file individually (the way the Reader's Edition EPUB was inspected) before
+converting it. Do NOT try to build a general dual-purpose-PDF splitter up front.
+
+**Validation:** run against a real PDF, round-trip through `parseBocMarkdown`,
+compare section counts to the PDF's ToC. Commit only the tool + `.gitignore`;
+never the PDFs or their converted Markdown (copyrighted).
+
+---
+
 ## Self-Review
 
 **Spec coverage (Plan 1 scope):**
@@ -905,7 +939,8 @@ git commit -m "Add Book of Concord EPUB-to-Markdown converter"
 - Vault indexer + startup sync → Task 5 ✓
 - Search backend (`'confession'` kind) → Task 6 ✓ (search UI is Plan 3)
 - IPC → Task 7 ✓
-- Converter with settled detection rule → Task 8 ✓
+- EPUB converter with settled detection rule → Task 8 ✓
+- PDF converter (translations/commentaries) → Task 9 (added; built after Task 8 validates + PDF sources identified) ✓
 - Appendices (CT/BEC/SVA) → in the Task 1 table + Task 8 conversion ✓
 - Editor's Introductions → commentary → Task 8 detection rule + Task 5 commentary indexing ✓
 - Paragraph-precise citation → `[N]` markers preserved through Tasks 3–5; `bocCitation()` itself is **Plan 2** (quotes) ✓
