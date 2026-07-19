@@ -1,5 +1,6 @@
 import { getDb } from '../db/connection'
 import type { SearchHit, SearchScope } from '../../shared/ipc'
+import { formatBocRef, type BocDocumentCode } from '../../shared/bookOfConcord'
 
 /** Turn a user query into a safe FTS5 MATCH string: unicode tokens, each prefix-matched. */
 function ftsQuery(raw: string): string {
@@ -187,6 +188,37 @@ export function indexScriptureChapter(
   for (const v of verses) {
     if (v.text.trim()) ins.run(v.text, ref, v.verse, title)
   }
+}
+
+/**
+ * Index a Book of Concord source's sections for search — one `search_fts` row per
+ * `boc_texts` row belonging to `sourceId`. `book_id` (a generic id column, not FK'd to
+ * `books`) holds the BoC source id so re-indexing/removal can scope by source the same
+ * way `indexBookText`/`removeBook` scope by book, and `ref` is the citable
+ * "<document code>:<ordinal>" produced by `formatBocRef` (e.g. "AC:4").
+ */
+export function indexBocForSearch(sourceId: string): void {
+  const db = getDb()
+  const rows = db
+    .prepare(
+      `SELECT document_code AS documentCode, section_ordinal AS ordinal, section_label AS label, text
+       FROM boc_texts WHERE source_id = ? ORDER BY document_code, section_ordinal`
+    )
+    .all(sourceId) as { documentCode: BocDocumentCode; ordinal: number; label: string; text: string }[]
+  db.transaction(() => {
+    db.prepare("DELETE FROM search_fts WHERE kind = 'confession' AND book_id = ?").run(sourceId)
+    const ins = db.prepare(
+      "INSERT INTO search_fts (content, kind, book_id, ref, page, title) VALUES (?, 'confession', ?, ?, NULL, ?)"
+    )
+    for (const r of rows) {
+      if (!r.text.trim()) continue
+      ins.run(r.text, sourceId, formatBocRef(r.documentCode, r.ordinal), r.label)
+    }
+  })()
+}
+
+export function removeBocFromSearch(sourceId: string): void {
+  getDb().prepare("DELETE FROM search_fts WHERE kind = 'confession' AND book_id = ?").run(sourceId)
 }
 
 export function unindexedBooks(): { id: string; title: string }[] {

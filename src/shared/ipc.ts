@@ -521,7 +521,7 @@ export type LinkTarget =
   | { type: 'note'; path: string }
   | null
 
-export type SearchKind = 'all' | 'page' | 'quote' | 'note' | 'scripture'
+export type SearchKind = 'all' | 'page' | 'quote' | 'note' | 'scripture' | 'confession'
 
 export interface SearchScope {
   kind: SearchKind
