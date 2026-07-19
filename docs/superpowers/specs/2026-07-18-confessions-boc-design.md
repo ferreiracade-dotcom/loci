@@ -319,6 +319,19 @@ needs to reach the same surfaces, not just its own tab:
    Scripture filter strip, and grouping/icon/label branches in
    `SearchResults.tsx`. `boc_texts` and `boc_commentary_excerpts` both feed
    the existing `search_fts` table.
+   **Plan 1 built the backend half** (the `'confession'` `SearchKind` value +
+   `indexBocForSearch`/`removeBocFromSearch`, which store rows with the BoC
+   source id in the reused `book_id` column and `ref` = `formatBocRef(...)`).
+   **Plan 3 acceptance criterion (carried forward from Task 6 review):** the
+   renderer read-path was intentionally left untouched, so once BoC content is
+   indexed, a `'confession'` hit currently groups as a fake "book"
+   (`SearchResults.groupKeyFor` checks `bookId` first) and is unclickable
+   (`SearchView.onHit` has no `'confession'` branch). Plan 3 MUST extend
+   `SearchHit.kind` (`ipc.ts`), `HitRow.kind` (`search.ts`), and
+   `SearchResults.tsx`'s `groupKeyFor`/`childLabel`/icon plus `SearchView.tsx`'s
+   `onHit` to handle `'confession'` explicitly (open the BoC reader at the
+   `ref`'d section). Treat this as a hard acceptance test for the Plan 3 search
+   surface, not an optional polish.
 4. **Projects (`ProjectItem` union)** — Projects can currently hold
    `book`/`note`/`scripture` items (not even `quotes` yet). A `boc` variant
    needs to be added here for a Confession section to be addable to a
