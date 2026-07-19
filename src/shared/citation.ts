@@ -163,3 +163,26 @@ export function scriptureLabel(r: ScriptureCiteRef): string {
 export function scriptureCitation(r: ScriptureCiteRef): string {
   return `${scriptureLabel(r)} (${r.abbr})`
 }
+
+// ---------- Book of Concord references ----------
+// Confessional citations follow the "AC IV, 2 (Reader's Edition)" convention: abbreviation +
+// section number (or label, for unnumbered sections like a Preface) + optional paragraph.
+
+export interface BocCiteRef {
+  abbreviation: string
+  sectionNumber: string | null
+  sectionLabel: string
+  paragraph?: number | null
+  sourceName: string
+}
+
+/** "AC IV, 2" / "AC IV" / "AC, Preface". */
+export function bocLabel(r: BocCiteRef): string {
+  const head = r.sectionNumber ? `${r.abbreviation} ${r.sectionNumber}` : `${r.abbreviation}, ${r.sectionLabel}`
+  return r.paragraph != null ? `${head}, ${r.paragraph}` : head
+}
+
+/** "AC IV, 2 (Reader's Edition)" — the attribution shown under a confessional quote. */
+export function bocCitation(r: BocCiteRef): string {
+  return `${bocLabel(r)} (${r.sourceName})`
+}
