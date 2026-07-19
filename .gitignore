@@ -9,3 +9,6 @@ Thumbs.db
 
 # Local Claude Code settings (machine-specific)
 .claude/settings.local.json
+
+# Copyrighted source EPUBs/derived Markdown for the Book of Concord converter
+tools/sources/
