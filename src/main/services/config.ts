@@ -64,6 +64,17 @@ export function commentaryVaultDir(): string {
   return join(localVaultDir(), 'commentaries')
 }
 
+/** The vault's Book of Concord primary-text Markdown folder — sibling of `commentaries/`,
+ *  same travels-with-the-vault rationale. */
+export function bocVaultDir(): string {
+  return join(localVaultDir(), 'confessions')
+}
+
+/** The vault's Book of Concord commentary-Markdown folder (notes keyed to BoC sections). */
+export function bocCommentaryVaultDir(): string {
+  return join(localVaultDir(), 'confessions-commentary')
+}
+
 export function readConfig(): LociConfig {
   const p = configPath()
   if (!existsSync(p)) return { ...defaults }

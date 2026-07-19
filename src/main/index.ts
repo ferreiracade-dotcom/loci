@@ -17,6 +17,7 @@ import { applyRelinkMap, applyTitleClean } from './services/relink'
 import { rebuildAllSidecars } from './services/sidecar'
 import { syncVault } from './services/vaultsync'
 import { syncCommentaryFolder } from './services/commentaryIndex'
+import { syncBocFolder } from './services/bocIndex'
 import { Channels } from '../shared/ipc'
 
 /** One-time whole-library sidecar write, triggered by a flag file, run off the boot path. */
@@ -143,6 +144,9 @@ app.whenReady().then(() => {
   // files only). Makes vault commentaries appear on every device without manual re-adding.
   // Deferred so the window paints before the (synchronous) index work runs.
   setTimeout(() => void syncCommentaryFolder().catch(() => {}), 2000)
+  // Same auto-register + index, for the Book of Concord's confessions/ + confessions-commentary/
+  // vault folders. Staggered a beat after the commentary sync so the two don't contend.
+  setTimeout(() => void syncBocFolder().catch(() => {}), 2500)
 
   // Keep the Drive backup fresh during long sessions (best-effort, skips when offline).
   setInterval(() => {
