@@ -93,6 +93,12 @@ export const Channels = {
   reviewDiscardCommentaryExcerpt: 'commentary:reviewDiscard',
   deleteCommentaryCorrectionsForSource: 'commentary:deleteCorrectionsForSource',
 
+  lookupBocSection: 'boc:lookupSection',
+  getBocSection: 'boc:getSection',
+  listBocDocumentSections: 'boc:listDocumentSections',
+  listBocSources: 'boc:listSources',
+  listBocCommentarySources: 'boc:listCommentarySources',
+
   // main → renderer events
   importProgress: 'library:importProgress',
   libraryChanged: 'library:libraryChanged',
@@ -340,6 +346,12 @@ export interface LociApi {
   reviewReassignCommentaryExcerpt(excerptId: string, patch: CommentaryExcerptReassign): Promise<void>
   reviewDiscardCommentaryExcerpt(excerptId: string): Promise<void>
   deleteCommentaryCorrectionsForSource(pdfRelativePath: string): Promise<void>
+
+  lookupBocSection(documentCode: string, ordinal: number): Promise<BocCommentaryMatch[]>
+  getBocSection(documentCode: string, ordinal: number, sourceId: string): Promise<BocSectionRow | null>
+  listBocDocumentSections(documentCode: string, sourceId: string): Promise<BocSectionRow[]>
+  listBocSources(): Promise<BocSource[]>
+  listBocCommentarySources(): Promise<BocSource[]>
 
   /** Subscribe to import progress; returns an unsubscribe function. */
   onImportProgress(cb: (p: ImportProgress) => void): () => void

@@ -114,6 +114,12 @@ const api: LociApi = {
   deleteCommentaryCorrectionsForSource: (pdfRelativePath) =>
     ipcRenderer.invoke(Channels.deleteCommentaryCorrectionsForSource, pdfRelativePath),
 
+  lookupBocSection: (d, o) => ipcRenderer.invoke(Channels.lookupBocSection, d, o),
+  getBocSection: (d, o, s) => ipcRenderer.invoke(Channels.getBocSection, d, o, s),
+  listBocDocumentSections: (d, s) => ipcRenderer.invoke(Channels.listBocDocumentSections, d, s),
+  listBocSources: () => ipcRenderer.invoke(Channels.listBocSources),
+  listBocCommentarySources: () => ipcRenderer.invoke(Channels.listBocCommentarySources),
+
   onImportProgress: (cb) => {
     const listener = (_e: IpcRendererEvent, p: ImportProgress): void => cb(p)
     ipcRenderer.on(Channels.importProgress, listener)

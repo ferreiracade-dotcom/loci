@@ -29,6 +29,7 @@ import * as exporter from '../services/export'
 import * as scripture from '../services/scripture'
 import * as commentary from '../services/commentary'
 import * as commentaryIndex from '../services/commentaryIndex'
+import * as boc from '../services/boc'
 import { deleteCorrectionsForSource } from '../services/commentaryCorrections'
 import { syncVault } from '../services/vaultsync'
 import {
@@ -387,4 +388,10 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.deleteCommentaryCorrectionsForSource, (_e, pdfRelativePath: string) =>
     deleteCorrectionsForSource(pdfRelativePath)
   )
+
+  ipcMain.handle(Channels.lookupBocSection, (_e, d: string, o: number) => boc.lookupBocSection(d, o))
+  ipcMain.handle(Channels.getBocSection, (_e, d: string, o: number, s: string) => boc.getSection(d, o, s))
+  ipcMain.handle(Channels.listBocDocumentSections, (_e, d: string, s: string) => boc.listSections(d, s))
+  ipcMain.handle(Channels.listBocSources, () => boc.listSources())
+  ipcMain.handle(Channels.listBocCommentarySources, () => boc.listCommentarySources())
 }
