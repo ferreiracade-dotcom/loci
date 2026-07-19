@@ -239,11 +239,34 @@ formatter to use. Two tables, one implementation.
 
 ## Ingestion
 
-Extend `epub-to-md.mjs` with a new detection mode for the Reader's Edition,
-reusing its EPUB machinery (unzip, TOC parse, HTML→Markdown). The
-text-vs-note detection rule — the open risk in the first draft — is now
-**settled by inspecting the actual EPUB.** The Reader's Edition's per-element
-CSS classes are unambiguous:
+**The Markdown contract is the format-agnostic seam.** Everything downstream
+(`parseBocMarkdown`, the indexer, service, search, IPC) consumes only the
+canonical Markdown (`# Document` / `## ordinal | number | label | part`), so a
+source's original format is entirely a *converter* concern. Two source formats
+exist, each with its own converter, both emitting the same contract:
+
+- **EPUB (e.g. the Reader's Edition) — `boc-epub-to-md.mjs`.** Rich CSS classes
+  make the text-vs-note split clean (table below). The Reader's Edition is the
+  one *dual-purpose* source (primary text + study notes interleaved), which the
+  classes disambiguate.
+- **PDF (most other translations and commentaries) — a `boc-pdf-to-md.mjs`
+  variant of the existing `pdf-to-md.mjs`.** PDFs have no CSS classes, so
+  section boundaries are detected from text/font patterns ("ARTICLE IV", "PART
+  III", catechism headings) the way `pdf-to-md.mjs` already detects Bible
+  `chap:verse` markers. Crucially, PDF sources are **single-purpose** — a
+  translation is entirely primary text, a commentary is entirely commentary —
+  so there is *no in-file text/note split* to perform; the user picks the
+  source type (translation vs commentary) at convert time and all body text
+  routes to the one corresponding file. This makes PDF conversion structurally
+  simpler than the EPUB dual-split, at the cost of less reliable
+  section-boundary detection (may need light per-source tuning, as the old
+  commentary PDF pipeline did). A PDF that were itself dual-purpose (text +
+  notes interleaved without markup to separate them) would be the hard case;
+  see Open questions.
+
+The EPUB detection rule — the open risk in the first draft — is now **settled
+by inspecting the actual EPUB.** The Reader's Edition's per-element CSS classes
+are unambiguous:
 
 | Class | Meaning | Routed to |
 |---|---|---|
@@ -262,10 +285,16 @@ paragraphs (with `[N]` preserved); the commentary file's section bodies are
 the `ch_note` study notes, plus each document's Editor's Introduction attached
 to its first section. Both share the same ordinal space by construction.
 
-The converter is validated by round-tripping its output through
+Either converter is validated by round-tripping its output through
 `parseBocMarkdown` and comparing per-document section counts against the
-Reader's Edition ToC (the ToC gives the authoritative section list) — a
-mismatch means a section was dropped or mis-split.
+source's own table of contents (which gives the authoritative section list) —
+a mismatch means a section was dropped or mis-split.
+
+**Plan scope note:** Plan 1's Task 8 builds the EPUB converter (Reader's
+Edition). The PDF converter for additional translations/commentaries is a
+sibling task (Task 9, or a Plan 1 addendum) done after the EPUB path
+validates; it changes no app-side code — only tooling that emits the same
+Markdown contract.
 
 ## Components & Integration Surfaces
 
