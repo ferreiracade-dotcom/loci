@@ -170,6 +170,16 @@ function displayLabel(text) {
   return isAllCaps(text) ? toTitleCase(text) : text
 }
 
+/** An `article`-class heading's raw text is like "ARTICLE IV" or, for the Apology's
+ *  dual-numbered sections, "ARTICLE II (I)" / "ARTICLES VII AND VIII (IV)" — the section's
+ *  `number` field must be ONLY the numeral (and any parenthetical dual-number), since it
+ *  feeds citations rendered as e.g. "AC IV, 2"; a leftover "ARTICLE " prefix would wrongly
+ *  render as "AC ARTICLE IV, 2". Strip a leading "ARTICLE "/"ARTICLES " (case-insensitive,
+ *  one or more spaces) and trim; text with no such prefix passes through unchanged. */
+function stripArticlePrefix(text) {
+  return text.replace(/^articles?\s+/i, '').trim()
+}
+
 const BARE_NUMERAL_RE = /^[IVXLCDM]+\.?$|^\d+\.?$/i
 const INTRO_TRIGGER_RE = /^editor(?:'?s|ial)?\s+introduction\b/i
 const BODY_START_PHRASES = new Set(['to the christian reader'])
@@ -267,7 +277,7 @@ function convert(opfPath) {
       docJustOpened = false
 
       if (cls === 'tab_ti') { mode = 'intro'; continue } // "OUTLINE"/"TIMELINE" front matter
-      if (cls === 'article') { pendingNumber = text; continue }
+      if (cls === 'article') { pendingNumber = stripArticlePrefix(text); continue }
 
       if (cls === 'txt_center') {
         if (currentSection) currentSection.body.push(text)
@@ -287,7 +297,7 @@ function convert(opfPath) {
         // Saxon Visitation Articles combines the article number and label into one ch_h1b
         // paragraph (no separate `article`/ch_h1a pair): "ARTICLE I" + <br> + "The Holy Supper".
         const artMatch = /^(ARTICLE\s+[IVXLCDM]+[a-z]?)\s+(.+)$/i.exec(t)
-        if (artMatch) { openSection(artMatch[2], artMatch[1].toUpperCase(), false); continue }
+        if (artMatch) { openSection(artMatch[2], stripArticlePrefix(artMatch[1].toUpperCase()), false); continue }
         // Otherwise fall through to the shared heading-candidate machine below: it may be a
         // real section heading (e.g. Catalog of Testimonies' "Conclusion") or, when it's just
         // a descriptive subtitle continuing the previous heading (Smalcald's "The
