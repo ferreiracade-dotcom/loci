@@ -6,6 +6,7 @@ import { api } from '../../lib/api'
 import { BOC_DOCUMENTS } from '@shared/bookOfConcord'
 import type { BocSectionRow, BocSource } from '@shared/ipc'
 import { BocReader } from './BocReader'
+import { useOpenElsewhereMenu } from './OpenElsewhere'
 
 interface PartGroup {
   part: string | null
@@ -42,6 +43,7 @@ export function BocPane({
   const setTabContent = useStore((s) => s.setTabContent)
   const bocSectionClicked = useStore((s) => s.bocSectionClicked)
   const addBocQuote = useStore((s) => s.addBocQuote)
+  const { onContextMenu, menu } = useOpenElsewhereMenu()
 
   const [sources, setSources] = useState<BocSource[]>([])
   const documentCode = tab.documentCode ?? 'AC'
@@ -155,6 +157,14 @@ export function BocPane({
                         }`}
                         style={{ fontSize: 12.5 }}
                         onClick={() => navigate(d.code, r.ordinal)}
+                        onContextMenu={(e) =>
+                          onContextMenu(e, {
+                            kind: 'boc',
+                            documentCode: d.code,
+                            sectionOrdinal: r.ordinal,
+                            bocSourceId
+                          })
+                        }
                       >
                         {sectionLabel(r)}
                       </button>
@@ -239,6 +249,7 @@ export function BocPane({
           <div className="sr-loading">Loading Confessions…</div>
         )}
       </div>
+      {menu}
     </div>
   )
 }
