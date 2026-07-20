@@ -1072,8 +1072,9 @@ export const useStore = create<Store>((set, get) => {
         get().focusPane(boc.id)
         get().saveLayout({ activeLeftView: 'reading' })
       } else {
-        // Open the reader from a sensible default right away; resolve the last-visited
-        // document/section from the session in the background below.
+        // Resume where the user left off, falling back to the Augsburg Confession's first
+        // section. (Unlike showScripture there is no background registry load to keep off the
+        // critical path — BoC sources are local files, resolved by the reader itself.)
         let doc = { documentCode: 'AC', ordinal: 1 }
         const last = await api.getSession('lastBoc')
         if (last) {
