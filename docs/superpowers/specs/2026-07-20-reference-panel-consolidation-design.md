@@ -57,6 +57,19 @@ One shared `CorpusSwitch` — a segmented control at the top of any multi-mode p
 
 Each pill pins independently — pinning Commentary to Bible leaves Quotes still following.
 
+**An explicit lookup beats a pin.** `verseClicked` and `bocSectionClicked` already switch the
+right panel to commentary (`useStore.ts:951` and `:1060`). Clicking a verse or a section is a
+direct request to see *that* passage's commentary, so it sets the Commentary pill's mode — Bible
+or Confessions respectively — even if the pill is pinned to the other. A pin expresses "leave it
+where I put it while I browse"; a click on the text expresses something more specific, and the
+more specific intent wins. The new mode then becomes the pin.
+
+**Pins persist in the session key-value store** (`api.getSession`/`setSession`, as
+`bocNavCollapsed` and `refBocLoc` already do), *not* in `PanelLayout`. `activeRightTab` is a real
+database column (`active_right_tab`, `state.ts:25`), so adding pin fields there would mean a
+schema migration for what is UI preference state. The session store costs nothing and needs no
+migration.
+
 A transient override (resetting on the next tab change) was considered and rejected. The argument
 for it was that a pin leaves the panel in a state whose cause isn't visible; that argument fails,
 because `CorpusSwitch` sits at the top of the panel displaying the active mode — the state is on
@@ -150,6 +163,21 @@ Matches the codebase's existing constraint: logic-level `vitest` only, no compon
   the technique established on 2026-07-20): the strip renders five pills on one row; each pill's
   switch changes the body; auto-follow tracks the focused tab; a persisted legacy id resolves to
   the right pill and mode.
+
+## Sequencing
+
+The plan orders the reorganisation **before** the new Confessions quotes panel:
+
+1. **Reorganisation** — `CorpusSwitch`, `useCorpusMode`, the three wrappers, the migration map,
+   Backlinks removal. Quotes ships with Books and Bible modes only. At this point the strip is
+   five pills and everything that worked before still works.
+2. **Confessions quotes mode** — the new panel, added as a third mode to a Quotes pill that
+   already exists and is already verified.
+
+Rationale: step 1 is pure rearrangement of components that work today, so a failure there is
+obvious and localised. Step 2 is the only genuinely new component, and isolating it means a bug in
+it cannot be confused with a bug in the consolidation. The strip is also usable after step 1
+alone, so the work is shippable at the midpoint.
 
 ## Non-goals
 
