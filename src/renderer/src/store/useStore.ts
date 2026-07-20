@@ -11,6 +11,8 @@ import type {
   BackfillResult,
   Book,
   BookUpdate,
+  BocCommentaryMatch,
+  BocQuoteInput,
   CommentaryMatch,
   ImportProgress,
   ImportResult,
@@ -151,6 +153,10 @@ interface Store {
   commentaryLookup: { book: string; chapter: number; verse: number } | null
   /** Results of that lookup, grouped by source in the reference sidebar. */
   commentaryMatches: CommentaryMatch[]
+  /** The BoC section a commentary lookup ran against, or null before any section has been clicked. */
+  bocLookup: { documentCode: string; ordinal: number } | null
+  /** Results of that lookup, grouped by source in the reference sidebar. */
+  bocMatches: BocCommentaryMatch[]
 
   // --- Center workspace ---
   /** Every open tab across both panes; the source of truth. */
@@ -252,6 +258,17 @@ interface Store {
   setCompareTranslation: (id: string) => void
   addScriptureHighlight: (input: NewScriptureHighlight) => Promise<void>
   deleteScriptureHighlight: (id: string) => Promise<void>
+
+  // --- Book of Concord (Confessions) ---
+  /** Route a document/section into a BoC pane: reuse the existing BoC pane if there is one,
+   *  otherwise open one. */
+  navigateBoc: (documentCode: string, ordinal: number, bocSourceId?: string) => void
+  /** A section was clicked in any BocReader instance — runs the commentary lookup and
+   *  switches the reference sidebar to show it. */
+  bocSectionClicked: (documentCode: string, ordinal: number) => Promise<void>
+  /** Open/focus the Book of Concord as a center pane (left-rail "Confessions" entry). */
+  showConfessions: () => Promise<void>
+  addBocQuote: (input: BocQuoteInput) => Promise<void>
 
   // --- Center workspace ---
   /** Create a new tab (duplicates allowed) and focus it; returns the new tab's id. */
@@ -373,6 +390,8 @@ export const useStore = create<Store>((set, get) => {
     scriptureCompareTranslation: '',
     commentaryLookup: null,
     commentaryMatches: [],
+    bocLookup: null,
+    bocMatches: [],
     tabs: [],
     paneOrder: [],
     activePaneId: null,
@@ -983,6 +1002,68 @@ export const useStore = create<Store>((set, get) => {
     deleteScriptureHighlight: async (id) => {
       await api.deleteQuote(id)
       // Bump the shared token so the reader drops the verse mark and panels reload.
+      set({ noteReloadToken: get().noteReloadToken + 1 })
+    },
+
+    // --- Book of Concord (Confessions) ---
+    // In-place navigation, like navigateScripture: if the active tab is already showing the BoC
+    // reader, it navigates there. Only explicit "open" actions create a new tab.
+    navigateBoc: (documentCode, ordinal, bocSourceId) => {
+      const { activePaneId } = get()
+      const current = activePaneId
+        ? activeTab({ tabs: get().tabs, paneOrder: get().paneOrder, activePaneId }, activePaneId)
+        : undefined
+      if (current?.kind === 'boc') {
+        get().setTabContent(current.id, {
+          kind: 'boc',
+          documentCode,
+          sectionOrdinal: ordinal,
+          bocSourceId: bocSourceId ?? current.bocSourceId
+        })
+      } else {
+        get().openTab({ kind: 'boc', documentCode, sectionOrdinal: ordinal, bocSourceId })
+      }
+      get().saveLayout({ activeLeftView: 'reading' })
+      void api.setSession('lastBoc', JSON.stringify({ documentCode, ordinal }))
+    },
+
+    bocSectionClicked: async (documentCode, ordinal) => {
+      set({ bocLookup: { documentCode, ordinal }, bocMatches: [] })
+      const matches = await api.lookupBocSection(documentCode, ordinal)
+      // A later click may have landed while this lookup was in flight — don't overwrite it.
+      const stillCurrent = get().bocLookup
+      const stale = stillCurrent?.documentCode !== documentCode || stillCurrent?.ordinal !== ordinal
+      if (stale) return
+      set({ bocMatches: matches })
+      get().saveLayout({ activeRightTab: 'boc-commentary', notesCollapsed: false })
+    },
+
+    showConfessions: async () => {
+      const boc = get().tabs.find((t) => t.kind === 'boc')
+      if (boc) {
+        get().focusTab(boc.id)
+        get().saveLayout({ activeLeftView: 'reading' })
+      } else {
+        // Resume where the user left off, falling back to the Augsburg Confession's first
+        // section. (Unlike showScripture there is no background registry load to keep off the
+        // critical path — BoC sources are local files, resolved by the reader itself.)
+        let doc = { documentCode: 'AC', ordinal: 1 }
+        const last = await api.getSession('lastBoc')
+        if (last) {
+          try {
+            const p = JSON.parse(last) as { documentCode?: string; ordinal?: number }
+            if (p.documentCode && p.ordinal != null) doc = { documentCode: p.documentCode, ordinal: p.ordinal }
+          } catch {
+            /* ignore malformed session value */
+          }
+        }
+        get().navigateBoc(doc.documentCode, doc.ordinal)
+      }
+    },
+
+    addBocQuote: async (input) => {
+      await api.addBocQuote(input)
+      // Bump the shared token so the reader re-marks paragraphs and panels reload.
       set({ noteReloadToken: get().noteReloadToken + 1 })
     },
 

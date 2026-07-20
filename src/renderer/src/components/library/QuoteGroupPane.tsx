@@ -31,6 +31,9 @@ export function QuoteGroupPane({ group }: { group: QuoteGroupRef }) {
     } else if (group.type === 'author') {
       const all = await api.listAllQuotes()
       setQuotes(all.filter((q) => authorFor(q, books) === group.author))
+    } else if (group.type === 'boc') {
+      // No listBocQuotes IPC yet (out of scope for this task) — nothing to show until it lands.
+      setQuotes([])
     } else {
       const all = await api.listAllQuotes()
       setQuotes(all.filter((q) => (group.tag ? q.tags.includes(group.tag) : q.tags.length === 0)))

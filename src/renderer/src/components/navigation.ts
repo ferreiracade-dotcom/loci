@@ -25,6 +25,7 @@ export const LEFT_VIEWS: RailItem[] = [
   { id: 'quotes', label: 'Quotes', icon: Quote },
   { id: 'search', label: 'Search', icon: Search },
   { id: 'scripture', label: 'Scripture', icon: ScrollText },
+  { id: 'confessions', label: 'Confessions', icon: BookMarked },
   { id: 'graph', label: 'Graph', icon: Network },
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'pages', label: 'Pages', icon: Files }
@@ -74,6 +75,11 @@ export const CENTER_EMPTY: Record<string, EmptyCopy> = {
     icon: ScrollText,
     title: 'Scripture index',
     subtitle: 'Reference recognition and the Scripture/Confessions index arrive in Phase 8.'
+  },
+  confessions: {
+    icon: BookMarked,
+    title: 'Book of Concord',
+    subtitle: 'Pick a document from the reader to begin — the Augsburg Confession opens by default.'
   },
   graph: {
     icon: Network,

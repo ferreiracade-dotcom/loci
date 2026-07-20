@@ -36,26 +36,32 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const showScripture = useStore((s) => s.showScripture)
   const tabs = useStore((s) => s.tabs)
   const paneOrder = useStore((s) => s.paneOrder)
+  const showConfessions = useStore((s) => s.showConfessions)
   const activePaneId = useStore((s) => s.activePaneId)
   const ref = useRef<HTMLDivElement>(null)
 
-  // The left rail mostly just switches the active view; "Scripture" opens/focuses a Bible pane.
+  // The left rail mostly just switches the active view; "Scripture" opens/focuses a Bible pane,
+  // "Confessions" opens/focuses a Book of Concord pane.
   const selectLeftView = (id: string): void => {
     if (id === 'scripture') void showScripture()
+    else if (id === 'confessions') void showConfessions()
     else saveLayout({ activeLeftView: id })
   }
 
   // In the workspace, light up the rail item matching the focused pane's active tab
-  // (Bible→Scripture, note→Notes); books have no rail entry, so they leave the rail unlit.
+  // (Bible→Scripture, BoC→Confessions, note→Notes); books have no rail entry, so they leave
+  // the rail unlit.
   const focusedTabId = paneOrder.find((p) => p.id === activePaneId)?.activeTabId
   const focusedTab = tabs.find((t) => t.id === focusedTabId)
   const railActiveId =
     layout.activeLeftView === 'reading' && focusedTab
       ? focusedTab.kind === 'bible'
         ? 'scripture'
-        : focusedTab.kind === 'note'
-          ? 'notes'
-          : layout.activeLeftView
+        : focusedTab.kind === 'boc'
+          ? 'confessions'
+          : focusedTab.kind === 'note'
+            ? 'notes'
+            : layout.activeLeftView
       : layout.activeLeftView
 
   // Normalize the active right tab (a removed tab, e.g. legacy 'tags', falls back).

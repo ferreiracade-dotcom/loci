@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
-import { FileText, BookOpen, ScrollText, Quote, FilePlus, Plus, X } from 'lucide-react'
+import { FileText, BookOpen, ScrollText, BookMarked, Quote, FilePlus, Plus, X } from 'lucide-react'
 import { useStore, tabsForPane } from '../../store/useStore'
 import type { Tab } from '../../store/useStore'
 import { bookByCode } from '@shared/scriptureRef'
+import { bocDocument } from '@shared/bookOfConcord'
 
 export interface HoverTarget {
   paneId: string
@@ -25,6 +26,10 @@ function tabTitle(
     const label = tab.book && tab.chapter != null ? `${bookByCode(tab.book)?.name ?? tab.book} ${tab.chapter}` : 'Bible'
     return { icon: <ScrollText size={13} />, label }
   }
+  if (tab.kind === 'boc') {
+    const doc = tab.documentCode ? bocDocument(tab.documentCode) : undefined
+    return { icon: <BookMarked size={13} />, label: doc?.abbreviation ?? tab.documentCode ?? 'Confessions' }
+  }
   if (tab.kind === 'quotes') {
     const g = tab.quotesGroup
     const label = !g
@@ -37,11 +42,13 @@ function tabTitle(
             : g.name
           : g.type === 'commentary'
             ? g.displayName
-            : g.type === 'author'
-              ? g.author
-              : g.tag
-                ? `#${g.tag}`
-                : 'Untagged'
+            : g.type === 'boc'
+              ? g.name
+              : g.type === 'author'
+                ? g.author
+                : g.tag
+                  ? `#${g.tag}`
+                  : 'Untagged'
     return { icon: <Quote size={13} />, label }
   }
   return { icon: <FilePlus size={13} />, label: 'New Tab' }

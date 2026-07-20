@@ -1,6 +1,6 @@
 import type { NoteSummary } from '@shared/ipc'
 
-export type TabKind = 'note' | 'bible' | 'pdf' | 'quotes' | 'picker'
+export type TabKind = 'note' | 'bible' | 'pdf' | 'quotes' | 'picker' | 'boc'
 
 /** A group of saved quotes opened in the center: a PDF, a Bible chapter, or a commentary source. */
 export type QuoteGroupRef =
@@ -8,6 +8,7 @@ export type QuoteGroupRef =
   // `chapter` omitted = every chapter of this book (the "Bible book" grouping mode).
   | { type: 'scripture'; book: string; chapter?: number; translation: string; name: string }
   | { type: 'commentary'; sourceId: string; displayName: string }
+  | { type: 'boc'; documentCode: string; bocSourceId: string; name: string }
   | { type: 'author'; author: string }
   | { type: 'tag'; tag: string }
 
@@ -24,6 +25,9 @@ export interface Tab {
   highlight?: number[]
   translation?: string
   quotesGroup?: QuoteGroupRef
+  documentCode?: string
+  sectionOrdinal?: number
+  bocSourceId?: string
 }
 
 /** A pane: which tabs live in it (via `Tab.paneId`) plus which one is active. */
@@ -45,6 +49,7 @@ export type TabContent =
   | { kind: 'pdf'; bookId: string }
   | { kind: 'bible'; book: string; chapter: number; highlight?: number[]; translation?: string }
   | { kind: 'quotes'; quotesGroup: QuoteGroupRef }
+  | { kind: 'boc'; documentCode: string; sectionOrdinal: number; bocSourceId?: string }
   | { kind: 'picker' }
 
 /** The content a tab is currently showing, independent of its id/pane/order. */
@@ -58,6 +63,8 @@ export function tabContent(tab: Tab): TabContent {
       return { kind: 'bible', book: tab.book!, chapter: tab.chapter!, highlight: tab.highlight, translation: tab.translation }
     case 'quotes':
       return { kind: 'quotes', quotesGroup: tab.quotesGroup! }
+    case 'boc':
+      return { kind: 'boc', documentCode: tab.documentCode!, sectionOrdinal: tab.sectionOrdinal!, bocSourceId: tab.bocSourceId }
     case 'picker':
       return { kind: 'picker' }
   }
