@@ -3,6 +3,7 @@ import { BookMarked, ScrollText, MessageSquareQuote, Layers, UserRound, Tag as T
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { authorFor } from '../../lib/quoteGrouping'
+import { normalizeQuoteGroups } from '@shared/ipc'
 import type { Quote, QuoteGroups } from '@shared/ipc'
 import type { QuoteGroupRef } from '../../store/useStore'
 
@@ -47,7 +48,7 @@ export function QuotesView() {
       api.listQuoteGroups(translation || 'BSB'),
       api.listAllQuotes()
     ])
-    setGroups(g)
+    setGroups(normalizeQuoteGroups(g))
     setAllQuotes(all)
   }, [translation])
 

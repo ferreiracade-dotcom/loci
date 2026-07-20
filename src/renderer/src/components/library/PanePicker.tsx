@@ -24,6 +24,7 @@ import { ScriptureReader } from './ScriptureReader'
 import { useOpenElsewhereMenu } from './OpenElsewhere'
 import { BOC_DOCUMENTS } from '@shared/bookOfConcord'
 import { bocSectionLabel } from '../../lib/bocGrouping'
+import { normalizeQuoteGroups } from '@shared/ipc'
 import type { BocSectionRow, BocSource, ProjectItem, QuoteGroups, SearchHit } from '@shared/ipc'
 
 // 'confessions' is unrestricted-mode only — ProjectItem has no BoC kind, so BoC can't be a
@@ -86,7 +87,9 @@ export function PanePicker({
   // translation-scoped) — not debounced/query-dependent, matching the Notes/Library pattern
   // of filtering an already-loaded list client-side rather than a live search call.
   useEffect(() => {
-    void api.listQuoteGroups(scriptureTranslation || 'BSB').then(setQuoteGroups)
+    void api
+      .listQuoteGroups(scriptureTranslation || 'BSB')
+      .then((g) => setQuoteGroups(normalizeQuoteGroups(g)))
   }, [scriptureTranslation])
 
   const [q, setQ] = useState('')

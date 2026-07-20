@@ -496,6 +496,19 @@ export interface BocQuoteInput {
 }
 
 /** Rows for the Quotes nav section: everything that has at least one saved quote. */
+/** Fill in any group list the main process didn't send. During development the renderer
+ *  hot-reloads while the main process does not, so a freshly-reloaded renderer can briefly talk
+ *  to an older main that predates a newly-added group kind. Reading `.length` off the missing
+ *  field would throw and take down the whole renderer, so normalise at the boundary. */
+export function normalizeQuoteGroups(g: Partial<QuoteGroups> | null | undefined): QuoteGroups {
+  return {
+    books: g?.books ?? [],
+    scripture: g?.scripture ?? [],
+    commentary: g?.commentary ?? [],
+    boc: g?.boc ?? []
+  }
+}
+
 export interface QuoteGroups {
   /** Library PDFs with book quotes. */
   books: { bookId: string; title: string; count: number }[]
