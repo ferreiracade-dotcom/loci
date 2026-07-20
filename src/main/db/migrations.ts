@@ -390,6 +390,35 @@ const migrations: Migration[] = [
         CREATE INDEX idx_boc_excerpts_source ON boc_commentary_excerpts(source_id);
       `)
     }
+  },
+  {
+    version: 19,
+    name: 'boc-quotes',
+    up: (db) => {
+      // Book of Concord quotes, alongside book/scripture/commentary quotes. A primary-text
+      // quote is anchored to a boc_sources row (the edition being read) via boc_source_id; a
+      // BoC-commentary quote (captured from the confessions commentary sidebar) is anchored to
+      // a boc_commentary_sources row instead — kept as its own FK'd column since that's a
+      // separate table (see migration 18's rationale), the same way commentary_source_id is
+      // kept separate from book_id rather than reusing it.
+      //
+      // boc_ref ("AC:6", via formatBocRef) is shared by both and is parseable for lookups/
+      // navigation. Unlike scripture_ref (whose chapter/verse round-trip through a regex) or
+      // commentary_ref (plain verse numbering), a BoC section's number/label can't be
+      // re-derived from the ordinal alone — some sections are unnumbered (e.g. a Preface, cited
+      // by label instead of number) and that shape varies per edition. So section_number/
+      // section_label/paragraph are captured once at quote time (the reader already has them on
+      // screen) and stored alongside the ref, letting citationForRow regenerate the exact
+      // citation on every future read the same way the other quote kinds do.
+      db.exec(`
+        ALTER TABLE quotes ADD COLUMN boc_source_id TEXT REFERENCES boc_sources(id) ON DELETE CASCADE;
+        ALTER TABLE quotes ADD COLUMN boc_commentary_source_id TEXT REFERENCES boc_commentary_sources(id) ON DELETE CASCADE;
+        ALTER TABLE quotes ADD COLUMN boc_ref TEXT;
+        ALTER TABLE quotes ADD COLUMN boc_section_number TEXT;
+        ALTER TABLE quotes ADD COLUMN boc_section_label TEXT;
+        ALTER TABLE quotes ADD COLUMN boc_paragraph INTEGER;
+      `)
+    }
   }
 ]
 

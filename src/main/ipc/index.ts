@@ -4,6 +4,7 @@ import { Channels } from '../../shared/ipc'
 import type {
   Annotation,
   AppState,
+  BocQuoteInput,
   BookUpdate,
   CommentaryExcerptReassign,
   CommentaryIndexProgress,
@@ -255,6 +256,10 @@ export function registerIpc(): void {
     quotes.listQuoteGroups(translation)
   )
   ipcMain.handle(Channels.listAllQuotes, () => quotes.listAllQuotes())
+  ipcMain.handle(Channels.addBocQuote, (_e, input: BocQuoteInput) => quotes.addBocQuote(input))
+  ipcMain.handle(Channels.addBocCommentaryQuote, (_e, input: BocQuoteInput) =>
+    quotes.addBocCommentaryQuote(input)
+  )
 
   // --- Notes (Phase 2c) ---
   ipcMain.handle(Channels.saveNote, (_e, path: string, content: string) =>

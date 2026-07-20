@@ -51,6 +51,8 @@ export const Channels = {
   listCommentaryQuotes: 'quotes:listCommentary',
   listQuoteGroups: 'quotes:listGroups',
   listAllQuotes: 'quotes:listAll',
+  addBocQuote: 'quotes:addBoc',
+  addBocCommentaryQuote: 'quotes:addBocCommentary',
   saveNote: 'notes:save',
   readNote: 'notes:read',
   listStandaloneNotes: 'notes:listStandalone',
@@ -274,6 +276,11 @@ export interface LociApi {
   /** Every saved quote (book/Scripture/commentary alike), for cross-cutting groupings
    *  (by author, by tag) that aren't tied to a single book/source. */
   listAllQuotes(): Promise<Quote[]>
+  /** Capture a Book of Concord section excerpt (or a selected portion of one) as a quote. */
+  addBocQuote(input: BocQuoteInput): Promise<Quote>
+  /** Capture a Book of Concord commentary excerpt as a quote (anchored to the commentary
+   *  source rather than the primary-text source). */
+  addBocCommentaryQuote(input: BocQuoteInput): Promise<Quote>
   saveNote(path: string, content: string): Promise<void>
   readNote(path: string): Promise<string>
   listStandaloneNotes(): Promise<NoteSummary[]>
@@ -462,6 +469,24 @@ export interface CommentaryQuoteInput {
   verseStart: number
   verseEnd?: number
   /** The excerpt text to store (whole bubble, or the user's selection within it). */
+  text: string
+  color?: string
+}
+
+/** Capture a Book of Concord section (or commentary) excerpt as a quote. Used for both
+ *  `addBocQuote` (anchored to the primary-text source) and `addBocCommentaryQuote` (anchored
+ *  to the commentary source) — same shape either way, since both are a document/section/
+ *  paragraph reference plus the excerpt text. */
+export interface BocQuoteInput {
+  /** The boc_sources (or, for `addBocCommentaryQuote`, boc_commentary_sources) row id. */
+  bocSourceId: string
+  documentCode: string
+  sectionOrdinal: number
+  /** Numbered sections (e.g. "IV"); null for unnumbered ones (Preface, Conclusion). */
+  sectionNumber: string | null
+  sectionLabel: string
+  /** The specific `[N]` paragraph quoted, if any. */
+  paragraph: number | null
   text: string
   color?: string
 }

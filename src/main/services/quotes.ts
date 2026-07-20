@@ -5,16 +5,20 @@ import { getDb } from '../db/connection'
 import { localVaultDir } from './config'
 import * as search from './search'
 import {
+  bocCitation,
   formatCitation,
   parseAuthors,
   scriptureCitation,
+  type BocCiteRef,
   type CitationSource,
   type ScriptureCiteRef
 } from '../../shared/citation'
 import { bookByCode } from '../../shared/scriptureRef'
+import { bocDocument, formatBocRef, parseBocRef, type BocDocumentCode } from '../../shared/bookOfConcord'
 import { groupValuesById, sanitizeName } from './library'
 import type {
   Annotation,
+  BocQuoteInput,
   CommentaryQuoteInput,
   NewQuote,
   NewScriptureHighlight,
@@ -49,6 +53,12 @@ interface QuoteRow {
   commentary_source_id: string | null
   commentary_ref: string | null
   citation_override: string | null
+  boc_source_id: string | null
+  boc_commentary_source_id: string | null
+  boc_ref: string | null
+  boc_section_number: string | null
+  boc_section_label: string | null
+  boc_paragraph: number | null
 }
 
 /** Parse a stored canonical ref like "JHN 3:16-18" into its parts. */
@@ -90,6 +100,23 @@ function commentarySourceMeta(id: string): CommentarySourceRow | undefined {
     .get(id) as CommentarySourceRow | undefined
 }
 
+interface BocSourceMetaRow {
+  display_name: string
+  author: string | null
+}
+
+function bocSourceMeta(id: string): BocSourceMetaRow | undefined {
+  return getDb()
+    .prepare('SELECT display_name, author FROM boc_sources WHERE id = ?')
+    .get(id) as BocSourceMetaRow | undefined
+}
+
+function bocCommentarySourceMeta(id: string): BocSourceMetaRow | undefined {
+  return getDb()
+    .prepare('SELECT display_name, author FROM boc_commentary_sources WHERE id = ?')
+    .get(id) as BocSourceMetaRow | undefined
+}
+
 /** Per-call lookup caches for the list paths, so mapping N quote rows doesn't run a tag query
  *  per row and re-fetch the same book/source metadata once per quote (it stalled the Quotes
  *  view — and thus IPC — the same way the library's per-book queries did). Omitted for
@@ -98,6 +125,8 @@ interface QuoteListCtx {
   tagsByQuote: Map<string, string[]>
   bookMetaById: Map<string, BookMetaRow | undefined>
   sourceById: Map<string, CommentarySourceRow | undefined>
+  bocSourceById: Map<string, BocSourceMetaRow | undefined>
+  bocCommentarySourceById: Map<string, BocSourceMetaRow | undefined>
 }
 
 function metaBook(id: string, ctx?: QuoteListCtx): BookMetaRow | undefined {
@@ -112,6 +141,18 @@ function metaSource(id: string, ctx?: QuoteListCtx): CommentarySourceRow | undef
   return ctx.sourceById.get(id)
 }
 
+function metaBocSource(id: string, ctx?: QuoteListCtx): BocSourceMetaRow | undefined {
+  if (!ctx) return bocSourceMeta(id)
+  if (!ctx.bocSourceById.has(id)) ctx.bocSourceById.set(id, bocSourceMeta(id))
+  return ctx.bocSourceById.get(id)
+}
+
+function metaBocCommentarySource(id: string, ctx?: QuoteListCtx): BocSourceMetaRow | undefined {
+  if (!ctx) return bocCommentarySourceMeta(id)
+  if (!ctx.bocCommentarySourceById.has(id)) ctx.bocCommentarySourceById.set(id, bocCommentarySourceMeta(id))
+  return ctx.bocCommentarySourceById.get(id)
+}
+
 /** One grouped tag query for a whole listing, plus empty metadata caches to fill lazily. */
 function buildQuoteListCtx(): QuoteListCtx {
   const tagRows = getDb()
@@ -120,7 +161,9 @@ function buildQuoteListCtx(): QuoteListCtx {
   return {
     tagsByQuote: groupValuesById(tagRows, (r) => r.quote_id, (r) => r.name),
     bookMetaById: new Map(),
-    sourceById: new Map()
+    sourceById: new Map(),
+    bocSourceById: new Map(),
+    bocCommentarySourceById: new Map()
   }
 }
 
@@ -129,6 +172,26 @@ function commentaryCitationOf(src: CommentarySourceRow, ref: string | null): str
   const sref = ref ? parseScriptureRef(ref, '') : null
   const parts = [src.author?.trim() || '', `*${src.display_name}*`, sref ? refLabelOf(sref) : '']
   return parts.filter(Boolean).join(', ')
+}
+
+/** Citation for a Book of Concord quote (primary-text or commentary): "AC IV, 2 (Reader's
+ *  Edition)". `abbreviation` comes from the document registry; everything else is whatever
+ *  was captured on the row at quote time (see migration 19's rationale). */
+function bocCitationOf(
+  abbreviation: string,
+  sectionNumber: string | null,
+  sectionLabel: string | null,
+  paragraph: number | null,
+  src: BocSourceMetaRow
+): string {
+  const ref: BocCiteRef = {
+    abbreviation,
+    sectionNumber,
+    sectionLabel: sectionLabel ?? '',
+    paragraph,
+    sourceName: src.display_name
+  }
+  return bocCitation(ref)
 }
 
 interface SidecarQuote {
@@ -320,6 +383,16 @@ function citationForRow(r: QuoteRow, ctx?: QuoteListCtx): string {
   if (r.commentary_source_id) {
     const src = metaSource(r.commentary_source_id, ctx)
     if (src) return commentaryCitationOf(src, r.commentary_ref)
+  }
+  if (r.boc_ref && (r.boc_source_id || r.boc_commentary_source_id)) {
+    const parsed = parseBocRef(r.boc_ref)
+    const doc = parsed ? bocDocument(parsed.code) : undefined
+    const src = r.boc_source_id
+      ? metaBocSource(r.boc_source_id, ctx)
+      : metaBocCommentarySource(r.boc_commentary_source_id as string, ctx)
+    if (doc && src) {
+      return bocCitationOf(doc.abbreviation, r.boc_section_number, r.boc_section_label, r.boc_paragraph, src)
+    }
   }
   return ''
 }
@@ -826,6 +899,131 @@ export function addCommentaryQuote(input: CommentaryQuoteInput): Quote {
        VALUES (?, NULL, ?, NULL, ?, ?, ?, ?, ?, ?)`
     )
     .run(id, input.text, color, rel, JSON.stringify([rel]), Date.now(), input.sourceId, ref)
+
+  reindexQuote(id)
+  const row = getDb().prepare('SELECT * FROM quotes WHERE id = ?').get(id) as QuoteRow
+  return rowToQuote(row)
+}
+
+// Book of Concord quotes live in one note per source (primary-text edition or commentary
+// source alike), mirroring the commentary-note pattern above.
+function bocNoteRel(displayName: string): string {
+  return `notes/confessions/${sanitizeName(displayName)}.md`
+}
+
+function ensureBocNote(vault: string, displayName: string): string {
+  const rel = bocNoteRel(displayName)
+  const abs = join(vault, rel)
+  if (!existsSync(abs)) {
+    mkdirSync(dirname(abs), { recursive: true })
+    const fm =
+      `---\n` +
+      `title: ${displayName.replace(/\r?\n/g, ' ')}\n` +
+      `type: boc-note\n` +
+      `---\n\n# ${displayName}\n`
+    writeFileSync(abs, fm, 'utf-8')
+  }
+  return rel
+}
+
+/**
+ * Capture a Book of Concord section excerpt (or a selected portion of one) as a quote.
+ * Anchored to the primary-text source (`boc_source_id`) it was read from; auto-homed into the
+ * per-source confessions note. Full parity with book / Scripture / commentary quotes.
+ */
+export function addBocQuote(input: BocQuoteInput): Quote {
+  const vault = localVaultDir()
+  if (!vault) throw new Error('No vault')
+  const src = bocSourceMeta(input.bocSourceId)
+  if (!src) throw new Error('Book of Concord source not found')
+
+  const id = randomUUID()
+  const color = input.color ?? 'amber'
+  const doc = bocDocument(input.documentCode)
+  const ref = formatBocRef(input.documentCode as BocDocumentCode, input.sectionOrdinal)
+  const citation = bocCitationOf(
+    doc?.abbreviation ?? input.documentCode,
+    input.sectionNumber,
+    input.sectionLabel,
+    input.paragraph,
+    src
+  )
+
+  const rel = ensureBocNote(vault, src.display_name)
+  upsertQuoteBlock(vault, rel, id, buildBlock(id, input.text, citation, []))
+
+  getDb()
+    .prepare(
+      `INSERT INTO quotes
+         (id, book_id, text, page, color, note_path, used_in, created,
+          boc_source_id, boc_ref, boc_section_number, boc_section_label, boc_paragraph)
+       VALUES (?, NULL, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+    .run(
+      id,
+      input.text,
+      color,
+      rel,
+      JSON.stringify([rel]),
+      Date.now(),
+      input.bocSourceId,
+      ref,
+      input.sectionNumber,
+      input.sectionLabel,
+      input.paragraph
+    )
+
+  reindexQuote(id)
+  const row = getDb().prepare('SELECT * FROM quotes WHERE id = ?').get(id) as QuoteRow
+  return rowToQuote(row)
+}
+
+/**
+ * Capture a Book of Concord commentary excerpt as a quote. Same shape as `addBocQuote`, but
+ * anchored to the commentary source (`boc_commentary_source_id`) instead of the primary-text
+ * source, since `boc_commentary_sources` is a separate table (migration 18).
+ */
+export function addBocCommentaryQuote(input: BocQuoteInput): Quote {
+  const vault = localVaultDir()
+  if (!vault) throw new Error('No vault')
+  const src = bocCommentarySourceMeta(input.bocSourceId)
+  if (!src) throw new Error('Book of Concord commentary source not found')
+
+  const id = randomUUID()
+  const color = input.color ?? 'amber'
+  const doc = bocDocument(input.documentCode)
+  const ref = formatBocRef(input.documentCode as BocDocumentCode, input.sectionOrdinal)
+  const citation = bocCitationOf(
+    doc?.abbreviation ?? input.documentCode,
+    input.sectionNumber,
+    input.sectionLabel,
+    input.paragraph,
+    src
+  )
+
+  const rel = ensureBocNote(vault, src.display_name)
+  upsertQuoteBlock(vault, rel, id, buildBlock(id, input.text, citation, []))
+
+  getDb()
+    .prepare(
+      `INSERT INTO quotes
+         (id, book_id, text, page, color, note_path, used_in, created,
+          boc_commentary_source_id, boc_ref, boc_section_number, boc_section_label, boc_paragraph)
+       VALUES (?, NULL, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+    .run(
+      id,
+      input.text,
+      color,
+      rel,
+      JSON.stringify([rel]),
+      Date.now(),
+      input.bocSourceId,
+      ref,
+      input.sectionNumber,
+      input.sectionLabel,
+      input.paragraph
+    )
 
   reindexQuote(id)
   const row = getDb().prepare('SELECT * FROM quotes WHERE id = ?').get(id) as QuoteRow
