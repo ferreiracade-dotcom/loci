@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { groupBocMatchesBySource, bocSectionRangeLabel } from './bocGrouping'
+import { groupBocMatchesBySource, bocSectionRangeLabel, bocSectionLabel } from './bocGrouping'
 
 const m = (over: Partial<any> = {}): any => ({
   excerptId: 'e', sourceId: 's1', sourceDisplayName: 'A', sourceAuthor: null,
@@ -19,5 +19,9 @@ describe('bocGrouping', () => {
   it('formats a section range label', () => {
     expect(bocSectionRangeLabel({ sectionStart: 4, sectionEnd: 4 })).toBe('§4')
     expect(bocSectionRangeLabel({ sectionStart: 4, sectionEnd: 6 })).toBe('§4–6')
+  })
+  it('formats a section list label, falling back to the bare label when unnumbered', () => {
+    expect(bocSectionLabel({ number: 'IV', label: 'Justification' })).toBe('IV. Justification')
+    expect(bocSectionLabel({ number: null, label: 'Preface' })).toBe('Preface')
   })
 })

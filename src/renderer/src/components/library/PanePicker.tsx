@@ -10,7 +10,8 @@ import {
   ChevronRight,
   ChevronDown,
   Check,
-  Quote
+  Quote,
+  BookMarked
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import type { TabContent, QuoteGroupRef } from '../../store/useStore'
@@ -21,9 +22,13 @@ import { SearchResults } from './SearchResults'
 import { BookListRow } from './LibraryView'
 import { ScriptureReader } from './ScriptureReader'
 import { useOpenElsewhereMenu } from './OpenElsewhere'
-import type { ProjectItem, QuoteGroups, SearchHit } from '@shared/ipc'
+import { BOC_DOCUMENTS } from '@shared/bookOfConcord'
+import { bocSectionLabel } from '../../lib/bocGrouping'
+import type { BocSectionRow, BocSource, ProjectItem, QuoteGroups, SearchHit } from '@shared/ipc'
 
-type BrowseTab = 'notes' | 'library' | 'bible' | 'quotes'
+// 'confessions' is unrestricted-mode only — ProjectItem has no BoC kind, so BoC can't be a
+// project source yet (Plan 3).
+type BrowseTab = 'notes' | 'library' | 'bible' | 'confessions' | 'quotes'
 
 /** Human label for a scripture project item, e.g. "John 3". */
 function scriptureLabel(item: { book: string; chapter: number }): string {
@@ -84,12 +89,43 @@ export function PanePicker({
   const [browseTab, setBrowseTab] = useState<BrowseTab>('notes')
   const [browseQ, setBrowseQ] = useState('')
   const [expandedBook, setExpandedBook] = useState<string | null>(null)
+  const [bocSources, setBocSources] = useState<BocSource[]>([])
+  const [expandedDoc, setExpandedDoc] = useState<string | null>(null)
+  const [docSections, setDocSections] = useState<BocSectionRow[]>([])
   const [previewChapter, setPreviewChapter] = useState<{ book: string; chapter: number } | null>(
     null
   )
   const query = q.trim()
   const ql = query.toLowerCase()
   const browseQl = browseQ.trim().toLowerCase()
+
+  // BoC sources load only when the Confessions tab is actually reached — unlike quote groups,
+  // they're dead weight for the common Notes/Library flow.
+  useEffect(() => {
+    if (browseTab !== 'confessions' || bocSources.length > 0) return
+    void api.listBocSources().then(setBocSources)
+  }, [browseTab, bocSources.length])
+
+  const bocSourceId = bocSources[0]?.id ?? ''
+
+  useEffect(() => {
+    if (!expandedDoc || !bocSourceId) {
+      setDocSections([])
+      return
+    }
+    let alive = true
+    void api
+      .listBocDocumentSections(expandedDoc, bocSourceId)
+      .then((rows) => {
+        if (alive) setDocSections(rows)
+      })
+      .catch(() => {
+        if (alive) setDocSections([])
+      })
+    return () => {
+      alive = false
+    }
+  }, [expandedDoc, bocSourceId])
 
   const bookIds = restrictToProject
     ? new Set(restrictToProject.filter((i) => i.kind === 'book').map((i) => i.id))
@@ -154,6 +190,9 @@ export function PanePicker({
   }
   const placeBible = (book: string, chapter: number): void => {
     place({ kind: 'bible', book, chapter, highlight: [], translation: scriptureTranslation })
+  }
+  const placeBoc = (documentCode: string, sectionOrdinal: number): void => {
+    place({ kind: 'boc', documentCode, sectionOrdinal, bocSourceId })
   }
   const openBible = (): void => {
     const p = scripturePassage ?? { book: 'JHN', chapter: 1, highlight: [] }
@@ -339,6 +378,14 @@ export function PanePicker({
             >
               <ScrollText size={13} /> Bible
             </button>
+            {!restrictToProject && (
+              <button
+                className={`pp-add-tab${browseTab === 'confessions' ? ' active' : ''}`}
+                onClick={() => setBrowseTab('confessions')}
+              >
+                <BookMarked size={13} /> Confessions
+              </button>
+            )}
             <button
               className={`pp-add-tab${browseTab === 'quotes' ? ' active' : ''}`}
               onClick={() => setBrowseTab('quotes')}
@@ -347,7 +394,7 @@ export function PanePicker({
             </button>
           </div>
 
-          {browseTab !== 'bible' && (
+          {browseTab !== 'bible' && browseTab !== 'confessions' && (
             <input
               className="pp-search pp-search-sm"
               placeholder={
@@ -561,6 +608,47 @@ export function PanePicker({
                   )
                 })}
               </div>
+            </div>
+          )}
+
+          {browseTab === 'confessions' && (
+            <div className="pp-scroll pp-bible-list">
+              {!bocSourceId ? (
+                <div className="pp-empty">
+                  No Confessions text indexed yet — add one to your vault’s confessions folder.
+                </div>
+              ) : (
+                BOC_DOCUMENTS.map((d) => {
+                  const open = expandedDoc === d.code
+                  return (
+                    <div key={d.code} className="pp-bible-book-group">
+                      <button className="pp-item" onClick={() => setExpandedDoc(open ? null : d.code)}>
+                        {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                        <span className="pp-item-title">{d.title}</span>
+                      </button>
+                      {open &&
+                        docSections.map((r) => (
+                          <button
+                            key={r.ordinal}
+                            className="pp-item pp-boc-section"
+                            title={`Open ${d.abbreviation} ${bocSectionLabel(r)}`}
+                            onClick={() => placeBoc(d.code, r.ordinal)}
+                            onContextMenu={(e) =>
+                              onContextMenu(e, {
+                                kind: 'boc',
+                                documentCode: d.code,
+                                sectionOrdinal: r.ordinal,
+                                bocSourceId
+                              })
+                            }
+                          >
+                            <span className="pp-item-title">{bocSectionLabel(r)}</span>
+                          </button>
+                        ))}
+                    </div>
+                  )
+                })
+              )}
             </div>
           )}
         </div>

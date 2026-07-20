@@ -23,3 +23,9 @@ export function groupBocMatchesBySource(matches: BocCommentaryMatch[]): BocComme
 export function bocSectionRangeLabel(m: { sectionStart: number; sectionEnd: number }): string {
   return m.sectionStart === m.sectionEnd ? `§${m.sectionStart}` : `§${m.sectionStart}–${m.sectionEnd}`
 }
+
+/** A section's list-row label: "IV. Justification", or just the label when the section is
+ *  unnumbered (prefaces, appendices). Shared by BocPane's nav rail and PanePicker's browser. */
+export function bocSectionLabel(r: { number: string | null; label: string }): string {
+  return r.number ? `${r.number}. ${r.label}` : r.label
+}

@@ -7,6 +7,7 @@ import { BOC_DOCUMENTS } from '@shared/bookOfConcord'
 import type { BocSectionRow, BocSource } from '@shared/ipc'
 import { BocReader } from './BocReader'
 import { useOpenElsewhereMenu } from './OpenElsewhere'
+import { bocSectionLabel } from '../../lib/bocGrouping'
 
 interface PartGroup {
   part: string | null
@@ -26,7 +27,6 @@ function groupByPart(rows: BocSectionRow[]): PartGroup[] {
   return groups
 }
 
-const sectionLabel = (r: BocSectionRow): string => (r.number ? `${r.number}. ${r.label}` : r.label)
 
 /** A Book of Concord document in a center workspace pane: the collapsible document-nav drawer
  *  (mirrors BiblePane's book drawer) plus the BocReader. Navigation and source changes update
@@ -166,7 +166,7 @@ export function BocPane({
                           })
                         }
                       >
-                        {sectionLabel(r)}
+                        {bocSectionLabel(r)}
                       </button>
                     ))}
                   </div>
