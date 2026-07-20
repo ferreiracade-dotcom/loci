@@ -180,6 +180,14 @@ function stripArticlePrefix(text) {
   return text.replace(/^articles?\s+/i, '').trim()
 }
 
+/** Strip a leading `[<digits>]` paragraph-number marker (and following whitespace) that
+ *  sometimes leaks into a heading's extracted text, e.g. the Large Catechism's "[14] Third"
+ *  / "[21] Baptism" section labels. LABELS only — `[N]` markers inside body text are
+ *  meaningful confessional paragraph numbers and must never be touched by this. */
+function stripLeadingParagraphMarker(text) {
+  return text.replace(/^\[\d+\]\s*/, '')
+}
+
 const BARE_NUMERAL_RE = /^[IVXLCDM]+\.?$|^\d+\.?$/i
 const INTRO_TRIGGER_RE = /^editor(?:'?s|ial)?\s+introduction\b/i
 const BODY_START_PHRASES = new Set(['to the christian reader'])
@@ -200,7 +208,6 @@ function convert(opfPath) {
   let currentDoc = null
   let currentSections = null
   let ordinal = 0
-  let currentPart = null
   let mode = 'body' // 'body' | 'intro'
   let currentSection = null
   let pendingIntro = [] // lines attached to the NEXT document's first section
@@ -213,16 +220,19 @@ function convert(opfPath) {
     if (currentSection && currentSections) currentSections.push(currentSection)
     currentSection = null
   }
-  function openSection(rawLabel, number, isPartHeader) {
+  // `part` is left `null` here and filled in by assignParts()'s structural post-pass, once
+  // this document's whole section list is known (see below): a part heading can only be
+  // recognized by the fact that it has NO body text of its own, which isn't knowable until
+  // the NEXT heading arrives.
+  function openSection(rawLabel, number) {
     flushSection()
     ordinal += 1
-    const part = isPartHeader ? null : currentPart
-    currentSection = { ordinal, number, label: displayLabel(rawLabel), part, body: [], notes: [] }
+    const label = displayLabel(stripLeadingParagraphMarker(rawLabel))
+    currentSection = { ordinal, number, label, part: null, body: [], notes: [] }
     if (ordinal === 1 && pendingIntro.length) {
       currentSection.notes.push(...pendingIntro)
       pendingIntro = []
     }
-    if (isPartHeader) currentPart = toTitleCase(rawLabel)
   }
   function openDocument(code, headingText) {
     flushSection()
@@ -230,7 +240,6 @@ function convert(opfPath) {
     currentSections = docsOut.get(code)
     if (!currentSections) { currentSections = []; docsOut.set(code, currentSections) }
     ordinal = 0
-    currentPart = null
     mode = 'body'
     currentSection = null
     lastDocOpenText = headingText
@@ -241,7 +250,7 @@ function convert(opfPath) {
   function appendBody(text) {
     if (currentSection) { currentSection.body.push(text); return }
     if (mode === 'intro') { pendingIntro.push(text); return }
-    if (currentDoc) { openSection(lastDocOpenText || currentDoc, null, false); currentSection.body.push(text) }
+    if (currentDoc) { openSection(lastDocOpenText || currentDoc, null); currentSection.body.push(text) }
     // else: no document open yet (front matter) — drop silently.
   }
   function appendNote(text) {
@@ -286,18 +295,18 @@ function convert(opfPath) {
       }
 
       if (cls === 'ch_h1a' && pendingNumber !== null) {
-        openSection(text, pendingNumber, false)
+        openSection(text, pendingNumber)
         pendingNumber = null
         continue
       }
 
       if (cls === 'ch_h1b') {
         const t = text.trim()
-        if (BARE_NUMERAL_RE.test(t)) { openSection(t, null, false); continue } // Catalog of Testimonies' "I.", "II.", …
+        if (BARE_NUMERAL_RE.test(t)) { openSection(t, null); continue } // Catalog of Testimonies' "I.", "II.", …
         // Saxon Visitation Articles combines the article number and label into one ch_h1b
         // paragraph (no separate `article`/ch_h1a pair): "ARTICLE I" + <br> + "The Holy Supper".
         const artMatch = /^(ARTICLE\s+[IVXLCDM]+[a-z]?)\s+(.+)$/i.exec(t)
-        if (artMatch) { openSection(artMatch[2], stripArticlePrefix(artMatch[1].toUpperCase()), false); continue }
+        if (artMatch) { openSection(artMatch[2], stripArticlePrefix(artMatch[1].toUpperCase())); continue }
         // Otherwise fall through to the shared heading-candidate machine below: it may be a
         // real section heading (e.g. Catalog of Testimonies' "Conclusion") or, when it's just
         // a descriptive subtitle continuing the previous heading (Smalcald's "The
@@ -354,13 +363,13 @@ function convert(opfPath) {
           }
         }
 
-        // mode === 'body': a real section-opening heading.
-        if (BARE_NUMERAL_RE.test(norm)) {
-          openSection(text, null, false)
-        } else {
-          const isPartHeader = isAllCaps(text) || /^[IVXLCDM]+\.\s/i.test(text) || /\bpart\b/i.test(text)
-          openSection(text, null, isPartHeader)
-        }
+        // mode === 'body': a real section-opening heading. Whether this heading turns out to
+        // be a part/article title (as opposed to a real, text-bearing section) is a
+        // structural question — does the NEXT heading's section have a body? — decided by
+        // assignParts()'s post-pass below, not guessed here from typography (in this EPUB
+        // essentially every heading is all-caps, so a typographic guess would misclassify
+        // nearly everything as a part header).
+        openSection(text, null)
         continue
       }
 
@@ -373,7 +382,33 @@ function convert(opfPath) {
     }
   }
   flushSection()
+  assignParts(docsOut)
   return docsOut
+}
+
+/** Structural (not typographic) part-header detection: a part/article-title heading is,
+ *  factually, one whose own section carries no body text — the label is a divider, and the
+ *  real content lives in the sections that follow it, until the next such divider. This can
+ *  only be known once every heading's body is fully collected, so it runs as a post-pass over
+ *  each document's finished section list (order preserved from parsing) rather than being
+ *  guessed inline while a heading is first seen. Resets the running part at each document
+ *  boundary (each `sections` array is one document's).
+ *
+ *  A part heading's OWN `part` field is left null (it doesn't belong to itself); its label
+ *  becomes the running part attributed to every subsequent text-bearing section, until the
+ *  next empty-body heading replaces it. */
+function assignParts(docsOut) {
+  for (const sections of docsOut.values()) {
+    let runningPart = null
+    for (const s of sections) {
+      if (s.body.length === 0) {
+        runningPart = s.label
+        s.part = null
+      } else {
+        s.part = runningPart
+      }
+    }
+  }
 }
 
 // --- Output ------------------------------------------------------------------------------
