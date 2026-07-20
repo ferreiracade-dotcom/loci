@@ -68,6 +68,7 @@ describe('migrateRightTabId', () => {
   })
 
   it('offers a mode list for every pill, and single-mode pills offer none', () => {
+    expect(MODES_FOR_PILL.quotes).toEqual(['books', 'bible'])
     expect(MODES_FOR_PILL.texts).toEqual(['bible', 'confessions'])
     expect(MODES_FOR_PILL.commentary).toEqual(['bible', 'confessions'])
     expect(MODES_FOR_PILL.notes).toEqual([])
