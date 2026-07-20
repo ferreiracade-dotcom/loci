@@ -4,10 +4,9 @@ export type CorpusMode = 'books' | 'bible' | 'confessions'
 /** The five reference-panel pills. */
 export type RefPill = 'quotes' | 'notes' | 'books' | 'texts' | 'commentary'
 
-/** Modes each pill can offer. An empty list means the pill is single-mode and shows no switch.
- *  Quotes gains 'confessions' in Task 6, once BocQuotesPanel exists. */
+/** Modes each pill can offer. An empty list means the pill is single-mode and shows no switch. */
 export const MODES_FOR_PILL: Record<RefPill, CorpusMode[]> = {
-  quotes: ['books', 'bible'],
+  quotes: ['books', 'bible', 'confessions'],
   notes: [],
   books: [],
   texts: ['bible', 'confessions'],
