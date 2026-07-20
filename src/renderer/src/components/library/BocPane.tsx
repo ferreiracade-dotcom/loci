@@ -229,7 +229,13 @@ export function BocPane({
             bocSourceId={bocSourceId}
             sources={sources}
             onNavigate={(ordinal) => navigate(documentCode, ordinal)}
-            onSectionClick={bocSectionClicked}
+            onSectionClick={(code, ordinal) =>
+              void bocSectionClicked(
+                code,
+                ordinal,
+                currentSection ? { number: currentSection.number, label: currentSection.label } : undefined
+              )
+            }
             onSourceChange={pickSource}
             onQuote={(paragraph, text, color) =>
               void addBocQuote({

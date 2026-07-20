@@ -13,6 +13,7 @@ import {
   File,
   BookOpenText,
   MessageSquareQuote,
+  MessageSquareText,
   Quote
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -40,7 +41,8 @@ export const RIGHT_TABS: RailItem[] = [
   { id: 'backlinks', label: 'Backlinks', icon: Link2 },
   { id: 'reference-pdf', label: 'Books', icon: File },
   { id: 'reference-bible', label: 'Bible', icon: BookOpenText },
-  { id: 'commentary', label: 'Commentary', icon: MessageSquareQuote }
+  { id: 'commentary', label: 'Commentary', icon: MessageSquareQuote },
+  { id: 'boc-commentary', label: 'Confessions', icon: MessageSquareText }
 ]
 
 interface EmptyCopy {

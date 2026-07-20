@@ -153,8 +153,15 @@ interface Store {
   commentaryLookup: { book: string; chapter: number; verse: number } | null
   /** Results of that lookup, grouped by source in the reference sidebar. */
   commentaryMatches: CommentaryMatch[]
-  /** The BoC section a commentary lookup ran against, or null before any section has been clicked. */
-  bocLookup: { documentCode: string; ordinal: number } | null
+  /** The BoC section a commentary lookup ran against, or null before any section has been clicked.
+   *  Carries the section's number/label because a commentary quote's citation needs them and they
+   *  can't be recovered from the ordinal alone (see migration v19 as-built). */
+  bocLookup: {
+    documentCode: string
+    ordinal: number
+    sectionNumber: string | null
+    sectionLabel: string
+  } | null
   /** Results of that lookup, grouped by source in the reference sidebar. */
   bocMatches: BocCommentaryMatch[]
 
@@ -265,10 +272,17 @@ interface Store {
   navigateBoc: (documentCode: string, ordinal: number, bocSourceId?: string) => void
   /** A section was clicked in any BocReader instance — runs the commentary lookup and
    *  switches the reference sidebar to show it. */
-  bocSectionClicked: (documentCode: string, ordinal: number) => Promise<void>
+  bocSectionClicked: (
+    documentCode: string,
+    ordinal: number,
+    section?: { number: string | null; label: string }
+  ) => Promise<void>
   /** Open/focus the Book of Concord as a center pane (left-rail "Confessions" entry). */
   showConfessions: () => Promise<void>
   addBocQuote: (input: BocQuoteInput) => Promise<void>
+  /** Quote an excerpt from a BoC *commentary* source (anchored to the commentary source row,
+   *  not the primary text — they live in separate tables). */
+  addBocCommentaryQuote: (input: BocQuoteInput) => Promise<void>
 
   // --- Center workspace ---
   /** Create a new tab (duplicates allowed) and focus it; returns the new tab's id. */
@@ -1027,8 +1041,16 @@ export const useStore = create<Store>((set, get) => {
       void api.setSession('lastBoc', JSON.stringify({ documentCode, ordinal }))
     },
 
-    bocSectionClicked: async (documentCode, ordinal) => {
-      set({ bocLookup: { documentCode, ordinal }, bocMatches: [] })
+    bocSectionClicked: async (documentCode, ordinal, section) => {
+      set({
+        bocLookup: {
+          documentCode,
+          ordinal,
+          sectionNumber: section?.number ?? null,
+          sectionLabel: section?.label ?? ''
+        },
+        bocMatches: []
+      })
       const matches = await api.lookupBocSection(documentCode, ordinal)
       // A later click may have landed while this lookup was in flight — don't overwrite it.
       const stillCurrent = get().bocLookup
@@ -1064,6 +1086,11 @@ export const useStore = create<Store>((set, get) => {
     addBocQuote: async (input) => {
       await api.addBocQuote(input)
       // Bump the shared token so the reader re-marks paragraphs and panels reload.
+      set({ noteReloadToken: get().noteReloadToken + 1 })
+    },
+
+    addBocCommentaryQuote: async (input) => {
+      await api.addBocCommentaryQuote(input)
       set({ noteReloadToken: get().noteReloadToken + 1 })
     },
 

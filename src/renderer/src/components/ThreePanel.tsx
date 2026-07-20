@@ -16,6 +16,7 @@ import { StandaloneNotesPanel } from './library/StandaloneNotesPanel'
 import { ReferencePdfPanel } from './library/ReferencePdfPanel'
 import { ReferenceBiblePanel } from './library/ReferenceBiblePanel'
 import { CommentaryPanel } from './library/CommentaryPanel'
+import { BocCommentaryPanel } from './library/BocCommentaryPanel'
 import { SearchView } from './library/SearchView'
 import { DashboardView } from './library/DashboardView'
 import { clamp } from '../lib/util'
@@ -27,6 +28,9 @@ const LEFT_MAX = 320
 const NOTES_MIN = 220
 const NOTES_MAX = 480
 const DIVIDER_ALLOWANCE = 14
+/** Reference tabs that render a reader and so want a wider notes panel: they raise the panel's
+ *  max width and auto-widen a narrow panel the first time one is chosen. */
+const WIDE_RIGHT_TABS = new Set(['reference-pdf', 'reference-bible', 'commentary', 'boc-commentary'])
 
 export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const layout = useStore((s) => s.layout)!
@@ -68,10 +72,7 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const rightTabId = RIGHT_TABS.some((t) => t.id === layout.activeRightTab)
     ? layout.activeRightTab
     : 'book-notes'
-  // The PDF/Bible/Commentary references want more room, so the panel may grow wider when
-  // they're active.
-  const readerTab =
-    rightTabId === 'reference-pdf' || rightTabId === 'reference-bible' || rightTabId === 'commentary'
+  const readerTab = WIDE_RIGHT_TABS.has(rightTabId)
   const notesMax = readerTab ? 820 : NOTES_MAX
 
   const leftSlot = layout.leftCollapsed ? RAIL : layout.leftWidth
@@ -82,10 +83,7 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const selectRightTab = (id: string, expand = false): void => {
     const patch: Parameters<typeof saveLayout>[0] = { activeRightTab: id }
     if (expand) patch.notesCollapsed = false
-    if (
-      (id === 'reference-pdf' || id === 'reference-bible' || id === 'commentary') &&
-      layout.notesWidth < 460
-    ) {
+    if (WIDE_RIGHT_TABS.has(id) && layout.notesWidth < 460) {
       patch.notesWidth = 560
     }
     saveLayout(patch)
@@ -234,6 +232,8 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
                 <ReferenceBiblePanel />
               ) : rightTabId === 'commentary' ? (
                 <CommentaryPanel />
+              ) : rightTabId === 'boc-commentary' ? (
+                <BocCommentaryPanel />
               ) : (
                 <EmptyState
                   icon={activeTab.icon}

@@ -3,28 +3,37 @@ import { ChevronDown, ChevronRight, ExternalLink, Copy, Check, Quote } from 'luc
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { bookByCode } from '@shared/scriptureRef'
-import type { CommentaryMatch } from '@shared/ipc'
 import { excerptRangeLabel, groupMatchesBySource, shouldCollapseByDefault } from '../../lib/commentaryGrouping'
 
 /** Excerpts longer than this are clamped with a "Show more" toggle (~4 lines of prose). */
 const CLAMP_LENGTH = 320
 
+/** One excerpt as the view renders it, independent of which corpus it came from. `onQuote`
+ *  receives the text the user actually wants quoted (their selection, or the whole excerpt) —
+ *  the view resolves that; the wrapper only decides where the quote is written. */
+export interface CommentaryExcerptVM {
+  excerptId: string
+  text: string
+  rangeLabel: string
+  onQuote: (text: string) => void | Promise<void>
+  onViewInPdf?: () => void
+}
+
+export interface CommentaryGroupVM {
+  sourceId: string
+  sourceDisplayName: string
+  sourceAuthor: string | null
+  excerpts: CommentaryExcerptVM[]
+}
+
 /** One commentary excerpt with its copy / quote / view-in-PDF actions. */
-function CommentaryExcerpt({
-  m,
-  lookup
-}: {
-  m: CommentaryMatch
-  lookup: { book: string; chapter: number; verse: number }
-}) {
-  const openBookAt = useStore((s) => s.openBookAt)
-  const bumpReload = useStore((s) => s.bumpReload)
+function CommentaryExcerpt({ e }: { e: CommentaryExcerptVM }) {
   const textRef = useRef<HTMLDivElement>(null)
   const [expanded, setExpanded] = useState(false)
   const [copied, setCopied] = useState(false)
   const [added, setAdded] = useState(false)
 
-  const clampable = m.text.length > CLAMP_LENGTH
+  const clampable = e.text.length > CLAMP_LENGTH
 
   /** The user's selection if it falls inside this excerpt's text, else the whole excerpt. */
   const quotableText = (): string => {
@@ -36,7 +45,7 @@ function CommentaryExcerpt({
         if (picked) return picked
       }
     }
-    return m.text
+    return e.text
   }
 
   const copy = (): void => {
@@ -47,27 +56,21 @@ function CommentaryExcerpt({
   }
 
   const addQuote = (): void => {
-    const text = quotableText()
-    void api
-      .addCommentaryQuote({
-        sourceId: m.sourceId,
-        book: lookup.book,
-        chapter: lookup.chapter,
-        verseStart: lookup.verse,
-        text
-      })
-      .then(() => {
-        bumpReload()
-        setAdded(true)
-        window.setTimeout(() => setAdded(false), 1400)
-      })
+    const confirm = (): void => {
+      setAdded(true)
+      window.setTimeout(() => setAdded(false), 1400)
+    }
+    // Flash the ✓ only once the write lands, as the pre-refactor panel did.
+    const result = e.onQuote(quotableText())
+    if (result instanceof Promise) void result.then(confirm)
+    else confirm()
   }
 
   return (
     <div className="commentary-excerpt">
-      <div className="commentary-excerpt-ref">{excerptRangeLabel(m)}</div>
+      <div className="commentary-excerpt-ref">{e.rangeLabel}</div>
       <div ref={textRef} className={`commentary-excerpt-text${clampable && !expanded ? ' clamped' : ''}`}>
-        {m.text}
+        {e.text}
       </div>
       {clampable && (
         <button className="commentary-excerpt-toggle" onClick={() => setExpanded((v) => !v)}>
@@ -90,13 +93,9 @@ function CommentaryExcerpt({
           {copied ? <Check size={12} /> : <Copy size={12} />} Copy
         </button>
         {/* Only PDF-sourced excerpts have a book + page to jump to. Markdown sources (EPUB/
-            scraped commentary) carry the full verse comment inline, so there's nothing to open. */}
-        {m.bookId && m.pageNumber > 0 && (
-          <button
-            className="commentary-excerpt-act commentary-view-pdf"
-            title="View in PDF"
-            onClick={() => openBookAt(m.bookId!, m.pageNumber)}
-          >
+            scraped commentary) carry the full comment inline, so there's nothing to open. */}
+        {e.onViewInPdf && (
+          <button className="commentary-excerpt-act commentary-view-pdf" title="View in PDF" onClick={e.onViewInPdf}>
             <ExternalLink size={12} /> View in PDF
           </button>
         )}
@@ -105,12 +104,21 @@ function CommentaryExcerpt({
   )
 }
 
-/** The commentary reference sidebar: results of the last verse click, grouped by source. */
-export function CommentaryPanel() {
-  const lookup = useStore((s) => s.commentaryLookup)
-  const matches = useStore((s) => s.commentaryMatches)
-
-  const groups = groupMatchesBySource(matches)
+/** The commentary sidebar's presentation: grouped excerpts with collapse state and the two
+ *  empty states. Corpus-agnostic — Bible and Book of Concord each supply their own groups via
+ *  a thin wrapper below / in BocCommentaryPanel. */
+export function CommentaryPanelView({
+  headLabel,
+  groups,
+  noLookupHint,
+  emptyHint
+}: {
+  /** null before anything has been clicked — renders `noLookupHint`. */
+  headLabel: string | null
+  groups: CommentaryGroupVM[]
+  noLookupHint: string
+  emptyHint: string
+}) {
   const defaultCollapsed = shouldCollapseByDefault(groups.length)
   const [collapsedOverride, setCollapsedOverride] = useState<Map<string, boolean>>(new Map())
 
@@ -123,18 +131,16 @@ export function CommentaryPanel() {
     })
   }
 
-  if (!lookup) {
-    return <div className="commentary-panel-empty">Click a verse to see commentary.</div>
+  if (headLabel === null) {
+    return <div className="commentary-panel-empty">{noLookupHint}</div>
   }
   if (groups.length === 0) {
-    return <div className="commentary-panel-empty">No commentary indexed for this verse.</div>
+    return <div className="commentary-panel-empty">{emptyHint}</div>
   }
-
-  const verseLabel = `${bookByCode(lookup.book)?.name ?? lookup.book} ${lookup.chapter}:${lookup.verse}`
 
   return (
     <div className="commentary-panel">
-      <div className="commentary-panel-head">{verseLabel}</div>
+      <div className="commentary-panel-head">{headLabel}</div>
       {groups.map((g) => {
         const collapsed = isCollapsed(g.sourceId)
         return (
@@ -146,8 +152,8 @@ export function CommentaryPanel() {
             </button>
             {!collapsed && (
               <div className="commentary-group-body">
-                {g.matches.map((m) => (
-                  <CommentaryExcerpt key={m.excerptId} m={m} lookup={lookup} />
+                {g.excerpts.map((e) => (
+                  <CommentaryExcerpt key={e.excerptId} e={e} />
                 ))}
               </div>
             )}
@@ -155,5 +161,51 @@ export function CommentaryPanel() {
         )
       })}
     </div>
+  )
+}
+
+/** The Bible commentary reference sidebar: results of the last verse click, grouped by source. */
+export function CommentaryPanel() {
+  const lookup = useStore((s) => s.commentaryLookup)
+  const matches = useStore((s) => s.commentaryMatches)
+  const openBookAt = useStore((s) => s.openBookAt)
+  const bumpReload = useStore((s) => s.bumpReload)
+
+  const groups: CommentaryGroupVM[] = groupMatchesBySource(matches).map((g) => ({
+    sourceId: g.sourceId,
+    sourceDisplayName: g.sourceDisplayName,
+    sourceAuthor: g.sourceAuthor,
+    excerpts: g.matches.map((m) => ({
+      excerptId: m.excerptId,
+      text: m.text,
+      rangeLabel: excerptRangeLabel(m),
+      onQuote: (text: string) => {
+        if (!lookup) return
+        return api
+          .addCommentaryQuote({
+            sourceId: m.sourceId,
+            book: lookup.book,
+            chapter: lookup.chapter,
+            verseStart: lookup.verse,
+            text
+          })
+          .then(bumpReload)
+      },
+      onViewInPdf:
+        m.bookId && m.pageNumber > 0 ? () => openBookAt(m.bookId!, m.pageNumber) : undefined
+    }))
+  }))
+
+  const headLabel = lookup
+    ? `${bookByCode(lookup.book)?.name ?? lookup.book} ${lookup.chapter}:${lookup.verse}`
+    : null
+
+  return (
+    <CommentaryPanelView
+      headLabel={headLabel}
+      groups={groups}
+      noLookupHint="Click a verse to see commentary."
+      emptyHint="No commentary indexed for this verse."
+    />
   )
 }
