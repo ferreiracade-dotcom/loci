@@ -11,6 +11,8 @@ import type {
   BackfillResult,
   Book,
   BookUpdate,
+  BocCommentaryMatch,
+  BocQuoteInput,
   CommentaryMatch,
   ImportProgress,
   ImportResult,
@@ -36,7 +38,7 @@ export type Phase = 'loading' | 'wizard' | 'welcome' | 'ready'
 
 // --- Center workspace (Phase 8.7 Stage 3) ---
 // 'empty' is a not-yet-filled pane that shows the content picker.
-export type PaneKind = 'note' | 'bible' | 'pdf' | 'empty' | 'quotes'
+export type PaneKind = 'note' | 'bible' | 'pdf' | 'empty' | 'quotes' | 'boc'
 
 /** A group of saved quotes opened in the center: a PDF, a Bible chapter, or a commentary source. */
 export type QuoteGroupRef =
@@ -44,6 +46,7 @@ export type QuoteGroupRef =
   // `chapter` omitted = every chapter of this book (the "Bible book" grouping mode).
   | { type: 'scripture'; book: string; chapter?: number; translation: string; name: string }
   | { type: 'commentary'; sourceId: string; displayName: string }
+  | { type: 'boc'; documentCode: string; bocSourceId: string; name: string }
   | { type: 'author'; author: string }
   | { type: 'tag'; tag: string }
 
@@ -58,6 +61,9 @@ export interface Pane {
   highlight?: number[]
   translation?: string
   quotesGroup?: QuoteGroupRef
+  documentCode?: string
+  sectionOrdinal?: number
+  bocSourceId?: string
 }
 
 /** Content to place into a pane. */
@@ -66,6 +72,7 @@ export type PaneContent =
   | { kind: 'pdf'; bookId: string }
   | { kind: 'bible'; book: string; chapter: number; highlight?: number[]; translation?: string }
   | { kind: 'quotes'; quotesGroup: QuoteGroupRef }
+  | { kind: 'boc'; documentCode: string; sectionOrdinal: number; bocSourceId?: string }
 
 function paneFromContent(c: PaneContent): Pane {
   return { id: crypto.randomUUID(), ...c }
@@ -193,6 +200,10 @@ interface Store {
   commentaryLookup: { book: string; chapter: number; verse: number } | null
   /** Results of that lookup, grouped by source in the reference sidebar. */
   commentaryMatches: CommentaryMatch[]
+  /** The BoC section a commentary lookup ran against, or null before any section has been clicked. */
+  bocLookup: { documentCode: string; ordinal: number } | null
+  /** Results of that lookup, grouped by source in the reference sidebar. */
+  bocMatches: BocCommentaryMatch[]
 
   // --- Center workspace (Phase 8.7 Stage 3) ---
   /** Up to two typed panes (note/bible/pdf) shown in the center; the source of truth. */
@@ -292,6 +303,17 @@ interface Store {
   setCompareTranslation: (id: string) => void
   addScriptureHighlight: (input: NewScriptureHighlight) => Promise<void>
   deleteScriptureHighlight: (id: string) => Promise<void>
+
+  // --- Book of Concord (Confessions) ---
+  /** Route a document/section into a BoC pane: reuse the existing BoC pane if there is one,
+   *  otherwise open one. */
+  navigateBoc: (documentCode: string, ordinal: number, bocSourceId?: string) => void
+  /** A section was clicked in any BocReader instance — runs the commentary lookup and
+   *  switches the reference sidebar to show it. */
+  bocSectionClicked: (documentCode: string, ordinal: number) => Promise<void>
+  /** Open/focus the Book of Concord as a center pane (left-rail "Confessions" entry). */
+  showConfessions: () => Promise<void>
+  addBocQuote: (input: BocQuoteInput) => Promise<void>
 
   // --- Center workspace ---
   openInPane: (content: PaneContent, opts?: { split?: boolean }) => void
@@ -403,6 +425,8 @@ export const useStore = create<Store>((set, get) => {
     scriptureCompareTranslation: '',
     commentaryLookup: null,
     commentaryMatches: [],
+    bocLookup: null,
+    bocMatches: [],
     panes: [],
     activePaneId: null,
     paneRatio: 0.5,
@@ -1006,6 +1030,67 @@ export const useStore = create<Store>((set, get) => {
     deleteScriptureHighlight: async (id) => {
       await api.deleteQuote(id)
       // Bump the shared token so the reader drops the verse mark and panels reload.
+      set({ noteReloadToken: get().noteReloadToken + 1 })
+    },
+
+    // Route a document/section into a BoC pane: reuse the existing BoC pane if there is one,
+    // otherwise open one (beside a single pane, or replacing the focused pane when full).
+    navigateBoc: (documentCode, ordinal, bocSourceId) => {
+      const { panes } = get()
+      const boc = panes.find((p) => p.kind === 'boc')
+      if (boc) {
+        get().setPaneContent(boc.id, {
+          kind: 'boc',
+          documentCode,
+          sectionOrdinal: ordinal,
+          bocSourceId: bocSourceId ?? boc.bocSourceId
+        })
+      } else {
+        get().openInPane(
+          { kind: 'boc', documentCode, sectionOrdinal: ordinal, bocSourceId },
+          { split: panes.length === 1 }
+        )
+      }
+      get().saveLayout({ activeLeftView: 'reading' })
+      void api.setSession('lastBoc', JSON.stringify({ documentCode, ordinal }))
+    },
+
+    bocSectionClicked: async (documentCode, ordinal) => {
+      set({ bocLookup: { documentCode, ordinal }, bocMatches: [] })
+      const matches = await api.lookupBocSection(documentCode, ordinal)
+      // A later click may have landed while this lookup was in flight — don't overwrite it.
+      const stillCurrent = get().bocLookup
+      const stale = stillCurrent?.documentCode !== documentCode || stillCurrent?.ordinal !== ordinal
+      if (stale) return
+      set({ bocMatches: matches })
+      get().saveLayout({ activeRightTab: 'boc-commentary', notesCollapsed: false })
+    },
+
+    showConfessions: async () => {
+      const boc = get().panes.find((p) => p.kind === 'boc')
+      if (boc) {
+        get().focusPane(boc.id)
+        get().saveLayout({ activeLeftView: 'reading' })
+      } else {
+        // Open the reader from a sensible default right away; resolve the last-visited
+        // document/section from the session in the background below.
+        let doc = { documentCode: 'AC', ordinal: 1 }
+        const last = await api.getSession('lastBoc')
+        if (last) {
+          try {
+            const p = JSON.parse(last) as { documentCode?: string; ordinal?: number }
+            if (p.documentCode && p.ordinal != null) doc = { documentCode: p.documentCode, ordinal: p.ordinal }
+          } catch {
+            /* ignore malformed session value */
+          }
+        }
+        get().navigateBoc(doc.documentCode, doc.ordinal)
+      }
+    },
+
+    addBocQuote: async (input) => {
+      await api.addBocQuote(input)
+      // Bump the shared token so the reader re-marks paragraphs and panels reload.
       set({ noteReloadToken: get().noteReloadToken + 1 })
     },
 

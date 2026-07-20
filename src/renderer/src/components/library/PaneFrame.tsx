@@ -107,11 +107,13 @@ export function PaneFrame({
             : g.name
           : g.type === 'commentary'
             ? g.displayName
-            : g.type === 'author'
-              ? g.author
-              : g.tag
-                ? `#${g.tag}`
-                : 'Untagged'
+            : g.type === 'boc'
+              ? g.name
+              : g.type === 'author'
+                ? g.author
+                : g.tag
+                  ? `#${g.tag}`
+                  : 'Untagged'
     body = <QuoteGroupPane key={JSON.stringify(g)} group={g} />
     canReplace = true
   } else if (pane.kind === 'empty') {
