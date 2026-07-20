@@ -5,6 +5,7 @@ import type { Pane } from '../../store/useStore'
 import { RichNoteEditor } from './RichNoteEditor'
 import { PdfReader } from './PdfReader'
 import { BiblePane } from './BiblePane'
+import { BocPane } from './BocPane'
 import { PanePicker } from './PanePicker'
 import { QuoteGroupPane } from './QuoteGroupPane'
 
@@ -69,6 +70,18 @@ export function PaneFrame({
       <div className={`pane-frame headerless${active ? ' active' : ''}`}>
         <div className="pane-body">
           <BiblePane key={pane.id} pane={pane} onClose={onClose} onReplace={replace} />
+        </div>
+      </div>
+    )
+  }
+
+  // Same rationale as Bible panes — BocPane's own document-nav drawer carries the close +
+  // change controls, so it skips the generic pane header too.
+  if (pane.kind === 'boc' && pane.documentCode && pane.sectionOrdinal != null) {
+    return (
+      <div className={`pane-frame headerless${active ? ' active' : ''}`}>
+        <div className="pane-body">
+          <BocPane key={pane.id} pane={pane} onClose={onClose} onReplace={replace} />
         </div>
       </div>
     )
