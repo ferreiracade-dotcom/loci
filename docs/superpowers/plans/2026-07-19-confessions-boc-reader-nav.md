@@ -225,6 +225,18 @@ git commit -m "Add BoC commentary grouping + section-range label helpers"
 - Consumes: `bocCitation` (Task 1); `formatBocRef`/`bocDocument` from `bookOfConcord.ts`.
 - Produces:
   - Migration v19 `'boc-quotes'`: `ALTER TABLE quotes ADD COLUMN boc_source_id TEXT REFERENCES boc_sources(id) ON DELETE CASCADE; ALTER TABLE quotes ADD COLUMN boc_ref TEXT;`
+
+  > **AS BUILT (commit a221430) — this migration shipped with four more columns than planned, deliberately:**
+  > `boc_commentary_source_id TEXT REFERENCES boc_commentary_sources(id) ON DELETE CASCADE`,
+  > `boc_section_number TEXT`, `boc_section_label TEXT`, `boc_paragraph INTEGER`.
+  > Why: (1) `boc_commentary_sources` is a *separate table* from `boc_sources` (migration 18), so
+  > `addBocCommentaryQuote` cannot reuse `boc_source_id` — with `foreign_keys = ON` that insert
+  > throws. This mirrors how `commentary_source_id` is kept separate from `book_id`.
+  > (2) `citationForRow` must regenerate the citation from stored columns alone (as the scripture
+  > and commentary branches do), but a section's number/label are NOT re-derivable from `"AC:6"` —
+  > unnumbered sections cite by label ("SC, Preface") and the paragraph isn't in the ref at all.
+  > So they're captured once at quote time. There is no stored `citation` column on `quotes` (the
+  > plan's illustrative test wrongly selected one); citation is always computed via `citationForRow`.
   - `interface BocQuoteInput { bocSourceId: string; documentCode: string; sectionOrdinal: number; sectionNumber: string | null; sectionLabel: string; paragraph: number | null; text: string; color?: string }`
   - `addBocQuote(input: BocQuoteInput): { id: string }` — inserts a `quotes` row with `book_id NULL`, `boc_source_id`, `boc_ref = formatBocRef(documentCode, sectionOrdinal)`, computed `citation = bocCitation(...)` using `bocDocument(documentCode).abbreviation` + the source's display_name.
   - `addBocCommentaryQuote(input)` — same shape but the ref points at the commentary source; reuse `addBocQuote` structure with the commentary source id.
