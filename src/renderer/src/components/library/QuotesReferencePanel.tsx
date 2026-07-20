@@ -8,7 +8,7 @@ import { BocQuotesPanel } from './BocQuotesPanel'
 export function QuotesReferencePanel(): ReactNode {
   const { mode } = useCorpusMode('quotes')
   return (
-    <>
+    <div className="ref-corpus-panel">
       <CorpusSwitch pill="quotes" />
       {mode === 'bible' ? (
         <ScriptureHighlightsPanel />
@@ -17,6 +17,6 @@ export function QuotesReferencePanel(): ReactNode {
       ) : (
         <QuotesPanel />
       )}
-    </>
+    </div>
   )
 }

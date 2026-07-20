@@ -7,9 +7,9 @@ import { ReferenceBocPanel } from './ReferenceBocPanel'
 export function TextsReferencePanel(): ReactNode {
   const { mode } = useCorpusMode('texts')
   return (
-    <>
+    <div className="ref-corpus-panel">
       <CorpusSwitch pill="texts" />
       {mode === 'confessions' ? <ReferenceBocPanel /> : <ReferenceBiblePanel />}
-    </>
+    </div>
   )
 }

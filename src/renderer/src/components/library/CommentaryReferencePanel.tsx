@@ -7,9 +7,9 @@ import { BocCommentaryPanel } from './BocCommentaryPanel'
 export function CommentaryReferencePanel(): ReactNode {
   const { mode } = useCorpusMode('commentary')
   return (
-    <>
+    <div className="ref-corpus-panel">
       <CorpusSwitch pill="commentary" />
       {mode === 'confessions' ? <BocCommentaryPanel /> : <CommentaryPanel />}
-    </>
+    </div>
   )
 }
