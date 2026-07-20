@@ -69,7 +69,7 @@ This codebase has **no component/render test infra** (tests are logic-level `vit
   - `function bocLabel(r: BocCiteRef): string` — `"AC IV, 2"` / `"AC IV"` / `"AC, Preface"`
   - `function bocCitation(r: BocCiteRef): string` — `bocLabel(r) + " (" + sourceName + ")"`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create/extend `src/shared/citation.test.ts`:
 
@@ -95,9 +95,9 @@ describe('bocCitation', () => {
 })
 ```
 
-- [ ] **Step 2: Run → FAIL** (`npm test -- src/shared/citation.test.ts`).
+- [x] **Step 2: Run → FAIL** (`npm test -- src/shared/citation.test.ts`).
 
-- [ ] **Step 3: Implement** in `src/shared/citation.ts`:
+- [x] **Step 3: Implement** in `src/shared/citation.ts`:
 
 ```ts
 export interface BocCiteRef {
@@ -118,8 +118,8 @@ export function bocCitation(r: BocCiteRef): string {
 }
 ```
 
-- [ ] **Step 4: Run → PASS.**
-- [ ] **Step 5: Commit**
+- [x] **Step 4: Run → PASS.**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/shared/citation.ts src/shared/citation.test.ts
@@ -143,7 +143,7 @@ git commit -m "Add bocCitation() for Book of Concord references"
 
 Mirror `src/renderer/src/lib/commentaryGrouping.ts`'s `groupMatchesBySource`/`excerptRangeLabel` (read it first).
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { describe, expect, it } from 'vitest'
@@ -171,9 +171,9 @@ describe('bocGrouping', () => {
 })
 ```
 
-- [ ] **Step 2: Run → FAIL.**
+- [x] **Step 2: Run → FAIL.**
 
-- [ ] **Step 3: Implement** `src/renderer/src/lib/bocGrouping.ts`:
+- [x] **Step 3: Implement** `src/renderer/src/lib/bocGrouping.ts`:
 
 ```ts
 import type { BocCommentaryMatch } from '../../../shared/ipc'
@@ -203,8 +203,8 @@ export function bocSectionRangeLabel(m: { sectionStart: number; sectionEnd: numb
 }
 ```
 
-- [ ] **Step 4: Run → PASS.**
-- [ ] **Step 5: Commit**
+- [x] **Step 4: Run → PASS.**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/renderer/src/lib/bocGrouping.ts src/renderer/src/lib/bocGrouping.test.ts
@@ -245,7 +245,7 @@ git commit -m "Add BoC commentary grouping + section-range label helpers"
 
 Read `src/main/services/quotes.ts` first — mirror `addScriptureQuote` (line 524, the `scripture_ref`/`scripture_translation` insert with `book_id NULL`) and `addCommentaryQuote` (line 807, the `commentary_source_id`/`commentary_ref` insert) exactly. Add the BoC branch to `citationForRow` (line 310) alongside its existing `scripture_ref` branch (line 316) and the commentary branch — key it on `r.boc_ref`/`r.boc_source_id`. Note `addScriptureHighlight` is the *store* action name (`useStore.ts:1000`); the *service* function is `addScriptureQuote`.
 
-- [ ] **Step 1: Write the failing test** (extend `quotes.test.ts`, in-memory-DB harness):
+- [x] **Step 1: Write the failing test** (extend `quotes.test.ts`, in-memory-DB harness):
 
 ```ts
 // harness: in-memory db + runMigrations + boc.createSource to make a source row …
@@ -266,10 +266,10 @@ it('creates a BoC quote row with boc_ref and a BoC citation', () => {
 })
 ```
 
-- [ ] **Step 2: Run → FAIL.**
-- [ ] **Step 3: Implement** the migration, the two service functions, the `citationForRow` branch, and the IPC surface (mirror the scripture/commentary quote precedents named above). Then `npm run typecheck`.
-- [ ] **Step 4: Run → PASS** (`npm test -- src/main/services/quotes.test.ts`) and full `npm test` (no regressions).
-- [ ] **Step 5: Commit**
+- [x] **Step 2: Run → FAIL.**
+- [x] **Step 3: Implement** the migration, the two service functions, the `citationForRow` branch, and the IPC surface (mirror the scripture/commentary quote precedents named above). Then `npm run typecheck`.
+- [x] **Step 4: Run → PASS** (`npm test -- src/main/services/quotes.test.ts`) and full `npm test` (no regressions).
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/main/db/migrations.ts src/main/services/quotes.ts src/main/services/quotes.test.ts src/shared/ipc.ts src/preload/index.ts src/main/ipc/index.ts
@@ -292,10 +292,10 @@ git commit -m "Add Book of Concord quote write-path (migration v19 + IPC)"
 
 Read `useStore.ts:39-100, 911-1010` first. `openInPane`/`setPaneContent`/`paneFromContent` are already generic — no change needed beyond the type unions.
 
-- [ ] **Step 1: Add the type-union members** (`PaneKind`, `Pane`, `PaneContent`, `QuoteGroupRef`) and the two state fields with initial values (`bocLookup: null`, `bocMatches: []`).
-- [ ] **Step 2: Add `navigateBoc`, `bocSectionClicked`, `showConfessions`, `addBocQuote`**, each mirroring the named Bible action line-for-line with BoC fields/APIs.
-- [ ] **Step 3: Typecheck** — `npm run typecheck` clean. (No unit test; store actions aren't unit-tested in this codebase. Their behavior is exercised by the browser checks in Tasks 5–8.)
-- [ ] **Step 4: Commit**
+- [x] **Step 1: Add the type-union members** (`PaneKind`, `Pane`, `PaneContent`, `QuoteGroupRef`) and the two state fields with initial values (`bocLookup: null`, `bocMatches: []`).
+- [x] **Step 2: Add `navigateBoc`, `bocSectionClicked`, `showConfessions`, `addBocQuote`**, each mirroring the named Bible action line-for-line with BoC fields/APIs.
+- [x] **Step 3: Typecheck** — `npm run typecheck` clean. (No unit test; store actions aren't unit-tested in this codebase. Their behavior is exercised by the browser checks in Tasks 5–8.)
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/renderer/src/store/useStore.ts
@@ -326,21 +326,21 @@ git commit -m "Add 'boc' pane kind and Book of Concord store actions"
     compact?: boolean
   }
   ```
-  Behavior: loads the section via `api.getBocSection(documentCode, sectionOrdinal, bocSourceId)`; renders `section.text` with its inline `[N]` paragraph markers styled as a clickable gutter (each `[N]` → `<span data-para={N} class="bp">`); a source `<select>` when `sources.length > 1` (mirror the translation dropdown at `ScriptureReader.tsx:226-241`); prev/next section nav via `onNavigate(ordinal ± 1)`; text-selection → color popover → `onQuote(paragraph, text)` (mirror `onBodyMouseUp`/`pickColor` at `ScriptureReader.tsx:159-207`, but NO `provider` gate — always enabled). Clicking a paragraph calls `onSectionClick(documentCode, sectionOrdinal)` to trigger commentary (the section is the lookup unit; the paragraph is for citation only).
+  Behavior: loads the section via `api.getBocSection(documentCode, sectionOrdinal, bocSourceId)`; renders `section.text` with its inline `[N]` paragraph markers styled as a clickable gutter (each `[N]` → `<span data-para={N} class="bp">`); a source `<select>` when `sources.length > 1` (mirror the translation dropdown at `ScriptureReader.tsx:226-241`); prev/next section nav via `onNavigate(<adjacent ordinal>)`; text-selection → color popover → `onQuote(paragraph, text)` (mirror `onBodyMouseUp`/`pickColor` at `ScriptureReader.tsx:159-207`, but NO `provider` gate — always enabled). Clicking a paragraph calls `onSectionClick(documentCode, sectionOrdinal)` to trigger commentary (the section is the lookup unit; the paragraph is for citation only).
 - `BocPane` (mirror `BiblePane.tsx`): owns `documentCode = pane.documentCode ?? 'AC'`, `sectionOrdinal = pane.sectionOrdinal ?? 1`, `bocSourceId = pane.bocSourceId ?? sources[0]?.id`; a left rail listing `BOC_DOCUMENTS` (14) and, for the current document, its sections from `api.listBocDocumentSections(documentCode, bocSourceId)` (grouped under `section_part` headings where present); `navigate()` → `setPaneContent(pane.id, { kind: 'boc', documentCode, sectionOrdinal, bocSourceId })`; wires `onSectionClick={bocSectionClicked}`, `onQuote={(para, text) => addBocQuote({...})}`, `onSourceChange`, and renders `BocReader`.
 - `PaneFrame.tsx`: add, next to the bible headerless branch (line 67), `if (pane.kind === 'boc' && pane.documentCode && pane.sectionOrdinal != null) return <headerless BocPane>`.
 
-- [ ] **Step 1** Create `BocReader.tsx` per the contract (copy `ScriptureReader.tsx` structure; strip the audio block, testament logic, and the `provider` highlight gate; swap verse→paragraph, book/chapter→document/section, `api.getScriptureChapter`→`api.getBocSection`).
-- [ ] **Step 2** Create `BocPane.tsx` per the contract (copy `BiblePane.tsx`; replace the 66-book testament nav with the 14-document + sections rail; replace translation with source picker).
-- [ ] **Step 3** Add the `PaneFrame.tsx` headerless `'boc'` branch.
-- [ ] **Step 4 — Typecheck:** `npm run typecheck` clean.
-- [ ] **Step 5 — Browser verify** (requires an indexed BoC source in the vault — convert the Reader's Edition with `tools/boc-epub-to-md.mjs` into the `confessions/` and `confessions-commentary/` vault folders first, restart so `syncBocFolder` indexes it):
+- [x] **Step 1** Create `BocReader.tsx` per the contract (copy `ScriptureReader.tsx` structure; strip the audio block, testament logic, and the `provider` highlight gate; swap verse→paragraph, book/chapter→document/section, `api.getScriptureChapter`→`api.getBocSection`).
+- [x] **Step 2** Create `BocPane.tsx` per the contract (copy `BiblePane.tsx`; replace the 66-book testament nav with the 14-document + sections rail; replace translation with source picker).
+- [x] **Step 3** Add the `PaneFrame.tsx` headerless `'boc'` branch.
+- [x] **Step 4 — Typecheck:** `npm run typecheck` clean.
+- [x] **Step 5 — Browser verify** (requires an indexed BoC source in the vault — convert the Reader's Edition with `tools/boc-epub-to-md.mjs` into the `confessions/` and `confessions-commentary/` vault folders first, restart so `syncBocFolder` indexes it):
   - `preview_start` the dev server. In the app, temporarily trigger a `boc` pane (e.g. call `openInPane({kind:'boc', documentCode:'AC', sectionOrdinal:6, bocSourceId:<id>})` via the devtools console, or wire the nav in Task 6 first and come back).
   - `read_page`: confirm AC section 6 renders "Justification" text with `[N]` markers, a source picker, and prev/next nav.
   - `read_console_messages`: no errors.
   - Select text → confirm the color popover appears (no provider gate).
   - Screenshot as proof.
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/renderer/src/components/library/BocReader.tsx src/renderer/src/components/library/BocPane.tsx src/renderer/src/components/library/PaneFrame.tsx
@@ -362,11 +362,11 @@ git commit -m "Add BocReader + BocPane and wire the boc pane frame"
 - `ThreePanel.railActiveId` (line 49): light `'confessions'` when the focused pane is `kind === 'boc'`.
 - `centerNode()` needs NO change — a `boc` pane opens via `showConfessions()` and falls through `default → CenterWorkspace`, exactly like Scripture.
 
-- [ ] **Step 1** Add the `LEFT_VIEWS` + `CENTER_EMPTY` entries.
-- [ ] **Step 2** Add the `selectLeftView` + `railActiveId` branches, importing `showConfessions` from the store.
-- [ ] **Step 3 — Typecheck** clean.
-- [ ] **Step 4 — Browser verify:** reload; a "Confessions" icon appears in the left rail; clicking it opens/focuses a BoC pane (or the empty-state copy if none); the rail item highlights when a boc pane is focused. Screenshot.
-- [ ] **Step 5: Commit**
+- [x] **Step 1** Add the `LEFT_VIEWS` + `CENTER_EMPTY` entries.
+- [x] **Step 2** Add the `selectLeftView` + `railActiveId` branches, importing `showConfessions` from the store.
+- [x] **Step 3 — Typecheck** clean.
+- [x] **Step 4 — Browser verify:** reload; a "Confessions" icon appears in the left rail; clicking it opens/focuses a BoC pane (or the empty-state copy if none); the rail item highlights when a boc pane is focused. Screenshot.
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/renderer/src/components/navigation.ts src/renderer/src/components/ThreePanel.tsx
@@ -389,12 +389,12 @@ git commit -m "Add Confessions left-nav tab"
 - `ThreePanel` right-tab switch (line 215): add `rightTabId === 'boc-commentary' → <BocCommentaryPanel/>`.
 - `ThreePanel` `readerTab` (line 65) + `selectRightTab` widening (line 74): add `'boc-commentary'` to the widen conditions.
 
-- [ ] **Step 1** Extract `CommentaryPanelView` (pure presentational) from `CommentaryPanel`; keep `CommentaryPanel` behavior identical (Bible wrapper). Typecheck.
-- [ ] **Step 2** Create `BocCommentaryPanel` wrapper.
-- [ ] **Step 3** Add the `RIGHT_TABS` entry + the `ThreePanel` switch/widening branches.
-- [ ] **Step 4 — Typecheck** clean.
-- [ ] **Step 5 — Browser verify:** open AC in a boc pane, click a section → the right sidebar switches to the "Confessions" commentary tab and shows the Reader's-Edition study note for that section, grouped by source; a "Quote" action on an excerpt creates a quote (check the Quotes view). Confirm the Bible commentary still works unchanged (click a verse). Screenshots of both.
-- [ ] **Step 6: Commit**
+- [x] **Step 1** Extract `CommentaryPanelView` (pure presentational) from `CommentaryPanel`; keep `CommentaryPanel` behavior identical (Bible wrapper). Typecheck.
+- [x] **Step 2** Create `BocCommentaryPanel` wrapper.
+- [x] **Step 3** Add the `RIGHT_TABS` entry + the `ThreePanel` switch/widening branches.
+- [x] **Step 4 — Typecheck** clean.
+- [x] **Step 5 — Browser verify:** open AC in a boc pane, click a section → the right sidebar switches to the "Confessions" commentary tab and shows the Reader's-Edition study note for that section, grouped by source; a "Quote" action on an excerpt creates a quote (check the Quotes view). Confirm the Bible commentary still works unchanged (click a verse). Screenshots of both.
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/renderer/src/components/library/CommentaryPanel.tsx src/renderer/src/components/library/BocCommentaryPanel.tsx src/renderer/src/components/navigation.ts src/renderer/src/components/ThreePanel.tsx
@@ -415,11 +415,11 @@ git commit -m "Parameterize CommentaryPanel; add BoC commentary sidebar tab"
 - `RIGHT_TABS` gains `{ id: 'reference-boc', label: 'Confessions ref', icon: <BookMarked/> }`.
 - `ThreePanel`: switch branch `reference-boc → <ReferenceBocPanel/>`; add to `readerTab`/`selectRightTab` widening.
 
-- [ ] **Step 1** Create `ReferenceBocPanel.tsx` per the contract (copy `ReferenceBiblePanel.tsx`; swap book-search for the 14-document picker; swap `ScriptureReader` for `BocReader`; new session key). Omit the drag handle.
-- [ ] **Step 2** Add the `RIGHT_TABS` entry + `ThreePanel` branches.
-- [ ] **Step 3 — Typecheck** clean.
-- [ ] **Step 4 — Browser verify:** the "Confessions ref" sidebar tab shows an independent BoC reader; picking a document/section renders it; "Open in center" promotes it to a center pane; state persists across a reload (session key). Screenshot.
-- [ ] **Step 5: Commit**
+- [x] **Step 1** Create `ReferenceBocPanel.tsx` per the contract (copy `ReferenceBiblePanel.tsx`; swap book-search for the 14-document picker; swap `ScriptureReader` for `BocReader`; new session key). Omit the drag handle.
+- [x] **Step 2** Add the `RIGHT_TABS` entry + `ThreePanel` branches.
+- [x] **Step 3 — Typecheck** clean.
+- [x] **Step 4 — Browser verify:** the "Confessions ref" sidebar tab shows an independent BoC reader; picking a document/section renders it; "Open in center" promotes it to a center pane; state persists across a reload (session key). Screenshot.
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/renderer/src/components/library/ReferenceBocPanel.tsx src/renderer/src/components/navigation.ts src/renderer/src/components/ThreePanel.tsx
@@ -444,3 +444,26 @@ git commit -m "Add Confessions reference sidebar panel"
 **Type consistency:** `BocCiteRef` (Task 1) consumed by Task 3's `addBocQuote`; `BocCommentaryMatch`/`BocSource`/`BocSectionRow` (Plan 1 ipc.ts) used identically in Tasks 2/4/5/7/8; `navigateBoc`/`bocSectionClicked`/`showConfessions`/`addBocQuote` (Task 4) called by Tasks 5–8; ref format `CODE:ordinal` from `formatBocRef` used in Task 3.
 
 **Verification honesty:** Tasks 1–3 are vitest-TDD (pure + backend). Tasks 4–8 are typecheck + browser-preview-gated because the codebase has no component-test infra — each names concrete browser checks, not "it works." The browser checks in Tasks 5/7/8 require an indexed Reader's Edition in the vault (run the Plan-1 converter first); Task 5 Step 5 notes this prerequisite.
+
+---
+
+## As-built (all 8 tasks merged, 2026-07-20)
+
+Where the shipped code differs from the plan above. The plan text is left intact; these notes override it.
+
+**Task 5 — prev/next is index-based, not `ordinal ± 1`.** The Task 5 contract said `onNavigate(ordinal ± 1)`. That would be a bug: section ordinals have **25 gaps across 7 documents** in the Reader's Edition (AC skips 2; FC-EP has 7 gaps inside a 24-wide range), so `± 1` lands on sections that don't exist. As built, `BocReader` derives `prevOrdinal`/`nextOrdinal` by index into the loaded ordinal list and disables the buttons at the ends (`BocReader.tsx:184-186`). Every other BoC surface (pane rail, picker, reference panel) drives off `listBocDocumentSections` too, so gaps are handled everywhere. The prose above has been corrected.
+
+**Task 7 — `onQuote` carries the text; `bocLookup` carries the section identity.**
+- The plan's view contract had `onQuote: () => void`. As built it is `(text: string) => void | Promise<void>`: the literal signature would have dropped select-part-of-an-excerpt-to-quote, and the `Promise` return preserves the pre-refactor behaviour of flashing the ✓ only once the write lands.
+- `bocLookup` gained `sectionNumber`/`sectionLabel` beyond the planned `{documentCode, ordinal}`. A commentary quote's citation needs them and they are not recoverable from an ordinal — the same reason migration v19 stores them as columns. `bocSectionClicked` takes an optional third `section` argument; `BocPane`/`ReferenceBocPanel` pass the row they already hold.
+- `CommentaryPanelView` takes `headLabel: string | null` (null ⇒ render `noLookupHint`) rather than a separate `hasLookup` boolean.
+- `ThreePanel`'s twice-duplicated reader-tab list was collapsed into one `WIDE_RIGHT_TABS` set rather than growing a third copy.
+
+**Task 8 — selects, not a go-to box.** `ReferenceBiblePanel` has a `parseReference` go-to input; BoC has no parseable `"Rom 3:28"` analogue because sections are titled rather than numbered. As built the panel navigates with a document `<select>` plus a section `<select>`.
+
+**Pulled forward from Plan 3** (the tabbed-panes merge made them prerequisites, not polish):
+- `useOpenElsewhereMenu` wired onto the `BocPane` section rail — without it BoC sections had no "open in new tab"/"open in split pane", which every other content kind had.
+- A **Confessions browse tab in `PanePicker`**, so a blank new tab can reach BoC at all. Unrestricted mode only: `ProjectItem` has no `boc` kind yet, so offering it inside a project would offer an "add" that cannot work. Plan 3 Task 3 finishes this.
+- `bocSectionLabel` extracted into `lib/bocGrouping.ts` so the rail and the picker share one label format.
+
+**Verified at merge:** `npm run typecheck` clean; `npm test` 141/141 across 20 files. Data-layer preconditions confirmed against the live database (read-only copy): `user_version = 19` with all six as-built columns, 293 sections across 14 documents, 217 unnumbered sections exercising the label-fallback path, 141 commentary excerpts covering **127 of 293** sections, and `lookupBocSection('AC', 6)` returning the Reader's Edition note on Justification. **The GUI interactions were not machine-verified** — desktop automation cannot resolve an unpackaged Electron dev build, and the renderer cannot boot in a plain browser tab because `api = window.loci` comes from the preload. The right-click menu, the sidebar tab switch, the Bible-commentary regression, and reference-panel persistence were left to a human pass.
