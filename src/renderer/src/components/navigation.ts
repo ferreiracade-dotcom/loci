@@ -42,7 +42,8 @@ export const RIGHT_TABS: RailItem[] = [
   { id: 'reference-pdf', label: 'Books', icon: File },
   { id: 'reference-bible', label: 'Bible', icon: BookOpenText },
   { id: 'commentary', label: 'Commentary', icon: MessageSquareQuote },
-  { id: 'boc-commentary', label: 'Confessions', icon: MessageSquareText }
+  { id: 'boc-commentary', label: 'Confessions', icon: MessageSquareText },
+  { id: 'reference-boc', label: 'Confessions ref', icon: BookMarked }
 ]
 
 interface EmptyCopy {

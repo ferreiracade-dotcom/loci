@@ -17,6 +17,7 @@ import { ReferencePdfPanel } from './library/ReferencePdfPanel'
 import { ReferenceBiblePanel } from './library/ReferenceBiblePanel'
 import { CommentaryPanel } from './library/CommentaryPanel'
 import { BocCommentaryPanel } from './library/BocCommentaryPanel'
+import { ReferenceBocPanel } from './library/ReferenceBocPanel'
 import { SearchView } from './library/SearchView'
 import { DashboardView } from './library/DashboardView'
 import { clamp } from '../lib/util'
@@ -30,7 +31,13 @@ const NOTES_MAX = 480
 const DIVIDER_ALLOWANCE = 14
 /** Reference tabs that render a reader and so want a wider notes panel: they raise the panel's
  *  max width and auto-widen a narrow panel the first time one is chosen. */
-const WIDE_RIGHT_TABS = new Set(['reference-pdf', 'reference-bible', 'commentary', 'boc-commentary'])
+const WIDE_RIGHT_TABS = new Set([
+  'reference-pdf',
+  'reference-bible',
+  'commentary',
+  'boc-commentary',
+  'reference-boc'
+])
 
 export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const layout = useStore((s) => s.layout)!
@@ -234,6 +241,8 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
                 <CommentaryPanel />
               ) : rightTabId === 'boc-commentary' ? (
                 <BocCommentaryPanel />
+              ) : rightTabId === 'reference-boc' ? (
+                <ReferenceBocPanel />
               ) : (
                 <EmptyState
                   icon={activeTab.icon}

@@ -777,6 +777,24 @@ select.field {
   flex: 1;
   min-height: 0;
 }
+/* BoC has no parseable "Rom 3:28" form, so the Confessions reference panel navigates with two
+   selects where the Bible panel has a go-to box. */
+.ref-boc-select {
+  flex: 0 0 auto;
+  max-width: 30%;
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  background: none;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  padding: 3px 4px;
+}
+.ref-boc-section-select {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: none;
+}
 
 /* Commentary reference sidebar (verse-click results, grouped by source) */
 .commentary-panel {
