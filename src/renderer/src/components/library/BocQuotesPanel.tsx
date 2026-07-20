@@ -21,13 +21,17 @@ export function BocQuotesPanel() {
   const focusedTab = tabs.find((t) => t.id === focusedTabId)
 
   const [sources, setSources] = useState<BocSource[]>([])
+  const [commentarySources, setCommentarySources] = useState<BocSource[]>([])
   const [documentCode, setDocumentCode] = useState('AC')
   const [quotes, setQuotes] = useState<Quote[]>([])
 
-  const bocSourceId = sources[0]?.id ?? ''
+  // Used only for the "no BoC content indexed at all" empty state below — the quote query
+  // itself is document-scoped and no longer needs a specific source id.
+  const hasAnyBocSource = sources.length > 0 || commentarySources.length > 0
 
   useEffect(() => {
     void api.listBocSources().then(setSources)
+    void api.listBocCommentarySources().then(setCommentarySources)
   }, [])
 
   // Follow the focused BoC tab's document.
@@ -36,12 +40,8 @@ export function BocQuotesPanel() {
   }, [focusedTab?.kind, focusedTab?.documentCode])
 
   const reload = useCallback(async () => {
-    if (!bocSourceId) {
-      setQuotes([])
-      return
-    }
-    setQuotes(await api.listBocQuotes(bocSourceId, documentCode))
-  }, [bocSourceId, documentCode])
+    setQuotes(await api.listBocQuotesForDocument(documentCode))
+  }, [documentCode])
 
   useEffect(() => {
     void reload()
@@ -53,7 +53,7 @@ export function BocQuotesPanel() {
     onDelete: (id) => void api.deleteQuote(id).then(reload)
   })
 
-  if (!bocSourceId) {
+  if (!hasAnyBocSource) {
     return <div className="quotes-empty">No Confessions text indexed yet.</div>
   }
 

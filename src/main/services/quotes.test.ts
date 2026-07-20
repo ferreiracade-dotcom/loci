@@ -29,7 +29,14 @@ afterEach(() => {
 
 // Imported after the mock is declared; vitest hoists vi.mock above this either way.
 import * as boc from './boc'
-import { addBocQuote, addBocCommentaryQuote, listAllQuotes, listBocQuotes, listQuoteGroups } from './quotes'
+import {
+  addBocQuote,
+  addBocCommentaryQuote,
+  listAllQuotes,
+  listBocQuotes,
+  listBocQuotesForDocument,
+  listQuoteGroups
+} from './quotes'
 
 describe('migration v19', () => {
   it('adds the BoC quote columns and reaches version 19', () => {
@@ -249,5 +256,70 @@ describe('BoC quote read path', () => {
 
   it('emits no BoC groups when nothing has been quoted', () => {
     expect(listQuoteGroups('BSB').boc).toEqual([])
+  })
+})
+
+// Regression: BocQuotesPanel only ever fetched from the primary-text source (listBocQuotes with
+// a single bocSourceId), so quotes anchored to a commentary source (boc_commentary_source_id)
+// never appeared in the panel. listBocQuotesForDocument is a document-scoped query that returns
+// every quote for a document regardless of which source column it's anchored to.
+describe('listBocQuotesForDocument', () => {
+  it('returns both primary-text and commentary-anchored quotes for a document, ordered by section ordinal', () => {
+    const primary = boc.createSource({
+      displayName: "Reader's Edition",
+      author: null,
+      mdRelativePath: 'ap-primary.md'
+    })
+    const commentary = boc.createCommentarySource({
+      displayName: "Reader's Edition Notes",
+      author: 'Ed.',
+      mdRelativePath: 'ap-notes.md'
+    })
+
+    // Commentary quote first, at a later section ordinal, to prove the result is sorted rather
+    // than merely returned in insertion order.
+    addBocCommentaryQuote({
+      bocSourceId: commentary.id,
+      documentCode: 'AP',
+      sectionOrdinal: 10,
+      sectionNumber: 'IV',
+      sectionLabel: 'Justification',
+      paragraph: null,
+      text: 'A note on justification.'
+    })
+    addBocQuote({
+      bocSourceId: primary.id,
+      documentCode: 'AP',
+      sectionOrdinal: 2,
+      sectionNumber: 'II',
+      sectionLabel: 'Original Sin',
+      paragraph: 1,
+      text: 'Also they teach that since the fall of Adam…'
+    })
+
+    const found = listBocQuotesForDocument('AP')
+    expect(found.map((q) => q.text)).toEqual([
+      'Also they teach that since the fall of Adam…',
+      'A note on justification.'
+    ])
+  })
+
+  it('excludes quotes from a different document', () => {
+    const primary = boc.createSource({
+      displayName: "Reader's Edition",
+      author: null,
+      mdRelativePath: 'ap-primary2.md'
+    })
+    addBocQuote({
+      bocSourceId: primary.id,
+      documentCode: 'SC',
+      sectionOrdinal: 1,
+      sectionNumber: null,
+      sectionLabel: 'Preface',
+      paragraph: null,
+      text: 'Small Catechism quote.'
+    })
+
+    expect(listBocQuotesForDocument('AP')).toEqual([])
   })
 })
