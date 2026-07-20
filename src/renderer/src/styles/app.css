@@ -197,6 +197,95 @@ select.field {
   min-height: 0;
   display: flex;
 }
+.tab-strip {
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+  flex: 0 0 auto;
+}
+.center-workspace .ws-pane:not(:only-child) .tab-strip.pane-focused {
+  box-shadow: inset 0 2px 0 var(--accent);
+}
+.tab-slot {
+  display: flex;
+  align-items: stretch;
+  position: relative;
+  flex: 1 1 0;
+  min-width: 84px;
+  max-width: 200px;
+}
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+  padding: 6px 6px 6px 9px;
+  border-right: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+}
+.tab.active {
+  color: var(--text);
+  background: var(--base);
+}
+.tab.dragging {
+  opacity: 0.4;
+}
+.tab-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-ui);
+  font-size: 12px;
+}
+.tab-close {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: inherit;
+  border-radius: 4px;
+  padding: 2px;
+  cursor: pointer;
+}
+.tab-close:hover {
+  background: var(--accent-12);
+  color: var(--accent);
+}
+.tab-drop-indicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: -1px;
+  width: 2px;
+  background: var(--accent);
+  z-index: 1;
+}
+.tab-new {
+  flex: 0 0 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-left: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+}
+.tab-new:hover {
+  color: var(--accent);
+  background: var(--accent-12);
+}
 .ws-pane {
   min-width: 0;
   min-height: 0;
@@ -212,28 +301,6 @@ select.field {
 .pane-frame.drag-over {
   box-shadow: inset 0 0 0 2px var(--accent);
   background: var(--accent-12);
-}
-.pane-head {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 8px;
-  border-bottom: 1px solid var(--border);
-  background: var(--panel);
-  flex: 0 0 auto;
-  color: var(--muted);
-}
-.pane-frame.active .pane-head {
-  color: var(--text);
-}
-.pane-title {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-family: var(--font-ui);
-  font-size: 12px;
 }
 .pane-back {
   display: inline-flex;
@@ -267,32 +334,6 @@ select.field {
   min-width: 0;
   min-height: 0;
 }
-/* Accent the focused pane only when two panes are open. */
-.center-workspace .ws-pane:not(:only-child) .pane-frame.active .pane-head {
-  box-shadow: inset 0 2px 0 var(--accent);
-}
-/* Bible panes have no pane-head, so accent the frame itself. */
-.center-workspace .ws-pane:not(:only-child) .pane-frame.headerless.active {
-  box-shadow: inset 0 2px 0 var(--accent);
-}
-
-/* "Open a second pane" strip, shown when a single pane is open. */
-.ws-add {
-  flex: 0 0 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-left: 1px solid var(--border);
-  background: var(--panel);
-  color: var(--muted);
-  cursor: pointer;
-}
-.ws-add:hover {
-  color: var(--accent);
-  background: var(--accent-12);
-}
-
 /* Empty-pane content picker */
 .pane-picker {
   flex: 1;
@@ -431,6 +472,14 @@ select.field {
 .pp-add-source .pp-scroll {
   max-height: 260px;
   overflow-y: auto;
+}
+.pp-browse {
+  /* The default (non-restricted) picker's Notes/Library/Bible/Quotes tabs are its primary
+     content, not a nested sub-section — same tab/scroll structure as .pp-add-source, but
+     without the card border/background/height cap. */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .pp-search-sm {
   padding: 7px 10px;
@@ -902,7 +951,28 @@ select.field {
 }
 .ref-promote-wrap {
   position: relative;
+  display: inline-flex;
+  gap: 4px;
   flex: 0 0 auto;
+}
+.ref-promote-split {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+.ref-promote-split:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.ref-promote-split:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 .ref-promote {
   display: inline-flex;
@@ -925,47 +995,6 @@ select.field {
 .ref-promote:disabled {
   opacity: 0.5;
   cursor: default;
-}
-.ref-promote-menu {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  z-index: 30;
-  min-width: 210px;
-  max-width: 280px;
-  background: var(--panel);
-  border: 1px solid var(--border-strong);
-  border-radius: 8px;
-  padding: 5px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.rpm-label {
-  font-size: 11px;
-  color: var(--muted);
-  padding: 4px 8px 2px;
-}
-.rpm-item {
-  display: block;
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: 1px solid transparent;
-  border-radius: 5px;
-  color: var(--text);
-  font-family: var(--font-ui);
-  font-size: 12.5px;
-  padding: 7px 8px;
-  cursor: pointer;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.rpm-item:hover {
-  background: var(--accent-12);
-  border-color: var(--accent);
 }
 .ref-pdf-stage {
   flex: 1;
@@ -3838,14 +3867,17 @@ select.field {
   border-color: var(--gold);
 }
 .nt-project-badge {
+  width: auto !important;
   display: inline-flex;
   align-items: center;
   gap: 5px;
   font-size: 11px;
-  padding: 0 8px;
+  padding: 0 8px !important;
   color: var(--accent);
   background: var(--accent-12);
   border-radius: 999px;
+  border: none;
+  cursor: pointer;
 }
 .note-cm {
   flex: 1;

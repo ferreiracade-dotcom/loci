@@ -34,7 +34,8 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const saveLayout = useStore((s) => s.saveLayout)
   const persistLayout = useStore((s) => s.persistLayout)
   const showScripture = useStore((s) => s.showScripture)
-  const panes = useStore((s) => s.panes)
+  const tabs = useStore((s) => s.tabs)
+  const paneOrder = useStore((s) => s.paneOrder)
   const activePaneId = useStore((s) => s.activePaneId)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -44,14 +45,15 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
     else saveLayout({ activeLeftView: id })
   }
 
-  // In the workspace, light up the rail item matching the focused pane (Bible→Scripture,
-  // note→Notes); books have no rail entry, so they leave the rail unlit.
-  const focusedPane = panes.find((p) => p.id === activePaneId)
+  // In the workspace, light up the rail item matching the focused pane's active tab
+  // (Bible→Scripture, note→Notes); books have no rail entry, so they leave the rail unlit.
+  const focusedTabId = paneOrder.find((p) => p.id === activePaneId)?.activeTabId
+  const focusedTab = tabs.find((t) => t.id === focusedTabId)
   const railActiveId =
-    layout.activeLeftView === 'reading' && focusedPane
-      ? focusedPane.kind === 'bible'
+    layout.activeLeftView === 'reading' && focusedTab
+      ? focusedTab.kind === 'bible'
         ? 'scripture'
-        : focusedPane.kind === 'note'
+        : focusedTab.kind === 'note'
           ? 'notes'
           : layout.activeLeftView
       : layout.activeLeftView

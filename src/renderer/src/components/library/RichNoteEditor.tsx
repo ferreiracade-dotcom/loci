@@ -345,6 +345,7 @@ export function RichNoteEditor({ path }: { path: string }) {
   const loadStandaloneNotes = useStore((s) => s.loadStandaloneNotes)
   const scriptureTranslation = useStore((s) => s.scriptureTranslation)
   const openScripture = useStore((s) => s.openScripture)
+  const openTabInSplit = useStore((s) => s.openTabInSplit)
 
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
   const [exporting, setExporting] = useState(false)
@@ -571,9 +572,13 @@ export function RichNoteEditor({ path }: { path: string }) {
           {exporting ? <Loader2 size={15} className="spin" /> : <FileDown size={15} />}
         </button>
         {noteType === 'project' ? (
-          <span className="nt-project-badge" title="This note is a Project — its sources open in the other pane">
+          <button
+            className="nt-project-badge"
+            title="Show this project's sources in the split pane"
+            onClick={() => openTabInSplit({ kind: 'picker' })}
+          >
             <FolderKanban size={13} /> Project
-          </span>
+          </button>
         ) : (
           <button
             className="nt-make-project"
