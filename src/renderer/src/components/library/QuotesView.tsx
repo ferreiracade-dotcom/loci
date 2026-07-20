@@ -27,7 +27,7 @@ export function QuotesView() {
   const tabs = useStore((s) => s.tabs)
   const books = useStore((s) => s.books)
 
-  const [groups, setGroups] = useState<QuoteGroups>({ books: [], scripture: [], commentary: [] })
+  const [groups, setGroups] = useState<QuoteGroups>({ books: [], scripture: [], commentary: [], boc: [] })
   const [allQuotes, setAllQuotes] = useState<Quote[]>([])
   const [groupMode, setGroupMode] = useState<GroupMode>('source')
 
@@ -106,6 +106,9 @@ export function QuotesView() {
     if (activeGroup.type === 'commentary' && ref.type === 'commentary') {
       return activeGroup.sourceId === ref.sourceId
     }
+    if (activeGroup.type === 'boc' && ref.type === 'boc') {
+      return activeGroup.bocSourceId === ref.bocSourceId && activeGroup.documentCode === ref.documentCode
+    }
     if (activeGroup.type === 'author' && ref.type === 'author') return activeGroup.author === ref.author
     if (activeGroup.type === 'tag' && ref.type === 'tag') return activeGroup.tag === ref.tag
     return false
@@ -134,7 +137,7 @@ export function QuotesView() {
       ? byAuthor.length
       : groupMode === 'tag'
         ? byTag.tags.length + (byTag.untagged > 0 ? 1 : 0)
-        : groups.books.length + groups.scripture.length + groups.commentary.length
+        : groups.books.length + groups.scripture.length + groups.commentary.length + groups.boc.length
 
   return (
     <div className="quotes-nav">
@@ -252,6 +255,27 @@ export function QuotesView() {
                     c.displayName,
                     c.count,
                     c.sourceId
+                  )
+                )}
+              </>
+            )}
+
+            {groups.boc.length > 0 && (
+              <>
+                <div className="notes-group-head">Confessions</div>
+                {groups.boc.map((b) =>
+                  row(
+                    {
+                      type: 'boc',
+                      documentCode: b.documentCode,
+                      bocSourceId: b.bocSourceId,
+                      name: b.name
+                    },
+                    <BookMarked size={14} />,
+                    // Two sources can quote the same document, so name the source too.
+                    `${b.name} — ${b.sourceName}`,
+                    b.count,
+                    `${b.bocSourceId}:${b.documentCode}`
                   )
                 )}
               </>

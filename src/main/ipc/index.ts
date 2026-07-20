@@ -249,6 +249,9 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.addCommentaryQuote, (_e, input: CommentaryQuoteInput) =>
     quotes.addCommentaryQuote(input)
   )
+  ipcMain.handle(Channels.listBocQuotes, (_e, bocSourceId: string, documentCode: string) =>
+    quotes.listBocQuotes(bocSourceId, documentCode)
+  )
   ipcMain.handle(Channels.listCommentaryQuotes, (_e, sourceId: string) =>
     quotes.listCommentaryQuotes(sourceId)
   )

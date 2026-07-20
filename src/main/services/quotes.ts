@@ -1089,5 +1089,59 @@ export function listQuoteGroups(translation: string): QuoteGroups {
     )
     .all() as QuoteGroups['commentary']
 
-  return { books, scripture, commentary }
+  // Book of Concord: one group per (source, document). A quote's source is in boc_source_id for
+  // primary text and boc_commentary_source_id for notes — different tables, so resolve the
+  // display name from whichever matched rather than joining one of them.
+  const bocRows = db
+    .prepare(
+      `SELECT COALESCE(boc_source_id, boc_commentary_source_id) AS bocSourceId,
+              substr(boc_ref, 1, instr(boc_ref, ':') - 1) AS documentCode,
+              COUNT(*) AS count
+       FROM quotes
+       WHERE boc_ref IS NOT NULL AND instr(boc_ref, ':') > 0
+       GROUP BY bocSourceId, documentCode`
+    )
+    .all() as { bocSourceId: string; documentCode: string; count: number }[]
+
+  const bocSourceNames = new Map<string, string>()
+  for (const table of ['boc_sources', 'boc_commentary_sources']) {
+    for (const r of db.prepare(`SELECT id, display_name FROM ${table}`).all() as {
+      id: string
+      display_name: string
+    }[]) {
+      bocSourceNames.set(r.id, r.display_name)
+    }
+  }
+
+  const boc = bocRows
+    .map((r) => ({
+      bocSourceId: r.bocSourceId,
+      documentCode: r.documentCode,
+      name: bocDocument(r.documentCode)?.title ?? r.documentCode,
+      sourceName: bocSourceNames.get(r.bocSourceId) ?? 'Unknown source',
+      count: r.count
+    }))
+    .sort(
+      (a, b) =>
+        (bocDocument(a.documentCode)?.sortOrder ?? 0) - (bocDocument(b.documentCode)?.sortOrder ?? 0) ||
+        a.sourceName.localeCompare(b.sourceName)
+    )
+
+  return { books, scripture, commentary, boc }
+}
+
+/** Every quote captured from one BoC source within one document, in section order. Mirrors
+ *  listCommentaryQuotes; `bocSourceId` may be a primary-text or a commentary source id. */
+export function listBocQuotes(bocSourceId: string, documentCode: string): Quote[] {
+  const rows = getDb()
+    .prepare(
+      `SELECT * FROM quotes
+       WHERE (boc_source_id = @src OR boc_commentary_source_id = @src)
+         AND boc_ref LIKE @prefix`
+    )
+    .all({ src: bocSourceId, prefix: `${documentCode}:%` }) as QuoteRow[]
+  const ordinalOf = (r: QuoteRow): number => Number((r.boc_ref ?? '').split(':')[1] ?? 0)
+  rows.sort((a, b) => ordinalOf(a) - ordinalOf(b) || (a.boc_paragraph ?? 0) - (b.boc_paragraph ?? 0) || a.created - b.created)
+  const ctx = buildQuoteListCtx()
+  return rows.map((r) => rowToQuote(r, ctx))
 }

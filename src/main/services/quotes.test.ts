@@ -29,7 +29,7 @@ afterEach(() => {
 
 // Imported after the mock is declared; vitest hoists vi.mock above this either way.
 import * as boc from './boc'
-import { addBocQuote, addBocCommentaryQuote, listAllQuotes } from './quotes'
+import { addBocQuote, addBocCommentaryQuote, listAllQuotes, listBocQuotes, listQuoteGroups } from './quotes'
 
 describe('migration v19', () => {
   it('adds the BoC quote columns and reaches version 19', () => {
@@ -164,5 +164,90 @@ describe('citationForRow BoC branch', () => {
     db.prepare('UPDATE quotes SET citation_override = ? WHERE id = ?').run('My custom citation', q.id)
     const found = listAllQuotes().find((x) => x.id === q.id)
     expect(found?.citation).toBe('My custom citation')
+  })
+})
+
+// Regression: BoC quotes were written correctly but had no read path — listQuoteGroups emitted
+// no BoC group and QuoteGroupPane's boc branch stubbed to [], so saved quotes were unreachable
+// in the Quotes view. Confirmed against the live DB (4 orphaned rows) before this was fixed.
+describe('BoC quote read path', () => {
+  const seed = (): { primary: string; commentary: string } => {
+    const primary = boc.createSource({
+      displayName: "Reader's Edition",
+      author: null,
+      mdRelativePath: 'read.md'
+    })
+    const commentary = boc.createCommentarySource({
+      displayName: "Reader's Edition Notes",
+      author: 'Ed.',
+      mdRelativePath: 'read-notes.md'
+    })
+    addBocQuote({
+      bocSourceId: primary.id,
+      documentCode: 'AC',
+      sectionOrdinal: 6,
+      sectionNumber: 'IV',
+      sectionLabel: 'Justification',
+      paragraph: 2,
+      text: 'Primary text quote.'
+    })
+    addBocCommentaryQuote({
+      bocSourceId: commentary.id,
+      documentCode: 'AC',
+      sectionOrdinal: 6,
+      sectionNumber: 'IV',
+      sectionLabel: 'Justification',
+      paragraph: null,
+      text: 'Commentary note quote.'
+    })
+    return { primary: primary.id, commentary: commentary.id }
+  }
+
+  it('surfaces a group per (source, document) with a count', () => {
+    const { primary, commentary } = seed()
+    const groups = listQuoteGroups('BSB').boc
+    expect(groups).toHaveLength(2)
+
+    const p = groups.find((g) => g.bocSourceId === primary)
+    expect(p).toMatchObject({ documentCode: 'AC', count: 1 })
+    expect(p?.name).toContain('Augsburg Confession')
+
+    // The commentary source lives in a different table but must still group.
+    expect(groups.find((g) => g.bocSourceId === commentary)).toMatchObject({
+      documentCode: 'AC',
+      count: 1
+    })
+  })
+
+  it('lists the quotes for a group, keeping primary and commentary sources apart', () => {
+    const { primary, commentary } = seed()
+
+    const fromPrimary = listBocQuotes(primary, 'AC')
+    expect(fromPrimary.map((q) => q.text)).toEqual(['Primary text quote.'])
+    expect(fromPrimary[0].citation).toBe("AC IV, 2 (Reader's Edition)")
+
+    const fromCommentary = listBocQuotes(commentary, 'AC')
+    expect(fromCommentary.map((q) => q.text)).toEqual(['Commentary note quote.'])
+  })
+
+  it('scopes a group to its own document', () => {
+    const { primary } = seed()
+    addBocQuote({
+      bocSourceId: primary,
+      documentCode: 'SC',
+      sectionOrdinal: 1,
+      sectionNumber: null,
+      sectionLabel: 'Preface',
+      paragraph: null,
+      text: 'Small Catechism quote.'
+    })
+
+    expect(listBocQuotes(primary, 'AC').map((q) => q.text)).toEqual(['Primary text quote.'])
+    expect(listBocQuotes(primary, 'SC').map((q) => q.text)).toEqual(['Small Catechism quote.'])
+    expect(listQuoteGroups('BSB').boc.filter((g) => g.bocSourceId === primary)).toHaveLength(2)
+  })
+
+  it('emits no BoC groups when nothing has been quoted', () => {
+    expect(listQuoteGroups('BSB').boc).toEqual([])
   })
 })

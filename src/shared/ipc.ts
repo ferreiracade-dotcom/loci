@@ -49,6 +49,7 @@ export const Channels = {
   deleteQuote: 'quotes:delete',
   addCommentaryQuote: 'quotes:addCommentary',
   listCommentaryQuotes: 'quotes:listCommentary',
+  listBocQuotes: 'quotes:listBoc',
   listQuoteGroups: 'quotes:listGroups',
   listAllQuotes: 'quotes:listAll',
   addBocQuote: 'quotes:addBoc',
@@ -270,6 +271,9 @@ export interface LociApi {
   addCommentaryQuote(input: CommentaryQuoteInput): Promise<Quote>
   /** Saved commentary quotes for one source, ordered by chapter then verse. */
   listCommentaryQuotes(sourceId: string): Promise<Quote[]>
+  /** Quotes captured from one BoC source within one document. `bocSourceId` may be a primary-text
+   *  or a commentary source id. */
+  listBocQuotes(bocSourceId: string, documentCode: string): Promise<Quote[]>
   /** Everything that has saved quotes, for the Quotes nav section: books (PDFs), Bible
    *  chapters (for the given translation), and commentary sources. */
   listQuoteGroups(translation: string): Promise<QuoteGroups>
@@ -499,6 +503,17 @@ export interface QuoteGroups {
   scripture: { book: string; chapter: number; name: string; count: number }[]
   /** Commentary sources with captured quotes. */
   commentary: { sourceId: string; displayName: string; author: string | null; count: number }[]
+  /** Book of Concord documents with captured quotes, one row per (source, document). Primary-text
+   *  and commentary sources live in separate tables but group side by side here. */
+  boc: {
+    bocSourceId: string
+    documentCode: string
+    /** The document's title, e.g. "Augsburg Confession". */
+    name: string
+    /** The source it was quoted from, e.g. "Reader's Edition Notes". */
+    sourceName: string
+    count: number
+  }[]
 }
 
 export interface Annotation {

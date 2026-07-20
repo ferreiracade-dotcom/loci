@@ -75,7 +75,12 @@ export function PanePicker({
   }, [scriptureTranslations.length, loadScripture])
 
   const { onContextMenu, menu } = useOpenElsewhereMenu()
-  const [quoteGroups, setQuoteGroups] = useState<QuoteGroups>({ books: [], scripture: [], commentary: [] })
+  const [quoteGroups, setQuoteGroups] = useState<QuoteGroups>({
+    books: [],
+    scripture: [],
+    commentary: [],
+    boc: []
+  })
 
   // Load once (and whenever the translation changes, since scripture-quote groups are
   // translation-scoped) — not debounced/query-dependent, matching the Notes/Library pattern
@@ -162,6 +167,9 @@ export function PanePicker({
   )
   const tabQuoteCommentaryHits = quoteGroups.commentary.filter(
     (c) => !browseQl || c.displayName.toLowerCase().includes(browseQl)
+  )
+  const tabQuoteBocHits = quoteGroups.boc.filter(
+    (b) => !browseQl || `${b.name} ${b.sourceName}`.toLowerCase().includes(browseQl)
   )
 
   // In restricted mode, the top box also runs a real content search over the collection.
@@ -517,7 +525,30 @@ export function PanePicker({
                   </button>
                 )
               })}
-              {tabQuoteBookHits.length === 0 && tabQuoteScriptureHits.length === 0 && tabQuoteCommentaryHits.length === 0 && (
+              {tabQuoteBocHits.length > 0 && <div className="pp-sec">Confessions</div>}
+              {tabQuoteBocHits.map((b) => {
+                const ref: QuoteGroupRef = {
+                  type: 'boc',
+                  documentCode: b.documentCode,
+                  bocSourceId: b.bocSourceId,
+                  name: b.name
+                }
+                return (
+                  <button
+                    key={`qbo-${b.bocSourceId}-${b.documentCode}`}
+                    className="pp-item"
+                    onClick={() => place({ kind: 'quotes', quotesGroup: ref })}
+                    onContextMenu={(e) => onContextMenu(e, { kind: 'quotes', quotesGroup: ref })}
+                  >
+                    <Quote size={14} />
+                    <span className="pp-item-title">{`${b.name} — ${b.sourceName}`}</span>
+                  </button>
+                )
+              })}
+              {tabQuoteBookHits.length === 0 &&
+                tabQuoteScriptureHits.length === 0 &&
+                tabQuoteCommentaryHits.length === 0 &&
+                tabQuoteBocHits.length === 0 && (
                 <div className="pp-empty">No matching quotes.</div>
               )}
             </div>
