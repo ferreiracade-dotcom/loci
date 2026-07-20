@@ -746,6 +746,34 @@ select.field {
   gap: 5px;
 }
 
+/* Corpus switch: which body a multi-mode reference pill is showing. */
+.corpus-switch {
+  display: flex;
+  gap: 4px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.corpus-switch-btn {
+  flex: 0 0 auto;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.corpus-switch-btn:hover {
+  color: var(--text);
+}
+.corpus-switch-btn.active {
+  background: var(--accent-12);
+  color: var(--accent);
+  border-color: var(--gold);
+}
+
 /* Reference panel: live Bible + embedded PDF */
 .ref-bible,
 .ref-pdf {
