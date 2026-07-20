@@ -715,6 +715,13 @@ select.field {
   padding: 10px;
   border-bottom: 1px solid var(--border);
 }
+/* Hold each pill at its label's width. Without this they shrink to a uniform ~56px and their
+   text spills outside the pill: because the shrunken row still "fits", flex-wrap never fires.
+   Scoped to .tabs so the centre workspace tab strip, which shares .tab and *should* shrink,
+   is unaffected. */
+.tabs .tab {
+  flex: 0 0 auto;
+}
 .tab {
   padding: 5px 9px;
   border-radius: 999px;
