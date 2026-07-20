@@ -50,15 +50,23 @@ into "Texts" would put two unrelated UIs behind one switch. Decided deliberately
 
 One shared `CorpusSwitch` — a segmented control at the top of any multi-mode panel.
 
-- **Auto-follow:** the mode mirrors the focused centre tab's kind — `pdf` → Books, `bible` →
-  Bible, `boc` → Confessions.
-- **Transient override:** clicking a mode overrides the automatic choice **until the focused
-  tab's kind next changes**, at which point auto-follow resumes.
+- **Auto-follow, until you take control:** the mode mirrors the focused centre tab's kind —
+  `pdf` → Books, `bible` → Bible, `boc` → Confessions.
+- **Sticky override:** clicking a mode pins it for that pill. Auto-follow stops for that pill and
+  the choice persists across restarts, alongside the rest of the layout state.
 
-The override is deliberately transient. A sticky pin would leave the panel showing Bible
-commentary while you read the Confessions, with no visible reason why — a state the user has to
-remember they caused. Transient override supports the real use ("let me glance at the Bible
-quotes while reading AC IV") without creating durable surprising state.
+Each pill pins independently — pinning Commentary to Bible leaves Quotes still following.
+
+A transient override (resetting on the next tab change) was considered and rejected. The argument
+for it was that a pin leaves the panel in a state whose cause isn't visible; that argument fails,
+because `CorpusSwitch` sits at the top of the panel displaying the active mode — the state is on
+screen. Meanwhile transient has a real cost: it makes deliberate comparison impossible, since
+reading AC IV against Bible commentary means re-picking the mode every time focus moves.
+
+**Accepted cost:** a pinned mode can look broken. Commentary pinned to Bible while you read the
+Confessions shows "Click a verse to see commentary" — accurate, but easy to misread as a failure.
+The existing empty-state copy is the mitigation; each mode's empty state must name its corpus
+("Click a *verse*…" vs "Click a *section*…") so the panel explains itself. No extra banner.
 
 When the focused tab's kind has no corresponding mode (e.g. a note is focused, and the Quotes
 panel has no Notes mode), the panel keeps its current mode rather than blanking.
@@ -133,9 +141,10 @@ without rendering anything.
 Matches the codebase's existing constraint: logic-level `vitest` only, no component-render infra.
 
 - **Unit-testable, and where the real risk is:** the tab-id migration map (every legacy id resolves
-  to a valid pill+mode) and the auto-follow rule (`useCorpusMode`'s pure core: given focused tab
-  kind, current mode, and override state, which mode wins). Both are pure functions and both are
-  exactly the kind of mapping that breaks silently.
+  to a valid pill+mode) and the mode-resolution rule (`useCorpusMode`'s pure core: given focused
+  tab kind, the pill's pinned mode if any, and the current mode — which mode wins). Both are pure
+  functions and both are exactly the kind of mapping that breaks silently. The pin case matters
+  most: a pinned mode must survive a tab change, and an unpinned one must not.
 - **Not unit-testable:** the wrappers themselves, which are composition only.
 - **Verified in the running app** over CDP (`playwright-core` against the renderer's debug port —
   the technique established on 2026-07-20): the strip renders five pills on one row; each pill's
