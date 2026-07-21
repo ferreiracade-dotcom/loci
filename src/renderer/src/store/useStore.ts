@@ -5,6 +5,7 @@ import { extractAndIndexBook } from '../lib/pdfIndex'
 import { BOOKS, parseReference } from '@shared/scriptureRef'
 import { DEFAULT_THEME } from '@shared/ipc'
 import { parseNote, serializeFrontMatter } from '../lib/noteFrontmatter'
+import type { CorpusMode, RefPill } from '../lib/corpusMode'
 import type {
   Annotation,
   AppState,
@@ -164,6 +165,10 @@ interface Store {
   } | null
   /** Results of that lookup, grouped by source in the reference sidebar. */
   bocMatches: BocCommentaryMatch[]
+  /** The mode each multi-mode reference pill is pinned to. Absent = follow the focused tab.
+   *  Mirrored to the session store under `refMode:<pill>`; deliberately NOT in PanelLayout,
+   *  which is a database row. */
+  refModes: Partial<Record<RefPill, CorpusMode>>
 
   // --- Center workspace ---
   /** Every open tab across both panes; the source of truth. */
@@ -265,6 +270,10 @@ interface Store {
   setCompareTranslation: (id: string) => void
   addScriptureHighlight: (input: NewScriptureHighlight) => Promise<void>
   deleteScriptureHighlight: (id: string) => Promise<void>
+
+  // --- Reference panel pins ---
+  /** Pin a reference pill to a corpus mode. Persisted to the session store. */
+  setRefMode: (pill: RefPill, mode: CorpusMode) => void
 
   // --- Book of Concord (Confessions) ---
   /** Route a document/section into a BoC pane: reuse the existing BoC pane if there is one,
@@ -406,6 +415,7 @@ export const useStore = create<Store>((set, get) => {
     commentaryMatches: [],
     bocLookup: null,
     bocMatches: [],
+    refModes: {},
     tabs: [],
     paneOrder: [],
     activePaneId: null,
@@ -484,6 +494,14 @@ export const useStore = create<Store>((set, get) => {
         pendingPage: null,
         phase: 'welcome'
       })
+      const pins: Partial<Record<RefPill, CorpusMode>> = {}
+      await Promise.all(
+        (['quotes', 'texts', 'commentary'] as RefPill[]).map(async (pill) => {
+          const v = await api.getSession(`refMode:${pill}`)
+          if (v === 'books' || v === 'bible' || v === 'confessions') pins[pill] = v
+        })
+      )
+      set({ refModes: pins })
       void get().refreshActiveProject()
     },
 
@@ -949,6 +967,9 @@ export const useStore = create<Store>((set, get) => {
       if (stale) return
       set({ commentaryMatches: matches })
       get().saveLayout({ activeRightTab: 'commentary', notesCollapsed: false })
+      // A click on a verse is a request for *this* passage's commentary — more specific than
+      // whatever the pill was pinned to, so it re-pins.
+      get().setRefMode('commentary', 'bible')
     },
 
     showScripture: async () => {
@@ -1019,6 +1040,12 @@ export const useStore = create<Store>((set, get) => {
       set({ noteReloadToken: get().noteReloadToken + 1 })
     },
 
+    // --- Reference panel pins ---
+    setRefMode: (pill, mode) => {
+      set({ refModes: { ...get().refModes, [pill]: mode } })
+      void api.setSession(`refMode:${pill}`, mode)
+    },
+
     // --- Book of Concord (Confessions) ---
     // In-place navigation, like navigateScripture: if the active tab is already showing the BoC
     // reader, it navigates there. Only explicit "open" actions create a new tab.
@@ -1057,7 +1084,8 @@ export const useStore = create<Store>((set, get) => {
       const stale = stillCurrent?.documentCode !== documentCode || stillCurrent?.ordinal !== ordinal
       if (stale) return
       set({ bocMatches: matches })
-      get().saveLayout({ activeRightTab: 'boc-commentary', notesCollapsed: false })
+      get().saveLayout({ activeRightTab: 'commentary', notesCollapsed: false })
+      get().setRefMode('commentary', 'confessions')
     },
 
     showConfessions: async () => {

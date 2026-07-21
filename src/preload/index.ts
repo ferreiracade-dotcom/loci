@@ -55,6 +55,8 @@ const api: LociApi = {
   listCommentaryQuotes: (sourceId) => ipcRenderer.invoke(Channels.listCommentaryQuotes, sourceId),
   listBocQuotes: (bocSourceId, documentCode) =>
     ipcRenderer.invoke(Channels.listBocQuotes, bocSourceId, documentCode),
+  listBocQuotesForDocument: (documentCode) =>
+    ipcRenderer.invoke(Channels.listBocQuotesForDocument, documentCode),
   listQuoteGroups: (translation) => ipcRenderer.invoke(Channels.listQuoteGroups, translation),
   listAllQuotes: () => ipcRenderer.invoke(Channels.listAllQuotes),
   addBocQuote: (input) => ipcRenderer.invoke(Channels.addBocQuote, input),

@@ -1145,3 +1145,17 @@ export function listBocQuotes(bocSourceId: string, documentCode: string): Quote[
   const ctx = buildQuoteListCtx()
   return rows.map((r) => rowToQuote(r, ctx))
 }
+
+/** Every quote captured for one document, from any BoC source — primary-text (boc_source_id) or
+ *  commentary (boc_commentary_source_id) alike — in section order. Unlike listBocQuotes, which
+ *  is scoped to a single source, this is what the document-wide quotes panel needs: it has no
+ *  way to know in advance which source(s) a document's quotes are anchored to. */
+export function listBocQuotesForDocument(documentCode: string): Quote[] {
+  const rows = getDb()
+    .prepare('SELECT * FROM quotes WHERE boc_ref LIKE @prefix')
+    .all({ prefix: `${documentCode}:%` }) as QuoteRow[]
+  const ordinalOf = (r: QuoteRow): number => Number((r.boc_ref ?? '').split(':')[1] ?? 0)
+  rows.sort((a, b) => ordinalOf(a) - ordinalOf(b) || (a.boc_paragraph ?? 0) - (b.boc_paragraph ?? 0) || a.created - b.created)
+  const ctx = buildQuoteListCtx()
+  return rows.map((r) => rowToQuote(r, ctx))
+}

@@ -50,6 +50,7 @@ export const Channels = {
   addCommentaryQuote: 'quotes:addCommentary',
   listCommentaryQuotes: 'quotes:listCommentary',
   listBocQuotes: 'quotes:listBoc',
+  listBocQuotesForDocument: 'quotes:listBocForDocument',
   listQuoteGroups: 'quotes:listGroups',
   listAllQuotes: 'quotes:listAll',
   addBocQuote: 'quotes:addBoc',
@@ -274,6 +275,9 @@ export interface LociApi {
   /** Quotes captured from one BoC source within one document. `bocSourceId` may be a primary-text
    *  or a commentary source id. */
   listBocQuotes(bocSourceId: string, documentCode: string): Promise<Quote[]>
+  /** Every quote captured for one document, from any BoC source (primary-text or commentary)
+   *  alike — what the document-wide quotes panel needs, since it has no single source to scope to. */
+  listBocQuotesForDocument(documentCode: string): Promise<Quote[]>
   /** Everything that has saved quotes, for the Quotes nav section: books (PDFs), Bible
    *  chapters (for the given translation), and commentary sources. */
   listQuoteGroups(translation: string): Promise<QuoteGroups>

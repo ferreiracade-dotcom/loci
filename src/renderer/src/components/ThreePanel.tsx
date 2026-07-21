@@ -7,20 +7,17 @@ import { EmptyState } from './EmptyState'
 import { LEFT_VIEWS, RIGHT_TABS, CENTER_EMPTY } from './navigation'
 import { LibraryView } from './library/LibraryView'
 import { CenterWorkspace } from './library/CenterWorkspace'
-import { QuotesPanel } from './library/QuotesPanel'
-import { ScriptureHighlightsPanel } from './library/ScriptureHighlightsPanel'
 import { NotesView } from './library/NotesView'
 import { QuotesView } from './library/QuotesView'
-import { BacklinksPanel } from './library/BacklinksPanel'
 import { StandaloneNotesPanel } from './library/StandaloneNotesPanel'
 import { ReferencePdfPanel } from './library/ReferencePdfPanel'
-import { ReferenceBiblePanel } from './library/ReferenceBiblePanel'
-import { CommentaryPanel } from './library/CommentaryPanel'
-import { BocCommentaryPanel } from './library/BocCommentaryPanel'
-import { ReferenceBocPanel } from './library/ReferenceBocPanel'
+import { QuotesReferencePanel } from './library/QuotesReferencePanel'
+import { TextsReferencePanel } from './library/TextsReferencePanel'
+import { CommentaryReferencePanel } from './library/CommentaryReferencePanel'
 import { SearchView } from './library/SearchView'
 import { DashboardView } from './library/DashboardView'
 import { clamp } from '../lib/util'
+import { migrateRightTabId } from '../lib/corpusMode'
 
 const RAIL = 48
 const CENTER_MIN = 300
@@ -31,13 +28,7 @@ const NOTES_MAX = 480
 const DIVIDER_ALLOWANCE = 14
 /** Reference tabs that render a reader and so want a wider notes panel: they raise the panel's
  *  max width and auto-widen a narrow panel the first time one is chosen. */
-const WIDE_RIGHT_TABS = new Set([
-  'reference-pdf',
-  'reference-bible',
-  'commentary',
-  'boc-commentary',
-  'reference-boc'
-])
+const WIDE_RIGHT_TABS = new Set(['books', 'texts', 'commentary'])
 
 export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const layout = useStore((s) => s.layout)!
@@ -75,10 +66,9 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
             : layout.activeLeftView
       : layout.activeLeftView
 
-  // Normalize the active right tab (a removed tab, e.g. legacy 'tags', falls back).
-  const rightTabId = RIGHT_TABS.some((t) => t.id === layout.activeRightTab)
-    ? layout.activeRightTab
-    : 'book-notes'
+  // Normalise the active right tab. Stored values may be legacy ids from before the five-pill
+  // consolidation — map them rather than dropping the user on a fallback.
+  const rightTabId = migrateRightTabId(layout.activeRightTab).pill
   const readerTab = WIDE_RIGHT_TABS.has(rightTabId)
   const notesMax = readerTab ? 820 : NOTES_MAX
 
@@ -225,24 +215,16 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
               })}
             </div>
             <div className="notes-body">
-              {rightTabId === 'book-notes' ? (
-                <QuotesPanel />
-              ) : rightTabId === 'scripture-highlights' ? (
-                <ScriptureHighlightsPanel />
-              ) : rightTabId === 'standalone-notes' ? (
+              {rightTabId === 'quotes' ? (
+                <QuotesReferencePanel />
+              ) : rightTabId === 'notes' ? (
                 <StandaloneNotesPanel />
-              ) : rightTabId === 'backlinks' ? (
-                <BacklinksPanel />
-              ) : rightTabId === 'reference-pdf' ? (
+              ) : rightTabId === 'books' ? (
                 <ReferencePdfPanel />
-              ) : rightTabId === 'reference-bible' ? (
-                <ReferenceBiblePanel />
+              ) : rightTabId === 'texts' ? (
+                <TextsReferencePanel />
               ) : rightTabId === 'commentary' ? (
-                <CommentaryPanel />
-              ) : rightTabId === 'boc-commentary' ? (
-                <BocCommentaryPanel />
-              ) : rightTabId === 'reference-boc' ? (
-                <ReferenceBocPanel />
+                <CommentaryReferencePanel />
               ) : (
                 <EmptyState
                   icon={activeTab.icon}

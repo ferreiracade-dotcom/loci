@@ -8,12 +8,9 @@ import {
   Files,
   BookMarked,
   FileText,
-  Link2,
-  Highlighter,
   File,
   BookOpenText,
   MessageSquareQuote,
-  MessageSquareText,
   Quote
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -32,18 +29,14 @@ export const LEFT_VIEWS: RailItem[] = [
   { id: 'pages', label: 'Pages', icon: Files }
 ]
 
-/** Right notes-panel tabs (spec §3). */
-// Right-hand reference panel sources. Tags were folded into Search + the notes list.
+/** Right reference-panel pills, organised by task. Corpus is a mode inside a panel, not a pill,
+ *  so adding a corpus does not add tabs here. */
 export const RIGHT_TABS: RailItem[] = [
-  { id: 'book-notes', label: 'Book Quotes', icon: BookMarked },
-  { id: 'scripture-highlights', label: 'Bible Quotes', icon: Highlighter },
-  { id: 'standalone-notes', label: 'Notes', icon: FileText },
-  { id: 'backlinks', label: 'Backlinks', icon: Link2 },
-  { id: 'reference-pdf', label: 'Books', icon: File },
-  { id: 'reference-bible', label: 'Bible', icon: BookOpenText },
-  { id: 'commentary', label: 'Commentary', icon: MessageSquareQuote },
-  { id: 'boc-commentary', label: 'Confessions', icon: MessageSquareText },
-  { id: 'reference-boc', label: 'Confessions ref', icon: BookMarked }
+  { id: 'quotes', label: 'Quotes', icon: Quote },
+  { id: 'notes', label: 'Notes', icon: FileText },
+  { id: 'books', label: 'Books', icon: File },
+  { id: 'texts', label: 'Texts', icon: BookOpenText },
+  { id: 'commentary', label: 'Commentary', icon: MessageSquareQuote }
 ]
 
 interface EmptyCopy {
