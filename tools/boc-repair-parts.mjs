@@ -29,8 +29,30 @@ const CODE_FOR_TITLE = {
   'Large Catechism': 'LC'
 }
 
-const HEADER_RE = /^## (\d+) \| ([^|]*)\| ([^|]*)\| (.*)$/
-const DOC_RE = /^# (.+)$/
+// Classify one line exactly as the app's canonical reader does (src/main/services/bocMarkdown.ts,
+// parseBocMarkdown): a level-1 heading is a document title; a level-2 heading whose content splits
+// into >=3 pipe fields with an integer ordinal >=1 and a non-empty label is a section header.
+// Matching that tolerant split-and-trim contract (rather than a rigid positional regex that
+// demands exact inter-pipe spacing) keeps this repair tool from silently skipping a header whose
+// whitespace an editor had normalized — a skipped divider would otherwise cascade into overwriting
+// a neighboring section's part. Returns null for anything that isn't a document/section heading.
+const HEADING_RE = /^(#{1,6})\s+(?=\S)(.*)$/
+
+function classifyLine(line) {
+  const h = HEADING_RE.exec(line)
+  if (!h) return null
+  const level = h[1].length
+  const content = h[2].trim()
+  if (level === 1) return { kind: 'doc', title: content }
+  if (level === 2) {
+    const parts = content.split('|').map((s) => s.trim())
+    const ordinal = Number(parts[0])
+    if (parts.length >= 3 && Number.isInteger(ordinal) && ordinal >= 1 && parts[2]) {
+      return { kind: 'header', ordinal, number: parts[1] || null, label: parts[2], part: parts[3] || null }
+    }
+  }
+  return null
+}
 
 /** Parse a primary-text .md file into the `Map<code, section[]>` shape assignParts() expects,
  *  reconstructing each section's `body`-non-emptiness from the text between its header and the
@@ -45,17 +67,16 @@ function parseSections(text) {
     bodyLines = []
   }
   for (const line of text.split('\n')) {
-    const docM = DOC_RE.exec(line)
-    if (docM) {
+    const c = classifyLine(line)
+    if (c?.kind === 'doc') {
       flush()
-      code = CODE_FOR_TITLE[docM[1]] ?? docM[1]
+      code = CODE_FOR_TITLE[c.title] ?? c.title
       current = null
       continue
     }
-    const headM = HEADER_RE.exec(line)
-    if (headM && code) {
+    if (c?.kind === 'header' && code) {
       flush()
-      current = { ordinal: Number(headM[1]), number: headM[2].trim() || null, label: headM[3].trim(), part: null }
+      current = { ordinal: c.ordinal, number: c.number, label: c.label, part: null }
       if (!docsOut.has(code)) docsOut.set(code, [])
       docsOut.get(code).push(current)
       continue
@@ -71,23 +92,26 @@ function patch(text, correctedPart) {
   return text
     .split('\n')
     .map((line) => {
-      const docM = DOC_RE.exec(line)
-      if (docM) {
-        code = CODE_FOR_TITLE[docM[1]] ?? docM[1]
+      const c = classifyLine(line)
+      if (c?.kind === 'doc') {
+        code = CODE_FOR_TITLE[c.title] ?? c.title
         return line
       }
-      const headM = HEADER_RE.exec(line)
-      if (headM && code) {
-        const key = `${code}:${Number(headM[1])}`
-        const part = correctedPart.has(key) ? correctedPart.get(key) : headM[4].trim()
-        return `## ${headM[1]} | ${headM[2].trim()} | ${headM[3].trim()} | ${part ?? ''}`
+      if (c?.kind === 'header' && code) {
+        const key = `${code}:${c.ordinal}`
+        const part = correctedPart.has(key) ? correctedPart.get(key) : c.part
+        return `## ${c.ordinal} | ${c.number ?? ''} | ${c.label} | ${part ?? ''}`
       }
       return line
     })
     .join('\n')
 }
 
+// Read BOTH inputs before writing EITHER, so a wrong/missing commentary path fails loudly up front
+// instead of after the primary file has already been overwritten (a half-applied repair).
 const primaryText = readFileSync(primaryPath, 'utf8')
+const commentaryText = readFileSync(commentaryPath, 'utf8')
+
 const docsOut = parseSections(primaryText)
 assignParts(docsOut)
 
@@ -97,5 +121,5 @@ for (const [code, sections] of docsOut) {
 }
 
 writeFileSync(primaryPath, patch(primaryText, correctedPart), 'utf8')
-writeFileSync(commentaryPath, patch(readFileSync(commentaryPath, 'utf8'), correctedPart), 'utf8')
+writeFileSync(commentaryPath, patch(commentaryText, correctedPart), 'utf8')
 console.error('repaired part fields in:\n  ' + primaryPath + '\n  ' + commentaryPath)
