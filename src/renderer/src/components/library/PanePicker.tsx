@@ -23,7 +23,7 @@ import { BookListRow } from './LibraryView'
 import { ScriptureReader } from './ScriptureReader'
 import { useOpenElsewhereMenu } from './OpenElsewhere'
 import { BOC_DOCUMENTS } from '@shared/bookOfConcord'
-import { bocSectionLabel } from '../../lib/bocGrouping'
+import { bocSectionLabel, groupByPart } from '../../lib/bocGrouping'
 import { normalizeQuoteGroups } from '@shared/ipc'
 import type { BocSectionRow, BocSource, ProjectItem, QuoteGroups, SearchHit } from '@shared/ipc'
 
@@ -661,23 +661,32 @@ export function PanePicker({
                         <span className="pp-item-title">{d.title}</span>
                       </button>
                       {open &&
-                        docSections.map((r) => (
-                          <button
-                            key={r.ordinal}
-                            className="pp-item pp-boc-section"
-                            title={`Open ${d.abbreviation} ${bocSectionLabel(r)}`}
-                            onClick={() => placeBoc(d.code, r.ordinal)}
-                            onContextMenu={(e) =>
-                              onContextMenu(e, {
-                                kind: 'boc',
-                                documentCode: d.code,
-                                sectionOrdinal: r.ordinal,
-                                bocSourceId
-                              })
-                            }
-                          >
-                            <span className="pp-item-title">{bocSectionLabel(r)}</span>
-                          </button>
+                        groupByPart(docSections).map((g, gi) => (
+                          <div key={gi}>
+                            {g.part && (
+                              <div className="sv-testament-head" style={{ padding: '6px 8px 2px' }}>
+                                {g.part}
+                              </div>
+                            )}
+                            {g.rows.map((r) => (
+                              <button
+                                key={r.ordinal}
+                                className="pp-item pp-boc-section"
+                                title={`Open ${d.abbreviation} ${bocSectionLabel(r)}`}
+                                onClick={() => placeBoc(d.code, r.ordinal)}
+                                onContextMenu={(e) =>
+                                  onContextMenu(e, {
+                                    kind: 'boc',
+                                    documentCode: d.code,
+                                    sectionOrdinal: r.ordinal,
+                                    bocSourceId
+                                  })
+                                }
+                              >
+                                <span className="pp-item-title">{bocSectionLabel(r)}</span>
+                              </button>
+                            ))}
+                          </div>
                         ))}
                     </div>
                   )
