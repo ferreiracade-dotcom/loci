@@ -7,26 +7,7 @@ import { BOC_DOCUMENTS } from '@shared/bookOfConcord'
 import type { BocSectionRow, BocSource } from '@shared/ipc'
 import { BocReader } from './BocReader'
 import { useOpenElsewhereMenu } from './OpenElsewhere'
-import { bocSectionLabel } from '../../lib/bocGrouping'
-
-interface PartGroup {
-  part: string | null
-  rows: BocSectionRow[]
-}
-
-/** Group an ordinal-ordered section list into contiguous runs sharing the same `part` — parts
- *  appear as unbroken runs in reading order, so this reproduces the document's own part
- *  headings without needing a separate lookup. */
-function groupByPart(rows: BocSectionRow[]): PartGroup[] {
-  const groups: PartGroup[] = []
-  for (const r of rows) {
-    const last = groups[groups.length - 1]
-    if (last && last.part === r.part) last.rows.push(r)
-    else groups.push({ part: r.part, rows: [r] })
-  }
-  return groups
-}
-
+import { bocSectionLabel, groupByPart } from '../../lib/bocGrouping'
 
 /** A Book of Concord document in a center workspace pane: the collapsible document-nav drawer
  *  (mirrors BiblePane's book drawer) plus the BocReader. Navigation and source changes update
