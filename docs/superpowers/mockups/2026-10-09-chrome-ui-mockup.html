@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loci Chrome mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --frame:#0e0c0a; --tab-hover:#1b1814; --toolbar:#231f19; --base:#161310; --card:#2a251e;
+  --omni:#16130f; --omni-focus:#0f0d0b; --menu:#2a251e; --menu-hover:#3a3329;
+  --accent:#c9a96e; --accent-12:rgba(201,169,110,.12); --accent-40:rgba(201,169,110,.4);
+  --text:#e8dcc8; --text-2:#b3a68f; --muted:#7a6f5a; --border:#2e2820; --border-strong:#3d3528;
+  --ui:'Inter',system-ui,sans-serif; --read:'Crimson Pro',Georgia,serif; --title:'Playfair Display',Georgia,serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--frame);color:var(--text);font:13px/1.4 var(--ui);overflow:hidden;user-select:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:default}
+svg.lucide{width:16px;height:16px;stroke-width:1.75;flex:none}
+.win{display:flex;flex-direction:column;height:100vh}
+
+/* ---- tab strip / title bar ---- */
+.strip{display:flex;align-items:flex-end;height:42px;padding:0 0 0 6px;background:var(--frame);gap:0}
+.strip .tsearch{width:28px;height:28px;margin:0 4px 6px 0;border-radius:8px;display:grid;place-items:center;background:#1d1a16}
+.strip .tsearch:hover{background:#2a251e}
+.tabs{display:flex;align-items:flex-end;flex:1;min-width:0;height:100%}
+.tab{position:relative;display:flex;align-items:center;gap:8px;height:34px;padding:0 8px 0 12px;flex:0 1 230px;min-width:44px;border-radius:9px 9px 0 0;color:var(--text-2)}
+.tab:not(.active):hover{background:var(--tab-hover)}
+.tab.active{background:var(--toolbar);color:var(--text);z-index:2}
+.tab.active::before,.tab.active::after{content:"";position:absolute;bottom:0;width:10px;height:10px;background:radial-gradient(circle at var(--cx) 0,transparent 9.5px,var(--toolbar) 10px)}
+.tab.active::before{left:-10px;--cx:0}
+.tab.active::after{right:-10px;--cx:10px}
+.tab .sep{position:absolute;right:0;top:9px;bottom:9px;width:1px;background:#3a332a}
+.tab.active .sep,.tab:hover .sep{display:none}
+.tab .lbl{flex:1;min-width:0;white-space:nowrap;overflow:hidden;mask-image:linear-gradient(90deg,#000 80%,transparent)}
+.tab .x{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;flex:none}
+.tab .x svg{width:12px;height:12px}
+.tab .x:hover{background:#4a4235}
+.tab.pinned{flex:0 0 44px;padding:0;justify-content:center}
+.tab.pinned .lbl,.tab.pinned .x{display:none}
+.tab.ingroup::after{}
+.tab .gline{position:absolute;left:4px;right:4px;bottom:0;height:2px;border-radius:2px;background:var(--gc)}
+.tab.active .gline{left:0;right:0;bottom:auto;top:0;height:2px;border-radius:9px 9px 0 0}
+.tab.split{flex:0 1 380px;padding:0 4px}
+.tab.split .half{display:flex;align-items:center;gap:7px;flex:1;min-width:0;height:26px;padding:0 6px;border-radius:6px}
+.tab.split .half.on{background:rgba(255,255,255,.06);color:var(--text)}
+.tab.split .half .lbl{flex:1}
+.tab.split .mid{width:1px;height:16px;background:#4a4235}
+.tab.dragover{box-shadow:inset 2px 0 0 var(--accent)}
+.gchip{height:22px;margin:0 6px 6px 6px;padding:0 9px;border-radius:7px;display:flex;align-items:center;font-weight:600;font-size:12px;background:var(--gc);color:#151210;white-space:nowrap;flex:none}
+.gchip.empty{width:14px;height:14px;padding:0;border-radius:50%;margin-bottom:10px}
+.gchip.collapsed{outline:2px solid var(--gc);outline-offset:2px}
+.newtab-btn{width:28px;height:28px;margin:0 0 4px 6px;border-radius:50%;display:grid;place-items:center;flex:none}
+.newtab-btn:hover{background:#2a251e}
+.winctl{display:flex;align-self:flex-start;height:34px;margin-left:8px}
+.winctl span{width:46px;display:grid;place-items:center;color:var(--text-2)}
+.winctl span:hover{background:#2a251e}
+.winctl span:last-child:hover{background:#c42b1c;color:#fff}
+
+/* ---- toolbar ---- */
+.toolbar{display:flex;align-items:center;gap:2px;height:44px;padding:0 8px;background:var(--toolbar)}
+.ib{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:var(--text-2);flex:none}
+.ib:hover{background:rgba(255,255,255,.08)}
+.ib.dis{opacity:.35;pointer-events:none}
+.ib.on{color:var(--accent)}
+.omni{position:relative;flex:1;height:34px;margin:0 8px;border-radius:17px;background:var(--omni);display:flex;align-items:center;padding:0 6px 0 14px;gap:10px}
+.omni:hover{background:#1c1813}
+.omni.focus{background:var(--omni-focus);border-radius:17px 17px 0 0;box-shadow:0 0 0 2px var(--accent-40)}
+.omni .crumb{flex:1;white-space:nowrap;overflow:hidden;color:var(--text)}
+.omni .crumb .dim{color:var(--muted)}
+.omni input{flex:1;background:none;border:0;outline:0;color:var(--text);font:inherit;font-size:14px}
+.omni .star{width:28px;height:28px}
+.omni .star.on svg{fill:var(--accent);color:var(--accent)}
+.sugg{position:absolute;left:0;right:0;top:34px;background:var(--omni-focus);border-radius:0 0 17px 17px;padding:4px 0 10px;box-shadow:0 0 0 2px var(--accent-40),0 12px 28px rgba(0,0,0,.5);z-index:50}
+.sugg div{display:flex;align-items:center;gap:12px;padding:7px 16px}
+.sugg div.sel{background:var(--menu-hover)}
+.sugg small{color:var(--muted);margin-left:auto}
+.tsep{width:1px;height:20px;background:var(--border-strong);margin:0 4px}
+.avatar{width:24px;height:24px;border-radius:50%;background:var(--gold,#8b6e42);display:grid;place-items:center;font-size:11px;font-weight:600;color:#151210}
+
+/* ---- bookmarks bar ---- */
+.bbar{display:flex;align-items:center;gap:2px;height:32px;padding:0 8px;background:var(--toolbar);border-bottom:1px solid var(--border)}
+.bm{display:flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-radius:13px;white-space:nowrap;color:var(--text-2);font-size:12.5px}
+.bm:hover{background:rgba(255,255,255,.08);color:var(--text)}
+.bm svg{width:14px;height:14px}
+.bm.grp{background:color-mix(in srgb,var(--gc) 22%,transparent);color:var(--gc);font-weight:600;border-radius:7px}
+.bm.grp:hover{background:color-mix(in srgb,var(--gc) 32%,transparent)}
+.bm.grp .dot{width:8px;height:8px;border-radius:50%;background:var(--gc)}
+.bm.grp.closed{opacity:.75}
+.bsep{width:1px;height:16px;background:var(--border-strong);margin:0 6px}
+
+/* ---- body ---- */
+.body{flex:1;display:flex;min-height:0;background:var(--base)}
+.content{flex:1;min-width:0;display:flex;overflow:hidden}
+.pane{flex:1;min-width:0;overflow:auto;position:relative}
+.pane.half{border:1px solid transparent}
+.pane.half.on{border-color:var(--accent-40)}
+.pane.half:not(.on){opacity:.88}
+.pdiv{width:6px;background:var(--frame);cursor:col-resize}
+.side{width:340px;flex:none;background:var(--toolbar);border-left:1px solid var(--border);display:flex;flex-direction:column}
+.side-h{display:flex;align-items:center;gap:6px;height:44px;padding:0 6px 0 12px;border-bottom:1px solid var(--border)}
+.side-h select{flex:1;background:var(--card);color:var(--text);border:1px solid var(--border-strong);border-radius:8px;height:30px;padding:0 8px;font:inherit}
+.side-b{flex:1;overflow:auto;padding:14px 16px;font-family:var(--read);font-size:16px;line-height:1.55;user-select:text}
+.side-b h4{font:600 12px var(--ui);color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 6px}
+.side-b .q{border-left:2px solid var(--accent-40);padding-left:10px;margin:8px 0;color:var(--text)}
+
+/* reading pages */
+.read{max-width:720px;margin:0 auto;padding:36px 40px 80px;font-family:var(--read);font-size:19px;line-height:1.65;user-select:text}
+.read h1{font:500 30px var(--title);margin:0 0 4px}
+.read .meta{font:12px var(--ui);color:var(--muted);margin-bottom:24px;letter-spacing:.04em;text-transform:uppercase}
+.read sup{font:600 11px var(--ui);color:var(--accent);margin-right:4px}
+.read a{color:var(--accent);text-decoration:none;border-bottom:1px dotted var(--accent-40);cursor:pointer}
+.read p{margin:0 0 14px}
+.read .ph{color:var(--muted);font-style:italic}
+.page{padding:32px 40px;max-width:1040px;margin:0 auto}
+.page h2{font:500 24px var(--title);margin:0 0 18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px}
+.cover{aspect-ratio:2/3;border-radius:6px;padding:14px 12px;display:flex;flex-direction:column;justify-content:flex-end;font:500 15px/1.25 var(--title);color:#f3e9d6;cursor:pointer}
+.cover small{font:11px var(--ui);opacity:.75;margin-top:6px}
+.cover:hover{outline:2px solid var(--accent)}
+.list div{display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer}
+.list div:hover{background:var(--card)}
+.list small{color:var(--muted);margin-left:auto}
+
+/* new tab page */
+.ntp{display:flex;flex-direction:column;align-items:center;padding-top:9vh}
+.ntp .word{font:500 64px var(--title);color:var(--accent);letter-spacing:.02em;margin-bottom:26px}
+.ntp .box{width:min(584px,90%);height:46px;border-radius:23px;background:var(--card);display:flex;align-items:center;gap:12px;padding:0 18px;color:var(--muted);font-size:15px;cursor:text}
+.ntp .box:hover{background:#322c23}
+.tiles{display:grid;grid-template-columns:repeat(5,112px);gap:8px;margin-top:30px}
+.tile{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 4px;border-radius:10px;cursor:pointer;text-align:center;font-size:12px;color:var(--text-2)}
+.tile:hover{background:var(--card)}
+.tile .ic{width:48px;height:48px;border-radius:50%;background:var(--card);display:grid;place-items:center;color:var(--accent)}
+.tile:hover .ic{background:#3a3329}
+.cont{width:min(584px,90%);margin-top:28px}
+.cont h5{font:600 11px var(--ui);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px}
+.cont .card{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;background:var(--toolbar);margin-bottom:6px;cursor:pointer}
+.cont .card:hover{background:var(--card)}
+.bar{height:4px;border-radius:2px;background:var(--border-strong);width:90px;overflow:hidden;margin-left:auto}
+.bar i{display:block;height:100%;background:var(--accent)}
+.hint{margin-top:26px;color:var(--muted);font-size:11.5px;text-align:center;line-height:1.8}
+kbd{font:11px var(--ui);background:var(--card);border:1px solid var(--border-strong);border-radius:4px;padding:0 5px;color:var(--text-2)}
+
+/* settings */
+.set{display:flex;height:100%}
+.set nav{width:240px;padding:20px 8px}
+.set nav div{display:flex;align-items:center;gap:14px;height:40px;padding:0 18px;border-radius:0 20px 20px 0;color:var(--text-2);cursor:pointer}
+.set nav div.on{background:var(--accent-12);color:var(--accent)}
+.set main{flex:1;padding:24px 40px;overflow:auto}
+.set .scard{background:var(--toolbar);border-radius:10px;max-width:680px;margin-bottom:18px}
+.set .row{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.set .row:last-child{border:0}
+.set .row small{display:block;color:var(--muted)}
+.tog{width:34px;height:14px;border-radius:7px;background:var(--accent-40);position:relative}
+.tog::after{content:"";position:absolute;right:-2px;top:-3px;width:20px;height:20px;border-radius:50%;background:var(--accent)}
+
+/* menus, cards, bubbles */
+.menu{position:fixed;z-index:100;min-width:240px;background:var(--menu);border-radius:8px;padding:6px 0;box-shadow:0 8px 28px rgba(0,0,0,.55),0 0 0 1px var(--border-strong)}
+.menu .mi{display:flex;align-items:center;gap:12px;height:32px;padding:0 16px 0 14px;white-space:nowrap}
+.menu .mi:hover,.menu .mi.open{background:var(--menu-hover)}
+.menu .mi .k{margin-left:auto;padding-left:24px;color:var(--muted);font-size:12px}
+.menu .mi .ar{margin-left:auto}
+.menu .mi.dis{color:var(--muted);pointer-events:none}
+.menu .ms{height:1px;background:var(--border-strong);margin:6px 0}
+.menu .mh{padding:6px 16px 4px;color:var(--muted);font-size:11.5px}
+.menu .ico{width:16px;display:grid;place-items:center}
+.menu .dot{width:10px;height:10px;border-radius:50%}
+.hcard{position:fixed;z-index:90;width:260px;background:var(--menu);border-radius:8px;padding:10px 12px;box-shadow:0 8px 28px rgba(0,0,0,.55),0 0 0 1px var(--border-strong);pointer-events:none}
+.hcard b{display:block;font-weight:600;margin-bottom:2px}
+.hcard span{color:var(--muted);font-size:12px}
+.hcard .pv{margin-top:8px;height:70px;border-radius:5px;background:var(--base);padding:8px;font:12px/1.4 var(--read);color:var(--text-2);overflow:hidden}
+.gedit{width:300px;padding:12px 0 6px}
+.gedit input{margin:0 14px 10px;width:calc(100% - 28px);height:34px;border-radius:8px;border:2px solid var(--accent);background:var(--omni-focus);color:var(--text);padding:0 10px;font:inherit;outline:0}
+.swatches{display:flex;gap:8px;padding:0 14px 10px}
+.swatches span{width:22px;height:22px;border-radius:50%;cursor:pointer}
+.swatches span.on{outline:2px solid var(--text);outline-offset:2px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--menu);padding:10px 16px;border-radius:8px;box-shadow:0 8px 28px rgba(0,0,0,.5),0 0 0 1px var(--border-strong);z-index:120}
+.bubble{position:fixed;z-index:110;width:320px;background:var(--menu);border-radius:10px;padding:16px;box-shadow:0 8px 28px rgba(0,0,0,.55),0 0 0 1px var(--border-strong)}
+.bubble h6{font:600 14px var(--ui);margin:0 0 12px}
+.bubble .btns{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.bubble .btn{height:30px;padding:0 14px;border-radius:15px;border:1px solid var(--border-strong)}
+.bubble .btn.p{background:var(--accent);color:#151210;border:0;font-weight:600}
+</style>
+</head>
+<body>
+<div class="win">
+  <div class="strip" id="strip"></div>
+  <div class="toolbar" id="toolbar"></div>
+  <div class="bbar" id="bbar"></div>
+  <div class="body"><div class="content" id="content"></div><aside class="side" id="side"></aside></div>
+</div>
+<script>
+const COLORS={grey:'#b8b0a2',blue:'#8ab4f8',red:'#f28b82',yellow:'#fdd663',green:'#81c995',pink:'#ff8bcb',purple:'#c58af9',cyan:'#78d9ec',orange:'#fcad70'};
+const BOOKS=['Genesis','Exodus','Psalms','Isaiah','Matthew','Mark','Luke','John','Acts','Romans','Galatians','Ephesians','Hebrews','Revelation'];
+const COVERS=[['Luther\'s Works 26','Galatians lectures, 1535','#5b3a29'],['Examination of the Council of Trent','Martin Chemnitz','#2f3d4a'],['Christian Dogmatics I','Francis Pieper','#3b4a2f'],['Theological Commonplaces','Johann Gerhard','#4a2f3d'],['Commentary on Romans','Philip Melanchthon','#4a3f2a'],['The Two Natures in Christ','Martin Chemnitz','#2a3f4a'],['Loci Communes 1543','Philip Melanchthon','#3d2f2a'],['Popular Commentary','Paul E. Kretzmann','#33402c']];
+const TEXT={
+ 'John 3':[[1,'Now there was a Pharisee named Nicodemus, a leader of the Jews.'],[2,'He came to Jesus at night and said, “Rabbi, we know that You are a teacher who has come from God. For no one could perform the signs You are doing if God were not with him.”'],[3,'Jesus replied, “Truly, truly, I tell you, no one can see the kingdom of God unless he is born again.”'],[16,'For God so loved the world that He gave His one and only Son, that everyone who believes in Him shall not perish but have eternal life.'],[17,'For God did not send His Son into the world to condemn the world, but to save the world through Him.']],
+ 'Romans 3':[[21,'But now, apart from the law, the righteousness of God has been revealed, as attested by the Law and the Prophets.'],[22,'And this righteousness from God comes through faith in Jesus Christ to all who believe. There is no distinction,'],[23,'for all have sinned and fall short of the glory of God,'],[24,'and are justified freely by His grace through the redemption that is in Christ Jesus.'],[28,'For we maintain that a man is justified by faith apart from works of the law. (cf. <a data-go="boc:AC IV">AC IV</a>)']]
+};
+const BOC={'AC IV':'Also they teach that men cannot be justified before God by their own strength, merits, or works, but are freely justified for Christ’s sake, through faith, when they believe that they are received into favor, and that their sins are forgiven for Christ’s sake, who, by His death, has made satisfaction for our sins. This faith God imputes for righteousness in His sight. <a data-go="bible:Romans 3">Rom. 3</a> and <a data-go="bible:Romans 4">4</a>.'};
+
+function info(key){
+  const i=key.indexOf(':'),k=i<0?key:key.slice(0,i),a=i<0?'':key.slice(i+1);
+  switch(k){
+    case 'newtab':return{t:'New Tab',ic:'plus',crumb:'',sub:'Search or type a reference',edit:''};
+    case 'bible':return{t:a,ic:'scroll-text',crumb:`<span class=dim>Bible ›</span> ${a} <span class=dim>(BSB)</span>`,sub:'Bible · Berean Standard Bible',edit:a};
+    case 'bibleidx':return{t:'Bible',ic:'scroll-text',crumb:'<span class=dim>Bible</span>',sub:'Choose a book',edit:'Bible'};
+    case 'boc':return{t:a,ic:'book-marked',crumb:`<span class=dim>Confessions ›</span> ${a.replace(' ',' › ')}`,sub:'Book of Concord',edit:a};
+    case 'conf':return{t:'Confessions',ic:'book-marked',crumb:'<span class=dim>Confessions</span>',sub:'Book of Concord',edit:'Confessions'};
+    case 'fathers':return{t:'Church Fathers',ic:'landmark',crumb:'<span class=dim>Fathers</span>',sub:'Church Fathers corpus',edit:'Fathers'};
+    case 'lib':return{t:'Library',ic:'library',crumb:'<span class=dim>Library</span>',sub:'Your books',edit:'Library'};
+    case 'notes':return{t:'Notes',ic:'notebook-pen',crumb:'<span class=dim>Notes</span>',sub:'All notes',edit:'Notes'};
+    case 'quotes':return{t:'Quotes',ic:'quote',crumb:'<span class=dim>Quotes</span>',sub:'Saved quotes',edit:'Quotes'};
+    case 'book':return{t:a,ic:'book-open',crumb:`<span class=dim>Library ›</span> ${a}`,sub:'PDF · page 212',edit:a};
+    case 'note':return{t:a,ic:'file-text',crumb:`<span class=dim>Notes ›</span> ${a}`,sub:'Note',edit:a};
+    case 'settings':return{t:'Settings',ic:'settings',crumb:'<span class=dim>loci://</span>settings',sub:'Settings',edit:'loci://settings'};
+    case 'history':return{t:'History',ic:'history',crumb:'<span class=dim>loci://</span>history',sub:'History',edit:'loci://history'};
+    case 'search':return{t:`${a} - Search`,ic:'search',crumb:`<span class=dim>Search ›</span> ${a}`,sub:'Search results',edit:a};
+  }
+  return{t:key,ic:'file',crumb:key,sub:'',edit:key};
+}
+
+let uid=0;const T=(key,o={})=>({id:++uid,hist:[key],hi:0,pinned:false,group:null,split:null,...o});
+const S={
+  tabs:[],active:null,closed:[],side:{open:true,mode:'Commentary'},showBar:true,zoom:100,
+  groups:[
+    {id:'g1',name:'Romans study',color:'blue',collapsed:false,open:true,pinned:true,saved:[]},
+    {id:'g2',name:'Baptism',color:'green',collapsed:false,open:false,pinned:true,saved:['bible:Romans 6','boc:SC IV','fathers']},
+    {id:'g3',name:'Advent sermon',color:'orange',collapsed:false,open:false,pinned:false,saved:['bible:Isaiah 9','bible:Luke 1','note:Advent 1 sermon']},
+    {id:'g4',name:'Pastoral visits',color:'purple',collapsed:false,open:false,pinned:false,saved:['bible:Psalms 23','note:Visit notes']}
+  ],
+  bookmarks:[{folder:'Dogmatics',items:['book:Christian Dogmatics I','book:Theological Commonplaces','book:Loci Communes 1543']},{key:'bible:John 3'},{key:'boc:AC IV'}],
+  hist:[]
+};
+{
+  const a=T('lib',{pinned:true}),b=T('notes',{pinned:true});
+  const r=T('bible:Romans 3',{group:'g1'}),c=T('boc:AC IV',{group:'g1'}),l=T('book:Luther\'s Works 26',{group:'g1'});
+  r.split=c.id;c.split=r.id;
+  const j=T('bible:John 3',{hist:['bible:John 1','bible:John 3'],hi:1}),n=T('newtab');
+  S.tabs=[a,b,r,c,l,j,n];S.active=r.id;
+}
+const $=s=>document.querySelector(s);
+const tab=id=>S.tabs.find(t=>t.id===id);
+const key=t=>t.hist[t.hi];
+const grp=id=>S.groups.find(g=>g.id===id);
+const cur=()=>tab(S.active);
+
+/* ---------- actions ---------- */
+function activate(id){const t=tab(id);if(!t)return;const g=t.group&&grp(t.group);if(g)g.collapsed=false;S.active=id;S.hist.unshift(key(t));render()}
+function nav(t,k){t.hist=t.hist.slice(0,t.hi+1);t.hist.push(k);t.hi++;S.hist.unshift(k);render()}
+function openNew(k,{bg=false,after=S.active,group}={}){
+  const t=T(k);const i=S.tabs.findIndex(x=>x.id===after);
+  const ref=tab(after);if(group!==undefined)t.group=group;else if(ref&&ref.group&&!bg)t.group=null;
+  S.tabs.splice(i<0?S.tabs.length:i+1,0,t);if(!bg)S.active=t.id;else toast(`Opened “${info(k).t}” in a background tab`);render();return t;
+}
+function closeTab(id){
+  const i=S.tabs.findIndex(t=>t.id===id);if(i<0)return;const t=S.tabs[i];
+  S.closed.push({...t,idx:i});if(t.split){const p=tab(t.split);if(p)p.split=null}
+  S.tabs.splice(i,1);
+  if(!S.tabs.length){S.tabs.push(T('newtab'));}
+  if(S.active===id){const vis=visible();S.active=(t.split&&tab(t.split))?t.split:(vis[Math.min(i,vis.length-1)]||S.tabs[0]).id}
+  const g=t.group&&grp(t.group);if(g&&!S.tabs.some(x=>x.group===g.id)){g.open=false;g.saved=[key(t)]}
+  render();
+}
+function reopen(){const t=S.closed.pop();if(!t)return toast('No recently closed tabs');const {idx,...rest}=t;rest.split=null;if(rest.group&&!grp(rest.group).open)rest.group=null;S.tabs.splice(Math.min(idx,S.tabs.length),0,rest);S.active=rest.id;render()}
+function visible(){return S.tabs.filter(t=>!(t.group&&grp(t.group).collapsed)||t.id===S.active)}
+function setPinned(t,v){t.pinned=v;if(v){t.group=null;if(t.split){tab(t.split).split=null;t.split=null}}S.tabs=[...S.tabs.filter(x=>x.pinned),...S.tabs.filter(x=>!x.pinned)];render()}
+function splitWith(a,b){const A=tab(a),B=tab(b);if(A.split)tab(A.split).split=null;if(B.split)tab(B.split).split=null;A.split=b;B.split=a;S.tabs=S.tabs.filter(t=>t.id!==b);S.tabs.splice(S.tabs.findIndex(t=>t.id===a)+1,0,B);B.group=A.group;S.active=a;render()}
+function unsplit(t){if(t.split){tab(t.split).split=null;t.split=null}render()}
+function newGroup(t){const g={id:'g'+Date.now(),name:'',color:Object.keys(COLORS)[S.groups.length%9],collapsed:false,open:true,pinned:false,saved:[]};S.groups.push(g);t.group=g.id;if(t.split)tab(t.split).group=g.id;render();setTimeout(()=>groupEditor(g,document.querySelector(`[data-gchip="${g.id}"]`)),0)}
+function closeGroup(g){g.saved=S.tabs.filter(t=>t.group===g.id).map(key);S.tabs=S.tabs.filter(t=>t.group!==g.id);g.open=false;if(!S.tabs.length)S.tabs.push(T('newtab'));if(!tab(S.active))S.active=S.tabs[S.tabs.length-1].id;toast(`“${g.name||'Unnamed group'}” closed. It's saved in ${g.pinned?'the bookmarks bar and ':''}the tab groups menu.`);render()}
+function openGroup(g){if(g.open){const f=S.tabs.find(t=>t.group===g.id);g.collapsed=false;return activate(f.id)}const ts=g.saved.map(k=>T(k,{group:g.id}));S.tabs.push(...ts);g.open=true;g.collapsed=false;S.active=ts[0].id;render()}
+function back(){const t=cur();if(t.hi>0){t.hi--;render()}}
+function fwd(){const t=cur();if(t.hi<t.hist.length-1){t.hi++;render()}}
+function isStarred(k){return S.bookmarks.some(b=>b.key===k)||S.bookmarks.some(b=>b.folder&&b.items.includes(k))}
+function toggleStar(){const k=key(cur());if(k==='newtab')return;if(isStarred(k)){S.bookmarks=S.bookmarks.filter(b=>b.key!==k);toast('Bookmark removed');render()}else{S.bookmarks.push({key:k});render();const r=$('.omni .star').getBoundingClientRect();bubble(r,`<h6>Bookmark added</h6><div style="color:var(--text-2)">Name<br><input value="${info(k).t}" style="width:100%;height:32px;margin-top:4px;border-radius:6px;border:1px solid var(--border-strong);background:var(--omni-focus);color:var(--text);padding:0 8px;font:inherit"></div><div style="color:var(--text-2);margin-top:10px">Folder: <b style="color:var(--text)">Bookmarks bar</b></div><div class=btns><button class=btn data-x="unstar">Remove</button><button class="btn p" data-x="close">Done</button></div>`)}}
+
+/* ---------- render ---------- */
+const ic=n=>`<i data-lucide="${n}"></i>`;
+function render(){
+  const a=cur();if(!a){S.active=S.tabs[0].id}
+  renderStrip();renderToolbar();renderBar();renderContent();renderSide();lucide.createIcons();
+}
+function renderStrip(){
+  let h=`<button class=tsearch data-act="tabsearch" title="Search tabs">${ic('chevron-down')}</button><div class=tabs id=tabs>`;
+  const seen=new Set();let lastG=null;
+  S.tabs.forEach((t,i)=>{
+    if(seen.has(t.id))return;
+    if(t.group!==lastG&&t.group){const g=grp(t.group);h+=`<div class="gchip${g.name?'':' empty'}${g.collapsed?' collapsed':''}" style="--gc:${COLORS[g.color]}" data-gchip="${g.id}" title="${g.name}">${g.name}</div>`}
+    lastG=t.group;
+    const g=t.group&&grp(t.group);if(g&&g.collapsed)return;
+    const gl=g?`<div class=gline style="--gc:${COLORS[g.color]}"></div>`:'';
+    if(t.split&&tab(t.split)){
+      const p=tab(t.split);seen.add(p.id);const on=S.active===t.id||S.active===p.id;
+      const half=x=>`<div class="half${S.active===x.id?' on':''}" data-tab="${x.id}">${ic(info(key(x)).ic)}<span class=lbl>${info(key(x)).t}</span></div>`;
+      h+=`<div class="tab split${on?' active':''}" data-tab="${S.active===p.id?p.id:t.id}" data-pair="1" draggable=true>${gl}${half(t)}<div class=mid></div>${half(p)}<button class=x data-close="${S.active===p.id?p.id:t.id}">${ic('x')}</button><div class=sep></div></div>`;
+      return;
+    }
+    const inf=info(key(t));
+    h+=`<div class="tab${S.active===t.id?' active':''}${t.pinned?' pinned':''}" data-tab="${t.id}" draggable=true>${gl}${ic(inf.ic)}<span class=lbl>${inf.t}</span><button class=x data-close="${t.id}">${ic('x')}</button><div class=sep></div></div>`;
+  });
+  h+=`<button class=newtab-btn data-act="newtab" title="New tab (Ctrl+T)">${ic('plus')}</button></div><div class=winctl><span>&#x2013;</span><span>&#x2610;</span><span>&#x2715;</span></div>`;
+  $('#strip').innerHTML=h;
+}
+function renderToolbar(){
+  const t=cur(),k=key(t),inf=info(k);
+  $('#toolbar').innerHTML=`
+   <button class="ib${t.hi>0?'':' dis'}" data-act="back" title="Back (Alt+←)">${ic('arrow-left')}</button>
+   <button class="ib${t.hi<t.hist.length-1?'':' dis'}" data-act="fwd" title="Forward (Alt+→)">${ic('arrow-right')}</button>
+   <button class=ib data-act="reload" title="Reload (Ctrl+R)">${ic('rotate-cw')}</button>
+   <div class=omni id=omni data-act="omni">${ic(k==='newtab'?'search':'book-open-text')}<div class=crumb>${inf.crumb||'<span class=dim>Search Loci or type a reference — rom 3:28, AC IV, “justification”</span>'}</div>
+     <button class="ib star${isStarred(k)?' on':''}" data-act="star" title="Bookmark this tab (Ctrl+D)">${ic('star')}</button></div>
+   <button class=ib data-act="audio" title="Listen">${ic('headphones')}</button>
+   <button class=ib data-act="capture" title="Quick capture (Ctrl+Shift+N)">${ic('pen-line')}</button>
+   <button class="ib${S.side.open?' on':''}" data-act="side" title="Side panel">${ic('panel-right')}</button>
+   <div class=tsep></div>
+   <button class=ib data-act="profile" title="Vault"><span class=avatar>L</span></button>
+   <button class=ib data-act="menu" title="Customize and control Loci">${ic('ellipsis-vertical')}</button>`;
+}
+function renderBar(){
+  const bb=$('#bbar');bb.style.display=S.showBar?'flex':'none';
+  let h='';
+  S.groups.filter(g=>g.pinned).forEach(g=>h+=`<button class="bm grp${g.open?'':' closed'}" style="--gc:${COLORS[g.color]}" data-sg="${g.id}"><span class=dot></span>${g.name||'Unnamed'}</button>`);
+  h+=`<button class=bm data-act="groups" title="Tab groups">${ic('layout-grid')}</button><div class=bsep></div>`;
+  [['bibleidx','Bible','scroll-text'],['conf','Confessions','book-marked'],['fathers','Fathers','landmark'],['lib','Library','library'],['notes','Notes','notebook-pen'],['quotes','Quotes','quote']].forEach(([k,l,i])=>h+=`<button class=bm data-bm="${k}" data-fixed=1>${ic(i)}${l}</button>`);
+  h+=`<div class=bsep></div>`;
+  S.bookmarks.forEach((b,i)=>h+=b.folder?`<button class=bm data-folder="${i}">${ic('folder')}${b.folder}</button>`:`<button class=bm data-bm="${b.key}">${ic(info(b.key).ic)}${info(b.key).t}</button>`);
+  bb.innerHTML=h;
+}
+function pageHTML(k){
+  const i=k.indexOf(':'),kind=i<0?k:k.slice(0,i),a=i<0?'':k.slice(i+1);
+  if(kind==='bible'){const v=TEXT[a];return `<div class=read><h1>${a}</h1><div class=meta>Berean Standard Bible</div>${v?v.map(([n,s])=>`<p><sup>${n}</sup>${s}</p>`).join(''):`<p class=ph>Chapter text renders here.</p>`}<p style="margin-top:30px;font:12px var(--ui);color:var(--muted)">Try: click a cross-reference, Ctrl+click to open it in a background tab, then use Back.</p></div>`}
+  if(kind==='boc')return `<div class=read><h1>${a==='AC IV'?'Article IV: Of Justification':a}</h1><div class=meta>Augsburg Confession · Book of Concord</div><p>${BOC[a]||'<span class=ph>Article text renders here.</span>'}</p></div>`;
+  if(kind==='newtab')return `<div class=ntp><div class=word>Loci</div><div class=box data-act="omni">${ic('search')}Search Loci or type a reference</div>
+    <div class=tiles>${[['bibleidx','Bible','scroll-text'],['conf','Confessions','book-marked'],['fathers','Fathers','landmark'],['lib','Library','library'],['notes','Notes','notebook-pen'],['quotes','Quotes','quote'],['bible:Romans 3','Romans 3','scroll-text'],['boc:AC IV','AC IV','book-marked'],['book:Luther\'s Works 26','LW 26','book-open'],['note:Advent 1 sermon','Advent 1 sermon','file-text']].map(([k,l,i])=>`<div class=tile data-go="${k}"><div class=ic>${ic(i)}</div>${l}</div>`).join('')}</div>
+    <div class=cont><h5>Continue reading</h5>
+      <div class=card data-go="book:Luther's Works 26">${ic('book-open')}<div><b>Luther's Works 26</b><br><span style="color:var(--muted);font-size:12px">Page 212 of 470 · yesterday</span></div><div class=bar><i style="width:45%"></i></div></div>
+      <div class=card data-go="book:Christian Dogmatics I">${ic('book-open')}<div><b>Christian Dogmatics I</b><br><span style="color:var(--muted);font-size:12px">Page 88 of 563 · 3 days ago</span></div><div class=bar><i style="width:16%"></i></div></div></div>
+    <div class=hint>Try right-clicking tabs, the group chips, and bookmarks. Middle-click closes tabs.<br><kbd>Ctrl+T</kbd> <kbd>Ctrl+W</kbd> <kbd>Ctrl+Shift+T</kbd> <kbd>Ctrl+Tab</kbd> <kbd>Ctrl+1–9</kbd> <kbd>Ctrl+L</kbd> <kbd>Ctrl+D</kbd> <kbd>Alt+←</kbd> <kbd>Ctrl+H</kbd> <kbd>Ctrl+Shift+B</kbd></div></div>`;
+  if(kind==='lib')return `<div class=page><h2>Library</h2><div class=grid>${COVERS.map(([t,s,c])=>`<div class=cover style="background:${c}" data-go="book:${t}">${t}<small>${s}</small></div>`).join('')}</div></div>`;
+  if(kind==='bibleidx')return `<div class=page><h2>Bible</h2><div class=grid>${BOOKS.map(b=>`<div class=tile style="background:var(--toolbar)" data-go="bible:${b} ${b==='Romans'?3:b==='John'?3:1}">${b}</div>`).join('')}</div></div>`;
+  if(kind==='conf')return `<div class=page><h2>Book of Concord</h2><div class=list>${['Apostles\' Creed','Nicene Creed','Athanasian Creed','Augsburg Confession','Apology of the Augsburg Confession','Smalcald Articles','Small Catechism','Large Catechism','Formula of Concord: Epitome','Formula of Concord: Solid Declaration'].map(d=>`<div data-go="${d==='Augsburg Confession'?'boc:AC IV':'conf'}">${ic('book-marked')}${d}</div>`).join('')}</div></div>`;
+  if(kind==='fathers')return `<div class=page><h2>Church Fathers</h2><div class=list>${['Ignatius of Antioch','Irenaeus, Against Heresies','Athanasius, On the Incarnation','Augustine, Confessions','Augustine, City of God','John Chrysostom, Homilies on Romans'].map(d=>`<div data-go="fathers">${ic('landmark')}${d}</div>`).join('')}</div></div>`;
+  if(kind==='notes')return `<div class=page><h2>Notes</h2><div class=list>${[['Advent 1 sermon','2 days ago'],['Visit notes','last week'],['Justification outline','Sep 30'],['Baptism study','Sep 12']].map(([n,d])=>`<div data-go="note:${n}">${ic('file-text')}${n}<small>${d}</small></div>`).join('')}</div></div>`;
+  if(kind==='quotes')return `<div class=page><h2>Quotes</h2><div class=list>${[['“This faith God imputes for righteousness…”','AC IV'],['“…justified by faith apart from works of the law.”','Romans 3:28'],['“The article of justification is the master and prince…”','LW 26']].map(([q,s])=>`<div data-go="${s==='AC IV'?'boc:AC IV':s.startsWith('Rom')?'bible:Romans 3':'book:Luther\'s Works 26'}">${ic('quote')}<span style="font-family:var(--read);font-size:16px">${q}</span><small>${s}</small></div>`).join('')}</div></div>`;
+  if(kind==='book')return `<div class=page style="display:flex;justify-content:center"><div style="width:560px;aspect-ratio:.72;background:#efe6d4;color:#2a2219;border-radius:3px;padding:48px;font:16px/1.6 var(--read)"><div style="text-align:center;font-size:12px;letter-spacing:.1em;color:#7a6a52">${a.toUpperCase()}</div><p class=ph style="color:#7a6a52;margin-top:40px">PDF page renders here.</p></div></div>`;
+  if(kind==='note')return `<div class=read><h1>${a}</h1><div class=meta>Note · edited 2 days ago</div><p class=ph>Rich-text note editor renders here.</p></div>`;
+  if(kind==='search')return `<div class=page><h2>Results for “${a}”</h2><div class=list><div data-go="bible:Romans 3">${ic('scroll-text')}Romans 3:28 — “…justified by faith apart from works…”<small>Bible</small></div><div data-go="boc:AC IV">${ic('book-marked')}AC IV — “…freely justified for Christ’s sake…”<small>Confessions</small></div><div data-go="book:Luther's Works 26">${ic('book-open')}LW 26, p. 9 — “…the article of justification…”<small>Library</small></div><div data-go="note:Justification outline">${ic('file-text')}Justification outline<small>Notes</small></div></div></div>`;
+  if(kind==='history')return `<div class=page><h2>History</h2><div class=list>${[...new Set(S.hist)].slice(0,14).map(k=>`<div data-go="${k}">${ic(info(k).ic)}${info(k).t}<small>Today</small></div>`).join('')||'<div>Nothing yet</div>'}</div></div>`;
+  if(kind==='settings')return `<div class=set><nav>${[['You and Loci','user',1],['Appearance','palette'],['Vault','folder'],['Scripture','scroll-text'],['Audio','headphones'],['Sync','cloud'],['Shortcuts','keyboard'],['About Loci','info']].map(([l,i,on])=>`<div class="${on?'on':''}">${ic(i)}${l}</div>`).join('')}</nav><main><h2 style="font:500 22px var(--title);margin:4px 0 18px">You and Loci</h2>
+    <div class=scard><div class=row><div>Vault folder<small>D:\\Vault\\Loci</small></div>${ic('chevron-right')}</div><div class=row><div>Default translation<small>Berean Standard Bible</small></div>${ic('chevron-right')}</div><div class=row><div>Show bookmarks bar<small>Ctrl+Shift+B</small></div><div class=tog></div></div><div class=row><div>Continue where you left off<small>Reopen your tabs and groups on launch</small></div><div class=tog></div></div></div></main></div>`;
+  return `<div class=page>${k}</div>`;
+}
+function renderContent(){
+  const t=cur();const c=$('#content');
+  if(t.split&&tab(t.split)){
+    const [L,R]=S.tabs.indexOf(t)<S.tabs.indexOf(tab(t.split))?[t,tab(t.split)]:[tab(t.split),t];
+    c.innerHTML=`<div class="pane half${S.active===L.id?' on':''}" data-pane="${L.id}">${pageHTML(key(L))}</div><div class=pdiv></div><div class="pane half${S.active===R.id?' on':''}" data-pane="${R.id}">${pageHTML(key(R))}</div>`;
+  }else c.innerHTML=`<div class=pane data-pane="${t.id}" style="zoom:${S.zoom/100}">${pageHTML(key(t))}</div>`;
+}
+function renderSide(){
+  const s=$('#side');s.style.display=S.side.open?'flex':'none';if(!S.side.open)return;
+  const m=S.side.mode;
+  const body={Commentary:`<h4>Kretzmann · Romans 3:28</h4><p>The apostle sums up the result: a man is justified by faith, without the deeds of the Law. Faith is the only means by which the righteousness of God is appropriated.</p><h4>Luther · LW 26</h4><div class=q>This is the true meaning of Christianity, that we are justified by faith in Christ, not by the works of the Law.</div>`,
+   Quotes:`<h4>Romans 3</h4><div class=q>…justified by faith apart from works of the law.</div><h4>AC IV</h4><div class=q>This faith God imputes for righteousness in His sight.</div>`,
+   Notes:`<h4>Justification outline</h4><p>1. Forensic declaration (Rom 3:28; AC IV)<br>2. Propter Christum, per fidem<br>3. Ap IV on faith as the receiving hand</p>`,
+   Texts:`<h4>Apology IV · 48</h4><p>Faith is that which receives the promise…</p>`,
+   Books:`<h4>Luther's Works 26</h4><p style="color:var(--muted)">Open a book here to read it beside your tabs.</p>`}[m];
+  s.innerHTML=`<div class=side-h><select id=sidemode>${['Commentary','Quotes','Notes','Texts','Books'].map(o=>`<option${o===m?' selected':''}>${o}</option>`).join('')}</select><button class=ib data-act="side" title="Close side panel">${ic('x')}</button></div><div class=side-b>${body}</div>`;
+  $('#sidemode').onchange=e=>{S.side.mode=e.target.value;render()};
+}
+
+/* ---------- menus ---------- */
+let menuEl=null,subEl=null;
+function closeMenus(){document.querySelectorAll('.menu,.bubble,.hcard').forEach(e=>e.remove());menuEl=subEl=null;const s=document.querySelector('.sugg');if(s)endOmni()}
+function menu(x,y,items,{sub=false,cls=''}={}){
+  if(!sub)closeMenus();else if(subEl){subEl.remove();subEl=null}
+  const m=document.createElement('div');m.className='menu '+cls;
+  items.forEach(it=>{
+    if(it==='-'){m.insertAdjacentHTML('beforeend','<div class=ms></div>');return}
+    if(it.h){m.insertAdjacentHTML('beforeend',`<div class=mh>${it.h}</div>`);return}
+    const d=document.createElement('div');d.className='mi'+(it.dis?' dis':'');
+    d.innerHTML=`<span class=ico>${it.dot?`<span class=dot style="background:${it.dot}"></span>`:it.i?ic(it.i):''}</span>${it.l}${it.sub?`<span class=ar>${ic('chevron-right')}</span>`:it.k?`<span class=k>${it.k}</span>`:''}`;
+    if(it.sub)d.onmouseenter=()=>{m.querySelectorAll('.mi.open').forEach(e=>e.classList.remove('open'));d.classList.add('open');const r=d.getBoundingClientRect();menu(r.right-2,r.top-6,it.sub,{sub:true})};
+    else{d.onmouseenter=()=>{if(subEl&&!sub){subEl.remove();subEl=null;m.querySelectorAll('.mi.open').forEach(e=>e.classList.remove('open'))}};d.onclick=e=>{e.stopPropagation();closeMenus();it.a&&it.a()}}
+    if(it.ctx)d.oncontextmenu=e=>{e.preventDefault();e.stopPropagation();it.ctx(e)};
+    m.appendChild(d);
+  });
+  document.body.appendChild(m);lucide.createIcons();
+  const r=m.getBoundingClientRect();m.style.left=Math.min(x,innerWidth-r.width-6)+'px';m.style.top=Math.min(y,innerHeight-r.height-6)+'px';
+  if(sub)subEl=m;else menuEl=m;return m;
+}
+function bubble(r,html){closeMenus();const b=document.createElement('div');b.className='bubble';b.innerHTML=html;document.body.appendChild(b);b.style.left=Math.max(8,Math.min(r.right-320,innerWidth-330))+'px';b.style.top=(r.bottom+8)+'px';b.onclick=e=>{const x=e.target.dataset.x;if(x==='close')closeMenus();if(x==='unstar'){closeMenus();toggleStar()}};}
+let toastT;function toast(s){document.querySelector('.toast')?.remove();const d=document.createElement('div');d.className='toast';d.textContent=s;document.body.appendChild(d);clearTimeout(toastT);toastT=setTimeout(()=>d.remove(),2600)}
+
+function tabMenu(t,x,y){
+  const openGroups=S.groups.filter(g=>g.open&&g.id!==t.group);
+  const others=S.tabs.filter(o=>o.id!==t.id&&!o.pinned&&!o.split&&o.id!==t.split);
+  menu(x,y,[
+    {l:'New tab to the right',i:'plus',a:()=>openNew('newtab',{after:t.id})},
+    {l:'Add tab to group',i:'layout-grid',sub:[{l:'New group',i:'plus',a:()=>newGroup(t)},...(openGroups.length?['-']:[]),...openGroups.map(g=>({l:g.name||'Unnamed group',dot:COLORS[g.color],a:()=>{t.group=g.id;if(t.split)tab(t.split).group=g.id;const last=S.tabs.filter(x=>x.group===g.id&&x!==t).pop();S.tabs=S.tabs.filter(x=>x!==t);S.tabs.splice(S.tabs.indexOf(last)+1,0,t);render()}}))]},
+    ...(t.group?[{l:'Remove from group',i:'circle-minus',a:()=>{t.group=null;if(t.split)tab(t.split).group=null;render()}}]:[]),
+    t.split?{l:'Exit split view',i:'columns-2',a:()=>unsplit(t)}:{l:'Split view with…',i:'columns-2',sub:others.length?others.map(o=>({l:info(key(o)).t,i:info(key(o)).ic,a:()=>splitWith(t.id,o.id)})):[{l:'No other tabs',dis:1}]},
+    '-',
+    {l:'Reload',i:'rotate-cw',k:'Ctrl+R',a:()=>toast('Reloaded')},
+    {l:'Duplicate',i:'copy',a:()=>{const d=openNew(key(t),{after:t.id});d.hist=[...t.hist];d.hi=t.hi;d.group=t.group;render()}},
+    {l:t.pinned?'Unpin':'Pin',i:t.pinned?'pin-off':'pin',a:()=>setPinned(t,!t.pinned)},
+    {l:'Bookmark tab…',i:'star',a:()=>{activate(t.id);toggleStar()}},
+    '-',
+    {l:'Close',i:'x',k:'Ctrl+W',a:()=>closeTab(t.id)},
+    {l:'Close other tabs',a:()=>{S.tabs=S.tabs.filter(o=>o.pinned||o.id===t.id||o.id===t.split);S.active=t.id;render()}},
+    {l:'Close tabs to the right',a:()=>{const i=S.tabs.indexOf(t);S.tabs=S.tabs.filter((o,j)=>j<=i||o.id===t.split);if(!tab(S.active))S.active=t.id;render()}},
+    '-',
+    {l:'Reopen closed tab',i:'undo-2',k:'Ctrl+Shift+T',dis:!S.closed.length,a:reopen}
+  ]);
+}
+function groupEditor(g,anchor){
+  closeMenus();const r=anchor.getBoundingClientRect();
+  const m=menu(r.left,r.bottom+6,[
+    {l:'New tab in group',i:'plus',a:()=>{const last=S.tabs.filter(t=>t.group===g.id).pop();openNew('newtab',{after:last.id,group:g.id})}},
+    {l:'Ungroup',i:'ungroup',a:()=>{S.tabs.forEach(t=>{if(t.group===g.id)t.group=null});S.groups=S.groups.filter(x=>x!==g);render()}},
+    {l:g.pinned?'Unpin from bookmarks bar':'Pin to bookmarks bar',i:g.pinned?'pin-off':'pin',a:()=>{g.pinned=!g.pinned;render()}},
+    {l:'Close group',i:'x',a:()=>closeGroup(g)},
+    {l:'Delete group',i:'trash-2',a:()=>{S.tabs=S.tabs.filter(t=>t.group!==g.id);S.groups=S.groups.filter(x=>x!==g);if(!S.tabs.length)S.tabs.push(T('newtab'));if(!tab(S.active))S.active=S.tabs[0].id;toast('Group deleted');render()}}
+  ],{cls:'gedit'});
+  m.insertAdjacentHTML('afterbegin',`<input placeholder="Name this group" value="${g.name}"><div class=swatches>${Object.entries(COLORS).map(([n,c])=>`<span data-c="${n}" class="${n===g.color?'on':''}" style="background:${c}"></span>`).join('')}</div><div class=ms></div>`);
+  const inp=m.querySelector('input');inp.focus();inp.select();
+  inp.oninput=()=>{g.name=inp.value;renderStrip();renderBar();lucide.createIcons()};
+  inp.onkeydown=e=>{if(e.key==='Enter')closeMenus()};
+  m.querySelectorAll('.swatches span').forEach(s=>s.onclick=e=>{e.stopPropagation();g.color=s.dataset.c;m.querySelectorAll('.swatches span').forEach(x=>x.classList.toggle('on',x===s));renderStrip();renderBar();lucide.createIcons()});
+}
+function groupsMenu(x,y){
+  menu(x,y,[{l:'Create new tab group',i:'square-plus',a:()=>{const t=openNew('newtab');newGroup(t)}},'-',
+    ...S.groups.map(g=>({l:(g.name||'Unnamed group')+(g.open?'':' <span style="color:var(--muted);font-size:11.5px">· closed</span>'),dot:COLORS[g.color],
+      sub:[{l:g.open?'Go to group':'Open group',i:'external-link',a:()=>openGroup(g)},{l:g.pinned?'Unpin from bookmarks bar':'Pin to bookmarks bar',i:g.pinned?'pin-off':'pin',a:()=>{g.pinned=!g.pinned;render()}},...(g.open?[{l:'Close group',i:'x',a:()=>closeGroup(g)}]:[]),{l:'Delete group',i:'trash-2',a:()=>{S.tabs=S.tabs.filter(t=>t.group!==g.id);S.groups=S.groups.filter(x=>x!==g);if(!S.tabs.length)S.tabs.push(T('newtab'));if(!tab(S.active))S.active=S.tabs[0].id;render()}}]}))]);
+}
+function appMenu(x,y){
+  menu(x,y,[
+    {l:'New tab',i:'plus',k:'Ctrl+T',a:()=>openNew('newtab')},
+    {l:'New tab group',i:'layout-grid',a:()=>{const t=openNew('newtab');newGroup(t)}},
+    {l:'Quick capture note',i:'pen-line',k:'Ctrl+Shift+N',a:()=>toast('Quick capture opens here')},
+    '-',
+    {l:'History',i:'history',sub:[{h:'Recently closed'},...(S.closed.slice(-5).reverse().map(c=>({l:info(key(c)).t,i:info(key(c)).ic,a:()=>openNew(key(c))}))),...(S.closed.length?[]:[{l:'Nothing closed yet',dis:1}]),'-',{l:'History',i:'history',k:'Ctrl+H',a:()=>openNew('history')}]},
+    {l:'Bookmarks and lists',i:'star',sub:[{l:'Bookmark this tab…',i:'star',k:'Ctrl+D',a:toggleStar},{l:(S.showBar?'Hide':'Show')+' bookmarks bar',i:'panel-top',k:'Ctrl+Shift+B',a:()=>{S.showBar=!S.showBar;render()}},{l:'Bookmark manager',i:'bookmark',a:()=>toast('Bookmark manager tab opens here')}]},
+    {l:'Tab groups',i:'layout-grid',sub:S.groups.map(g=>({l:g.name||'Unnamed group',dot:COLORS[g.color],a:()=>openGroup(g)}))},
+    '-',
+    {l:`Zoom&nbsp;&nbsp;<span style="margin-left:auto;display:flex;gap:6px;align-items:center"><button class=ib style="width:24px;height:24px" onclick="event.stopPropagation();S.zoom=Math.max(50,S.zoom-10);render();closeMenus()">−</button>${S.zoom}%<button class=ib style="width:24px;height:24px" onclick="event.stopPropagation();S.zoom=Math.min(200,S.zoom+10);render();closeMenus()">+</button></span>`,i:'zoom-in'},
+    {l:'Find…',i:'search',k:'Ctrl+F',a:()=>toast('Find bar opens under the toolbar')},
+    {l:'Print / export PDF…',i:'printer',k:'Ctrl+P',a:()=>toast('Export opens here')},
+    '-',
+    {l:'Settings',i:'settings',a:()=>openNew('settings')},
+    {l:'Help',i:'circle-help',sub:[{l:'About Loci',i:'info',a:()=>toast('Loci — mockup')},{l:'Keyboard shortcuts',i:'keyboard',a:()=>toast('Shortcuts list opens here')}]},
+    '-',{l:'Exit',i:'log-out',a:()=>toast('Loci would close')}
+  ]);
+}
+function bmMenu(k,x,y,fixed){
+  menu(x,y,[{l:'Open in new tab',i:'plus',a:()=>openNew(k)},{l:'Open in background tab',i:'square-arrow-out-up-right',a:()=>openNew(k,{bg:true})},{l:'Open in split view',i:'columns-2',a:()=>{const t=openNew(k,{bg:true});splitWith(S.active===t.id?S.tabs[0].id:S.active,t.id)}},
+    ...(fixed?[]:['-',{l:'Edit…',i:'pencil',a:()=>toast('Edit bookmark dialog')},{l:'Delete',i:'trash-2',a:()=>{S.bookmarks=S.bookmarks.filter(b=>b.key!==k);render()}}]),
+    '-',{l:'Add page…',i:'star',a:()=>toast('Add bookmark dialog')},{l:'Add folder…',i:'folder-plus',a:()=>toast('Add folder dialog')},'-',{l:'Bookmark manager',i:'bookmark',a:()=>toast('Bookmark manager tab opens here')}]);
+}
+
+/* ---------- omnibox ---------- */
+let sel=0,suggs=[];
+function parse(q){
+  const s=q.trim();if(!s)return[];const out=[];const m=s.match(/^([1-3]?\s*[a-z]+)\.?\s*(\d+)(?::(\d+))?$/i);
+  if(m){const b=BOOKS.find(b=>b.toLowerCase().startsWith(m[1].replace(/\s/g,'').toLowerCase()));if(b)out.push({k:`bible:${b} ${m[2]}`,l:`<b>${b} ${m[2]}${m[3]?':'+m[3]:''}</b>`,i:'scroll-text',h:'Bible'})}
+  const ac=s.match(/^(ac|ap|sa|sc|lc|fc)\s*([ivxl]+|\d+)?$/i);if(ac)out.push({k:`boc:${ac[1].toUpperCase()} ${(ac[2]||'I').toUpperCase()}`,l:`<b>${ac[1].toUpperCase()} ${(ac[2]||'I').toUpperCase()}</b>`,i:'book-marked',h:'Confessions'});
+  [['bibleidx','Bible'],['conf','Confessions'],['fathers','Fathers'],['lib','Library'],['notes','Notes'],['quotes','Quotes'],['settings','Settings'],['history','History']].forEach(([k,l])=>{if(l.toLowerCase().startsWith(s.toLowerCase()))out.push({k,l:`<b>${l}</b>`,i:info(k).ic,h:'Go to'})});
+  COVERS.forEach(([t])=>{if(t.toLowerCase().includes(s.toLowerCase())&&s.length>2)out.push({k:`book:${t}`,l:t,i:'book-open',h:'Library'})});
+  S.tabs.forEach(t=>{const inf=info(key(t));if(s.length>1&&inf.t.toLowerCase().includes(s.toLowerCase()))out.push({k:'__tab'+t.id,l:inf.t,i:inf.ic,h:'Switch to this tab'})});
+  out.push({k:`search:${s}`,l:`${s} <span style="color:var(--muted)">— Search Loci</span>`,i:'search',h:''});
+  return out.slice(0,7);
+}
+function startOmni(){
+  const o=$('#omni');if(o.classList.contains('focus'))return;closeMenus();o.classList.add('focus');
+  const ed=info(key(cur())).edit;o.querySelector('.crumb').outerHTML=`<input id=oin value="${ed}" spellcheck=false>`;
+  const inp=$('#oin');inp.focus();inp.select();
+  const upd=()=>{suggs=parse(inp.value);sel=0;draw()};
+  const draw=()=>{o.querySelector('.sugg')?.remove();if(!suggs.length)return;o.insertAdjacentHTML('beforeend',`<div class=sugg>${suggs.map((s,i)=>`<div class="${i===sel?'sel':''}" data-si="${i}">${ic(s.i)}<span>${s.l}</span><small>${s.h}</small></div>`).join('')}</div>`);lucide.createIcons();o.querySelectorAll('[data-si]').forEach(d=>d.onmousedown=e=>{e.preventDefault();go(suggs[+d.dataset.si],e.altKey)})};
+  const go=(s,newTab)=>{if(!s)return;endOmni();if(s.k.startsWith('__tab'))return activate(+s.k.slice(5));newTab?openNew(s.k):nav(cur(),s.k)};
+  inp.oninput=upd;
+  inp.onkeydown=e=>{if(e.key==='ArrowDown'){sel=Math.min(sel+1,suggs.length-1);draw();e.preventDefault()}else if(e.key==='ArrowUp'){sel=Math.max(sel-1,0);draw();e.preventDefault()}else if(e.key==='Enter'){go(suggs[sel]||parse(inp.value)[0],e.altKey)}else if(e.key==='Escape'){endOmni()}};
+  inp.onblur=()=>setTimeout(endOmni,120);
+  if(ed){suggs=[];}else upd();
+}
+function endOmni(){const o=$('#omni');if(o&&o.classList.contains('focus')){renderToolbar();lucide.createIcons()}}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  if(e.target.closest('.menu,.bubble'))return;
+  const el=e.target;
+  const close=el.closest('[data-close]');if(close){e.stopPropagation();closeTab(+close.dataset.close);return}
+  const act=el.closest('[data-act]')?.dataset.act;
+  if(act){const r=el.closest('[data-act]').getBoundingClientRect();
+    if(act==='omni')return startOmni();
+    closeMenus();
+    ({newtab:()=>openNew('newtab',{after:S.tabs[S.tabs.length-1].id}),back,fwd,reload:()=>toast('Reloaded'),star:toggleStar,
+      side:()=>{S.side.open=!S.side.open;render()},audio:()=>toast('Audio player drops down here'),capture:()=>toast('Quick capture opens here'),
+      menu:()=>appMenu(r.right-260,r.bottom+2),groups:()=>groupsMenu(r.left,r.bottom+4),
+      profile:()=>menu(r.right-260,r.bottom+2,[{h:'Vault'},{l:'Loci <span style="color:var(--muted)">· D:\\Vault\\Loci</span>',i:'folder'},{l:'Synced to Google Drive',i:'cloud'},'-',{l:'Switch vault…',i:'repeat'},{l:'Open vault folder',i:'folder-open'}]),
+      tabsearch:()=>menu(r.left,r.bottom+4,[{h:'Open tabs'},...S.tabs.map(t=>({l:info(key(t)).t,i:info(key(t)).ic,a:()=>activate(t.id)})),'-',{h:'Recently closed'},...(S.closed.slice(-3).reverse().map(c=>({l:info(key(c)).t,i:info(key(c)).ic,a:reopen}))),...(S.closed.length?[]:[{l:'None',dis:1}])])
+    })[act]?.();return}
+  if(menuEl||document.querySelector('.bubble')){closeMenus()}
+  const gc=el.closest('[data-gchip]');if(gc){const g=grp(gc.dataset.gchip);g.collapsed=!g.collapsed;if(g.collapsed&&cur().group===g.id){const o=S.tabs.find(t=>t.group!==g.id);if(o)S.active=o.id}render();return}
+  const sg=el.closest('[data-sg]');if(sg){openGroup(grp(sg.dataset.sg));return}
+  const fo=el.closest('[data-folder]');if(fo){const r=fo.getBoundingClientRect();const b=S.bookmarks[+fo.dataset.folder];menu(r.left,r.bottom+4,[...b.items.map(k=>({l:info(k).t,i:info(k).ic,a:()=>openNew(k),ctx:ev=>bmMenu(k,ev.clientX,ev.clientY)})),'-',{l:'Open all ('+b.items.length+')',a:()=>b.items.forEach(k=>openNew(k,{bg:true}))},{l:'Open all in new tab group',a:()=>{const g={id:'g'+Date.now(),name:b.folder,color:'yellow',collapsed:false,open:false,pinned:false,saved:b.items};S.groups.push(g);openGroup(g)}}]);return}
+  const bm=el.closest('[data-bm]');if(bm){openNew(bm.dataset.bm,{bg:e.ctrlKey});return}
+  const go=el.closest('[data-go]');if(go){const pane=el.closest('[data-pane]');const t=pane?tab(+pane.dataset.pane):cur();if(e.ctrlKey||e.metaKey){S.active=t.id;openNew(go.dataset.go,{bg:true,after:t.id});return}S.active=t.id;nav(t,go.dataset.go);return}
+  const half=el.closest('.half[data-tab]');if(half){activate(+half.dataset.tab);return}
+  const tb=el.closest('[data-tab]');if(tb){activate(+tb.dataset.tab);return}
+  const pane=el.closest('.pane.half');if(pane&&+pane.dataset.pane!==S.active){activate(+pane.dataset.pane)}
+});
+document.addEventListener('auxclick',e=>{if(e.button!==1)return;const tb=e.target.closest('[data-tab]');if(tb){e.preventDefault();closeTab(+tb.dataset.tab);return}const bm=e.target.closest('[data-bm]');if(bm){openNew(bm.dataset.bm,{bg:true});return}const go=e.target.closest('[data-go]');if(go)openNew(go.dataset.go,{bg:true})});
+document.addEventListener('mousedown',e=>{if(e.button===1)e.preventDefault()});
+document.addEventListener('contextmenu',e=>{
+  if(e.target.closest('.menu'))return;e.preventDefault();hideHover();
+  const half=e.target.closest('.half[data-tab]');const tb=half||e.target.closest('[data-tab]');if(tb)return tabMenu(tab(+tb.dataset.tab),e.clientX,e.clientY);
+  const gc=e.target.closest('[data-gchip]');if(gc)return groupEditor(grp(gc.dataset.gchip),gc);
+  const sg=e.target.closest('[data-sg]');if(sg){const g=grp(sg.dataset.sg);return menu(e.clientX,e.clientY,[{l:g.open?'Go to group':'Open group',i:'external-link',a:()=>openGroup(g)},{l:'Unpin from bookmarks bar',i:'pin-off',a:()=>{g.pinned=false;toast(`“${g.name}” is still in the tab groups menu`);render()}},...(g.open?[{l:'Close group',i:'x',a:()=>closeGroup(g)}]:[]),{l:'Delete group',i:'trash-2',a:()=>{S.tabs=S.tabs.filter(t=>t.group!==g.id);S.groups=S.groups.filter(x=>x!==g);if(!S.tabs.length)S.tabs.push(T('newtab'));if(!tab(S.active))S.active=S.tabs[0].id;render()}}])}
+  const bm=e.target.closest('[data-bm]');if(bm)return bmMenu(bm.dataset.bm,e.clientX,e.clientY,bm.dataset.fixed);
+  const go=e.target.closest('[data-go]');if(go)return menu(e.clientX,e.clientY,[{l:'Open in new tab',i:'plus',a:()=>openNew(go.dataset.go,{bg:true})},{l:'Open in split view',i:'columns-2',a:()=>{const a=S.active;const t=openNew(go.dataset.go,{bg:true});splitWith(a,t.id)}},{l:'Open in side panel',i:'panel-right',a:()=>{S.side.open=true;render()}},'-',{l:'Copy reference',i:'copy',a:()=>toast('Copied')},{l:'Save as quote',i:'quote',a:()=>toast('Saved to Quotes')}]);
+  if(e.target.closest('.read'))return menu(e.clientX,e.clientY,[{l:'Back',i:'arrow-left',k:'Alt+←',dis:cur().hi===0,a:back},{l:'Forward',i:'arrow-right',k:'Alt+→',dis:cur().hi>=cur().hist.length-1,a:fwd},{l:'Reload',i:'rotate-cw',k:'Ctrl+R',a:()=>toast('Reloaded')},'-',{l:'Highlight',i:'highlighter',a:()=>toast('Highlight')},{l:'Save as quote',i:'quote',a:()=>toast('Saved to Quotes')},{l:'Add note…',i:'pen-line',a:()=>toast('Note')},'-',{l:'Copy',i:'copy',k:'Ctrl+C'},{l:'Search Loci for selection',i:'search',a:()=>openNew('search:justification')}]);
+  closeMenus();
+});
+/* hover cards */
+let hovT,hovEl=null;function hideHover(){clearTimeout(hovT);document.querySelector('.hcard')?.remove();hovEl=null}
+document.addEventListener('mouseover',e=>{
+  const tb=e.target.closest('.half[data-tab]')||e.target.closest('.tab[data-tab]');if(tb===hovEl)return;hideHover();if(!tb||document.querySelector('.menu'))return;hovEl=tb;
+  hovT=setTimeout(()=>{const t=tab(+tb.dataset.tab);if(!t)return;const inf=info(key(t));const g=t.group&&grp(t.group);const r=tb.getBoundingClientRect();const d=document.createElement('div');d.className='hcard';
+    d.innerHTML=`<b>${inf.t}</b><span>${inf.sub}${g?` · <span style="color:${COLORS[g.color]}">${g.name}</span>`:''}${t.split?' · split view':''}</span>${key(t).startsWith('bible')||key(t).startsWith('boc')?`<div class=pv>${(TEXT[inf.t]?.[0]?.[1])||BOC[inf.t]||'…'}</div>`:''}`;
+    document.body.appendChild(d);d.style.left=Math.min(r.left,innerWidth-270)+'px';d.style.top=(r.bottom+6)+'px'},550);
+});
+/* drag to reorder */
+let dragId=null;
+document.addEventListener('dragstart',e=>{const tb=e.target.closest('.tab[data-tab]');if(!tb)return;hideHover();dragId=+tb.dataset.tab;e.dataTransfer.effectAllowed='move'});
+document.addEventListener('dragover',e=>{const tb=e.target.closest('.tab[data-tab]');document.querySelectorAll('.dragover').forEach(x=>x.classList.remove('dragover'));if(tb&&dragId){e.preventDefault();tb.classList.add('dragover')}});
+document.addEventListener('drop',e=>{const tb=e.target.closest('.tab[data-tab]');if(!tb||!dragId)return;e.preventDefault();const d=tab(dragId),tg=tab(+tb.dataset.tab);if(d===tg)return;const move=[d,...(d.split?[tab(d.split)]:[])];S.tabs=S.tabs.filter(t=>!move.includes(t));const i=S.tabs.indexOf(tg.split&&S.tabs.indexOf(tab(tg.split))<S.tabs.indexOf(tg)?tab(tg.split):tg);S.tabs.splice(i,0,...move);move.forEach(m=>{m.group=tg.group;m.pinned=tg.pinned});dragId=null;render()});
+document.addEventListener('dragend',()=>{dragId=null;document.querySelectorAll('.dragover').forEach(x=>x.classList.remove('dragover'))});
+/* keyboard */
+document.addEventListener('keydown',e=>{
+  if(e.target.id==='oin'||e.target.closest?.('.gedit'))return;
+  const c=e.ctrlKey||e.metaKey,k=e.key.toLowerCase();
+  const vis=()=>S.tabs.filter(t=>!(t.group&&grp(t.group).collapsed));
+  const run=f=>{e.preventDefault();closeMenus();f()};
+  if(c&&e.shiftKey&&k==='t')return run(reopen);
+  if(c&&e.shiftKey&&k==='b')return run(()=>{S.showBar=!S.showBar;render()});
+  if(c&&k==='t')return run(()=>openNew('newtab',{after:S.tabs[S.tabs.length-1].id}));
+  if(c&&k==='w')return run(()=>closeTab(S.active));
+  if(c&&k==='tab')return run(()=>{const v=vis();const i=v.findIndex(t=>t.id===S.active);activate(v[(i+(e.shiftKey?-1:1)+v.length)%v.length].id)});
+  if(c&&/^[1-9]$/.test(k))return run(()=>{const v=vis();activate((k==='9'?v[v.length-1]:v[+k-1]||v[v.length-1]).id)});
+  if((c&&k==='l')||e.key==='F6')return run(startOmni);
+  if(c&&k==='d')return run(toggleStar);
+  if(c&&k==='h')return run(()=>openNew('history'));
+  if(c&&k==='f')return run(()=>toast('Find bar opens under the toolbar'));
+  if((c&&k==='r')||e.key==='F5')return run(()=>toast('Reloaded'));
+  if(c&&(k==='='||k==='+'))return run(()=>{S.zoom=Math.min(200,S.zoom+10);render();toast(`Zoom ${S.zoom}%`)});
+  if(c&&k==='-')return run(()=>{S.zoom=Math.max(50,S.zoom-10);render();toast(`Zoom ${S.zoom}%`)});
+  if(c&&k==='0')return run(()=>{S.zoom=100;render()});
+  if(e.altKey&&e.key==='ArrowLeft')return run(back);
+  if(e.altKey&&e.key==='ArrowRight')return run(fwd);
+  if(e.key==='Escape')closeMenus();
+});
+window.addEventListener('blur',hideHover);
+render();
+</script>
+</body>
+</html>
