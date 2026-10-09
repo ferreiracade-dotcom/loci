@@ -9,7 +9,9 @@ import { commentaryVaultDir, readConfig, writeConfig } from './config'
 // Testament, converted from the 1895-98 scans with its verse headings checked against the KJV/RV;
 // Leupold on Genesis, from CCEL's public-domain edition; Bengel's Gnomon, from SermonIndex's module
 // with the spaces its Greek had lost restored; Hengstenberg, from SermonIndex's module with its
-// Greek and Hebrew repaired by tools/mybible-to-md.py; Gerhard on 1 and 2 Peter and on Matthew, and
+// Greek and Hebrew repaired by tools/mybible-to-md.py; Luther's prefaces, Church Postil sermons and
+// commentaries on Genesis 4-9, Psalm 82, the Sermon on the Mount and Galatians, from SermonIndex's
+// module with each entry put back at its passage by tools/luther-sermonindex-to-md.py; Gerhard on 1 and 2 Peter and on Matthew, and
 // Calov's Biblia Illustrata on both Testaments, from The Faith Received's Latin and its machine
 // translation, by tools/tfr-to-md.py and tools/tfr-books-to-md.py). They live in resources/commentaries
 // in the repository and in the installer's resources; on first launch each is copied into the
@@ -33,6 +35,7 @@ export const BUNDLED_COMMENTARIES: Record<string, { title: string; author: strin
     author: 'Abraham Calov'
   },
   'Calov Isaiah to Malachi.md': { title: 'Biblia Illustrata: Isaiah to Malachi', author: 'Abraham Calov' },
+  'Luther Selected Passages.md': { title: "Luther's Commentary on Selected Bible Passages", author: 'Martin Luther' },
   'Hengstenberg.md': {
     title: "Hengstenberg's Commentaries on Psalms, Ecclesiastes, Ezekiel, John and Revelation",
     author: 'E. W. Hengstenberg'
