@@ -75,12 +75,11 @@ import {
   addFolder as pureAddFolder,
   editBookmark as pureEditBookmark,
   editFolder as pureEditFolder,
-  migrateBookmarks,
   moveNode as pureMoveNode,
+  parseBookmarks,
   removeBookmark as pureRemoveBookmark,
   removeFolder as pureRemoveFolder,
   renameBookmark as pureRenameBookmark,
-  serializeBookmarks,
   toggleBookmark as pureToggleBookmark
 } from './bookmarks'
 import type { Bookmark, BookmarkFolder, Bookmarks } from './bookmarks'
@@ -103,6 +102,16 @@ import {
 } from './tabGroups'
 import type { GroupColor, GroupState, TabGroup } from './tabGroups'
 import { createSequentialQueue } from '../lib/sequentialQueue'
+import { diffItems, isEmptyChanges, stableJson } from '@shared/sync'
+import type { DeviceTabs, SyncChanges, SyncItem, SyncKind, SyncSnapshot } from '@shared/sync'
+import {
+  bookmarksToItems,
+  buildGroups,
+  groupItems,
+  itemsToBookmarks,
+  mergeRemoteGroups,
+  parseGroupItems
+} from './syncModel'
 
 export type {
   ClosedTab,
@@ -151,58 +160,98 @@ function persistWorkspace(ws: Workspace): void {
   queuePersist(() => api.setSession('workspace', payload))
 }
 
-const queueBookmarks = createSequentialQueue()
-
-/** Set once init has read the vault's bookmarks and tab groups; no vault writes before that. */
-let vaultDataLoaded = false
-
-/** Bookmarks and their folders live in the vault (app/bookmarks.json), so they travel with it. */
-function persistBookmarks(b: Bookmarks): Promise<void> {
-  // Never write before the vault's copy has been read: that would replace it with a partial one.
-  if (!vaultDataLoaded) return Promise.resolve()
-  const payload = serializeBookmarks(b)
-  return new Promise((resolve) => {
-    queueBookmarks(async () => {
-      try {
-        await api.setVaultData('bookmarks', payload)
-      } finally {
-        resolve()
-      }
-    })
-  })
-}
-
-const queueGroups = createSequentialQueue()
-let groupsTimer: ReturnType<typeof setTimeout> | null = null
-let lastGroupsPayload: string | null = null
-let pendingGroups: (() => string) | null = null
+const queueSync = createSequentialQueue()
 
 /**
- * Saved tab groups live in the vault (app/tab-groups.json). Open groups snapshot their tabs
- * there too, so writes are debounced and skipped when nothing changed.
+ * Bookmarks and tab groups sync between devices (see src/shared/sync.ts): main keeps this
+ * device's records in the vault's `app/sync/<deviceId>/` and pushes the merged view of every
+ * device's records. The renderer sends only what the user changed here. Nothing is sent before
+ * init has read the merged view.
  */
-function persistGroups(payload: () => string, immediate = false): void {
-  pendingGroups = payload
+let syncReady = false
+let syncSeq = 0
+
+/** Bookmark changes sent to main and not yet recorded (they win over a merged view meanwhile). */
+const pendingBookmarks = new Map<string, { item: SyncItem | null; seq: number }>()
+
+/** Group ids sent to main and not yet recorded. */
+const pendingGroups = new Map<string, number>()
+
+/** The last synced form of each group (sent from here or received), as stable JSON. */
+let syncedGroups = new Map<string, string>()
+
+function sendChanges(kind: SyncKind, changes: SyncChanges, onDone: (seq: number) => void): number {
+  const seq = ++syncSeq
+  queueSync(async () => {
+    try {
+      await api.syncPut(kind, changes)
+    } catch (e) {
+      console.error('[sync] could not record a change', e)
+    } finally {
+      onDone(seq)
+    }
+  })
+  return seq
+}
+
+function sendBookmarkChanges(prev: Bookmarks, next: Bookmarks): void {
+  if (!syncReady) return
+  const changes = diffItems(bookmarksToItems(prev), bookmarksToItems(next))
+  if (isEmptyChanges(changes)) return
+  const seq = sendChanges('bookmarks', changes, (done) => {
+    for (const [id, p] of pendingBookmarks) if (p.seq === done) pendingBookmarks.delete(id)
+  })
+  for (const it of changes.upserts) pendingBookmarks.set(it.id, { item: it, seq })
+  for (const id of changes.deletes) pendingBookmarks.set(id, { item: null, seq })
+}
+
+/** The merged bookmarks with this device's unrecorded changes laid over them. */
+function bookmarksWithPending(items: SyncItem[]): Bookmarks {
+  const byId = new Map(items.map((i) => [i.id, i]))
+  for (const [id, p] of pendingBookmarks) {
+    if (p.item) byId.set(id, p.item)
+    else byId.delete(id)
+  }
+  return itemsToBookmarks([...byId.values()])
+}
+
+function bookmarksFingerprint(b: Bookmarks): string {
+  return stableJson(bookmarksToItems(b).sort((x, y) => (x.id < y.id ? -1 : x.id > y.id ? 1 : 0)))
+}
+
+let groupsTimer: ReturnType<typeof setTimeout> | null = null
+let flushGroupSync: () => void = () => {}
+let lastLocalGroups: string | null = null
+
+/** Local (this device's) group state: open/collapsed and every saved tab's history. */
+function localGroupsPayload(groups: TabGroup[], ws: Workspace): string {
+  const parsed = JSON.parse(serializeGroups(groups, ws)) as { groups: unknown[] }
+  return JSON.stringify({ version: 2, groups: parsed.groups, synced: [...syncedGroups.keys()] })
+}
+
+function parseLocalGroups(json: string | null): { groups: TabGroup[]; synced: Set<string> } | null {
+  if (!json) return null
+  try {
+    const raw = JSON.parse(json) as { groups?: unknown; synced?: unknown }
+    const groups = parseGroups(JSON.stringify({ groups: raw.groups }))
+    const synced = new Set(Array.isArray(raw.synced) ? raw.synced.filter((x): x is string => typeof x === 'string') : [])
+    return { groups, synced }
+  } catch {
+    return null
+  }
+}
+
+/** Group changes are sent on a short debounce (an open group's tabs change with navigation). */
+function scheduleGroupSync(immediate = false): void {
   if (groupsTimer) clearTimeout(groupsTimer)
   groupsTimer = null
-  const flush = (): void => {
-    groupsTimer = null
-    if (!vaultDataLoaded) return
-    const make = pendingGroups
-    pendingGroups = null
-    if (!make) return
-    const json = make()
-    if (json === lastGroupsPayload) return
-    lastGroupsPayload = json
-    queueGroups(() => api.setVaultData('tabGroups', json))
-  }
-  if (immediate) flush()
-  else groupsTimer = setTimeout(flush, 600)
+  if (immediate) flushGroupSync()
+  else groupsTimer = setTimeout(() => flushGroupSync(), 600)
 }
 
 /** Write any pending group change now (the window is closing). */
 export function flushGroups(): void {
-  if (pendingGroups) persistGroups(pendingGroups, true)
+  if (groupsTimer) scheduleGroupSync(true)
 }
 
 /** Zoom steps, as Chrome's (percent). */
@@ -298,8 +347,12 @@ interface Store {
   bookmarks: Bookmarks
   /** Saved tab groups, open and closed (tabs of open ones carry `groupId`). */
   groups: TabGroup[]
-  /** Bookmarks bar visibility (Ctrl+Shift+B). */
+  /** Bookmarks bar visibility (Ctrl+Shift+B). Per device, not synced. */
   showBookmarksBar: boolean
+  /** Other devices' open tabs ("Tabs from other devices" on the History page). */
+  remoteDevices: DeviceTabs[]
+  /** Fold in the merged bookmarks and tab groups main pushes after another device's changes. */
+  applySync: (s: SyncSnapshot) => void
 
   init: () => Promise<void>
   enter: () => void
@@ -600,7 +653,36 @@ export const useStore = create<Store>((set, get) => {
     return { tabs, activeTabId, splitRatios, closed: closedTabs }
   }
 
-  const groupsPayload = (): string => serializeGroups(get().groups, currentWs())
+  flushGroupSync = (): void => {
+    groupsTimer = null
+    if (!syncReady) return
+    const groups = get().groups
+    const ws = currentWs()
+    const items = groupItems(groups, ws)
+    const upserts: SyncItem[] = []
+    const live = new Set<string>()
+    for (const item of items) {
+      live.add(item.id)
+      const json = stableJson(item)
+      if (syncedGroups.get(item.id) === json) continue
+      syncedGroups.set(item.id, json)
+      upserts.push(item as unknown as SyncItem)
+    }
+    const deletes = [...syncedGroups.keys()].filter((id) => !live.has(id))
+    for (const id of deletes) syncedGroups.delete(id)
+    if (upserts.length || deletes.length) {
+      const seq = sendChanges('tabGroups', { upserts, deletes }, (done) => {
+        for (const [id, s] of pendingGroups) if (s === done) pendingGroups.delete(id)
+      })
+      for (const it of upserts) pendingGroups.set(it.id, seq)
+      for (const id of deletes) pendingGroups.set(id, seq)
+    }
+    const local = localGroupsPayload(groups, ws)
+    if (local !== lastLocalGroups) {
+      lastLocalGroups = local
+      queuePersist(() => api.setSession('tabGroupsLocal', local))
+    }
+  }
 
   // Apply a workspace change (and optionally new groups): enforce the group invariants, update
   // state + the reflected legacy fields, persist (sequenced, so an older write can never land
@@ -624,7 +706,7 @@ export const useStore = create<Store>((set, get) => {
       ...reflectWorkspace(next)
     })
     if (!wsSame) persistWorkspace(next)
-    persistGroups(groupsPayload, groups !== prevGroups)
+    scheduleGroupSync(groups !== prevGroups)
     if (next.tabs !== prev.tabs) void get().refreshActiveProject()
   }
 
@@ -632,9 +714,10 @@ export const useStore = create<Store>((set, get) => {
   const commitGroups = (s: GroupState): void => commit(s.ws, s.groups)
 
   const setBookmarks = (bookmarks: Bookmarks): void => {
-    if (bookmarks === get().bookmarks) return
+    const prev = get().bookmarks
+    if (bookmarks === prev) return
     set({ bookmarks })
-    void persistBookmarks(bookmarks)
+    sendBookmarkChanges(prev, bookmarks)
   }
 
   return {
@@ -684,6 +767,7 @@ export const useStore = create<Store>((set, get) => {
     bookmarks: EMPTY_BOOKMARKS,
     groups: [],
     showBookmarksBar: true,
+    remoteDevices: [],
 
     init: async () => {
       if (!listenersBound) {
@@ -724,22 +808,32 @@ export const useStore = create<Store>((set, get) => {
       if (workspace.tabs.length === 0) {
         workspace = pureOpenTab(EMPTY_WORKSPACE, { kind: 'newtab' }).ws
       }
-      // Bookmarks and groups live in the vault; phase 2 kept bookmarks in session_state, so
-      // move those over the first time (and clear the old copy once the vault has it).
-      const { bookmarks, migrated } = migrateBookmarks(
-        await api.getVaultData('bookmarks'),
-        await api.getSession('bookmarks')
-      )
-      const groupsJson = await api.getVaultData('tabGroups')
-      vaultDataLoaded = true
-      if (migrated) {
-        void persistBookmarks(bookmarks).then(async () => {
-          if ((await api.getVaultData('bookmarks')) !== null) await api.setSession('bookmarks', '')
-        })
-      }
-      const grouped = reconcileGroups(workspace, workspace, parseGroups(groupsJson))
+      // Bookmarks and saved groups sync between devices through the vault; whether a group is
+      // open (and its tabs' histories) is this device's own state, kept in the session.
+      const snapshot = await api.syncInit()
+      const local =
+        parseLocalGroups(await api.getSession('tabGroupsLocal')) ??
+        // First start with sync: the pre-sync groups file seeds open/collapsed and histories,
+        // and every group in it counts as already synced.
+        (() => {
+          const groups = parseGroups(snapshot.legacyTabGroups)
+          return { groups, synced: new Set(groups.map((g) => g.id)) }
+        })()
+      let bookmarks = bookmarksWithPending(snapshot.bookmarks)
+      const groupItemsIn = parseGroupItems(snapshot.tabGroups)
+      const unsynced = new Set(local.groups.filter((g) => !local.synced.has(g.id)).map((g) => g.id))
+      const grouped = buildGroups(groupItemsIn, local.groups, workspace, unsynced)
       workspace = grouped.ws
-      lastGroupsPayload = serializeGroups(grouped.groups, workspace)
+      syncedGroups = new Map(groupItemsIn.map((g) => [g.id, stableJson(g)]))
+      syncReady = true
+      // Phase 2 kept bookmarks in session_state: move them over once, if nothing synced yet.
+      const sessionBookmarks = await api.getSession('bookmarks')
+      if (sessionBookmarks && bookmarks.bookmarks.length === 0 && bookmarks.folders.length === 0) {
+        const legacy = parseBookmarks(sessionBookmarks)
+        sendBookmarkChanges(EMPTY_BOOKMARKS, legacy)
+        bookmarks = legacy
+        void api.setSession('bookmarks', '')
+      }
       const showBookmarksBar = (await api.getSession('showBookmarksBar')) !== '0'
       const zoomRaw = Number(await api.getSession('zoom'))
       const zoom = ZOOM_STEPS.includes(zoomRaw) ? zoomRaw : 100
@@ -756,6 +850,7 @@ export const useStore = create<Store>((set, get) => {
         bookmarks,
         groups: grouped.groups,
         showBookmarksBar,
+        remoteDevices: snapshot.devices,
         ...reflected,
         // Seed the selected translation from config so a Bible pane can render its
         // (offline-cached) text immediately, before the translation registry has resolved.
@@ -763,6 +858,7 @@ export const useStore = create<Store>((set, get) => {
         pendingPage: null,
         phase: 'welcome'
       })
+      scheduleGroupSync() // records groups made here but never recorded, and open-group drift
       const pins: Partial<Record<RefPill, CorpusMode>> = {}
       await Promise.all(
         (['quotes', 'texts', 'commentary'] as RefPill[]).map(async (pill) => {
@@ -1537,6 +1633,20 @@ export const useStore = create<Store>((set, get) => {
     removeBookmarkFolder: (id) => setBookmarks(pureRemoveFolder(get().bookmarks, id)),
 
     moveBookmarkNode: (id, parentId, index) => setBookmarks(pureMoveNode(get().bookmarks, id, parentId, index)),
+
+    applySync: (snapshot) => {
+      if (!syncReady) return
+      const bookmarks = bookmarksWithPending(snapshot.bookmarks)
+      if (bookmarksFingerprint(bookmarks) !== bookmarksFingerprint(get().bookmarks)) set({ bookmarks })
+      // A group change still on its debounce must be recorded as pending before merging.
+      if (groupsTimer) scheduleGroupSync(true)
+      const before = groupState()
+      const items = parseGroupItems(snapshot.tabGroups)
+      const r = mergeRemoteGroups(before, items, syncedGroups, new Set(pendingGroups.keys()))
+      syncedGroups = r.synced
+      if (r.state !== before) commit(r.state.ws, r.state.groups)
+      if (stableJson(snapshot.devices) !== stableJson(get().remoteDevices)) set({ remoteDevices: snapshot.devices })
+    },
 
     toggleBookmarksBar: () => {
       const show = !get().showBookmarksBar

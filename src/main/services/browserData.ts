@@ -1,69 +1,112 @@
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { localVaultDir } from './config'
-import type { VaultDataKey } from '../../shared/ipc'
+import { deviceIdentity, localVaultDir, readConfig, writeConfig } from './config'
+import { BrowserSync } from './browserSync'
+import { stableJson } from '../../shared/sync'
+import type { RemoteTab, SyncChanges, SyncKind, SyncSnapshot } from '../../shared/sync'
 
 /**
- * Browser-style data that travels with the vault: bookmarks (and their folders) and saved tab
- * groups. Each is one JSON document under the vault's `app/` folder, which the vault sync
- * mirrors to Drive like notes and highlights.
+ * Bookmarks (with their folders), saved tab groups and this device's open tabs, synced through
+ * the vault's per-device folders (see browserSync.ts). This module binds the sync store to the
+ * app: the local vault, this installation's device identity, and pushes to the renderer.
  */
-const FILES: Record<VaultDataKey, string> = {
-  bookmarks: 'bookmarks.json',
-  tabGroups: 'tab-groups.json'
-}
-
-/** Refuse anything absurdly large (a runaway write must not fill the vault). */
-const MAX_BYTES = 8 * 1024 * 1024
 
 export function vaultAppDir(): string {
   return join(localVaultDir(), 'app')
 }
 
-function pathFor(key: VaultDataKey): string {
-  const name = Object.prototype.hasOwnProperty.call(FILES, key) ? FILES[key] : undefined
-  if (typeof name !== 'string') throw new Error(`Unknown vault data key: ${String(key)}`)
-  return join(vaultAppDir(), name)
+let store: BrowserSync | null = null
+let storeDir: string | null = null
+
+function sync(): BrowserSync {
+  const dir = vaultAppDir()
+  if (!store || storeDir !== dir) {
+    store = new BrowserSync(dir, deviceIdentity)
+    storeDir = dir
+  }
+  return store
+}
+
+const KINDS: SyncKind[] = ['bookmarks', 'tabGroups']
+
+function assertKind(kind: SyncKind): void {
+  if (!KINDS.includes(kind)) throw new Error(`Unknown sync kind: ${String(kind)}`)
+}
+
+/** Import pre-sync files once per version of them (marks kept in this device's config). */
+function importLegacy(): void {
+  const marks = readConfig().legacyImported ?? {}
+  const next = sync().importLegacy(marks)
+  if (stableJson(next) !== stableJson(marks)) writeConfig({ legacyImported: next })
+}
+
+let lastPushed: string | null = null
+let push: ((s: SyncSnapshot) => void) | null = null
+let afterWrite: (() => void) | null = null
+
+function fingerprint(s: SyncSnapshot): string {
+  return stableJson({ b: s.bookmarks, g: s.tabGroups, d: s.devices, n: s.deviceName })
+}
+
+/** Where merged changes go (the window's renderer). */
+export function setSyncPush(fn: ((s: SyncSnapshot) => void) | null): void {
+  push = fn
+}
+
+/** Called after this device writes its records (to schedule a quick Drive copy). */
+export function setAfterSyncWrite(fn: (() => void) | null): void {
+  afterWrite = fn
+}
+
+/** The renderer's first read: imports legacy files if needed, then the merged state. */
+export function syncInit(): SyncSnapshot {
+  try {
+    importLegacy()
+  } catch (e) {
+    console.error('[sync] legacy import failed', e)
+  }
+  const s = sync().snapshot(true)
+  lastPushed = fingerprint(s)
+  return s
+}
+
+/** Record changes made on this device. */
+export function syncPut(kind: SyncKind, changes: SyncChanges): void {
+  assertKind(kind)
+  sync().put(kind, changes)
+  afterWrite?.()
+}
+
+let lastTabs: RemoteTab[] | null = null
+
+/** Publish this device's open tabs for the other devices' History page. */
+export function syncPublishTabs(tabs: RemoteTab[]): void {
+  lastTabs = tabs
+  if (sync().publishTabs(tabs)) afterWrite?.()
 }
 
 /**
- * The stored JSON for `key`, or null when it has never been written (or is unreadable). An
- * unreadable file (say, truncated by an interrupted copy) is moved aside to `<name>.corrupt-<time>`
- * first, so the next write cannot destroy what may still be recoverable from it.
+ * Re-read every device folder (after a mirror pass, or on focus) and push the merged state to
+ * the renderer when it changed.
  */
-export function getVaultData(key: VaultDataKey): string | null {
-  const p = pathFor(key)
-  if (!existsSync(p)) return null
-  let text: string
+export function refreshSync(): void {
+  if (!readConfig().setupComplete) return
   try {
-    text = readFileSync(p, 'utf8')
-  } catch {
-    return null
+    importLegacy()
+    let wrote = false
+    for (const k of KINDS) wrote = sync().compact(k) || wrote
+    if (wrote) afterWrite?.()
+  } catch (e) {
+    console.error('[sync] refresh failed', e)
   }
-  try {
-    JSON.parse(text) // only hand back well-formed JSON
-    return text
-  } catch {
-    try {
-      renameSync(p, `${p}.corrupt-${Date.now()}`)
-    } catch {
-      /* best effort */
-    }
-    return null
-  }
+  const s = sync().snapshot(false)
+  const fp = fingerprint(s)
+  if (fp === lastPushed) return
+  lastPushed = fp
+  push?.(s)
 }
 
-/**
- * Replace the stored JSON for `key`. Written to a temp file and renamed over the real one, so
- * a crash mid-write can never leave a truncated file (which would read as "no bookmarks").
- */
-export function setVaultData(key: VaultDataKey, json: string): void {
-  const p = pathFor(key)
-  if (typeof json !== 'string' || json.length > MAX_BYTES) throw new Error('Invalid vault data')
-  const parsed = JSON.parse(json) as unknown
-  if (!parsed || typeof parsed !== 'object') throw new Error('Vault data must be a JSON object')
-  mkdirSync(vaultAppDir(), { recursive: true })
-  const tmp = `${p}.tmp`
-  writeFileSync(tmp, json, 'utf8')
-  renameSync(tmp, p)
+/** The device name changed: republish so other devices show the new one. */
+export function deviceRenamed(): void {
+  lastPushed = null
+  if (lastTabs) syncPublishTabs(lastTabs)
 }

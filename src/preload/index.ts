@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer, webFrame } from 'electron'
 import type { IpcRendererEvent } from 'electron'
 import { Channels } from '../shared/ipc'
 import type { CommentaryIndexProgress, ImportProgress, LociApi, SyncResult } from '../shared/ipc'
+import type { SyncSnapshot } from '../shared/sync'
 
 const api: LociApi = {
   getAppState: () => ipcRenderer.invoke(Channels.getAppState),
@@ -150,8 +151,14 @@ const api: LociApi = {
   addHistory: (entry) => ipcRenderer.invoke(Channels.addHistory, entry),
   listHistory: (limit) => ipcRenderer.invoke(Channels.listHistory, limit),
   clearHistory: () => ipcRenderer.invoke(Channels.clearHistory),
-  getVaultData: (key) => ipcRenderer.invoke(Channels.getVaultData, key),
-  setVaultData: (key, json) => ipcRenderer.invoke(Channels.setVaultData, key, json),
+  syncInit: () => ipcRenderer.invoke(Channels.syncInit),
+  syncPut: (kind, changes) => ipcRenderer.invoke(Channels.syncPut, kind, changes),
+  syncPublishTabs: (tabs) => ipcRenderer.invoke(Channels.syncPublishTabs, tabs),
+  onSyncChanged: (cb) => {
+    const listener = (_e: IpcRendererEvent, s: SyncSnapshot): void => cb(s)
+    ipcRenderer.on(Channels.syncChanged, listener)
+    return () => ipcRenderer.removeListener(Channels.syncChanged, listener)
+  },
   setZoomFactor: (factor) => webFrame.setZoomFactor(factor)
 }
 

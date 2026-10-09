@@ -3,26 +3,28 @@ import { describe, expect, it, vi } from 'vitest'
 // A second device: the wizard points Loci at a vault that already has bookmarks and a saved
 // tab group. Finishing the wizard must load them, not start from empty copies that the first
 // change would write back over the vault's.
-const vaultBookmarks = JSON.stringify({
-  version: 1,
-  bookmarks: [{ id: 'm1', title: 'Romans 3', location: { kind: 'bible', book: 'ROM', chapter: 3 } }],
-  folders: []
-})
-const vaultGroups = JSON.stringify({
-  version: 1,
-  groups: [
+// The merged view main hands over from the vault's device folders.
+const snapshot = {
+  deviceId: 'dev-b',
+  deviceName: 'B',
+  bookmarks: [
+    { id: 'm1', type: 'bookmark', title: 'Romans 3', location: { kind: 'bible', book: 'ROM', chapter: 3 }, order: 0 }
+  ],
+  tabGroups: [
     {
       id: 'g1',
       name: 'Study',
       color: 'blue',
-      collapsed: false,
       pinnedToBar: true,
-      open: false,
-      savedTabs: [{ id: 't1', order: 0, kind: 'bible', book: 'ROM', chapter: 3 }]
+      createdAt: 1,
+      tabs: [{ location: { kind: 'bible', book: 'ROM', chapter: 3 } }],
+      splitRatios: {}
     }
-  ]
-})
-const writes: [string, string][] = []
+  ],
+  devices: [],
+  legacyTabGroups: null
+}
+const writes: [string, { upserts: { id: string }[]; deletes: string[] }][] = []
 const calls: Record<string, (...a: unknown[]) => unknown> = {
   getAppState: () => ({ setupComplete: true, vaultPath: '/v', vaultExists: true }),
   completeWizard: () => ({ setupComplete: true, vaultPath: '/v', vaultExists: true }),
@@ -32,9 +34,9 @@ const calls: Record<string, (...a: unknown[]) => unknown> = {
   listShelves: () => [],
   listTags: () => [],
   listStandaloneNotes: () => [],
-  getVaultData: (key) => (key === 'bookmarks' ? vaultBookmarks : vaultGroups),
-  setVaultData: (key, json) => {
-    writes.push([key as string, json as string])
+  syncInit: () => snapshot,
+  syncPut: (kind, changes) => {
+    writes.push([kind as string, changes as (typeof writes)[number][1]])
   }
 }
 vi.mock('../lib/api', () => ({
@@ -58,14 +60,14 @@ describe('finishing the setup wizard', () => {
     expect(s.tabs).toHaveLength(1)
     expect(s.activeTabId).toBe(s.tabs[0].id)
 
-    // A change afterwards keeps the vault's group and bookmark in what is written.
+    // A change afterwards records just that change: nothing synced is deleted or rewritten.
     s.newTab(null)
     s.addBookmark({ kind: 'bible', book: 'JHN', chapter: 1 }, 'John 1')
     await new Promise((r) => setTimeout(r, 700))
-    const bm = writes.filter(([k]) => k === 'bookmarks').pop()
-    expect(bm && JSON.parse(bm[1]).bookmarks).toHaveLength(2)
-    for (const [, json] of writes.filter(([k]) => k === 'tabGroups')) {
-      expect(JSON.parse(json).groups).toHaveLength(1)
-    }
+    const bm = writes.filter(([k]) => k === 'bookmarks')
+    expect(bm).toHaveLength(1)
+    expect(bm[0][1].deletes).toEqual([])
+    expect(bm[0][1].upserts.map((u) => u.id)).not.toContain('m1')
+    expect(writes.filter(([k]) => k === 'tabGroups')).toEqual([])
   })
 })

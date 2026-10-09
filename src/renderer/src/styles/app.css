@@ -5158,6 +5158,36 @@ select.field {
   font-size: 12px;
   flex: none;
 }
+.history-device + .history-device {
+  border-top: 1px solid var(--card);
+  margin-top: 4px;
+  padding-top: 4px;
+}
+.history-device-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px 2px;
+  color: var(--muted);
+  font: 12px var(--font-ui);
+}
+.history-device-name {
+  color: var(--text);
+  font-weight: 600;
+}
+.history-group {
+  flex: none;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 1px 8px;
+  border-radius: 8px;
+  background: var(--card);
+  color: #202124;
+  font-size: 11px;
+  font-weight: 600;
+}
 .history-empty {
   max-width: 860px;
   margin: 40px auto;

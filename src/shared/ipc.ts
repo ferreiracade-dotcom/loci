@@ -1,6 +1,8 @@
 // Shared IPC contract — imported by main, preload, and renderer.
 // The renderer never touches Node/fs directly; everything goes through this surface.
 
+import type { RemoteTab, SyncChanges, SyncKind, SyncSnapshot } from './sync'
+
 export const Channels = {
   getAppState: 'app:getState',
   chooseFolder: 'dialog:chooseFolder',
@@ -113,12 +115,12 @@ export const Channels = {
   listHistory: 'history:list',
   clearHistory: 'history:clear',
 
-  getVaultData: 'vaultData:get',
-  setVaultData: 'vaultData:set'
+  syncInit: 'sync:init',
+  syncPut: 'sync:put',
+  syncPublishTabs: 'sync:publishTabs',
+  // main → renderer: the merged bookmarks/tab groups/other devices' tabs changed
+  syncChanged: 'sync:changed'
 } as const
-
-/** Browser-style documents stored as JSON in the vault's app folder (they travel with it). */
-export type VaultDataKey = 'bookmarks' | 'tabGroups'
 
 export type ChannelName = (typeof Channels)[keyof typeof Channels]
 
@@ -180,6 +182,10 @@ export interface PublicConfig {
   theme: ThemePalette
   /** Absolute path to a user-chosen unlock background, or null for the bundled default. */
   welcomeBackground: string | null
+  /** This computer's sync id (bookmarks and tab groups sync per device). */
+  deviceId: string | null
+  /** The name other computers show for this one. */
+  deviceName: string
 }
 
 export interface AppState {
@@ -388,10 +394,14 @@ export interface LociApi {
   /** Most recent first. */
   listHistory(limit?: number): Promise<HistoryEntry[]>
   clearHistory(): Promise<void>
-  /** A vault-stored JSON document (bookmarks, tab groups); null when never written. */
-  getVaultData(key: VaultDataKey): Promise<string | null>
-  /** Replace a vault-stored JSON document (written atomically). */
-  setVaultData(key: VaultDataKey, json: string): Promise<void>
+  /** The merged bookmarks and tab groups over every device (imports pre-sync files once). */
+  syncInit(): Promise<SyncSnapshot>
+  /** Record bookmark or tab-group changes made on this device. */
+  syncPut(kind: SyncKind, changes: SyncChanges): Promise<void>
+  /** Publish this device's open tabs ("Tabs from other devices" elsewhere). */
+  syncPublishTabs(tabs: RemoteTab[]): Promise<void>
+  /** Fired when another device's changes arrive; returns unsubscribe. */
+  onSyncChanged(cb: (s: SyncSnapshot) => void): () => void
   /** Page zoom (1 = 100%). Synchronous; applied by the preload through webFrame. */
   setZoomFactor(factor: number): void
   /** Fired when the book/shelf data changes in the background; returns unsubscribe. */

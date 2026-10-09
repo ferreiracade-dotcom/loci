@@ -15,7 +15,8 @@ import {
 import { readConfig } from './services/config'
 import { applyRelinkMap, applyTitleClean } from './services/relink'
 import { rebuildAllSidecars } from './services/sidecar'
-import { syncVault } from './services/vaultsync'
+import { onVaultSynced, syncDeviceFolders, syncVault } from './services/vaultsync'
+import { refreshSync, setAfterSyncWrite, setSyncPush } from './services/browserData'
 import { syncCommentaryFolder } from './services/commentaryIndex'
 import { syncBocFolder } from './services/bocIndex'
 import { Channels } from '../shared/ipc'
@@ -72,6 +73,18 @@ function createWindow(): void {
   })
 
   win.on('ready-to-show', () => win.show())
+
+  // Bookmarks and tab groups from other devices: pushed whenever a sync pass brings changes.
+  setSyncPush((snapshot) => {
+    if (!win.isDestroyed()) win.webContents.send(Channels.syncChanged, snapshot)
+  })
+  // Coming back to the window is when another computer's changes are most likely wanted.
+  let lastFocusSync = 0
+  win.on('focus', () => {
+    if (Date.now() - lastFocusSync < 5000) return
+    lastFocusSync = Date.now()
+    setTimeout(() => runDeviceSync(), 50)
+  })
 
   // There is no application menu (see app.whenReady), so the default accelerators such as
   // Ctrl+R (reload the window) and Ctrl+W (close it) are gone and the renderer owns those keys.
@@ -151,7 +164,27 @@ function createWindow(): void {
   }
 }
 
+/** Mirror the bookmarks/tab-groups device folders with Drive and refresh (best effort). */
+function runDeviceSync(): void {
+  try {
+    syncDeviceFolders()
+  } catch {
+    /* Drive may be offline */
+  }
+}
+
+let deviceSyncTimer: ReturnType<typeof setTimeout> | null = null
+
 app.whenReady().then(() => {
+  onVaultSynced(refreshSync)
+  // A bookmark or tab-group change reaches Drive a few seconds later, not at the next full pass.
+  setAfterSyncWrite(() => {
+    if (deviceSyncTimer) clearTimeout(deviceSyncTimer)
+    deviceSyncTimer = setTimeout(() => {
+      deviceSyncTimer = null
+      runDeviceSync()
+    }, 3000)
+  })
   getDb() // open DB + run migrations before the window loads
   try {
     syncVault() // seed the local notes/highlights vault from Drive + back up (best-effort)
@@ -185,6 +218,8 @@ app.whenReady().then(() => {
       /* best effort */
     }
   }, 180_000)
+  // Bookmarks and tab groups poll more often: only a few small files per device.
+  setInterval(runDeviceSync, 30_000)
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

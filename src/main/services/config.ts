@@ -1,6 +1,8 @@
 import { safeStorage } from 'electron'
 import { extname, join } from 'path'
 import { copyFileSync, existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs'
+import { randomUUID } from 'crypto'
+import { hostname } from 'os'
 import { getDataDir } from '../db/connection'
 import { DEFAULT_THEME } from '../../shared/ipc'
 import type { AiMode, PublicConfig, RateCard, ThemePalette } from '../../shared/ipc'
@@ -26,6 +28,12 @@ export interface LociConfig {
   apiBibleKeyEncrypted: string | null
   /** safeStorage-encrypted Crossway ESV key; never sent to the renderer. */
   esvKeyEncrypted: string | null
+  /** This installation's sync identity (bookmarks/tab groups); never stored in the vault. */
+  deviceId: string | null
+  /** Friendly name other devices show for this one (defaults to the computer's host name). */
+  deviceName: string | null
+  /** mtime of each pre-sync bookmarks/tab-groups file already imported into this device's records. */
+  legacyImported: { bookmarks?: number; tabGroups?: number }
 }
 
 const defaults: LociConfig = {
@@ -42,7 +50,10 @@ const defaults: LociConfig = {
   welcomeBackground: null,
   apiKeyEncrypted: null,
   apiBibleKeyEncrypted: null,
-  esvKeyEncrypted: null
+  esvKeyEncrypted: null,
+  deviceId: null,
+  deviceName: null,
+  legacyImported: {}
 }
 
 function configPath(): string {
@@ -105,11 +116,35 @@ export function writeConfig(patch: Partial<LociConfig>): LociConfig {
   return next
 }
 
+/**
+ * This installation's stable sync identity, created on first use. It lives in the app's own
+ * config (not the vault), so every computer sharing the vault has its own.
+ */
+export function deviceIdentity(): { deviceId: string; deviceName: string } {
+  const cfg = readConfig()
+  let deviceId = cfg.deviceId
+  if (!deviceId || !/^[A-Za-z0-9_-]{1,64}$/.test(deviceId)) {
+    deviceId = randomUUID()
+    writeConfig({ deviceId })
+  }
+  return { deviceId, deviceName: cleanDeviceName(cfg.deviceName) || defaultDeviceName() }
+}
+
+export function defaultDeviceName(): string {
+  return cleanDeviceName(hostname()) || 'This computer'
+}
+
+export function cleanDeviceName(name: unknown): string {
+  return typeof name === 'string' ? name.replace(/\s+/g, ' ').trim().slice(0, 60) : ''
+}
+
 /** Strip secrets before handing config to the renderer. */
 export function toPublicConfig(cfg: LociConfig = readConfig()): PublicConfig {
-  const { apiKeyEncrypted, apiBibleKeyEncrypted, esvKeyEncrypted, ...rest } = cfg
+  const { apiKeyEncrypted, apiBibleKeyEncrypted, esvKeyEncrypted, legacyImported: _l, ...rest } = cfg
+  void _l
   return {
     ...rest,
+    deviceName: cleanDeviceName(cfg.deviceName) || defaultDeviceName(),
     hasApiKey: !!apiKeyEncrypted,
     hasApiBibleKey: !!apiBibleKeyEncrypted,
     hasEsvKey: !!esvKeyEncrypted

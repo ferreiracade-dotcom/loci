@@ -15,7 +15,6 @@ import type {
   IndexedPage,
   NewCommentarySource,
   NewHistoryEntry,
-  VaultDataKey,
   NewQuote,
   NewScriptureHighlight,
   NoteType,
@@ -36,6 +35,7 @@ import * as boc from '../services/boc'
 import { deleteCorrectionsForSource } from '../services/commentaryCorrections'
 import { syncVault } from '../services/vaultsync'
 import {
+  cleanDeviceName,
   getWelcomeBackgroundDataUrl,
   hasApiBibleKey,
   hasApiKey,
@@ -51,7 +51,8 @@ import {
 } from '../services/config'
 import { getLayout, getSession, setLayout, setSession } from '../services/state'
 import { addHistory, clearHistory, listHistory } from '../services/history'
-import { getVaultData, setVaultData } from '../services/browserData'
+import { deviceRenamed, syncInit, syncPublishTabs, syncPut } from '../services/browserData'
+import type { RemoteTab, SyncChanges, SyncKind } from '../../shared/sync'
 import { scaffoldVault, vaultExists } from '../services/vault'
 function appState(): AppState {
   const cfg = readConfig()
@@ -121,7 +122,10 @@ export function registerIpc(): void {
     for (const k of ALLOWED) {
       if (patch && patch[k] !== undefined) Object.assign(safe, { [k]: patch[k] })
     }
-    writeConfig(safe)
+    // The device name is shown on other computers; empty means the host name again.
+    const renamed = patch && typeof patch.deviceName === 'string'
+    writeConfig(renamed ? { ...safe, deviceName: cleanDeviceName(patch.deviceName) || null } : safe)
+    if (renamed) deviceRenamed()
     return toPublicConfig()
   })
 
@@ -155,8 +159,9 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.addHistory, (_e, entry: NewHistoryEntry) => addHistory(entry))
   ipcMain.handle(Channels.listHistory, (_e, limit?: number) => listHistory(limit))
   ipcMain.handle(Channels.clearHistory, () => clearHistory())
-  ipcMain.handle(Channels.getVaultData, (_e, key: VaultDataKey) => getVaultData(key))
-  ipcMain.handle(Channels.setVaultData, (_e, key: VaultDataKey, json: string) => setVaultData(key, json))
+  ipcMain.handle(Channels.syncInit, () => syncInit())
+  ipcMain.handle(Channels.syncPut, (_e, kind: SyncKind, changes: SyncChanges) => syncPut(kind, changes))
+  ipcMain.handle(Channels.syncPublishTabs, (_e, tabs: RemoteTab[]) => syncPublishTabs(tabs))
   ipcMain.handle(Channels.setApiKey, (_e, key: string) => setApiKey(key))
   ipcMain.handle(Channels.hasApiKey, () => hasApiKey())
 

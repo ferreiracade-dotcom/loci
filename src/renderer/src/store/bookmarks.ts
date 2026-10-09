@@ -52,18 +52,35 @@ export function isBookmarkable(loc: TabLocation): boolean {
   return loc.kind !== 'newtab' && loc.kind !== 'settings' && loc.kind !== 'history' && loc.kind !== 'bookmarks'
 }
 
-/** A folder's children (or the bar's, for `parentId` undefined), in order. */
+/**
+ * A folder's children (or the bar's, for `parentId` undefined), in order. Orders are fractional
+ * (a move only renumbers the moved item), so two devices inserting at the same spot can produce
+ * equal orders: the id breaks the tie the same way everywhere.
+ */
 export function childrenOf(b: Bookmarks, parentId?: string): BookmarkNode[] {
   const nodes: BookmarkNode[] = [
     ...b.folders.filter((f) => f.parentId === parentId).map((item) => ({ type: 'folder' as const, item })),
     ...b.bookmarks.filter((m) => m.parentId === parentId).map((item) => ({ type: 'bookmark' as const, item }))
   ]
-  return nodes.sort((x, y) => (x.item.order ?? Infinity) - (y.item.order ?? Infinity))
+  return nodes.sort(
+    (x, y) =>
+      (x.item.order ?? Infinity) - (y.item.order ?? Infinity) ||
+      (x.item.id < y.item.id ? -1 : x.item.id > y.item.id ? 1 : 0)
+  )
 }
 
 function nextOrder(b: Bookmarks, parentId?: string): number {
   const kids = childrenOf(b, parentId)
-  return kids.length ? Math.max(...kids.map((k) => k.item.order ?? 0)) + 1 : 0
+  return kids.length ? Math.floor(Math.max(...kids.map((k) => k.item.order ?? 0))) + 1 : 0
+}
+
+/** An order strictly between `before` and `after` (either may be missing), or null if none fits. */
+export function orderBetween(before: number | undefined, after: number | undefined): number | null {
+  if (before === undefined && after === undefined) return 0
+  if (before === undefined) return Math.floor(after!) - 1
+  if (after === undefined) return Math.floor(before) + 1
+  const mid = (before + after) / 2
+  return mid > before && mid < after ? mid : null
 }
 
 export function findFolder(b: Bookmarks, id: string | undefined): BookmarkFolder | undefined {
@@ -187,20 +204,29 @@ export function moveNode(b: Bookmarks, id: string, parentId: string | undefined,
   if (isFolder && parentId !== undefined && folderSubtree(b, id).has(parentId)) return b
   const siblings = childrenOf(b, parentId).filter((n) => n.item.id !== id)
   const at = Math.max(0, Math.min(index, siblings.length))
-  const moving: BookmarkNode = isFolder
-    ? { type: 'folder', item: b.folders.find((f) => f.id === id)! }
-    : { type: 'bookmark', item: b.bookmarks.find((m) => m.id === id)! }
-  const ordered = [...siblings.slice(0, at), moving, ...siblings.slice(at)]
-  const orderOf = new Map(ordered.map((n, i) => [n.item.id, i]))
+  // Only the moved item gets a new order (so a sync records one change, not a renumbering),
+  // unless there is no room left between its neighbours: then the whole folder is renumbered.
+  let orderOf: Map<string, number>
+  const between = orderBetween(siblings[at - 1]?.item.order, siblings[at]?.item.order)
+  if (between !== null) orderOf = new Map([[id, between]])
+  else {
+    const ordered = [...siblings.slice(0, at).map((n) => n.item.id), id, ...siblings.slice(at).map((n) => n.item.id)]
+    orderOf = new Map(ordered.map((x, i) => [x, i]))
+  }
   const place = <T extends Bookmark | BookmarkFolder>(x: T): T => {
     const o = orderOf.get(x.id)
     if (o === undefined) return x
     const next = { ...x, order: o }
-    if (parentId === undefined) delete next.parentId
-    else next.parentId = parentId
+    if (x.id === id) {
+      if (parentId === undefined) delete next.parentId
+      else next.parentId = parentId
+    }
     return next
   }
-  return { folders: b.folders.map(place), bookmarks: b.bookmarks.map(place) }
+  const out = { folders: b.folders.map(place), bookmarks: b.bookmarks.map(place) }
+  const was = isFolder ? b.folders.find((f) => f.id === id)! : b.bookmarks.find((m) => m.id === id)!
+  const now = isFolder ? out.folders.find((f) => f.id === id)! : out.bookmarks.find((m) => m.id === id)!
+  return orderOf.size === 1 && was.order === now.order && was.parentId === now.parentId ? b : out
 }
 
 /** The Edit dialog: rename, and optionally move to another folder (appended at its end). */
@@ -247,8 +273,9 @@ export function searchBookmarks(b: Bookmarks, query: string): BookmarkNode[] {
 }
 
 /**
- * Repair a loaded tree: dangling or cyclic parents go to the bar, and every parent's children
- * get contiguous orders (missing orders keep their array position).
+ * Repair a loaded tree: dangling or cyclic parents go to the bar (as a view only: the stored
+ * item keeps its parent, so nothing is lost if the folder comes back), and items without an
+ * order are appended after their siblings. Existing orders are kept as they are.
  */
 export function normalizeBookmarks(b: Bookmarks): Bookmarks {
   const ids = new Set(b.folders.map((f) => f.id))
@@ -265,25 +292,23 @@ export function normalizeBookmarks(b: Bookmarks): Bookmarks {
     }
     return f
   })
-  const bookmarks = b.bookmarks.map((m) => (m.parentId && !ids.has(m.parentId) ? withoutParent(m) : m))
-  const fixedIds = new Set(folders.map((f) => f.id))
-  let out: Bookmarks = { folders, bookmarks }
-  for (const parent of [undefined, ...fixedIds]) {
-    const kids = [
-      ...out.folders.map((item, i) => ({ item, i, type: 'folder' as const })),
-      ...out.bookmarks.map((item, i) => ({ item, i: i + 1e6, type: 'bookmark' as const }))
-    ]
-      .filter((k) => k.item.parentId === parent)
-      .sort((x, y) => (x.item.order ?? Infinity) - (y.item.order ?? Infinity) || x.i - y.i)
-    const orderOf = new Map(kids.map((k, i) => [k.item.id, i]))
-    out = {
-      folders: out.folders.map((f) => (orderOf.has(f.id) && f.order !== orderOf.get(f.id) ? { ...f, order: orderOf.get(f.id) } : f)),
-      bookmarks: out.bookmarks.map((m) =>
-        orderOf.has(m.id) && m.order !== orderOf.get(m.id) ? { ...m, order: orderOf.get(m.id) } : m
-      )
+  let bookmarks = b.bookmarks.map((m) => (m.parentId && !ids.has(m.parentId) ? withoutParent(m) : m))
+  if (folders.some((f) => !Number.isFinite(f.order)) || bookmarks.some((m) => !Number.isFinite(m.order))) {
+    const next = new Map<string | undefined, number>()
+    const assign = <T extends Bookmark | BookmarkFolder>(x: T): T => {
+      if (Number.isFinite(x.order)) return x
+      if (!next.has(x.parentId)) {
+        const sib = [...folders, ...bookmarks].filter((y) => y.parentId === x.parentId && Number.isFinite(y.order))
+        next.set(x.parentId, sib.length ? Math.floor(Math.max(...sib.map((y) => y.order!))) + 1 : 0)
+      }
+      const order = next.get(x.parentId)!
+      next.set(x.parentId, order + 1)
+      return { ...x, order }
     }
+    folders = folders.map(assign)
+    bookmarks = bookmarks.map(assign)
   }
-  return out
+  return { folders, bookmarks }
 }
 
 function withoutParent<T extends { parentId?: string }>(x: T): T {

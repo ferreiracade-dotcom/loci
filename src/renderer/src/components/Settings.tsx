@@ -30,6 +30,7 @@ export function Settings({ onClose }: { onClose?: () => void } = {}) {
   const [note, setNote] = useState<string | null>(null)
   const [backfilling, setBackfilling] = useState(false)
   const [storageMsg, setStorageMsg] = useState<string | null>(null)
+  const [deviceName, setDeviceName] = useState<string | null>(null)
 
   useEffect(() => {
     if (scriptureTranslations.length === 0) void loadScripture()
@@ -54,6 +55,16 @@ export function Settings({ onClose }: { onClose?: () => void } = {}) {
   }, [onClose])
 
   if (!config) return null
+
+  async function saveDeviceName(): Promise<void> {
+    if (deviceName === null || !config || deviceName.trim() === config.deviceName) {
+      setDeviceName(null)
+      return
+    }
+    await api.setConfig({ deviceName })
+    await refreshConfig()
+    setDeviceName(null)
+  }
 
   async function changeFolder(
     field: 'backupPath' | 'primaryLibraryPath'
@@ -219,6 +230,27 @@ export function Settings({ onClose }: { onClose?: () => void } = {}) {
             </label>
             {backfilling && <div className="field-ok">Downloading books to this machine…</div>}
             {storageMsg && <div className="field-ok">{storageMsg}</div>}
+          </section>
+
+          <section className="set-section">
+            <h3 className="set-h">Sync</h3>
+            <div className="set-label">This computer&apos;s name</div>
+            <input
+              className="field"
+              value={deviceName ?? config.deviceName}
+              maxLength={60}
+              onChange={(e) => setDeviceName(e.target.value)}
+              onBlur={() => void saveDeviceName()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') e.currentTarget.blur()
+                if (e.key === 'Escape') setDeviceName(null)
+              }}
+            />
+            <p className="set-help">
+              Bookmarks and saved tab groups sync with every computer that uses this vault. Other
+              computers list this one&apos;s open tabs under this name, in History under Tabs from
+              other devices. Whether a group is open, and the bookmarks bar, stay per computer.
+            </p>
           </section>
 
           <section className="set-section">

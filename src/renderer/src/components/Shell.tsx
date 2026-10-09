@@ -8,6 +8,7 @@ import { ChromeTabStrip } from './chrome/ChromeTabStrip'
 import { ChromeToolbar } from './chrome/ChromeToolbar'
 import { useTabShortcuts } from './chrome/useTabShortcuts'
 import { useHistoryRecorder } from './chrome/useHistoryRecorder'
+import { useDeviceSync } from './chrome/useDeviceSync'
 import { BookmarksBar } from './chrome/BookmarksBar'
 import { BookmarkDialogHost } from './chrome/BookmarkDialog'
 
@@ -29,7 +30,7 @@ export function Shell() {
     return () => window.clearTimeout(t)
   }, [toast, setToast])
 
-  // Saved tab groups are written to the vault on a short debounce; don't lose the last change.
+  // Saved tab group changes are recorded on a short debounce; don't lose the last change.
   useEffect(() => {
     window.addEventListener('beforeunload', flushGroups)
     return () => window.removeEventListener('beforeunload', flushGroups)
@@ -37,6 +38,7 @@ export function Shell() {
 
   useTabShortcuts({ onQuickCapture: openQuickCapture })
   useHistoryRecorder()
+  useDeviceSync()
 
   const vaultMissing = !!appState && (!appState.vaultPath || !appState.vaultExists)
 

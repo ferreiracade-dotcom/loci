@@ -34,6 +34,8 @@ export interface TabGroup {
   savedTabs: Tab[]
   /** Divider positions of the split pairs in `savedTabs`. */
   savedSplitRatios?: Record<string, number>
+  /** When the group was made (orders the group list the same way on every device). */
+  createdAt?: number
 }
 
 /** The workspace together with the groups: what every group operation works on. */
@@ -195,7 +197,7 @@ export function reconcileGroups(prev: Workspace, ws: Workspace, groups: TabGroup
 export function createGroup(
   state: GroupState,
   tabId: string,
-  opts: { id?: string; name?: string; color?: GroupColor } = {}
+  opts: { id?: string; name?: string; color?: GroupColor; createdAt?: number } = {}
 ): GroupState & { groupId: string | null } {
   const sorted = sortedTabs(state.ws.tabs)
   const unit = unitOf(sorted, tabId)
@@ -209,7 +211,8 @@ export function createGroup(
     collapsed: false,
     pinnedToBar: false,
     open: true,
-    savedTabs: []
+    savedTabs: [],
+    createdAt: opts.createdAt ?? Date.now()
   }
   const ids = new Set(unit.map((t) => t.id))
   const tabs = sorted.map((t) => (ids.has(t.id) ? setGroup(t, id) : t))
@@ -450,8 +453,8 @@ export function stripSegments(tabs: Tab[], groups: TabGroup[]): { group: TabGrou
 }
 
 /**
- * What goes to the vault. An open group's tabs are snapshotted too, so the group can still be
- * reopened from another device (or if the session's workspace is lost).
+ * This device's full group state (with every saved tab's history), kept in the local session.
+ * An open group's tabs are snapshotted too, in case the session's workspace is lost.
  */
 export function serializeGroups(groups: TabGroup[], ws: Workspace): string {
   const out = groups.map((g) => {
@@ -464,7 +467,7 @@ export function serializeGroups(groups: TabGroup[], ws: Workspace): string {
 
 const KNOWN_COLOR = new Set<string>(GROUP_COLOR_NAMES)
 
-/** Parse the vault's groups. Never throws; drops malformed entries. */
+/** Parse serialized groups. Never throws; drops malformed entries. */
 export function parseGroups(json: string | null): TabGroup[] {
   if (!json) return []
   try {
@@ -489,7 +492,8 @@ export function parseGroups(json: string | null): TabGroup[] {
         open: !!g.open,
         savedTabs,
         savedSplitRatios:
-          g.savedSplitRatios && typeof g.savedSplitRatios === 'object' ? { ...g.savedSplitRatios } : {}
+          g.savedSplitRatios && typeof g.savedSplitRatios === 'object' ? { ...g.savedSplitRatios } : {},
+        ...(typeof g.createdAt === 'number' ? { createdAt: g.createdAt } : {})
       })
     }
     return out
