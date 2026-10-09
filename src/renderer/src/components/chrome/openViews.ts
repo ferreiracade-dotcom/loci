@@ -48,7 +48,7 @@ export async function openConfessionsTab(): Promise<void> {
 }
 
 /** Where the Bible was last read (JHN 1 by default), as tab content. */
-async function lastBibleContent(): Promise<TabContent> {
+export async function lastBibleContent(): Promise<TabContent> {
   const s = useStore.getState()
   let p: { book: string; chapter: number } | null = s.scripturePassage
   if (!p) {
@@ -65,7 +65,7 @@ async function lastBibleContent(): Promise<TabContent> {
 }
 
 /** Where the Confessions were last read (AC, first section, by default). */
-async function lastBocContent(): Promise<TabContent> {
+export async function lastBocContent(): Promise<TabContent> {
   try {
     const last = await api.getSession('lastBoc')
     const p = last ? (JSON.parse(last) as { documentCode?: string; ordinal?: number }) : null
@@ -183,4 +183,25 @@ export async function openLinkInBackground(name: string): Promise<void> {
   if (!target) return
   if (target.type === 'book') openInBackground({ kind: 'pdf', bookId: target.id })
   else openInBackground({ kind: 'note', notePath: target.path })
+}
+
+/**
+ * A bookmark-style open: always a new tab (the owner's choice, see the spec's open question 1),
+ * in the foreground at the end of the strip, or in the background next to the focused tab.
+ */
+export function openInNewTab(content: TabContent, background: boolean): void {
+  const s = useStore.getState()
+  if (background) openInBackground(content)
+  else s.openTab(content, { forceNew: true, after: null, groupId: null })
+  if (content.kind === 'bible' && s.scriptureTranslations.length === 0) void s.loadScripture()
+}
+
+/** The fixed views on the bookmarks bar. */
+export type FixedView = 'bible' | 'confessions' | 'fathers' | 'library' | 'notes' | 'quotesIndex'
+
+/** Where a fixed bookmarks-bar entry goes: the Bible and Confessions resume where you were. */
+export async function fixedViewContent(view: FixedView): Promise<TabContent> {
+  if (view === 'bible') return lastBibleContent()
+  if (view === 'confessions') return lastBocContent()
+  return { kind: view }
 }

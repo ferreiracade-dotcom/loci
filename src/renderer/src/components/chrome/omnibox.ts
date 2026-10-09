@@ -40,6 +40,7 @@ const PAGES: { label: string; kind: PageKind }[] = [
   { label: 'Quotes', kind: 'quotesIndex' },
   { label: 'Church Fathers', kind: 'fathers' },
   { label: 'History', kind: 'history' },
+  { label: 'Bookmarks', kind: 'bookmarks' },
   { label: 'Settings', kind: 'settings' },
   { label: 'Dashboard', kind: 'dashboard' }
 ]

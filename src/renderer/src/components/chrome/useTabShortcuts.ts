@@ -24,6 +24,8 @@ export function useTabShortcuts({ onQuickCapture }: { onQuickCapture: () => void
       else if (ctrl && !e.shiftKey && key === 'pageup') s.cycleTab(-1)
       else if (ctrl && !e.shiftKey && !e.altKey && /^[1-9]$/.test(e.key)) s.selectTabByNumber(Number(e.key))
       else if (ctrl && !e.shiftKey && key === 'h') s.openPage('history')
+      else if (ctrl && e.shiftKey && !e.altKey && key === 'b') s.toggleBookmarksBar()
+      else if (ctrl && e.shiftKey && !e.altKey && key === 'o') s.openPage('bookmarks')
       else if (e.altKey && !ctrl && !e.shiftKey && e.key === 'ArrowLeft') s.goBack()
       else if (e.altKey && !ctrl && !e.shiftKey && e.key === 'ArrowRight') s.goForward()
       else if (ctrl && !e.shiftKey && !e.altKey && key === 'l') window.dispatchEvent(new Event(FOCUS_OMNIBOX_EVENT))

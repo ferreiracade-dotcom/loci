@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { RefreshCw } from 'lucide-react'
-import { useStore } from '../store/useStore'
+import { flushGroups, useStore } from '../store/useStore'
 import { ThreePanel } from './ThreePanel'
 import { LocateFileBanner } from './LocateFileBanner'
 import { QuickCapture } from './library/QuickCapture'
@@ -8,6 +8,8 @@ import { ChromeTabStrip } from './chrome/ChromeTabStrip'
 import { ChromeToolbar } from './chrome/ChromeToolbar'
 import { useTabShortcuts } from './chrome/useTabShortcuts'
 import { useHistoryRecorder } from './chrome/useHistoryRecorder'
+import { BookmarksBar } from './chrome/BookmarksBar'
+import { BookmarkDialogHost } from './chrome/BookmarkDialog'
 
 export function Shell() {
   const appState = useStore((s) => s.appState)
@@ -27,6 +29,12 @@ export function Shell() {
     return () => window.clearTimeout(t)
   }, [toast, setToast])
 
+  // Saved tab groups are written to the vault on a short debounce; don't lose the last change.
+  useEffect(() => {
+    window.addEventListener('beforeunload', flushGroups)
+    return () => window.removeEventListener('beforeunload', flushGroups)
+  }, [])
+
   useTabShortcuts({ onQuickCapture: openQuickCapture })
   useHistoryRecorder()
 
@@ -39,6 +47,7 @@ export function Shell() {
       <div className="chrome-top" style={zoom !== 100 ? { zoom: 100 / zoom } : undefined}>
         <ChromeTabStrip />
         <ChromeToolbar onQuickCapture={openQuickCapture} />
+        <BookmarksBar />
       </div>
       {vaultMissing && (
         <LocateFileBanner
@@ -52,6 +61,7 @@ export function Shell() {
         />
       )}
       <ThreePanel />
+      <BookmarkDialogHost />
       {quickOpen && <QuickCapture onClose={() => setQuickOpen(false)} />}
       {indexing && indexing.total > 0 && (
         <div className="indexing-badge">

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import {
+  Bookmark as BookmarkIcon,
   BookMarked,
   BookOpen,
   FileText,
@@ -32,6 +33,7 @@ import { Settings } from '../Settings'
 import { NewTabPage } from './NewTabPage'
 import { HistoryPage } from './HistoryPage'
 import { FathersPage } from './FathersPage'
+import { BookmarksManager } from './BookmarksManager'
 
 /** What a tab's title may need to look up. */
 export interface TitleContext {
@@ -193,6 +195,7 @@ export const TAB_REGISTRY: Record<TabKind, TabKindDef> = {
   fathers: page(Landmark, 'Church Fathers', 'Church Fathers corpus', () => <FathersPage />),
   settings: page(SettingsIcon, 'Settings', 'loci://settings', () => <Settings />),
   history: page(History, 'History', 'loci://history', () => <HistoryPage />),
+  bookmarks: page(BookmarkIcon, 'Bookmarks', 'loci://bookmarks', () => <BookmarksManager />),
   dashboard: page(LayoutDashboard, 'Dashboard', 'Vault health and bibliography', () => <DashboardView />)
 }
 

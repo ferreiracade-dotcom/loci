@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import {
   ArrowLeft,
   ArrowRight,
+  Bookmark,
+  LayoutGrid,
+  SquarePlus,
   BookMarked,
   EllipsisVertical,
   Headphones,
@@ -32,6 +35,8 @@ import { locationTab, tabDef, tabLocationText, tabTitle } from './tabRegistry'
 import { BOOKMARK_TAB_EVENT, Omnibox } from './Omnibox'
 import { isBackgroundClick, openBibleTab, openConfessionsTab, openInBackground } from './openViews'
 import { SCRIPTURE_AUDIO_EVENT } from '../library/ScriptureAudio'
+import { GROUP_COLORS, groupName } from '../../store/tabGroups'
+import { requestGroupEditor } from './TabGroupMenus'
 
 /** Entries shown in a Back/Forward dropdown, like Chrome's. */
 const HISTORY_MENU_MAX = 12
@@ -207,7 +212,10 @@ function HistoryButton({ tab, dir, onGo }: { tab: Tab | undefined; dir: -1 | 1; 
   )
 }
 
-/** The ⋮ menu. Until the bookmarks bar exists (phase 3) it also carries the fixed views. */
+/**
+ * The ⋮ menu. The fixed views (Bible, Confessions, …) live on the bookmarks bar; while the bar
+ * is hidden they are listed here too, so they stay one click away.
+ */
 function AppMenu({ x, y, onClose }: { x: number; y: number; onClose: () => void }) {
   const newTab = useStore((s) => s.newTab)
   const reopenClosedTab = useStore((s) => s.reopenClosedTab)
@@ -215,9 +223,29 @@ function AppMenu({ x, y, onClose }: { x: number; y: number; onClose: () => void 
   const openPage = useStore((s) => s.openPage)
   const zoom = useStore((s) => s.zoom)
   const stepZoom = useStore((s) => s.stepZoom)
+  const showBar = useStore((s) => s.showBookmarksBar)
+  const toggleBookmarksBar = useStore((s) => s.toggleBookmarksBar)
+  const groups = useStore((s) => s.groups)
+  const createGroupWithNewTab = useStore((s) => s.createGroupWithNewTab)
+  const openGroup = useStore((s) => s.openGroup)
 
+  const newGroup = (): void => {
+    const id = createGroupWithNewTab()
+    if (id) requestGroupEditor(id)
+  }
+  const views: MenuEntry[] = showBar
+    ? []
+    : [
+        { label: 'Bible', icon: ScrollText, onSelect: () => void openBibleTab() },
+        { label: 'Confessions', icon: BookMarked, onSelect: () => void openConfessionsTab() },
+        { label: 'Church Fathers', icon: Landmark, onSelect: () => openPage('fathers') },
+        { label: 'Library', icon: Library, onSelect: () => openPage('library') },
+        { label: 'Notes', icon: NotebookPen, onSelect: () => openPage('notes') },
+        { label: 'Quotes', icon: Quote, onSelect: () => openPage('quotesIndex') }
+      ]
   const items: MenuEntry[] = [
     { label: 'New tab', icon: Plus, shortcut: 'Ctrl+T', onSelect: () => newTab(null) },
+    { label: 'New tab group', icon: LayoutGrid, onSelect: newGroup },
     {
       label: 'Reopen closed tab',
       icon: Undo2,
@@ -228,18 +256,41 @@ function AppMenu({ x, y, onClose }: { x: number; y: number; onClose: () => void 
     'sep',
     { label: 'History', icon: History, shortcut: 'Ctrl+H', onSelect: () => openPage('history') },
     {
-      label: 'Bookmark this tab',
+      label: 'Bookmarks',
       icon: Star,
-      shortcut: 'Ctrl+D',
-      onSelect: () => window.dispatchEvent(new Event(BOOKMARK_TAB_EVENT))
+      submenu: [
+        {
+          label: 'Bookmark this tab',
+          icon: Star,
+          shortcut: 'Ctrl+D',
+          onSelect: () => window.dispatchEvent(new Event(BOOKMARK_TAB_EVENT))
+        },
+        {
+          label: 'Show bookmarks bar',
+          checked: showBar,
+          shortcut: 'Ctrl+Shift+B',
+          onSelect: toggleBookmarksBar
+        },
+        { label: 'Bookmarks manager', icon: Bookmark, shortcut: 'Ctrl+Shift+O', onSelect: () => openPage('bookmarks') }
+      ]
+    },
+    {
+      label: 'Tab groups',
+      icon: LayoutGrid,
+      submenu: [
+        { label: 'Create new tab group', icon: SquarePlus, onSelect: newGroup },
+        ...(groups.length ? (['sep'] as MenuEntry[]) : []),
+        ...groups.map(
+          (g): MenuEntry => ({
+            label: `${groupName(g)}${g.open ? '' : ' (closed)'}`,
+            dot: GROUP_COLORS[g.color],
+            onSelect: () => openGroup(g.id)
+          })
+        )
+      ]
     },
     'sep',
-    { label: 'Bible', icon: ScrollText, onSelect: () => void openBibleTab() },
-    { label: 'Confessions', icon: BookMarked, onSelect: () => void openConfessionsTab() },
-    { label: 'Church Fathers', icon: Landmark, onSelect: () => openPage('fathers') },
-    { label: 'Library', icon: Library, onSelect: () => openPage('library') },
-    { label: 'Notes', icon: NotebookPen, onSelect: () => openPage('notes') },
-    { label: 'Quotes', icon: Quote, onSelect: () => openPage('quotesIndex') },
+    ...views,
     { label: 'Dashboard', icon: LayoutDashboard, onSelect: () => openPage('dashboard') },
     'sep',
     {
