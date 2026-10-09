@@ -13,11 +13,10 @@ import { QuoteCard, makeQuoteCardHandlers } from './QuotesPanel'
  */
 export function BocQuotesPanel() {
   const tabs = useStore((s) => s.tabs)
-  const paneOrder = useStore((s) => s.paneOrder)
-  const activePaneId = useStore((s) => s.activePaneId)
+  const activeTabId = useStore((s) => s.activeTabId)
   const noteReloadToken = useStore((s) => s.noteReloadToken)
 
-  const focusedTabId = paneOrder.find((p) => p.id === activePaneId)?.activeTabId
+  const focusedTabId = activeTabId
   const focusedTab = tabs.find((t) => t.id === focusedTabId)
 
   const [sources, setSources] = useState<BocSource[]>([])

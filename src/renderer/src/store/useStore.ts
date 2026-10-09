@@ -39,27 +39,35 @@ export type Phase = 'loading' | 'wizard' | 'welcome' | 'ready'
 
 import {
   EMPTY_WORKSPACE,
-  activeTab,
+  closeOtherTabs as pureCloseOtherTabs,
   closeTab as pureCloseTab,
+  closeTabsToRight as pureCloseTabsToRight,
+  cycleTab as pureCycleTab,
+  duplicateTab as pureDuplicateTab,
   findProjectTab,
-  focusPane as pureFocusPane,
   focusTab as pureFocusTab,
-  moveTab as pureMoveTab,
+  focusedTab,
   openTab as pureOpenTab,
-  otherPaneId,
+  parsePersistedWorkspace,
   reflectWorkspace,
+  reopenClosedTab as pureReopenClosedTab,
   reorderTab as pureReorderTab,
   sanitizeWorkspace,
+  selectTabByNumber as pureSelectTabByNumber,
+  serializeWorkspace,
+  setPinned as pureSetPinned,
+  setSplitRatio as pureSetSplitRatio,
   setTabContent as pureSetTabContent,
-  tabContent,
-  tabsForPane,
+  splitPartner,
+  splitTabs as pureSplitTabs,
+  unsplitTab as pureUnsplitTab,
   validateRestoredTabs
 } from './workspace'
-import type { PaneMeta, Tab, TabContent, Workspace, QuoteGroupRef } from './workspace'
+import type { ClosedTab, PageKind, Tab, TabContent, Workspace, QuoteGroupRef } from './workspace'
 import { createSequentialQueue } from '../lib/sequentialQueue'
 
-export type { PaneMeta, Tab, TabContent, Workspace, QuoteGroupRef }
-export { tabsForPane, activeTab }
+export type { ClosedTab, PageKind, Tab, TabContent, Workspace, QuoteGroupRef }
+export { focusedTab, splitPartner }
 
 /** Rewrite a project note's `items:` frontmatter line, preserving everything else. */
 async function writeProjectItems(path: string, items: ProjectItem[]): Promise<void> {
@@ -81,21 +89,13 @@ function sameProjectItem(a: ProjectItem, b: ProjectItem): boolean {
 
 const queuePersist = createSequentialQueue()
 
-function persistWorkspace(
-  tabs: Tab[],
-  paneOrder: PaneMeta[],
-  activePaneId: string | null,
-  paneRatio: number
-): void {
-  // Don't persist picker tabs — they'd restore as blank pickers with nothing chosen yet.
-  const sanitized = sanitizeWorkspace({
-    tabs: tabs.filter((t) => t.kind !== 'picker'),
-    paneOrder,
-    activePaneId
-  })
-  const payload = JSON.stringify({ ...sanitized, paneRatio })
+function persistWorkspace(ws: Workspace): void {
+  const payload = serializeWorkspace(ws)
   queuePersist(() => api.setSession('workspace', payload))
 }
+
+/** Zoom steps, as Chrome's (percent). */
+export const ZOOM_STEPS = [50, 67, 75, 80, 90, 100, 110, 125, 150, 175, 200]
 
 interface Store {
   phase: Phase
@@ -136,9 +136,6 @@ interface Store {
   searchTag: string
   /** Index of the result the user last opened, highlighted in the results panel. */
   activeHit: number | null
-  /** True after clicking a search hit opened the reading workspace — shows a "back to search
-   *  results" affordance there. Cleared on any deliberate navigation away from 'reading'. */
-  cameFromSearch: boolean
 
   // --- Scripture (Phase 8) ---
   scriptureTranslations: ScriptureTranslation[]
@@ -170,15 +167,19 @@ interface Store {
    *  which is a database row. */
   refModes: Partial<Record<RefPill, CorpusMode>>
 
-  // --- Center workspace ---
-  /** Every open tab across both panes; the source of truth. */
+  // --- Tab workspace (one Chrome-style strip) ---
+  /** Every open tab, in strip order via `order`; the source of truth. */
   tabs: Tab[]
-  /** Up to two panes, in left-to-right order. */
-  paneOrder: PaneMeta[]
-  /** Focused pane — receives "open" actions and feeds the derived context fields. */
-  activePaneId: string | null
-  /** Split ratio between the two panes (0.2-0.8). */
-  paneRatio: number
+  /** The focused tab (the focused half, for a split). Feeds the derived context fields. */
+  activeTabId: string | null
+  /** Divider position per split id. */
+  splitRatios: Record<string, number>
+  /** Recently closed tabs, most recent last. */
+  closedTabs: ClosedTab[]
+  /** Bumped per tab by Reload (F5 / Ctrl+R) to remount its content. */
+  reloadKeys: Record<string, number>
+  /** Page zoom, percent. */
+  zoom: number
   /** The Project note open in either pane, and its source collection, or null. */
   activeProject: { path: string; items: ProjectItem[] } | null
 
@@ -251,10 +252,6 @@ interface Store {
   setSearchShelf: (s: string) => void
   setSearchTag: (t: string) => void
   setActiveHit: (i: number | null) => void
-  /** Mark that the reading workspace is about to be opened from a search-hit click. */
-  markCameFromSearch: () => void
-  /** The "back to search results" action — returns to the Search view without closing panes. */
-  returnToSearch: () => void
 
   loadScripture: () => Promise<void>
   setScriptureTranslation: (id: string) => void
@@ -293,26 +290,44 @@ interface Store {
    *  not the primary text — they live in separate tables). */
   addBocCommentaryQuote: (input: BocQuoteInput) => Promise<void>
 
-  // --- Center workspace ---
-  /** Create a new tab (duplicates allowed) and focus it; returns the new tab's id. */
-  openTab: (content: TabContent, opts?: { paneId?: string; activate?: boolean }) => string
-  /** Open a new tab beside the current one, splitting into a second pane if needed. */
+  // --- Tab workspace ---
+  /**
+   * Open content in a new tab and focus it; returns the tab id. By default it lands right after
+   * the focused tab (`after: null` = end of strip). Like Chrome navigating from its New Tab page,
+   * opening content while a New Tab page is focused fills that tab instead (`forceNew` opts out).
+   */
+  openTab: (
+    content: TabContent,
+    opts?: { activate?: boolean; after?: string | null; forceNew?: boolean }
+  ) => string
+  /** Ctrl+T / "+": a New Tab page at the end of the strip. */
+  newTab: (after?: string | null) => void
+  /** Open a page tab (Library, Notes, Settings, …). Settings and History focus an existing one. */
+  openPage: (kind: PageKind) => void
+  /** Open content in a new tab joined in a split with the focused tab. */
   openTabInSplit: (content: TabContent) => void
-  /** Move an existing tab into the other pane, creating it if needed. */
-  moveTabToSplit: (tabId: string) => void
   closeTab: (tabId: string) => void
-  /** Reorder a tab within its own pane. */
-  reorderTab: (tabId: string, targetOrder: number) => void
-  /** Move a tab to an exact pane + position in one step (drag-and-drop drop handler). */
-  placeTab: (tabId: string, paneId: string, order: number) => void
+  closeOtherTabs: (tabId: string) => void
+  closeTabsToRight: (tabId: string) => void
+  reopenClosedTab: () => void
+  duplicateTab: (tabId: string) => void
+  setPinned: (tabId: string, pinned: boolean) => void
+  /** Join two open tabs into a split view. */
+  splitTabs: (a: string, b: string) => void
+  unsplitTab: (tabId: string) => void
+  /** Move a tab (and its split partner) to a strip position. */
+  reorderTab: (tabId: string, targetIndex: number) => void
   setTabContent: (tabId: string, content: TabContent) => void
-  /** Reset a tab to the content picker without closing it. */
-  resetTabToPicker: (tabId: string) => void
-  /** Activate a specific tab (and its pane). */
+  /** Turn a tab back into a New Tab page without closing it. */
+  resetTabToNewTab: (tabId: string) => void
   focusTab: (tabId: string) => void
-  /** Focus a pane without changing which of its tabs is active. */
-  focusPane: (id: string) => void
-  setPaneRatio: (r: number) => void
+  cycleTab: (dir: 1 | -1) => void
+  selectTabByNumber: (n: number) => void
+  setSplitRatio: (splitId: string, r: number) => void
+  /** Remount a tab's content (F5 / Ctrl+R); never reloads the window. */
+  reloadTab: (tabId: string) => void
+  /** Step zoom in (+1) / out (-1), or reset (0). */
+  stepZoom: (dir: 1 | -1 | 0) => void
   /** Create a note and place it into a specific tab (used by the picker). */
   createNoteInTab: (id: string, title: string, type?: NoteType) => Promise<NoteSummary>
 
@@ -376,6 +391,34 @@ export const useStore = create<Store>((set, get) => {
     }
   }
 
+  const currentWs = (): Workspace => {
+    const { tabs, activeTabId, splitRatios, closedTabs } = get()
+    return { tabs, activeTabId, splitRatios, closed: closedTabs }
+  }
+
+  // Apply a workspace change: update state + the reflected legacy fields, persist (sequenced,
+  // so an older write can never land after a newer one), and refresh the project context.
+  const commit = (next: Workspace): void => {
+    const prev = currentWs()
+    if (
+      next.tabs === prev.tabs &&
+      next.activeTabId === prev.activeTabId &&
+      next.splitRatios === prev.splitRatios &&
+      next.closed === prev.closed
+    ) {
+      return
+    }
+    set({
+      tabs: next.tabs,
+      activeTabId: next.activeTabId,
+      splitRatios: next.splitRatios,
+      closedTabs: next.closed,
+      ...reflectWorkspace(next)
+    })
+    persistWorkspace(next)
+    if (next.tabs !== prev.tabs) void get().refreshActiveProject()
+  }
+
   return {
     phase: 'loading',
     appState: null,
@@ -405,7 +448,6 @@ export const useStore = create<Store>((set, get) => {
     searchShelf: '',
     searchTag: '',
     activeHit: null,
-    cameFromSearch: false,
     scriptureTranslations: [],
     scriptureTranslation: '',
     scripturePassage: null,
@@ -417,9 +459,11 @@ export const useStore = create<Store>((set, get) => {
     bocMatches: [],
     refModes: {},
     tabs: [],
-    paneOrder: [],
-    activePaneId: null,
-    paneRatio: 0.5,
+    activeTabId: null,
+    splitRatios: {},
+    closedTabs: [],
+    reloadKeys: {},
+    zoom: 100,
     activeProject: null,
 
     init: async () => {
@@ -449,44 +493,30 @@ export const useStore = create<Store>((set, get) => {
       }
       const data = await loadAll()
       applyTheme(data.config.theme)
-      // Restore the workspace: validate every tab's reference against what's still in the
-      // library/notes list (a book or note can be deleted while the app is closed), then
-      // sanitize pane/active-tab bookkeeping around whatever survives.
-      let workspace: Workspace = EMPTY_WORKSPACE
-      let paneRatio = 0.5
-      const restoredRaw = await api.getSession('workspace')
-      if (restoredRaw) {
-        try {
-          const parsed = JSON.parse(restoredRaw) as Partial<Workspace> & { paneRatio?: number }
-          const tabs = validateRestoredTabs(
-            Array.isArray(parsed.tabs) ? parsed.tabs : [],
-            data.books,
-            data.standaloneNotes
-          )
-          workspace = sanitizeWorkspace({
-            tabs,
-            paneOrder: Array.isArray(parsed.paneOrder) ? parsed.paneOrder : [],
-            activePaneId: parsed.activePaneId ?? null
-          })
-          if (typeof parsed.paneRatio === 'number') {
-            paneRatio = Math.min(0.8, Math.max(0.2, parsed.paneRatio))
-          }
-        } catch {
-          /* ignore malformed value */
-        }
+      // Restore the workspace (migrating the old two-pane format if that's what's stored):
+      // validate every tab's reference against what's still in the library/notes list (a book
+      // or note can be deleted while the app is closed), then sanitize focus/splits around
+      // whatever survives. An empty strip gets a New Tab page, like Chrome.
+      const restored = parsePersistedWorkspace(await api.getSession('workspace'))
+      let workspace: Workspace = sanitizeWorkspace({
+        ...restored,
+        tabs: validateRestoredTabs(restored.tabs, data.books, data.standaloneNotes)
+      })
+      if (workspace.tabs.length === 0) {
+        workspace = pureOpenTab(EMPTY_WORKSPACE, { kind: 'newtab' }).ws
       }
-      let landingView = data.layout.activeLeftView
-      if (landingView === 'reading' && workspace.tabs.length === 0) landingView = 'library'
-      const layout = { ...data.layout, activeLeftView: landingView }
+      const zoomRaw = Number(await api.getSession('zoom'))
+      const zoom = ZOOM_STEPS.includes(zoomRaw) ? zoomRaw : 100
+      if (zoom !== 100) api.setZoomFactor(zoom / 100)
       const reflected = reflectWorkspace(workspace)
       set({
         appState,
         ...data,
-        layout,
         tabs: workspace.tabs,
-        paneOrder: workspace.paneOrder,
-        activePaneId: workspace.activePaneId,
-        paneRatio,
+        activeTabId: workspace.activeTabId,
+        splitRatios: workspace.splitRatios,
+        closedTabs: workspace.closed,
+        zoom,
         ...reflected,
         // Seed the selected translation from config so a Bible pane can render its
         // (offline-cached) text immediately, before the translation registry has resolved.
@@ -553,11 +583,6 @@ export const useStore = create<Store>((set, get) => {
       const layout = get().layout
       if (!layout) return
       set({ layout: { ...layout, ...patch } })
-      // Any deliberate move away from the reading workspace retires the "back to search" link —
-      // it only makes sense while a search hit's pane is still showing.
-      if (patch.activeLeftView && patch.activeLeftView !== 'reading' && get().cameFromSearch) {
-        set({ cameFromSearch: false })
-      }
       void api.setLayout(patch)
     },
 
@@ -573,7 +598,6 @@ export const useStore = create<Store>((set, get) => {
     openBook: (id) => {
       get().openTab({ kind: 'pdf', bookId: id })
       set({ quotes: [], pendingPage: null })
-      get().saveLayout({ activeLeftView: 'reading' })
       void api.setSession('lastOpenBook', id)
       void get().loadQuotes(id)
     },
@@ -585,7 +609,6 @@ export const useStore = create<Store>((set, get) => {
         pendingPage: { bookId: id, page },
         books: get().books.map((b) => (b.id === id ? { ...b, lastPage: page } : b))
       })
-      get().saveLayout({ activeLeftView: 'reading' })
       void api.setBookLastPage(id, page)
       void api.setSession('lastOpenBook', id)
       void get().loadQuotes(id)
@@ -611,17 +634,14 @@ export const useStore = create<Store>((set, get) => {
       const note = await api.createNote(title, type)
       await get().loadStandaloneNotes()
       get().openTab({ kind: 'note', notePath: note.path })
-      get().saveLayout({ activeLeftView: 'reading' })
     },
 
     openNote: (path) => {
       get().openTab({ kind: 'note', notePath: path })
-      get().saveLayout({ activeLeftView: 'reading' })
     },
 
     openNoteInSplit: (path) => {
       get().openTabInSplit({ kind: 'note', notePath: path })
-      get().saveLayout({ activeLeftView: 'reading' })
     },
 
     setNotesTagFilter: (tag) => set({ notesTagFilter: tag }),
@@ -685,7 +705,6 @@ export const useStore = create<Store>((set, get) => {
 
     openQuotesGroup: (group) => {
       get().openTab({ kind: 'quotes', quotesGroup: group })
-      get().saveLayout({ activeLeftView: 'reading' })
     },
 
     bumpReload: () => set({ noteReloadToken: get().noteReloadToken + 1 }),
@@ -886,11 +905,6 @@ export const useStore = create<Store>((set, get) => {
     setSearchShelf: (s) => set({ searchShelf: s }),
     setSearchTag: (t) => set({ searchTag: t }),
     setActiveHit: (i) => set({ activeHit: i }),
-    markCameFromSearch: () => set({ cameFromSearch: true }),
-    returnToSearch: () => {
-      set({ cameFromSearch: false })
-      get().saveLayout({ activeLeftView: 'search' })
-    },
 
     loadScripture: async () => {
       const translations = await api.listScriptureTranslations()
@@ -940,8 +954,8 @@ export const useStore = create<Store>((set, get) => {
     // In-place navigation, like clicking a link in a browser tab: if the active tab is already
     // showing the Bible, it navigates there. Only explicit "open" actions create a new tab.
     navigateScripture: (book, chapter, highlight = []) => {
-      const { activePaneId, scriptureTranslation } = get()
-      const current = activePaneId ? activeTab({ tabs: get().tabs, paneOrder: get().paneOrder, activePaneId }, activePaneId) : undefined
+      const { scriptureTranslation } = get()
+      const current = focusedTab(get())
       if (current?.kind === 'bible') {
         get().setTabContent(current.id, {
           kind: 'bible',
@@ -953,7 +967,6 @@ export const useStore = create<Store>((set, get) => {
       } else {
         get().openTab({ kind: 'bible', book, chapter, highlight, translation: scriptureTranslation })
       }
-      get().saveLayout({ activeLeftView: 'reading' })
       void api.setSession('lastScripture', JSON.stringify({ book, chapter }))
     },
 
@@ -976,8 +989,7 @@ export const useStore = create<Store>((set, get) => {
       const bible = get().tabs.find((t) => t.kind === 'bible')
       if (bible) {
         get().focusTab(bible.id)
-        get().saveLayout({ activeLeftView: 'reading' })
-      } else {
+        } else {
         // Open the reader from local state right away. The translation registry can hit the
         // network to resolve copyrighted versions, so it must NOT gate the view switch — it is
         // loaded in the background below and fills the translation picker when it arrives.
@@ -1050,10 +1062,7 @@ export const useStore = create<Store>((set, get) => {
     // In-place navigation, like navigateScripture: if the active tab is already showing the BoC
     // reader, it navigates there. Only explicit "open" actions create a new tab.
     navigateBoc: (documentCode, ordinal, bocSourceId) => {
-      const { activePaneId } = get()
-      const current = activePaneId
-        ? activeTab({ tabs: get().tabs, paneOrder: get().paneOrder, activePaneId }, activePaneId)
-        : undefined
+      const current = focusedTab(get())
       if (current?.kind === 'boc') {
         get().setTabContent(current.id, {
           kind: 'boc',
@@ -1064,7 +1073,6 @@ export const useStore = create<Store>((set, get) => {
       } else {
         get().openTab({ kind: 'boc', documentCode, sectionOrdinal: ordinal, bocSourceId })
       }
-      get().saveLayout({ activeLeftView: 'reading' })
       void api.setSession('lastBoc', JSON.stringify({ documentCode, ordinal }))
     },
 
@@ -1092,8 +1100,7 @@ export const useStore = create<Store>((set, get) => {
       const boc = get().tabs.find((t) => t.kind === 'boc')
       if (boc) {
         get().focusTab(boc.id)
-        get().saveLayout({ activeLeftView: 'reading' })
-      } else {
+        } else {
         // Resume where the user left off, falling back to the Augsburg Confession's first
         // section. (Unlike showScripture there is no background registry load to keep off the
         // critical path — BoC sources are local files, resolved by the reader itself.)
@@ -1122,96 +1129,104 @@ export const useStore = create<Store>((set, get) => {
       set({ noteReloadToken: get().noteReloadToken + 1 })
     },
 
-    openTab: (content, opts) => {
-      const currentWs: Workspace = { tabs: get().tabs, paneOrder: get().paneOrder, activePaneId: get().activePaneId }
-      const { ws: next, tabId } = pureOpenTab(currentWs, content, opts)
-      set({ tabs: next.tabs, paneOrder: next.paneOrder, activePaneId: next.activePaneId, ...reflectWorkspace(next) })
-      persistWorkspace(next.tabs, next.paneOrder, next.activePaneId, get().paneRatio)
-      void get().refreshActiveProject()
+    openTab: (content, opts = {}) => {
+      const current = focusedTab(get())
+      if (
+        !opts.forceNew &&
+        opts.activate !== false &&
+        content.kind !== 'newtab' &&
+        current?.kind === 'newtab'
+      ) {
+        get().setTabContent(current.id, content)
+        return current.id
+      }
+      const after = opts.after === undefined ? get().activeTabId : opts.after
+      const { ws: next, tabId } = pureOpenTab(currentWs(), content, { activate: opts.activate, after })
+      commit(next)
       return tabId
     },
 
-    openTabInSplit: (content) => {
-      const { activePaneId, tabs, paneOrder } = get()
-      const target =
-        (activePaneId ? otherPaneId({ tabs, paneOrder, activePaneId }, activePaneId) : null) ??
-        crypto.randomUUID()
-      get().openTab(content, { paneId: target })
+    newTab: (after = null) => {
+      get().openTab({ kind: 'newtab' }, { after })
     },
 
-    moveTabToSplit: (tabId) => {
-      const { tabs, paneOrder, activePaneId } = get()
-      const tab = tabs.find((t) => t.id === tabId)
-      if (!tab) return
-      const target = otherPaneId({ tabs, paneOrder, activePaneId }, tab.paneId) ?? crypto.randomUUID()
-      // Moving a pane's only tab would just empty that pane and collapse it right back —
-      // duplicate instead, so the action is never a no-op.
-      if (tabsForPane(tabs, tab.paneId).length === 1) {
-        get().openTab(tabContent(tab), { paneId: target })
-        return
+    openPage: (kind) => {
+      if (kind === 'settings' || kind === 'history') {
+        const existing = get().tabs.find((t) => t.kind === kind)
+        if (existing) {
+          get().focusTab(existing.id)
+          return
+        }
       }
-      const next = pureMoveTab({ tabs, paneOrder, activePaneId }, tabId, target)
-      set({ tabs: next.tabs, paneOrder: next.paneOrder, activePaneId: next.activePaneId, ...reflectWorkspace(next) })
-      persistWorkspace(next.tabs, next.paneOrder, next.activePaneId, get().paneRatio)
+      get().openTab({ kind })
+    },
+
+    openTabInSplit: (content) => {
+      const anchor = get().activeTabId
+      const id = get().openTab(content, { forceNew: true })
+      if (anchor && anchor !== id) get().splitTabs(anchor, id)
+      get().focusTab(id)
     },
 
     closeTab: (tabId) => {
-      const { tabs, paneOrder, activePaneId } = get()
-      const next = pureCloseTab({ tabs, paneOrder, activePaneId }, tabId)
-      set({ tabs: next.tabs, paneOrder: next.paneOrder, activePaneId: next.activePaneId, ...reflectWorkspace(next) })
-      persistWorkspace(next.tabs, next.paneOrder, next.activePaneId, get().paneRatio)
-      void get().refreshActiveProject()
+      let next = pureCloseTab(currentWs(), tabId)
+      // Chrome closes the window with its last tab; Loci keeps a New Tab page instead.
+      if (next.tabs.length === 0) next = pureOpenTab(next, { kind: 'newtab' }).ws
+      commit(next)
     },
 
-    reorderTab: (tabId, targetOrder) => {
-      const { tabs, paneOrder, activePaneId } = get()
-      const next = pureReorderTab({ tabs, paneOrder, activePaneId }, tabId, targetOrder)
-      set({ tabs: next.tabs })
-      persistWorkspace(next.tabs, get().paneOrder, get().activePaneId, get().paneRatio)
+    closeOtherTabs: (tabId) => commit(pureCloseOtherTabs(currentWs(), tabId)),
+
+    closeTabsToRight: (tabId) => commit(pureCloseTabsToRight(currentWs(), tabId)),
+
+    reopenClosedTab: () => {
+      const { ws: next, tabId } = pureReopenClosedTab(currentWs())
+      if (tabId) commit(next)
     },
 
-    placeTab: (tabId, paneId, order) => {
-      const { tabs, paneOrder, activePaneId } = get()
-      const ws0: Workspace = { tabs, paneOrder, activePaneId }
-      const tab = tabs.find((t) => t.id === tabId)
-      if (!tab) return
-      const ws1 = tab.paneId === paneId ? ws0 : pureMoveTab(ws0, tabId, paneId)
-      const next = pureReorderTab(ws1, tabId, order)
-      set({ tabs: next.tabs, paneOrder: next.paneOrder, activePaneId: next.activePaneId, ...reflectWorkspace(next) })
-      persistWorkspace(next.tabs, next.paneOrder, next.activePaneId, get().paneRatio)
+    duplicateTab: (tabId) => {
+      const { ws: next, tabId: id } = pureDuplicateTab(currentWs(), tabId)
+      if (id) commit(next)
     },
 
-    setTabContent: (tabId, content) => {
-      const { tabs, paneOrder, activePaneId } = get()
-      const next = pureSetTabContent({ tabs, paneOrder, activePaneId }, tabId, content)
-      set({ tabs: next.tabs, ...reflectWorkspace(next) })
-      persistWorkspace(next.tabs, get().paneOrder, get().activePaneId, get().paneRatio)
-      void get().refreshActiveProject()
-    },
+    setPinned: (tabId, pinned) => commit(pureSetPinned(currentWs(), tabId, pinned)),
 
-    resetTabToPicker: (tabId) => {
-      get().setTabContent(tabId, { kind: 'picker' })
+    splitTabs: (a, b) => commit(pureSplitTabs(currentWs(), a, b)),
+
+    unsplitTab: (tabId) => commit(pureUnsplitTab(currentWs(), tabId)),
+
+    reorderTab: (tabId, targetIndex) => commit(pureReorderTab(currentWs(), tabId, targetIndex)),
+
+    setTabContent: (tabId, content) => commit(pureSetTabContent(currentWs(), tabId, content)),
+
+    resetTabToNewTab: (tabId) => {
+      get().setTabContent(tabId, { kind: 'newtab' })
     },
 
     focusTab: (tabId) => {
-      const { tabs, paneOrder, activePaneId } = get()
-      const next = pureFocusTab({ tabs, paneOrder, activePaneId }, tabId)
-      set({ paneOrder: next.paneOrder, activePaneId: next.activePaneId, ...reflectWorkspace(next) })
-      persistWorkspace(next.tabs, next.paneOrder, next.activePaneId, get().paneRatio)
+      if (get().activeTabId === tabId) return
+      commit(pureFocusTab(currentWs(), tabId))
     },
 
-    focusPane: (id) => {
-      const { tabs, paneOrder, activePaneId } = get()
-      if (id === activePaneId) return
-      const next = pureFocusPane({ tabs, paneOrder, activePaneId }, id)
-      set({ activePaneId: next.activePaneId, ...reflectWorkspace(next) })
-      persistWorkspace(next.tabs, next.paneOrder, next.activePaneId, get().paneRatio)
+    cycleTab: (dir) => commit(pureCycleTab(currentWs(), dir)),
+
+    selectTabByNumber: (n) => commit(pureSelectTabByNumber(currentWs(), n)),
+
+    setSplitRatio: (splitId, r) => commit(pureSetSplitRatio(currentWs(), splitId, r)),
+
+    reloadTab: (tabId) => {
+      const keys = get().reloadKeys
+      set({ reloadKeys: { ...keys, [tabId]: (keys[tabId] ?? 0) + 1 } })
     },
 
-    setPaneRatio: (r) => {
-      const ratio = Math.min(0.8, Math.max(0.2, r))
-      set({ paneRatio: ratio })
-      persistWorkspace(get().tabs, get().paneOrder, get().activePaneId, ratio)
+    stepZoom: (dir) => {
+      const cur = get().zoom
+      let zoom = 100
+      if (dir === 1) zoom = ZOOM_STEPS.find((z) => z > cur) ?? ZOOM_STEPS[ZOOM_STEPS.length - 1]
+      else if (dir === -1) zoom = [...ZOOM_STEPS].reverse().find((z) => z < cur) ?? ZOOM_STEPS[0]
+      set({ zoom })
+      api.setZoomFactor(zoom / 100)
+      void api.setSession('zoom', String(zoom))
     },
 
     createNoteInTab: async (id, title, type) => {

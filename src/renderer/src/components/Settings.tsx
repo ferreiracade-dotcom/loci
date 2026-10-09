@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import { X, FolderOpen, KeyRound, ShieldCheck, Image as ImageIcon } from 'lucide-react'
 import { useStore } from '../store/useStore'
 import { api } from '../lib/api'
@@ -12,7 +13,8 @@ function themesMatch(a: ThemePalette, b: ThemePalette): boolean {
   )
 }
 
-export function Settings({ onClose }: { onClose: () => void }) {
+/** Settings: a tab page (loci://settings) when `onClose` is omitted, else a modal drawer. */
+export function Settings({ onClose }: { onClose?: () => void } = {}) {
   const config = useStore((s) => s.config)
   const refreshConfig = useStore((s) => s.refreshConfig)
   const relocateVault = useStore((s) => s.relocateVault)
@@ -44,8 +46,9 @@ export function Settings({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') onClose?.()
     }
+    if (!onClose) return
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
@@ -107,12 +110,14 @@ export function Settings({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <DrawerOverlay onClose={onClose}>
+    <SettingsFrame onClose={onClose}>
       <div className="drawer-head">
           <h2 className="drawer-title">Settings</h2>
-          <button className="icon-btn" title="Close" onClick={onClose}>
-            <X size={16} />
-          </button>
+          {onClose && (
+            <button className="icon-btn" title="Close" onClick={onClose}>
+              <X size={16} />
+            </button>
+          )}
         </div>
 
         <div className="drawer-body">
@@ -413,6 +418,15 @@ export function Settings({ onClose }: { onClose: () => void }) {
             </p>
           </section>
         </div>
-    </DrawerOverlay>
+    </SettingsFrame>
+  )
+}
+
+function SettingsFrame({ onClose, children }: { onClose?: () => void; children: ReactNode }) {
+  if (onClose) return <DrawerOverlay onClose={onClose}>{children}</DrawerOverlay>
+  return (
+    <div className="settings-page">
+      <div className="settings-page-inner">{children}</div>
+    </div>
   )
 }

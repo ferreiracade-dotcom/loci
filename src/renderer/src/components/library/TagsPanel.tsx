@@ -5,7 +5,9 @@ export function TagsPanel() {
   const notes = useStore((s) => s.standaloneNotes)
   const activeFilter = useStore((s) => s.notesTagFilter)
   const setTagFilter = useStore((s) => s.setNotesTagFilter)
-  const saveLayout = useStore((s) => s.saveLayout)
+  const tabs = useStore((s) => s.tabs)
+  const focusTab = useStore((s) => s.focusTab)
+  const openPage = useStore((s) => s.openPage)
 
   const counts = new Map<string, number>()
   for (const n of notes) for (const t of n.tags) counts.set(t, (counts.get(t) ?? 0) + 1)
@@ -22,7 +24,9 @@ export function TagsPanel() {
 
   const pick = (t: string): void => {
     setTagFilter(activeFilter === t ? null : t)
-    saveLayout({ activeLeftView: 'notes' })
+    const notesTab = tabs.find((x) => x.kind === 'notes')
+    if (notesTab) focusTab(notesTab.id)
+    else openPage('notes')
   }
 
   return (

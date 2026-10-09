@@ -574,8 +574,8 @@ export function RichNoteEditor({ path }: { path: string }) {
         {noteType === 'project' ? (
           <button
             className="nt-project-badge"
-            title="Show this project's sources in the split pane"
-            onClick={() => openTabInSplit({ kind: 'picker' })}
+            title="Show this project's sources in split view"
+            onClick={() => openTabInSplit({ kind: 'newtab' })}
           >
             <FolderKanban size={13} /> Project
           </button>

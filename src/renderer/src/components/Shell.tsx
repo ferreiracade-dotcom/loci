@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { RefreshCw } from 'lucide-react'
 import { useStore } from '../store/useStore'
 import { ThreePanel } from './ThreePanel'
-import { Settings } from './Settings'
 import { LocateFileBanner } from './LocateFileBanner'
 import { QuickCapture } from './library/QuickCapture'
+import { ChromeTabStrip } from './chrome/ChromeTabStrip'
+import { ChromeToolbar } from './chrome/ChromeToolbar'
+import { useTabShortcuts } from './chrome/useTabShortcuts'
+import { useHistoryRecorder } from './chrome/useHistoryRecorder'
 
 export function Shell() {
   const appState = useStore((s) => s.appState)
@@ -12,8 +15,9 @@ export function Shell() {
   const indexing = useStore((s) => s.indexing)
   const toast = useStore((s) => s.toast)
   const setToast = useStore((s) => s.setToast)
-  const [settingsOpen, setSettingsOpen] = useState(false)
+  const zoom = useStore((s) => s.zoom)
   const [quickOpen, setQuickOpen] = useState(false)
+  const openQuickCapture = useCallback(() => setQuickOpen(true), [])
 
   // Clear the status toast a few seconds after it appears (it may have been set during the
   // welcome screen, before the Shell mounted — so the timer starts here, when it's first shown).
@@ -23,21 +27,19 @@ export function Shell() {
     return () => window.clearTimeout(t)
   }, [toast, setToast])
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent): void => {
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'n') {
-        e.preventDefault()
-        setQuickOpen(true)
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [])
+  useTabShortcuts({ onQuickCapture: openQuickCapture })
+  useHistoryRecorder()
 
   const vaultMissing = !!appState && (!appState.vaultPath || !appState.vaultExists)
 
   return (
     <div className="shell">
+      {/* Page zoom scales the whole document; the title-bar rows are counter-zoomed so they
+          keep matching the OS window controls drawn over the strip. */}
+      <div className="chrome-top" style={zoom !== 100 ? { zoom: 100 / zoom } : undefined}>
+        <ChromeTabStrip />
+        <ChromeToolbar onQuickCapture={openQuickCapture} />
+      </div>
       {vaultMissing && (
         <LocateFileBanner
           message={
@@ -49,8 +51,7 @@ export function Shell() {
           onAction={() => void relocateVault()}
         />
       )}
-      <ThreePanel onOpenSettings={() => setSettingsOpen(true)} />
-      {settingsOpen && <Settings onClose={() => setSettingsOpen(false)} />}
+      <ThreePanel />
       {quickOpen && <QuickCapture onClose={() => setQuickOpen(false)} />}
       {indexing && indexing.total > 0 && (
         <div className="indexing-badge">

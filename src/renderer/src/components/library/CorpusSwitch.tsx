@@ -16,12 +16,11 @@ export function useCorpusMode(pill: RefPill): {
   modes: CorpusMode[]
 } {
   const tabs = useStore((s) => s.tabs)
-  const paneOrder = useStore((s) => s.paneOrder)
-  const activePaneId = useStore((s) => s.activePaneId)
+  const activeTabId = useStore((s) => s.activeTabId)
   const refModes = useStore((s) => s.refModes)
   const setRefMode = useStore((s) => s.setRefMode)
 
-  const focusedTabId = paneOrder.find((p) => p.id === activePaneId)?.activeTabId
+  const focusedTabId = activeTabId
   const focusedKind = tabs.find((t) => t.id === focusedTabId)?.kind
 
   const modes = MODES_FOR_PILL[pill]

@@ -19,7 +19,7 @@ export function OpenInCenterButton({
 
   // Show the center workspace and collapse the reference panel (it's now in the center).
   const finish = (): void => {
-    saveLayout({ activeLeftView: 'reading', notesCollapsed: true })
+    saveLayout({ notesCollapsed: true })
     onDone?.()
   }
 
@@ -33,9 +33,9 @@ export function OpenInCenterButton({
           openTab(content)
           finish()
         }}
-        title="Open in the center workspace"
+        title="Open in a new tab"
       >
-        <ArrowLeftToLine size={13} /> Open in center
+        <ArrowLeftToLine size={13} /> Open in tab
       </button>
       <button
         className="ref-promote-split"
@@ -45,7 +45,7 @@ export function OpenInCenterButton({
           openTabInSplit(content)
           finish()
         }}
-        title="Open in a split pane"
+        title="Open in split view"
       >
         <Columns2 size={13} />
       </button>

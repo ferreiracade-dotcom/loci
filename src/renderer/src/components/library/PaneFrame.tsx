@@ -1,14 +1,7 @@
 import { useState } from 'react'
-import { useStore } from '../../store/useStore'
-import type { PaneMeta } from '../../store/useStore'
-import { RichNoteEditor } from './RichNoteEditor'
-import { PdfReader } from './PdfReader'
-import { BiblePane } from './BiblePane'
-import { BocPane } from './BocPane'
-import { PanePicker } from './PanePicker'
-import { QuoteGroupPane } from './QuoteGroupPane'
-import { TabStrip } from './TabStrip'
-import type { HoverTarget } from './TabStrip'
+import { useStore, splitPartner } from '../../store/useStore'
+import type { Tab } from '../../store/useStore'
+import { tabDef } from '../chrome/tabRegistry'
 
 /** Read whichever project-item drag payload is present on a drop event, if any. */
 function projectItemFromDrag(e: React.DragEvent): { kind: 'book' | 'note' | 'scripture'; value: string } | null {
@@ -21,42 +14,24 @@ function projectItemFromDrag(e: React.DragEvent): { kind: 'book' | 'note' | 'scr
   return null
 }
 
-/** One center-workspace pane: a tab strip over the active tab's reused body. */
-export function PaneFrame({
-  pane,
-  focused,
-  dragTabId,
-  hover,
-  onDragStart,
-  onHover,
-  onDrop,
-  onDragCancel
-}: {
-  pane: PaneMeta
-  focused: boolean
-  dragTabId: string | null
-  hover: HoverTarget | null
-  onDragStart: (tabId: string) => void
-  onHover: (target: HoverTarget | null) => void
-  onDrop: () => void
-  onDragCancel: () => void
-}) {
+/** One tab's content (a whole tab, or one half of a split view). */
+export function PaneFrame({ tab }: { tab: Tab }) {
   const tabs = useStore((s) => s.tabs)
   const activeProject = useStore((s) => s.activeProject)
   const addProjectItem = useStore((s) => s.addProjectItem)
-  const resetTabToPicker = useStore((s) => s.resetTabToPicker)
+  const resetTabToNewTab = useStore((s) => s.resetTabToNewTab)
   const closeTab = useStore((s) => s.closeTab)
   const [dragOver, setDragOver] = useState(false)
 
-  const tab = tabs.find((t) => t.id === pane.activeTabId)
-
-  // If this pane's sibling holds the active Project note, this pane is the sources surface —
-  // its picker tabs offer only the project's items instead of the whole library.
-  const projectTab = tabs.find((t) => t.kind === 'note' && t.notePath === activeProject?.path)
-  const isProjectSibling = !!projectTab && projectTab.paneId !== pane.id
-  // Both the sources surface and the project note's own pane accept a dropped reference-panel
+  // If this tab's split partner is the active Project note, this tab is the sources surface —
+  // its New Tab page offers only the project's items instead of the whole library.
+  const partner = splitPartner(tabs, tab.id)
+  const isProjectNote = !!activeProject && tab.kind === 'note' && tab.notePath === activeProject.path
+  const isProjectSibling =
+    !!activeProject && partner?.kind === 'note' && partner.notePath === activeProject.path
+  // Both the sources surface and the project note itself accept a dropped reference-panel
   // item, adding it to the project's collection.
-  const isProjectDropTarget = isProjectSibling || (!!activeProject && pane.id === projectTab?.paneId)
+  const isProjectDropTarget = isProjectSibling || isProjectNote
 
   const onDropItem = (e: React.DragEvent): void => {
     if (!isProjectDropTarget || !activeProject) return
@@ -72,46 +47,12 @@ export function PaneFrame({
     }
   }
 
-  let body: React.ReactNode = (
-    <PanePicker
-      heading="Open a note, a book, or the Bible"
-      restrictToProject={isProjectSibling ? activeProject?.items : undefined}
-    />
-  )
-
-  if (tab?.kind === 'pdf' && tab.bookId) {
-    body = <PdfReader key={tab.id} bookId={tab.bookId} embedded />
-  } else if (tab?.kind === 'note' && tab.notePath) {
-    body = <RichNoteEditor key={tab.id} path={tab.notePath} />
-  } else if (tab?.kind === 'quotes' && tab.quotesGroup) {
-    body = <QuoteGroupPane key={tab.id} group={tab.quotesGroup} />
-  } else if (tab?.kind === 'bible' && tab.book && tab.chapter != null) {
-    body = (
-      <BiblePane
-        key={tab.id}
-        tab={tab}
-        onClose={() => closeTab(tab.id)}
-        onReplace={() => resetTabToPicker(tab.id)}
-      />
-    )
-  } else if (tab?.kind === 'boc' && tab.documentCode && tab.sectionOrdinal != null) {
-    body = (
-      <BocPane
-        key={tab.id}
-        tab={tab}
-        onClose={() => closeTab(tab.id)}
-        onReplace={() => resetTabToPicker(tab.id)}
-      />
-    )
-  } else if (tab?.kind === 'picker') {
-    body = (
-      <PanePicker
-        key={tab.id}
-        tabId={tab.id}
-        restrictToProject={isProjectSibling ? activeProject?.items : undefined}
-      />
-    )
+  const ctx = {
+    close: () => closeTab(tab.id),
+    replace: () => resetTabToNewTab(tab.id),
+    restrictToProject: isProjectSibling ? activeProject?.items : undefined
   }
+  const body = tabDef(tab.kind).render(tab, ctx) ?? tabDef('newtab').render(tab, ctx)
 
   return (
     <div
@@ -124,16 +65,6 @@ export function PaneFrame({
       onDragLeave={() => setDragOver(false)}
       onDrop={onDropItem}
     >
-      <TabStrip
-        paneId={pane.id}
-        focused={focused}
-        dragTabId={dragTabId}
-        hover={hover}
-        onDragStart={onDragStart}
-        onHover={onHover}
-        onDrop={onDrop}
-        onDragCancel={onDragCancel}
-      />
       <div className="pane-body">{body}</div>
     </div>
   )

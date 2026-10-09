@@ -34,7 +34,7 @@ export function OpenElsewhereItems({
           onDone()
         }}
       >
-        Open in split pane
+        Open in split view
       </button>
     </>
   )
