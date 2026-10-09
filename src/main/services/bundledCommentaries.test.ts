@@ -13,6 +13,7 @@ vi.mock('electron', () => ({
 }))
 
 import { BUNDLED_COMMENTARIES, installBundledCommentaries } from './bundledCommentaries'
+import { writeConfig } from './config'
 import { parseCommentaryMarkdown } from './commentaryMarkdown'
 import { validateSource } from './commentaryValidate'
 import { VERSE_COUNTS } from '../../shared/versification'
@@ -51,6 +52,37 @@ describe('installBundledCommentaries', () => {
     writeFileSync(vaultFile('Philippi Romans.md'), 'synced copy')
     expect(installBundledCommentaries(shipped)).toEqual([])
     expect(readFileSync(vaultFile('Philippi Romans.md'), 'utf8')).toBe('synced copy')
+  })
+
+  it('replaces the copy it installed with a newer shipped version', () => {
+    installBundledCommentaries(shipped)
+    writeFileSync(join(shipped, 'Philippi Romans.md'), '# Romans\n## 1:1\nPaul, a servant')
+    expect(installBundledCommentaries(shipped)).toEqual(['Philippi Romans.md'])
+    expect(readFileSync(vaultFile('Philippi Romans.md'), 'utf8')).toContain('a servant')
+    expect(installBundledCommentaries(shipped)).toEqual([])
+  })
+
+  it('never replaces a copy the user changed', () => {
+    installBundledCommentaries(shipped)
+    writeFileSync(vaultFile('Philippi Romans.md'), 'my notes')
+    writeFileSync(join(shipped, 'Philippi Romans.md'), '# Romans\n## 1:1\nPaul, a servant')
+    expect(installBundledCommentaries(shipped)).toEqual([])
+    expect(readFileSync(vaultFile('Philippi Romans.md'), 'utf8')).toBe('my notes')
+  })
+
+  it('does not bring back a removed commentary when a newer version ships', () => {
+    installBundledCommentaries(shipped)
+    unlinkSync(vaultFile('Philippi Romans.md'))
+    writeFileSync(join(shipped, 'Philippi Romans.md'), '# Romans\n## 1:1\nPaul, a servant')
+    expect(installBundledCommentaries(shipped)).toEqual([])
+    expect(existsSync(vaultFile('Philippi Romans.md'))).toBe(false)
+  })
+
+  it('updates a copy installed before versions were recorded', () => {
+    installBundledCommentaries(shipped)
+    writeConfig({ bundledCommentaryHashes: null })
+    writeFileSync(join(shipped, 'Philippi Romans.md'), '# Romans\n## 1:1\nPaul, a servant')
+    expect(installBundledCommentaries(shipped)).toEqual(['Philippi Romans.md'])
   })
 
   it('does nothing when there is no shipped folder', () => {

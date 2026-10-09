@@ -1,5 +1,6 @@
 import { app } from 'electron'
-import { copyFileSync, existsSync, mkdirSync, readdirSync } from 'fs'
+import { createHash } from 'crypto'
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from 'fs'
 import { join } from 'path'
 import { commentaryVaultDir, readConfig, writeConfig } from './config'
 
@@ -23,25 +24,54 @@ export function bundledCommentaryDir(): string {
     : join(app.getAppPath(), 'resources', 'commentaries')
 }
 
+const sha256 = (path: string): string => createHash('sha256').update(readFileSync(path)).digest('hex')
+
 /** Copy each shipped commentary into the vault once, unless the vault already has a file of
  *  that name (synced from another device). Each is recorded once present, so removing one
- *  afterwards does not bring it back. Returns the file names copied. */
+ *  afterwards does not bring it back. A newer shipped version (a better conversion) replaces the
+ *  vault copy while that copy is still the one Loci put there, never one the user has changed.
+ *  Returns the file names copied or updated. */
 export function installBundledCommentaries(sourceDir: string = bundledCommentaryDir()): string[] {
   if (!existsSync(sourceDir)) return []
-  const recorded = readConfig().bundledCommentaries ?? []
+  const config = readConfig()
+  const recorded = config.bundledCommentaries ?? []
   const done = new Set(recorded)
+  const hashes = { ...(config.bundledCommentaryHashes ?? {}) }
+  const before = JSON.stringify(hashes)
   const folder = commentaryVaultDir()
   const copied: string[] = []
   for (const fileName of readdirSync(sourceDir).filter((f) => /\.(md|sqlite3)$/i.test(f))) {
-    if (done.has(fileName)) continue
+    const source = join(sourceDir, fileName)
     const dest = join(folder, fileName)
-    if (!existsSync(dest)) {
-      mkdirSync(folder, { recursive: true })
-      copyFileSync(join(sourceDir, fileName), dest)
-      copied.push(fileName)
+    const shipped = sha256(source)
+    if (!done.has(fileName)) {
+      if (!existsSync(dest)) {
+        mkdirSync(folder, { recursive: true })
+        copyFileSync(source, dest)
+        copied.push(fileName)
+      }
+      done.add(fileName)
+      // A different copy already in the vault (synced from another device, which keeps it up to
+      // date itself, or the user's own file of that name) is left alone, now and later.
+      const found = sha256(dest)
+      hashes[fileName] = found === shipped ? shipped : `kept:${found}`
     }
-    done.add(fileName)
+    if (!existsSync(dest)) continue // removed by the user: stays removed
+    const current = sha256(dest)
+    // Installed by a Loci from before versions were recorded: that copy is Loci's.
+    const installed = hashes[fileName] ?? current
+    if (shipped !== installed && current === installed) {
+      copyFileSync(source, dest)
+      if (!copied.includes(fileName)) copied.push(fileName)
+      hashes[fileName] = shipped
+    } else {
+      // Already the shipped version (another device updated it and sync brought it): Loci's.
+      hashes[fileName] = current === shipped ? shipped : installed
+    }
   }
-  if (done.size !== recorded.length) writeConfig({ bundledCommentaries: [...done] })
+  const patch: Partial<typeof config> = {}
+  if (done.size !== recorded.length) patch.bundledCommentaries = [...done]
+  if (JSON.stringify(hashes) !== before) patch.bundledCommentaryHashes = hashes
+  if (Object.keys(patch).length) writeConfig(patch)
   return copied
 }

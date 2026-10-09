@@ -30,6 +30,9 @@ export interface LociConfig {
   sermonIndexDefaults: string[] | null
   /** Commentaries shipped with Loci already copied into the vault (or found there), by file name. */
   bundledCommentaries: string[] | null
+  /** SHA-256 of the shipped version last put in the vault, by file name: a newer shipped version
+   *  replaces the vault copy only while that copy is still the one Loci put there. */
+  bundledCommentaryHashes: Record<string, string> | null
   /** Legacy single flag from before per-module tracking; true meant Lenski was installed. */
   sermonIndexDefaultsInstalled?: boolean
 }
@@ -50,7 +53,8 @@ const defaults: LociConfig = {
   apiBibleKeyEncrypted: null,
   esvKeyEncrypted: null,
   sermonIndexDefaults: null,
-  bundledCommentaries: null
+  bundledCommentaries: null,
+  bundledCommentaryHashes: null
 }
 
 function configPath(): string {
