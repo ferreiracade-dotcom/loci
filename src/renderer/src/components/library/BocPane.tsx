@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { PanelLeftClose, PanelLeftOpen, Replace, X } from 'lucide-react'
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import type { Tab } from '../../store/useStore'
 import { api } from '../../lib/api'
@@ -12,15 +12,7 @@ import { bocSectionLabel, groupByPart } from '../../lib/bocGrouping'
 /** A Book of Concord document in a center workspace pane: the collapsible document-nav drawer
  *  (mirrors BiblePane's book drawer) plus the BocReader. Navigation and source changes update
  *  *this* pane only. */
-export function BocPane({
-  tab,
-  onClose,
-  onReplace
-}: {
-  tab: Tab
-  onClose?: () => void
-  onReplace?: () => void
-}) {
+export function BocPane({ tab }: { tab: Tab }) {
   const setTabContent = useStore((s) => s.setTabContent)
   const bocSectionClicked = useStore((s) => s.bocSectionClicked)
   const addBocQuote = useStore((s) => s.addBocQuote)
@@ -185,35 +177,15 @@ export function BocPane({
           <button className="rail-btn" title="Show documents" onClick={() => toggleNav(false)}>
             <PanelLeftOpen size={16} />
           </button>
-          {onReplace && (
-            <button className="rail-btn" title="Change content" onClick={onReplace}>
-              <Replace size={16} />
-            </button>
-          )}
-          {onClose && (
-            <button className="rail-btn" title="Close pane" onClick={onClose}>
-              <X size={16} />
-            </button>
-          )}
         </div>
       ) : (
         <div className="sv-nav">
           <div className="sv-nav-top">
             <div className="sv-nav-bar">
               <span className="sv-nav-title">Confessions</span>
-              {onReplace && (
-                <button className="icon-btn" title="Change content" onClick={onReplace}>
-                  <Replace size={15} />
-                </button>
-              )}
               <button className="icon-btn" title="Hide documents" onClick={() => toggleNav(true)}>
                 <PanelLeftClose size={15} />
               </button>
-              {onClose && (
-                <button className="icon-btn" title="Close pane" onClick={onClose}>
-                  <X size={15} />
-                </button>
-              )}
             </div>
           </div>
           <div className="sv-books">{docList}</div>

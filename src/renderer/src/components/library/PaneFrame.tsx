@@ -44,8 +44,6 @@ export function PaneFrame({
   const tabs = useStore((s) => s.tabs)
   const activeProject = useStore((s) => s.activeProject)
   const addProjectItem = useStore((s) => s.addProjectItem)
-  const resetTabToPicker = useStore((s) => s.resetTabToPicker)
-  const closeTab = useStore((s) => s.closeTab)
   const [dragOver, setDragOver] = useState(false)
 
   const tab = tabs.find((t) => t.id === pane.activeTabId)
@@ -87,21 +85,11 @@ export function PaneFrame({
     body = <QuoteGroupPane key={tab.id} group={tab.quotesGroup} />
   } else if (tab?.kind === 'bible' && tab.book && tab.chapter != null) {
     body = (
-      <BiblePane
-        key={tab.id}
-        tab={tab}
-        onClose={() => closeTab(tab.id)}
-        onReplace={() => resetTabToPicker(tab.id)}
-      />
+      <BiblePane key={tab.id} tab={tab} />
     )
   } else if (tab?.kind === 'boc' && tab.documentCode && tab.sectionOrdinal != null) {
     body = (
-      <BocPane
-        key={tab.id}
-        tab={tab}
-        onClose={() => closeTab(tab.id)}
-        onReplace={() => resetTabToPicker(tab.id)}
-      />
+      <BocPane key={tab.id} tab={tab} />
     )
   } else if (tab?.kind === 'picker') {
     body = (

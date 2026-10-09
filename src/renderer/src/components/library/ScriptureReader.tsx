@@ -21,7 +21,7 @@ interface Props {
   onTranslationChange?: (id: string) => void
   /** Slim header for the split pane beside a note. */
   compact?: boolean
-  /** When provided (center-pane mode), a close button is shown in the header. */
+  /** When provided (the project picker's chapter preview), a close button is shown in the header. */
   onClose?: () => void
 }
 
@@ -248,7 +248,7 @@ export function ScriptureReader({
           <ChevronRight size={16} />
         </button>
         {onClose && (
-          <button className="icon-btn" title="Close pane" onClick={onClose}>
+          <button className="icon-btn" title="Close preview" onClick={onClose}>
             <X size={16} />
           </button>
         )}
