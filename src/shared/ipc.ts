@@ -111,8 +111,14 @@ export const Channels = {
 
   addHistory: 'history:add',
   listHistory: 'history:list',
-  clearHistory: 'history:clear'
+  clearHistory: 'history:clear',
+
+  getVaultData: 'vaultData:get',
+  setVaultData: 'vaultData:set'
 } as const
+
+/** Browser-style documents stored as JSON in the vault's app folder (they travel with it). */
+export type VaultDataKey = 'bookmarks' | 'tabGroups'
 
 export type ChannelName = (typeof Channels)[keyof typeof Channels]
 
@@ -382,6 +388,10 @@ export interface LociApi {
   /** Most recent first. */
   listHistory(limit?: number): Promise<HistoryEntry[]>
   clearHistory(): Promise<void>
+  /** A vault-stored JSON document (bookmarks, tab groups); null when never written. */
+  getVaultData(key: VaultDataKey): Promise<string | null>
+  /** Replace a vault-stored JSON document (written atomically). */
+  setVaultData(key: VaultDataKey, json: string): Promise<void>
   /** Page zoom (1 = 100%). Synchronous; applied by the preload through webFrame. */
   setZoomFactor(factor: number): void
   /** Fired when the book/shelf data changes in the background; returns unsubscribe. */

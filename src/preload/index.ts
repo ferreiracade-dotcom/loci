@@ -150,6 +150,8 @@ const api: LociApi = {
   addHistory: (entry) => ipcRenderer.invoke(Channels.addHistory, entry),
   listHistory: (limit) => ipcRenderer.invoke(Channels.listHistory, limit),
   clearHistory: () => ipcRenderer.invoke(Channels.clearHistory),
+  getVaultData: (key) => ipcRenderer.invoke(Channels.getVaultData, key),
+  setVaultData: (key, json) => ipcRenderer.invoke(Channels.setVaultData, key, json),
   setZoomFactor: (factor) => webFrame.setZoomFactor(factor)
 }
 

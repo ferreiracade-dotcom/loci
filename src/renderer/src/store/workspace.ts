@@ -18,10 +18,20 @@ export type TabKind =
   | 'fathers'
   | 'settings'
   | 'history'
+  | 'bookmarks'
   | 'dashboard'
 
 /** Page kinds: views with no location of their own. */
-export type PageKind = 'newtab' | 'library' | 'notes' | 'quotesIndex' | 'fathers' | 'settings' | 'history' | 'dashboard'
+export type PageKind =
+  | 'newtab'
+  | 'library'
+  | 'notes'
+  | 'quotesIndex'
+  | 'fathers'
+  | 'settings'
+  | 'history'
+  | 'bookmarks'
+  | 'dashboard'
 
 export const PAGE_KINDS: PageKind[] = [
   'newtab',
@@ -31,6 +41,7 @@ export const PAGE_KINDS: PageKind[] = [
   'fathers',
   'settings',
   'history',
+  'bookmarks',
   'dashboard'
 ]
 
@@ -55,6 +66,8 @@ export interface Tab {
   pinned?: boolean
   /** Two tabs sharing a splitId render side by side (Chrome split view). */
   splitId?: string
+  /** The open tab group this tab belongs to (see `tabGroups.ts`). */
+  groupId?: string
   notePath?: string
   bookId?: string
   book?: string
@@ -145,7 +158,7 @@ export function sortedTabs(tabs: Tab[]): Tab[] {
 }
 
 /** Rewrite `order` as 0..n-1 following the array's sequence. */
-function renumber(tabs: Tab[]): Tab[] {
+export function renumber(tabs: Tab[]): Tab[] {
   return tabs.map((t, i) => (t.order === i ? t : { ...t, order: i }))
 }
 
@@ -186,7 +199,7 @@ function indexAfter(sorted: Tab[], id: string): number {
 }
 
 /** First index an unpinned tab may occupy. */
-function pinnedCount(sorted: Tab[]): number {
+export function pinnedCount(sorted: Tab[]): number {
   return sorted.filter((t) => t.pinned).length
 }
 
@@ -360,7 +373,10 @@ export function setPinned(ws: Workspace, tabId: string, pinned: boolean): Worksp
   const sorted = sortedTabs(tabs)
   const updated = sorted.find((t) => t.id === tabId)!
   const rest = sorted.filter((t) => t.id !== tabId)
-  const moved: Tab = pinned ? { ...updated, pinned: true } : (({ pinned: _p, ...r }) => (void _p, r))(updated)
+  // Pinned tabs can't be in a group either.
+  const moved: Tab = pinned
+    ? (({ groupId: _g, ...r }) => (void _g, { ...r, pinned: true }))(updated)
+    : (({ pinned: _p, ...r }) => (void _p, r))(updated)
   const index = pinnedCount(rest)
   return { ...ws, tabs: renumber([...rest.slice(0, index), moved, ...rest.slice(index)]), splitRatios: ratios }
 }
@@ -422,17 +438,22 @@ export function duplicateTab(ws: Workspace, tabId: string): { ws: Workspace; tab
   const h = tabHistory(tab)
   const next = {
     ...opened,
-    tabs: opened.tabs.map((t) => (t.id === id ? { ...t, history: h.entries, historyIndex: h.index } : t))
+    tabs: opened.tabs.map((t) =>
+      t.id === id
+        ? { ...t, history: h.entries, historyIndex: h.index, ...(tab.groupId ? { groupId: tab.groupId } : {}) }
+        : t
+    )
   }
   if (!tab.pinned) return { ws: next, tabId: id }
   return { ws: setPinned(next, id, true), tabId: id }
 }
 
-/** A tab's content fields replaced by `content`, keeping id, position, pin, split and history. */
+/** A tab's content fields replaced by `content`, keeping id, position, pin, split, group and history. */
 function withContent(t: Tab, content: TabContent, history: TabLocation[], historyIndex: number): Tab {
   const base: Tab = { id: t.id, order: t.order, kind: content.kind }
   if (t.pinned) base.pinned = true
   if (t.splitId) base.splitId = t.splitId
+  if (t.groupId) base.groupId = t.groupId
   return { ...base, ...content, history, historyIndex }
 }
 

@@ -2,10 +2,10 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync, unlinkSync,
 import { dirname, join } from 'path'
 import { localVaultDir, readConfig } from './config'
 
-// Notes + highlights are mirrored between the local working copy and the Drive vault. PDFs,
+// Notes + highlights (and the `app` folder: bookmarks, saved tab groups) are mirrored between the local working copy and the Drive vault. PDFs,
 // covers and other large assets are NOT synced here — they stay on Drive (streamed) and use
 // the library's own local-first resolution.
-const SUBDIRS = ['notes', 'highlights', 'commentaries']
+const SUBDIRS = ['notes', 'highlights', 'commentaries', 'app']
 
 /** Copy newer files from src into dst (recursive). Never deletes; preserves mtime so a
  *  round-trip doesn't ping-pong. ~1s slack absorbs coarse cloud-filesystem timestamps. */

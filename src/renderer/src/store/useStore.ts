@@ -68,16 +68,53 @@ import {
 import type { ClosedTab, PageKind, Tab, TabContent, TabLocation, Workspace, QuoteGroupRef } from './workspace'
 import {
   EMPTY_BOOKMARKS,
-  parseBookmarks,
+  addBookmark as pureAddBookmark,
+  addFolder as pureAddFolder,
+  editBookmark as pureEditBookmark,
+  editFolder as pureEditFolder,
+  migrateBookmarks,
+  moveNode as pureMoveNode,
   removeBookmark as pureRemoveBookmark,
+  removeFolder as pureRemoveFolder,
   renameBookmark as pureRenameBookmark,
   serializeBookmarks,
   toggleBookmark as pureToggleBookmark
 } from './bookmarks'
-import type { Bookmark, Bookmarks } from './bookmarks'
+import type { Bookmark, BookmarkFolder, Bookmarks } from './bookmarks'
+import {
+  addTabToGroup as pureAddTabToGroup,
+  closeGroup as pureCloseGroup,
+  createGroup as pureCreateGroup,
+  deleteGroup as pureDeleteGroup,
+  moveGroup as pureMoveGroup,
+  moveTabTo as pureMoveTabTo,
+  newTabInGroup as pureNewTabInGroup,
+  openGroup as pureOpenGroup,
+  parseGroups,
+  reconcileGroups,
+  removeTabFromGroup as pureRemoveTabFromGroup,
+  serializeGroups,
+  toggleGroupCollapsed as pureToggleGroupCollapsed,
+  ungroup as pureUngroup,
+  updateGroup as pureUpdateGroup
+} from './tabGroups'
+import type { GroupColor, GroupState, TabGroup } from './tabGroups'
 import { createSequentialQueue } from '../lib/sequentialQueue'
 
-export type { ClosedTab, PageKind, Tab, TabContent, TabLocation, Workspace, QuoteGroupRef, Bookmark, Bookmarks }
+export type {
+  ClosedTab,
+  PageKind,
+  Tab,
+  TabContent,
+  TabLocation,
+  Workspace,
+  QuoteGroupRef,
+  Bookmark,
+  BookmarkFolder,
+  Bookmarks,
+  GroupColor,
+  TabGroup
+}
 export { focusedTab, splitPartner }
 
 /** Rewrite a project note's `items:` frontmatter line, preserving everything else. */
@@ -107,10 +144,50 @@ function persistWorkspace(ws: Workspace): void {
 
 const queueBookmarks = createSequentialQueue()
 
-/** Bookmarks live in session_state under one key for now (phase 3 may move them to the vault). */
-function persistBookmarks(b: Bookmarks): void {
+/** Bookmarks and their folders live in the vault (app/bookmarks.json), so they travel with it. */
+function persistBookmarks(b: Bookmarks): Promise<void> {
   const payload = serializeBookmarks(b)
-  queueBookmarks(() => api.setSession('bookmarks', payload))
+  return new Promise((resolve) => {
+    queueBookmarks(async () => {
+      try {
+        await api.setVaultData('bookmarks', payload)
+      } finally {
+        resolve()
+      }
+    })
+  })
+}
+
+const queueGroups = createSequentialQueue()
+let groupsTimer: ReturnType<typeof setTimeout> | null = null
+let lastGroupsPayload: string | null = null
+let pendingGroups: (() => string) | null = null
+
+/**
+ * Saved tab groups live in the vault (app/tab-groups.json). Open groups snapshot their tabs
+ * there too, so writes are debounced and skipped when nothing changed.
+ */
+function persistGroups(payload: () => string, immediate = false): void {
+  pendingGroups = payload
+  if (groupsTimer) clearTimeout(groupsTimer)
+  groupsTimer = null
+  const flush = (): void => {
+    groupsTimer = null
+    const make = pendingGroups
+    pendingGroups = null
+    if (!make) return
+    const json = make()
+    if (json === lastGroupsPayload) return
+    lastGroupsPayload = json
+    queueGroups(() => api.setVaultData('tabGroups', json))
+  }
+  if (immediate) flush()
+  else groupsTimer = setTimeout(flush, 600)
+}
+
+/** Write any pending group change now (the window is closing). */
+export function flushGroups(): void {
+  if (pendingGroups) persistGroups(pendingGroups, true)
 }
 
 /** Zoom steps, as Chrome's (percent). */
@@ -203,6 +280,10 @@ interface Store {
   activeProject: { path: string; items: ProjectItem[] } | null
   /** Bookmarks (☆ / Ctrl+D) and their folders. */
   bookmarks: Bookmarks
+  /** Saved tab groups, open and closed (tabs of open ones carry `groupId`). */
+  groups: TabGroup[]
+  /** Bookmarks bar visibility (Ctrl+Shift+B). */
+  showBookmarksBar: boolean
 
   init: () => Promise<void>
   enter: () => void
@@ -319,7 +400,7 @@ interface Store {
    */
   openTab: (
     content: TabContent,
-    opts?: { activate?: boolean; after?: string | null; forceNew?: boolean }
+    opts?: { activate?: boolean; after?: string | null; forceNew?: boolean; groupId?: string | null }
   ) => string
   /** Ctrl+T / "+": a New Tab page at the end of the strip. */
   newTab: (after?: string | null) => void
@@ -358,6 +439,37 @@ interface Store {
   toggleBookmark: (location: TabLocation, title: string) => Bookmark | null
   renameBookmark: (id: string, title: string) => void
   removeBookmark: (id: string) => void
+  /** Add a bookmark (no duplicate per location) into a folder or the bar. */
+  addBookmark: (location: TabLocation, title: string, parentId?: string) => Bookmark
+  addBookmarkFolder: (title: string, parentId?: string) => BookmarkFolder
+  /** Edit dialog: rename and/or move (parentId null = the bar). */
+  editBookmark: (id: string, patch: { title?: string; parentId?: string | null }) => void
+  editBookmarkFolder: (id: string, patch: { title?: string; parentId?: string | null }) => void
+  removeBookmarkFolder: (id: string) => void
+  /** Drag: move a bookmark or folder into a parent at an index. */
+  moveBookmarkNode: (id: string, parentId: string | undefined, index: number) => void
+  toggleBookmarksBar: () => void
+
+  // --- Tab groups ---
+  /** Put a tab (and its split partner) in a new group; returns the group id. */
+  createGroup: (tabId: string) => string | null
+  /** ⊞ "Create new tab group": a New Tab page in a new group. */
+  createGroupWithNewTab: () => string | null
+  addTabToGroup: (tabId: string, groupId: string) => void
+  removeTabFromGroup: (tabId: string) => void
+  updateGroup: (id: string, patch: Partial<Pick<TabGroup, 'name' | 'color' | 'pinnedToBar'>>) => void
+  toggleGroupCollapsed: (id: string) => void
+  /** Hide a group: its tabs are saved into it and leave the strip. */
+  closeGroup: (id: string) => void
+  /** Restore a closed group's tabs, or switch to an open one. */
+  openGroup: (id: string) => void
+  deleteGroup: (id: string) => void
+  ungroup: (id: string) => void
+  newTabInGroup: (id: string) => void
+  /** Drag a group's label to a strip position (index into the strip without its tabs). */
+  moveGroup: (id: string, targetIndex: number) => void
+  /** Drag a tab to a strip position and into (or out of) a group. */
+  moveTab: (tabId: string, targetIndex: number, groupId: string | null) => void
   /** Step zoom in (+1) / out (-1), or reset (0). */
   stepZoom: (dir: 1 | -1 | 0) => void
   /** Create a note and place it into a specific tab (used by the picker). */
@@ -428,27 +540,41 @@ export const useStore = create<Store>((set, get) => {
     return { tabs, activeTabId, splitRatios, closed: closedTabs }
   }
 
-  // Apply a workspace change: update state + the reflected legacy fields, persist (sequenced,
-  // so an older write can never land after a newer one), and refresh the project context.
-  const commit = (next: Workspace): void => {
+  const groupsPayload = (): string => serializeGroups(get().groups, currentWs())
+
+  // Apply a workspace change (and optionally new groups): enforce the group invariants, update
+  // state + the reflected legacy fields, persist (sequenced, so an older write can never land
+  // after a newer one), and refresh the project context.
+  const commit = (proposed: Workspace, proposedGroups: TabGroup[] = get().groups): void => {
     const prev = currentWs()
-    if (
+    const prevGroups = get().groups
+    const { ws: next, groups } = reconcileGroups(prev, proposed, proposedGroups)
+    const wsSame =
       next.tabs === prev.tabs &&
       next.activeTabId === prev.activeTabId &&
       next.splitRatios === prev.splitRatios &&
       next.closed === prev.closed
-    ) {
-      return
-    }
+    if (wsSame && groups === prevGroups) return
     set({
       tabs: next.tabs,
       activeTabId: next.activeTabId,
       splitRatios: next.splitRatios,
       closedTabs: next.closed,
+      groups,
       ...reflectWorkspace(next)
     })
-    persistWorkspace(next)
+    if (!wsSame) persistWorkspace(next)
+    persistGroups(groupsPayload, groups !== prevGroups)
     if (next.tabs !== prev.tabs) void get().refreshActiveProject()
+  }
+
+  const groupState = (): GroupState => ({ ws: currentWs(), groups: get().groups })
+  const commitGroups = (s: GroupState): void => commit(s.ws, s.groups)
+
+  const setBookmarks = (bookmarks: Bookmarks): void => {
+    if (bookmarks === get().bookmarks) return
+    set({ bookmarks })
+    void persistBookmarks(bookmarks)
   }
 
   return {
@@ -498,6 +624,8 @@ export const useStore = create<Store>((set, get) => {
     zoom: 100,
     activeProject: null,
     bookmarks: EMPTY_BOOKMARKS,
+    groups: [],
+    showBookmarksBar: true,
 
     init: async () => {
       if (!listenersBound) {
@@ -538,7 +666,21 @@ export const useStore = create<Store>((set, get) => {
       if (workspace.tabs.length === 0) {
         workspace = pureOpenTab(EMPTY_WORKSPACE, { kind: 'newtab' }).ws
       }
-      const bookmarks = parseBookmarks(await api.getSession('bookmarks'))
+      // Bookmarks and groups live in the vault; phase 2 kept bookmarks in session_state, so
+      // move those over the first time (and clear the old copy once the vault has it).
+      const { bookmarks, migrated } = migrateBookmarks(
+        await api.getVaultData('bookmarks'),
+        await api.getSession('bookmarks')
+      )
+      if (migrated) {
+        void persistBookmarks(bookmarks).then(async () => {
+          if ((await api.getVaultData('bookmarks')) !== null) await api.setSession('bookmarks', '')
+        })
+      }
+      const grouped = reconcileGroups(workspace, workspace, parseGroups(await api.getVaultData('tabGroups')))
+      workspace = grouped.ws
+      lastGroupsPayload = serializeGroups(grouped.groups, workspace)
+      const showBookmarksBar = (await api.getSession('showBookmarksBar')) !== '0'
       const zoomRaw = Number(await api.getSession('zoom'))
       const zoom = ZOOM_STEPS.includes(zoomRaw) ? zoomRaw : 100
       if (zoom !== 100) api.setZoomFactor(zoom / 100)
@@ -552,6 +694,8 @@ export const useStore = create<Store>((set, get) => {
         closedTabs: workspace.closed,
         zoom,
         bookmarks,
+        groups: grouped.groups,
+        showBookmarksBar,
         ...reflected,
         // Seed the selected translation from config so a Bible pane can render its
         // (offline-cached) text immediately, before the translation registry has resolved.
@@ -1176,7 +1320,14 @@ export const useStore = create<Store>((set, get) => {
         return current.id
       }
       const after = opts.after === undefined ? get().activeTabId : opts.after
-      const { ws: next, tabId } = pureOpenTab(currentWs(), content, { activate: opts.activate, after })
+      const { ws: opened, tabId } = pureOpenTab(currentWs(), content, { activate: opts.activate, after })
+      // A tab opened next to a grouped tab joins its group (Chrome's links and "New tab to the
+      // right"), unless the caller says otherwise.
+      const groupId =
+        opts.groupId !== undefined ? opts.groupId : (opened.tabs.find((t) => t.id === after)?.groupId ?? null)
+      const next = groupId
+        ? { ...opened, tabs: opened.tabs.map((t) => (t.id === tabId ? { ...t, groupId } : t)) }
+        : opened
       commit(next)
       return tabId
     },
@@ -1186,7 +1337,7 @@ export const useStore = create<Store>((set, get) => {
     },
 
     openPage: (kind) => {
-      if (kind === 'settings' || kind === 'history') {
+      if (kind === 'settings' || kind === 'history' || kind === 'bookmarks') {
         const existing = get().tabs.find((t) => t.kind === kind)
         if (existing) {
           get().focusTab(existing.id)
@@ -1270,24 +1421,75 @@ export const useStore = create<Store>((set, get) => {
 
     toggleBookmark: (location, title) => {
       const { bookmarks, added } = pureToggleBookmark(get().bookmarks, location, title)
-      set({ bookmarks })
-      persistBookmarks(bookmarks)
+      setBookmarks(bookmarks)
       return added
     },
 
-    renameBookmark: (id, title) => {
-      const bookmarks = pureRenameBookmark(get().bookmarks, id, title)
-      if (bookmarks === get().bookmarks) return
-      set({ bookmarks })
-      persistBookmarks(bookmarks)
+    renameBookmark: (id, title) => setBookmarks(pureRenameBookmark(get().bookmarks, id, title)),
+
+    removeBookmark: (id) => setBookmarks(pureRemoveBookmark(get().bookmarks, id)),
+
+    addBookmark: (location, title, parentId) => {
+      const { bookmarks, bookmark } = pureAddBookmark(get().bookmarks, location, title, undefined, parentId)
+      setBookmarks(bookmarks)
+      return bookmark
     },
 
-    removeBookmark: (id) => {
-      const bookmarks = pureRemoveBookmark(get().bookmarks, id)
-      if (bookmarks === get().bookmarks) return
-      set({ bookmarks })
-      persistBookmarks(bookmarks)
+    addBookmarkFolder: (title, parentId) => {
+      const { bookmarks, folder } = pureAddFolder(get().bookmarks, title, parentId)
+      setBookmarks(bookmarks)
+      return folder
     },
+
+    editBookmark: (id, patch) => setBookmarks(pureEditBookmark(get().bookmarks, id, patch)),
+
+    editBookmarkFolder: (id, patch) => setBookmarks(pureEditFolder(get().bookmarks, id, patch)),
+
+    removeBookmarkFolder: (id) => setBookmarks(pureRemoveFolder(get().bookmarks, id)),
+
+    moveBookmarkNode: (id, parentId, index) => setBookmarks(pureMoveNode(get().bookmarks, id, parentId, index)),
+
+    toggleBookmarksBar: () => {
+      const show = !get().showBookmarksBar
+      set({ showBookmarksBar: show })
+      void api.setSession('showBookmarksBar', show ? '1' : '0')
+    },
+
+    createGroup: (tabId) => {
+      const r = pureCreateGroup(groupState(), tabId)
+      if (r.groupId) commitGroups(r)
+      return r.groupId
+    },
+
+    createGroupWithNewTab: () => {
+      const tabId = get().openTab({ kind: 'newtab' }, { forceNew: true, after: null, groupId: null })
+      return get().createGroup(tabId)
+    },
+
+    addTabToGroup: (tabId, groupId) => commitGroups(pureAddTabToGroup(groupState(), tabId, groupId)),
+
+    removeTabFromGroup: (tabId) => commitGroups(pureRemoveTabFromGroup(groupState(), tabId)),
+
+    updateGroup: (id, patch) => {
+      const groups = pureUpdateGroup(get().groups, id, patch)
+      if (groups !== get().groups) commit(currentWs(), groups)
+    },
+
+    toggleGroupCollapsed: (id) => commitGroups(pureToggleGroupCollapsed(groupState(), id)),
+
+    closeGroup: (id) => commitGroups(pureCloseGroup(groupState(), id)),
+
+    openGroup: (id) => commitGroups(pureOpenGroup(groupState(), id)),
+
+    deleteGroup: (id) => commitGroups(pureDeleteGroup(groupState(), id)),
+
+    ungroup: (id) => commitGroups(pureUngroup(groupState(), id)),
+
+    newTabInGroup: (id) => commitGroups(pureNewTabInGroup(groupState(), id)),
+
+    moveGroup: (id, targetIndex) => commitGroups(pureMoveGroup(groupState(), id, targetIndex)),
+
+    moveTab: (tabId, targetIndex, groupId) => commitGroups(pureMoveTabTo(groupState(), tabId, targetIndex, groupId)),
 
     stepZoom: (dir) => {
       const cur = get().zoom
