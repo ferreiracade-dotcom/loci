@@ -169,7 +169,21 @@ export function contentKey(c: TabContent): string {
   const { kind, ...rest } = c as TabContent & Record<string, unknown>
   // Highlights are a view detail, not a location.
   delete (rest as Record<string, unknown>).highlight
-  return `${kind}:${JSON.stringify(rest, Object.keys(rest).sort())}`
+  return `${kind}:${stableJson(rest)}`
+}
+
+/** JSON with object keys sorted at every depth (a quotes tab's `quotesGroup` is nested). */
+function stableJson(v: unknown): string {
+  if (Array.isArray(v)) return `[${v.map((x) => (x === undefined ? 'null' : stableJson(x))).join(',')}]`
+  if (v && typeof v === 'object') {
+    const o = v as Record<string, unknown>
+    const parts = Object.keys(o)
+      .filter((k) => o[k] !== undefined)
+      .sort()
+      .map((k) => `${JSON.stringify(k)}:${stableJson(o[k])}`)
+    return `{${parts.join(',')}}`
+  }
+  return JSON.stringify(v) ?? 'null'
 }
 
 function newId(): string {

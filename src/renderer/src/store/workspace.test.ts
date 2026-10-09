@@ -325,6 +325,22 @@ describe('tabContent / contentKey', () => {
     expect(a).toBe(b)
     expect(a).not.toBe(c)
   })
+
+  it('tells quote groups apart (the group is a nested object)', () => {
+    const grace = contentKey({ kind: 'quotes', quotesGroup: { type: 'tag', tag: 'grace' } })
+    const luther = contentKey({ kind: 'quotes', quotesGroup: { type: 'author', author: 'Luther' } })
+    expect(grace).not.toBe(luther)
+    // Key order inside the group does not matter.
+    const s1 = contentKey({ kind: 'quotes', quotesGroup: { type: 'scripture', book: 'ROM', chapter: 3, translation: 'BSB', name: 'Romans' } })
+    const s2 = contentKey({ kind: 'quotes', quotesGroup: { name: 'Romans', translation: 'BSB', chapter: 3, book: 'ROM', type: 'scripture' } })
+    expect(s1).toBe(s2)
+  })
+
+  it('pushes history when a quotes tab moves to another group', () => {
+    const { ws, tabId } = openTab(EMPTY_WORKSPACE, { kind: 'quotes', quotesGroup: { type: 'tag', tag: 'grace' } })
+    const next = setTabContent(ws, tabId, { kind: 'quotes', quotesGroup: { type: 'author', author: 'Luther' } })
+    expect(canGoBack(next.tabs[0])).toBe(true)
+  })
 })
 
 describe('restore: validate, sanitize, round trip, legacy migration', () => {

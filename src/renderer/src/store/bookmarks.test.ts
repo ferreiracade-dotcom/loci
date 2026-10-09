@@ -43,6 +43,16 @@ describe('bookmarks', () => {
     expect(findBookmark(bookmarks, john3)).toBeUndefined()
   })
 
+  it('keeps bookmarks of different quote groups apart', () => {
+    const grace: TabLocation = { kind: 'quotes', quotesGroup: { type: 'tag', tag: 'grace' } }
+    const luther: TabLocation = { kind: 'quotes', quotesGroup: { type: 'author', author: 'Luther' } }
+    const a = toggleBookmark(EMPTY_BOOKMARKS, grace, '#grace')
+    expect(findBookmark(a.bookmarks, luther)).toBeUndefined()
+    const b = toggleBookmark(a.bookmarks, luther, 'Luther')
+    expect(b.added?.title).toBe('Luther')
+    expect(b.bookmarks.bookmarks).toHaveLength(2)
+  })
+
   it('does not add a duplicate for the same location', () => {
     const a = addBookmark(EMPTY_BOOKMARKS, ac4, 'AC IV')
     const b = addBookmark(a.bookmarks, { ...ac4 }, 'again')
