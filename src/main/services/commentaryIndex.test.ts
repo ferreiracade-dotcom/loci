@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3'
-import { mkdirSync, mkdtempSync, rmSync } from 'fs'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -100,5 +100,17 @@ describe('syncCommentaryFolder with MyBible modules', () => {
     writeModule(join(folder, 'GILL.commentaries.SQLite3'), [[470, 1, 1, 'text']], 'Gill’s Exposition')
     await syncCommentaryFolder()
     expect(commentary.listSources()[0]).toMatchObject({ displayName: 'Gill’s Exposition', author: null })
+  })
+})
+
+describe('syncCommentaryFolder with commentaries Loci ships', () => {
+  it('registers a shipped Markdown commentary under its title and author', async () => {
+    const folder = join(dataDir, 'vault', 'commentaries')
+    mkdirSync(folder, { recursive: true })
+    writeFileSync(join(folder, 'Philippi Romans.md'), '# Romans\n## 1:1-7\nThe Salutation\n## 1:1\nPaul')
+    await syncCommentaryFolder()
+    const [source] = commentary.listSources()
+    expect(source).toMatchObject({ displayName: "Philippi's Commentary on Romans", author: 'F. A. Philippi', status: 'indexed' })
+    expect(commentary.listChapter(source.id, 'ROM', 1).map((e) => e.text)).toEqual(['The Salutation', 'Paul'])
   })
 })

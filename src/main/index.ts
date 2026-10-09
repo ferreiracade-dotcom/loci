@@ -18,6 +18,7 @@ import { rebuildAllSidecars } from './services/sidecar'
 import { syncVault } from './services/vaultsync'
 import { syncCommentaryFolder } from './services/commentaryIndex'
 import { installDefaultModules } from './services/sermonIndex'
+import { installBundledCommentaries } from './services/bundledCommentaries'
 import { syncBocFolder } from './services/bocIndex'
 import { Channels } from '../shared/ipc'
 
@@ -144,13 +145,22 @@ app.whenReady().then(() => {
   // Auto-register + index any Markdown commentaries the vault carries (best-effort; new/changed
   // files only). Makes vault commentaries appear on every device without manual re-adding.
   // Deferred so the window paints before the (synchronous) index work runs.
-  // Then, once per setup, download the default SermonIndex commentaries (Lenski) into the vault
-  // and index them with a second folder pass. Offline is fine: it retries next launch.
+  // Then, once per setup, copy in the commentaries Loci ships (Philippi) and download the default
+  // SermonIndex ones (Lenski, Keil & Delitzsch), indexing them with a second folder pass.
+  // Offline is fine: a failed download retries next launch.
   setTimeout(
     () =>
       void syncCommentaryFolder()
         .catch(() => {})
-        .then(() => installDefaultModules())
+        .then(async () => {
+          let bundled: string[] = []
+          try {
+            bundled = installBundledCommentaries()
+          } catch {
+            /* best effort — a locked vault folder retries next launch */
+          }
+          return [...bundled, ...(await installDefaultModules())]
+        })
         .then((installed) => (installed.length > 0 ? syncCommentaryFolder() : undefined))
         .then(() => BrowserWindow.getAllWindows().forEach((w) => w.webContents.send(Channels.libraryChanged)))
         .catch(() => {}),

@@ -8,6 +8,10 @@ files:
   - package.json
 asarUnpack:
   - "**/*.node"
+# Commentaries Loci ships and copies into the vault on first launch (bundledCommentaries.ts).
+extraResources:
+  - from: resources/commentaries
+    to: commentaries
 win:
   target:
     - nsis

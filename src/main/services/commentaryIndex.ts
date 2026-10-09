@@ -7,6 +7,7 @@ import { commentaryVaultDir, localVaultDir } from './config'
 import { parseCommentaryMarkdown, type ExtractedChunk } from './commentaryMarkdown'
 import { parseMyBibleCommentaries, type MyBibleRow } from './mybible'
 import { catalogEntryForFile } from './sermonIndex'
+import { BUNDLED_COMMENTARIES } from './bundledCommentaries'
 import { applyCorrections, correctionsForSource, hashChunkContent } from './commentaryCorrections'
 import { validateSource } from './commentaryValidate'
 import { VERSE_COUNTS } from '../../shared/versification'
@@ -81,6 +82,8 @@ function readSourceChunks(pdfRelativePath: string): ExtractedChunk[] {
 
 /** Display name + author for a commentaries-folder file being registered for the first time. */
 export function describeCommentaryFile(fileName: string): { displayName: string; author: string | null } {
+  const shipped = BUNDLED_COMMENTARIES[fileName]
+  if (shipped) return { displayName: shipped.title, author: shipped.author }
   if (!isMyBibleModule(fileName)) return { displayName: fileName.replace(/\.md$/i, ''), author: null }
   const entry = catalogEntryForFile(fileName)
   let title: string | null = null
