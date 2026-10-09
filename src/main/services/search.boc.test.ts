@@ -21,7 +21,8 @@ afterEach(() => {
 })
 
 import * as boc from './boc'
-import { indexBocForSearch, removeBocFromSearch } from './search'
+import { indexBocForSearch, removeBocFromSearch, search } from './search'
+import { parseBocRef } from '../../shared/bookOfConcord'
 
 describe('BoC search indexing', () => {
   it('indexes BoC section text into search_fts under the confession kind', () => {
@@ -77,5 +78,19 @@ describe('BoC search indexing', () => {
       .prepare("SELECT ref FROM search_fts WHERE kind='confession'")
       .all()
     expect(remaining).toEqual([{ ref: 'SC:1' }])
+  })
+})
+
+describe('BoC search hits', () => {
+  it('returns confession hits whose ref round-trips to documentCode + section ordinal', () => {
+    const src = boc.createSource({ displayName: 'RE', author: null, mdRelativePath: 're.md' })
+    boc.replaceSections(src.id, [
+      { documentCode: 'AC', ordinal: 4, number: 'IV', label: 'Justification', part: null, text: 'Justification by faith alone' }
+    ])
+    indexBocForSearch(src.id)
+    const hits = search('justification', { kind: 'confession' })
+    expect(hits).toHaveLength(1)
+    expect(hits[0]).toMatchObject({ kind: 'confession', bookId: src.id, ref: 'AC:4', title: 'Justification' })
+    expect(parseBocRef(hits[0].ref!)).toEqual({ code: 'AC', ordinal: 4 })
   })
 })

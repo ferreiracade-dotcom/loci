@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Search as SearchIcon, DatabaseZap, ScrollText, X } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { SearchResults } from './SearchResults'
+import { parseBocRef } from '@shared/bookOfConcord'
 import type { SearchHit, SearchKind } from '@shared/ipc'
 
 const KINDS: { id: SearchKind; label: string }[] = [
@@ -9,7 +10,8 @@ const KINDS: { id: SearchKind; label: string }[] = [
   { id: 'page', label: 'Books' },
   { id: 'quote', label: 'Quotes' },
   { id: 'note', label: 'Notes' },
-  { id: 'scripture', label: 'Scripture' }
+  { id: 'scripture', label: 'Scripture' },
+  { id: 'confession', label: 'Confessions' }
 ]
 
 export function SearchView({ compact = false }: { compact?: boolean }) {
@@ -28,6 +30,7 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
   const openBookAt = useStore((s) => s.openBookAt)
   const openNote = useStore((s) => s.openNote)
   const navigateScripture = useStore((s) => s.navigateScripture)
+  const navigateBoc = useStore((s) => s.navigateBoc)
   const setActiveHit = useStore((s) => s.setActiveHit)
   const markCameFromSearch = useStore((s) => s.markCameFromSearch)
   const indexing = useStore((s) => s.indexing)
@@ -57,6 +60,10 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
     else if (h.kind === 'scripture' && h.ref) {
       const [book, chapterStr] = h.ref.split(':')
       if (book && chapterStr) navigateScripture(book, Number(chapterStr))
+    } else if (h.kind === 'confession' && h.ref) {
+      // ref is "<document code>:<section ordinal>" (formatBocRef); bookId is the BoC source id.
+      const parsed = parseBocRef(h.ref)
+      if (parsed) navigateBoc(parsed.code, parsed.ordinal, h.bookId ?? undefined)
     }
   }
 

@@ -4,12 +4,12 @@ import {
 } from './bookOfConcord'
 
 describe('BOC_DOCUMENTS', () => {
-  it('lists all 14 documents in nav order with unique codes and 1..14 sortOrder', () => {
+  it('lists all 15 documents in nav order with unique codes and 1..15 sortOrder', () => {
     expect(BOC_DOCUMENTS.map((d) => d.code)).toEqual([
-      'CR-AP','CR-NI','CR-ATH','AC','AP','SA','TR','SC','LC','FC-EP','FC-SD','CT','BEC','SVA'
+      'PREF','CR-AP','CR-NI','CR-ATH','AC','AP','SA','TR','SC','LC','FC-EP','FC-SD','CT','BEC','SVA'
     ])
-    expect(new Set(BOC_DOCUMENTS.map((d) => d.code)).size).toBe(14)
-    expect(BOC_DOCUMENTS.map((d) => d.sortOrder)).toEqual([...Array(14)].map((_, i) => i + 1))
+    expect(new Set(BOC_DOCUMENTS.map((d) => d.code)).size).toBe(15)
+    expect(BOC_DOCUMENTS.map((d) => d.sortOrder)).toEqual([...Array(15)].map((_, i) => i + 1))
   })
   it('puts the three appendices last', () => {
     expect(BOC_DOCUMENTS.slice(-3).map((d) => d.code)).toEqual(['CT','BEC','SVA'])
@@ -24,6 +24,8 @@ describe('helpers', () => {
   it('resolves a document by title, abbreviation, code, or Reader\'s Edition heading spelling', () => {
     expect(documentCodeFromName('Augsburg Confession')).toBe('AC')
     expect(documentCodeFromName('augsburg confession')).toBe('AC')
+    expect(documentCodeFromName('Preface to the Book of Concord')).toBe('PREF')
+    expect(documentCodeFromName('Preface to the Christian Book of Concord')).toBe('PREF')
     expect(documentCodeFromName('AC')).toBe('AC')
     expect(documentCodeFromName('The Augsburg Confession (1530)')).toBe('AC')
     expect(documentCodeFromName('The Creed of Athanasius')).toBe('CR-ATH')
