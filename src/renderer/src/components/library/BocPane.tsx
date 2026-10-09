@@ -134,35 +134,42 @@ export function BocPane({
                   Loading…
                 </div>
               ) : (
-                groupByPart(sections).map((g, gi) => (
-                  <div key={gi}>
-                    {g.part && (
-                      <div className="sv-testament-head" style={{ padding: '6px 8px 2px' }}>
-                        {g.part}
-                      </div>
-                    )}
-                    {g.rows.map((r) => (
-                      <button
-                        key={r.ordinal}
-                        className={`sv-book${
-                          documentCode === d.code && sectionOrdinal === r.ordinal ? ' active' : ''
-                        }`}
-                        style={{ fontSize: 12.5 }}
-                        onClick={() => navigate(d.code, r.ordinal)}
-                        onContextMenu={(e) =>
-                          onContextMenu(e, {
-                            kind: 'boc',
-                            documentCode: d.code,
-                            sectionOrdinal: r.ordinal,
-                            bocSourceId
-                          })
-                        }
-                      >
-                        {bocSectionLabel(r)}
-                      </button>
-                    ))}
-                  </div>
-                ))
+                groupByPart(sections).map((g, gi) => {
+                  const row = (r: BocSectionRow): JSX.Element => (
+                    <button
+                      key={r.ordinal}
+                      className={`sv-book${
+                        documentCode === d.code && sectionOrdinal === r.ordinal ? ' active' : ''
+                      }`}
+                      style={{ fontSize: 12.5 }}
+                      onClick={() => navigate(d.code, r.ordinal)}
+                      onContextMenu={(e) =>
+                        onContextMenu(e, {
+                          kind: 'boc',
+                          documentCode: d.code,
+                          sectionOrdinal: r.ordinal,
+                          bocSourceId
+                        })
+                      }
+                    >
+                      {bocSectionLabel(r)}
+                    </button>
+                  )
+                  return (
+                    <div key={gi}>
+                      {g.head ? (
+                        row(g.head)
+                      ) : (
+                        g.part && (
+                          <div className="sv-testament-head" style={{ padding: '6px 8px 2px' }}>
+                            {g.part}
+                          </div>
+                        )
+                      )}
+                      {g.head ? <div style={{ paddingLeft: 10 }}>{g.rows.map(row)}</div> : g.rows.map(row)}
+                    </div>
+                  )
+                })
               )}
             </div>
           )}

@@ -70,9 +70,25 @@ const SLUG_TO_CODE = {
   'catalog-of-testimonies': 'CT',
   'exhortation-to-confession': 'BEC'
 }
-// Canonical `# <Document>` headings (must resolve via documentCodeFromName — see
-// src/shared/bookOfConcord.ts), in BOC_DOCUMENTS order.
+// Canonical `# <Document>` headings — the site's menu names, mirroring BOC_DOCUMENTS' titles in
+// src/shared/bookOfConcord.ts (which must resolve them via documentCodeFromName), in its order.
 export const DOC_TITLES = {
+  'PREF': 'Preface to the Christian Book of Concord',
+  'CR': 'The Ecumenical Creeds',
+  'AC': 'The Augsburg Confession',
+  'AP': 'The Apology of the Augsburg Confession',
+  'SA': 'The Smalcald Articles',
+  'TR': 'The Power and Primacy of the Pope',
+  'SC': 'The Small Catechism',
+  'LC': 'The Large Catechism',
+  'FC-EP': 'The Formula of Concord - Epitome',
+  'FC-SD': 'The Formula of Concord - Solid Declaration',
+  'CT': 'Appendix A: Catalog of Testimonies',
+  'BEC': 'Appendix B: A Brief Exhortation to Confession',
+  'SVA': 'Appendix C: Saxon Visitation Articles'
+}
+// Headings the EPUB converter (and this tool's first runs) wrote, still accepted on input.
+const OLD_TITLES = {
   'PREF': 'Preface to the Book of Concord',
   'CR': 'Ecumenical Creeds',
   'AC': 'Augsburg Confession',
@@ -147,12 +163,24 @@ export function parseNav(html) {
     for (const c of node.children) {
       // depth 0 = document entries, depth 1 = a document's own pages (no part); deeper pages
       // take their enclosing group's label as the part.
-      if (c.href) out.push({ path: c.href, code: codeForPath(c.href), part: depth >= 2 ? node.label : null })
+      if (c.href) out.push({ path: c.href, code: codeForPath(c.href), label: c.label, part: depth >= 2 ? node.label : null })
       walk(c, depth + 1)
     }
   }
   walk(root, 0)
   return out.filter((e) => e.code)
+}
+
+// Menu misspellings corrected rather than copied.
+const SITE_TYPOS = { 'Foreward': 'Foreword' }
+
+/** A menu label → section number/label: "Article XII (V). Repentance" splits into
+ *  { number: 'XII (V)', label: 'Repentance' }; anything else ("I. Original Sin", "Article I",
+ *  "Preface") is kept whole as the label, exactly as the menu shows it. */
+export function splitNavLabel(navLabel) {
+  const m = /^Articles? ([^.]+)\. (.+)$/.exec(navLabel)
+  if (m) return { number: m[1], label: m[2] }
+  return { number: null, label: SITE_TYPOS[navLabel] ?? navLabel }
 }
 
 /** One site page → { number, label, text }. */
@@ -177,7 +205,9 @@ export function parsePage(html) {
   const paras = []
   for (const m of body.matchAll(/<(h[2-6]|p)\b[^>]*>([\s\S]*?)<\/\1>/g)) {
     const t = inlineText(m[2])
-    if (t) paras.push(t)
+    // In-page headings stay headings: h2 → `### `, h3+ → `#### ` lines, which parseBocMarkdown
+    // keeps as section body and BocReader renders as sub-headings.
+    if (t) paras.push(m[1] === 'p' ? t : `${m[1] === 'h2' ? '###' : '####'} ${t}`)
   }
   return { number, label, text: paras.join('\n\n') }
 }
@@ -185,7 +215,9 @@ export function parsePage(html) {
 // --- EPUB Markdown (same heading contract as src/main/services/bocMarkdown.ts) ----------------
 export function parseContractMd(md) {
   const docs = new Map() // code → sections[]
-  const codeByTitle = new Map(Object.entries(DOC_TITLES).map(([c, t]) => [t.toLowerCase(), c]))
+  const codeByTitle = new Map(
+    [...Object.entries(OLD_TITLES), ...Object.entries(DOC_TITLES)].map(([c, t]) => [t.toLowerCase(), c])
+  )
   let code = null
   let offset = 0 // ordinal shift for a legacy per-creed document folded into CR
   let cur = null
@@ -283,7 +315,7 @@ export function restructureSva(oldSecs) {
     if (!a.label.toLowerCase().includes(articleKey) || !anti) throw new Error(`SVA: can't pair article ${a.number} "${a.label}"`)
     map.set(a.ordinal, i + 1)
     map.set(anti.ordinal, i + 1)
-    const antiHeading = anti.label.replace(/:$/, '').replace(/\s+/g, ' ')
+    const antiHeading = '### ' + anti.label.replace(/:$/, '').replace(/\s+/g, ' ')
     return { ordinal: i + 1, number: a.number, label: a.label, part: null, text: [fixMarkers(a.text), antiHeading, fixMarkers(anti.text)].filter(Boolean).join('\n\n') }
   })
   return { sections, map }
@@ -319,7 +351,8 @@ async function main() {
     const page = parsePage(await fetchPage(entry.path))
     if (!site.has(entry.code)) site.set(entry.code, [])
     const secs = site.get(entry.code)
-    secs.push({ ordinal: secs.length + 1, number: page.number, label: page.label ?? entry.path, part: entry.part, text: page.text })
+    const { number, label } = splitNavLabel(entry.label ?? page.label ?? entry.path)
+    secs.push({ ordinal: secs.length + 1, number, label, part: entry.part, text: page.text })
   }
 
   // 2. EPUB → site ordinal maps.

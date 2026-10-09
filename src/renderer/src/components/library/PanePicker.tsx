@@ -678,33 +678,40 @@ export function PanePicker({
                         <span className="pp-item-title">{d.title}</span>
                       </button>
                       {open &&
-                        groupByPart(docSections).map((g, gi) => (
-                          <div key={gi}>
-                            {g.part && (
-                              <div className="sv-testament-head" style={{ padding: '6px 8px 2px' }}>
-                                {g.part}
-                              </div>
-                            )}
-                            {g.rows.map((r) => (
-                              <button
-                                key={r.ordinal}
-                                className="pp-item pp-boc-section"
-                                title={`Open ${d.abbreviation} ${bocSectionLabel(r)}`}
-                                onClick={() => placeBoc(d.code, r.ordinal)}
-                                onContextMenu={(e) =>
-                                  onContextMenu(e, {
-                                    kind: 'boc',
-                                    documentCode: d.code,
-                                    sectionOrdinal: r.ordinal,
-                                    bocSourceId
-                                  })
-                                }
-                              >
-                                <span className="pp-item-title">{bocSectionLabel(r)}</span>
-                              </button>
-                            ))}
-                          </div>
-                        ))}
+                        groupByPart(docSections).map((g, gi) => {
+                          const row = (r: BocSectionRow): JSX.Element => (
+                            <button
+                              key={r.ordinal}
+                              className="pp-item pp-boc-section"
+                              title={`Open ${d.abbreviation} ${bocSectionLabel(r)}`}
+                              onClick={() => placeBoc(d.code, r.ordinal)}
+                              onContextMenu={(e) =>
+                                onContextMenu(e, {
+                                  kind: 'boc',
+                                  documentCode: d.code,
+                                  sectionOrdinal: r.ordinal,
+                                  bocSourceId
+                                })
+                              }
+                            >
+                              <span className="pp-item-title">{bocSectionLabel(r)}</span>
+                            </button>
+                          )
+                          return (
+                            <div key={gi}>
+                              {g.head ? (
+                                row(g.head)
+                              ) : (
+                                g.part && (
+                                  <div className="sv-testament-head" style={{ padding: '6px 8px 2px' }}>
+                                    {g.part}
+                                  </div>
+                                )
+                              )}
+                              {g.head ? <div style={{ paddingLeft: 10 }}>{g.rows.map(row)}</div> : g.rows.map(row)}
+                            </div>
+                          )
+                        })}
                     </div>
                   )
                 })

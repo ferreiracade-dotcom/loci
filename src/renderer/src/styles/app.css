@@ -4603,6 +4603,22 @@ select.field {
   user-select: text;
   -webkit-user-select: text;
 }
+/* A Confessions page's own in-text headings ("Affirmative Statements", "The First Commandment"). */
+.sr-subhead {
+  display: block;
+  margin: 1.1em 0 0.35em;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  color: var(--accent);
+}
+.sr-subhead-3 {
+  font-size: 15px;
+  letter-spacing: 0.02em;
+}
+.sr-subhead-4 {
+  font-size: 14px;
+  color: var(--text);
+}
 .sv-num {
   font-family: var(--font-ui);
   font-size: 0.62em;

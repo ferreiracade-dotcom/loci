@@ -21,7 +21,7 @@ describe('BOC_DOCUMENTS', () => {
 
 describe('helpers', () => {
   it('looks up a document definition by code', () => {
-    expect(bocDocument('AC')?.title).toBe('Augsburg Confession')
+    expect(bocDocument('AC')?.title).toBe('The Augsburg Confession')
     expect(bocDocument('ZZ')).toBeUndefined()
   })
   it('resolves a document by title, abbreviation, code, or Reader\'s Edition heading spelling', () => {

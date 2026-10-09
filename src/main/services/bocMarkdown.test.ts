@@ -29,6 +29,11 @@ describe('parseBocMarkdown', () => {
     expect(s.map((x) => x.documentCode)).toEqual(['CR', 'AC'])
   })
 
+  it('keeps a ### sub-heading inside a section as body text', () => {
+    const s = parseBocMarkdown('# The Augsburg Confession\n## 1 |  | Preface | \nA\n### Sub\nB\n## 2 | I | God | \nC')
+    expect(s.map((x) => x.text)).toEqual(['A\n### Sub\nB', 'C'])
+  })
+
   it('drops content before any document and ignores non-contract headings', () => {
     expect(parseBocMarkdown('preamble\n## 4 | IV | Justification | \nno document set')).toEqual([])
     const s = parseBocMarkdown('# Augsburg Confession\n## 1 | I | God | \nA\n## Random Title\nstray\n## 2 | II | Original Sin | \nB')

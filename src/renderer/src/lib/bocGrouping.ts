@@ -24,14 +24,20 @@ export function bocSectionRangeLabel(m: { sectionStart: number; sectionEnd: numb
   return m.sectionStart === m.sectionEnd ? `§${m.sectionStart}` : `§${m.sectionStart}–${m.sectionEnd}`
 }
 
-/** A section's list-row label: "IV. Justification", or just the label when the section is
- *  unnumbered (prefaces, appendices). Shared by BocPane's nav rail and PanePicker's browser. */
+/** A section's list-row label, as bookofconcord.cph.org's menu writes it: "Article IV.
+ *  Justification" ("Articles VII and VIII (IV). The Church"), or just the label when the
+ *  section is unnumbered ("Preface", "I. Original Sin"). Shared by every Confessions list. */
 export function bocSectionLabel(r: { number: string | null; label: string }): string {
-  return r.number ? `${r.number}. ${r.label}` : r.label
+  if (!r.number) return r.label
+  return `${/ and /.test(r.number) ? 'Articles' : 'Article'} ${r.number}. ${r.label}`
 }
 
 export interface PartGroup {
   part: string | null
+  /** The section that IS this part's page (e.g. AC "A Review of the Various Abuses…", LC
+   *  "Part 2: The Apostles' Creed"): shown as the group's clickable heading, with `rows` nested
+   *  under it, as the site's menu nests them — instead of once as a row and again as a header. */
+  head?: BocSectionRow
   rows: BocSectionRow[]
 }
 
@@ -43,8 +49,17 @@ export function groupByPart(rows: BocSectionRow[]): PartGroup[] {
   const groups: PartGroup[] = []
   for (const r of rows) {
     const last = groups[groups.length - 1]
-    if (last && last.part === r.part) last.rows.push(r)
-    else groups.push({ part: r.part, rows: [r] })
+    if (last && last.part === r.part) {
+      last.rows.push(r)
+      continue
+    }
+    // A part named after the section just before it: that section is the part's own page.
+    const prev = last?.rows[last.rows.length - 1]
+    if (r.part && prev && prev.part !== r.part && prev.label === r.part) {
+      last.rows.pop()
+      if (last.rows.length === 0 && !last.head) groups.pop()
+      groups.push({ part: r.part, head: prev, rows: [r] })
+    } else groups.push({ part: r.part, rows: [r] })
   }
   return groups
 }

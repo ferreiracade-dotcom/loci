@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { groupBocMatchesBySource, bocSectionRangeLabel, bocSectionLabel } from './bocGrouping'
+import { groupBocMatchesBySource, bocSectionRangeLabel, bocSectionLabel, groupByPart } from './bocGrouping'
 
 const m = (over: Partial<any> = {}): any => ({
   excerptId: 'e', sourceId: 's1', sourceDisplayName: 'A', sourceAuthor: null,
@@ -20,8 +20,24 @@ describe('bocGrouping', () => {
     expect(bocSectionRangeLabel({ sectionStart: 4, sectionEnd: 4 })).toBe('§4')
     expect(bocSectionRangeLabel({ sectionStart: 4, sectionEnd: 6 })).toBe('§4–6')
   })
-  it('formats a section list label, falling back to the bare label when unnumbered', () => {
-    expect(bocSectionLabel({ number: 'IV', label: 'Justification' })).toBe('IV. Justification')
+  it('formats a section list label as the site menu does, falling back to the bare label when unnumbered', () => {
+    expect(bocSectionLabel({ number: 'IV', label: 'Justification' })).toBe('Article IV. Justification')
+    expect(bocSectionLabel({ number: 'VII and VIII (IV)', label: 'The Church' })).toBe('Articles VII and VIII (IV). The Church')
     expect(bocSectionLabel({ number: null, label: 'Preface' })).toBe('Preface')
+  })
+  it('makes a section that is its own part\'s page the group head, not a separate row', () => {
+    const row = (ordinal: number, label: string, part: string | null): any => ({ ordinal, number: null, label, part })
+    const groups = groupByPart([
+      row(1, 'Preface', null),
+      row(2, 'A Review of the Abuses', null),
+      row(3, 'Both Kinds', 'A Review of the Abuses'),
+      row(4, 'Conclusion', 'A Review of the Abuses'),
+      row(5, 'The First Commandment', 'Part 1')
+    ])
+    expect(groups.map((g) => [g.part, g.head?.ordinal ?? null, g.rows.map((r) => r.ordinal)])).toEqual([
+      [null, null, [1]],
+      ['A Review of the Abuses', 2, [3, 4]],
+      ['Part 1', null, [5]]
+    ])
   })
 })

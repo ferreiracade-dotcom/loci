@@ -212,7 +212,8 @@ export function indexBocForSearch(sourceId: string): void {
     )
     for (const r of rows) {
       if (!r.text.trim()) continue
-      ins.run(r.text, sourceId, formatBocRef(r.documentCode, r.ordinal), r.label)
+      // Drop the `###` sub-heading markers so snippets show plain text.
+      ins.run(r.text.replace(/^#{3,6} /gm, ''), sourceId, formatBocRef(r.documentCode, r.ordinal), r.label)
     }
   })()
 }
