@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useStore } from '../../store/useStore'
 import { BOOKMARK_TAB_EVENT, FOCUS_OMNIBOX_EVENT } from './Omnibox'
+import { leaveToEditor } from './leaveToEditor'
 
 /**
  * Chrome's tab keyboard shortcuts. Registered in the capture phase on window so they win over
@@ -10,6 +11,7 @@ import { BOOKMARK_TAB_EVENT, FOCUS_OMNIBOX_EVENT } from './Omnibox'
 export function useTabShortcuts({ onQuickCapture }: { onQuickCapture: () => void }): void {
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
+      if (leaveToEditor(e)) return
       const s = useStore.getState()
       const ctrl = e.ctrlKey || e.metaKey
       const key = e.key.toLowerCase()
@@ -31,9 +33,10 @@ export function useTabShortcuts({ onQuickCapture }: { onQuickCapture: () => void
       else if (ctrl && !e.shiftKey && !e.altKey && key === 'l') window.dispatchEvent(new Event(FOCUS_OMNIBOX_EVENT))
       else if (e.altKey && !ctrl && !e.shiftKey && key === 'd') window.dispatchEvent(new Event(FOCUS_OMNIBOX_EVENT))
       else if (ctrl && !e.shiftKey && !e.altKey && key === 'd') window.dispatchEvent(new Event(BOOKMARK_TAB_EVENT))
-      else if (ctrl && (key === '=' || key === '+')) s.stepZoom(1)
-      else if (ctrl && (key === '-' || key === '_')) s.stepZoom(-1)
-      else if (ctrl && key === '0') s.stepZoom(0)
+      // Not with Alt: Ctrl+Alt+0 is the note editor's "paragraph".
+      else if (ctrl && !e.altKey && (key === '=' || key === '+')) s.stepZoom(1)
+      else if (ctrl && !e.altKey && (key === '-' || key === '_')) s.stepZoom(-1)
+      else if (ctrl && !e.altKey && key === '0') s.stepZoom(0)
       else if (e.key === 'F5' || (ctrl && !e.shiftKey && key === 'r')) {
         if (s.activeTabId) s.reloadTab(s.activeTabId)
       } else handled = false
