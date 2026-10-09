@@ -9,8 +9,8 @@ import { commentaryVaultDir, readConfig, writeConfig } from './config'
 // Testament, converted from the 1895-98 scans with its verse headings checked against the KJV/RV;
 // Leupold on Genesis, from CCEL's public-domain edition; Bengel's Gnomon, from SermonIndex's module
 // with the spaces its Greek had lost restored; Gerhard on 1 and 2 Peter and on Matthew, and
-// Calov's Biblia Illustrata, from The Faith Received's Latin and its machine translation, by
-// tools/tfr-to-md.py and tools/tfr-books-to-md.py). They live in resources/commentaries
+// Calov's Biblia Illustrata on both Testaments, from The Faith Received's Latin and its machine
+// translation, by tools/tfr-to-md.py and tools/tfr-books-to-md.py). They live in resources/commentaries
 // in the repository and in the installer's resources; on first launch each is copied into the
 // vault's commentaries folder, where the folder sync indexes it and vault sync carries it to
 // every device, like any other commentary file.
@@ -26,7 +26,12 @@ export const BUNDLED_COMMENTARIES: Record<string, { title: string; author: strin
   'Gerhard Matthew.md': { title: 'Posthumous Annotations on the Gospel of Matthew', author: 'Johann Gerhard' },
   'Calov Gospels and Acts.md': { title: 'Biblia Illustrata: Gospels and Acts', author: 'Abraham Calov' },
   'Calov Romans to 2 Thessalonians.md': { title: 'Biblia Illustrata: Romans to 2 Thessalonians', author: 'Abraham Calov' },
-  'Calov 1 Timothy to Revelation.md': { title: 'Biblia Illustrata: 1 Timothy to Revelation', author: 'Abraham Calov' }
+  'Calov 1 Timothy to Revelation.md': { title: 'Biblia Illustrata: 1 Timothy to Revelation', author: 'Abraham Calov' },
+  'Calov Genesis to Song of Songs.md': {
+    title: 'Biblia Illustrata: Genesis to Song of Songs, with Lamentations',
+    author: 'Abraham Calov'
+  },
+  'Calov Isaiah to Malachi.md': { title: 'Biblia Illustrata: Isaiah to Malachi', author: 'Abraham Calov' }
 }
 
 /** Where the shipped commentary files are: the installer's resources, or the repository. */
