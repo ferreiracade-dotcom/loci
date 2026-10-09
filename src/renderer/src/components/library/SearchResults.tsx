@@ -72,18 +72,15 @@ interface Group {
 
 export function SearchResults({
   onHit,
-  results: resultsProp,
+  results,
   activeHit: activeHitProp
 }: {
   onHit: (h: SearchHit, index: number) => void
-  /** Defaults to the global search store — pass explicit results for a local, scoped search. */
-  results?: SearchHit[]
+  /** The hits to list (each search view passes its own). */
+  results: SearchHit[]
   activeHit?: number | null
 }) {
-  const storeResults = useStore((s) => s.searchResults)
-  const storeActiveHit = useStore((s) => s.activeHit)
-  const results = resultsProp ?? storeResults
-  const activeHit = resultsProp ? (activeHitProp ?? null) : storeActiveHit
+  const activeHit = activeHitProp ?? null
   const books = useStore((s) => s.books)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const activeChildRef = useRef<HTMLButtonElement | null>(null)

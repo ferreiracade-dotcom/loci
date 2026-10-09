@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Search as SearchIcon, DatabaseZap, ScrollText, X } from 'lucide-react'
-import { useStore } from '../../store/useStore'
+import { searchKey, useStore } from '../../store/useStore'
 import { SearchResults } from './SearchResults'
 import type { SearchHit, SearchKind } from '@shared/ipc'
 
@@ -12,14 +12,19 @@ const KINDS: { id: SearchKind; label: string }[] = [
   { id: 'scripture', label: 'Scripture' }
 ]
 
+const NO_HITS: SearchHit[] = []
+
 /** Full Loci search (books, quotes, notes, Scripture) for `query`, with scope filters. */
 export function SearchView({ query, onQueryChange }: { query: string; onQueryChange: (q: string) => void }) {
   const shelves = useStore((s) => s.shelves)
   const tags = useStore((s) => s.tags)
-  const results = useStore((s) => s.searchResults)
   const kind = useStore((s) => s.searchKind)
   const shelfId = useStore((s) => s.searchShelf)
   const tag = useStore((s) => s.searchTag)
+  // This view's own results (another Search tab may be showing a different query).
+  const key = searchKey(query, { kind, shelfId: shelfId || null, tag: tag || null })
+  const entry = useStore((s) => s.searches[key])
+  const results = entry?.results ?? NO_HITS
   const setSearchKind = useStore((s) => s.setSearchKind)
   const setSearchShelf = useStore((s) => s.setSearchShelf)
   const setSearchTag = useStore((s) => s.setSearchTag)
@@ -48,7 +53,7 @@ export function SearchView({ query, onQueryChange }: { query: string; onQueryCha
   }, [query, kind, shelfId, tag, runSearch])
 
   const onHit = (h: SearchHit, index: number): void => {
-    setActiveHit(index)
+    setActiveHit(key, index, query)
     if ((h.kind === 'page' || h.kind === 'quote') && h.bookId) openBookAt(h.bookId, h.page ?? 1)
     else if (h.kind === 'note' && h.ref) openNote(h.ref)
     else if (h.kind === 'scripture' && h.ref) {
@@ -160,7 +165,7 @@ export function SearchView({ query, onQueryChange }: { query: string; onQueryCha
           background).
         </div>
       ) : (
-        <SearchResults onHit={onHit} />
+        <SearchResults results={results} activeHit={entry?.activeHit ?? null} onHit={onHit} />
       )}
     </div>
   )

@@ -237,15 +237,17 @@ interface Store {
   indexing: { done: number; total: number } | null
   /** Progress of a whole-Bible (BSB) indexing pass, or null when idle. */
   bibleIndexing: { done: number; total: number } | null
-  searchResults: SearchHit[]
+  /**
+   * Search results per query and scope (see `searchKey`), so two Search tabs open at once (say,
+   * side by side in a split) each show their own results.
+   */
+  searches: Record<string, SearchEntry>
   /** Folded query tokens, used to flash-highlight matches when jumping to a page. */
   searchTerms: string[]
   /** Persisted search inputs so the bar survives moving between books. */
   searchKind: SearchKind
   searchShelf: string
   searchTag: string
-  /** Index of the result the user last opened, highlighted in the results panel. */
-  activeHit: number | null
 
   // --- Scripture (Phase 8) ---
   scriptureTranslations: ScriptureTranslation[]
@@ -366,7 +368,8 @@ interface Store {
   setSearchKind: (k: SearchKind) => void
   setSearchShelf: (s: string) => void
   setSearchTag: (t: string) => void
-  setActiveHit: (i: number | null) => void
+  /** Mark the result the user opened in the search `key` (highlighted in its results list). */
+  setActiveHit: (key: string, i: number | null, query?: string) => void
 
   loadScripture: () => Promise<void>
   setScriptureTranslation: (id: string) => void
@@ -505,6 +508,40 @@ interface Store {
   removeProjectItem: (item: ProjectItem) => Promise<void>
 }
 
+/** One search's results, and the hit last opened from them. */
+export interface SearchEntry {
+  results: SearchHit[]
+  activeHit: number | null
+}
+
+/** How many searches' results are kept (the oldest are dropped first). */
+const MAX_SEARCHES = 20
+
+/** The key a search's results are kept under: its query and scope. */
+export function searchKey(query: string, scope: SearchScope): string {
+  return JSON.stringify([
+    query.trim(),
+    scope.kind ?? 'all',
+    scope.shelfId ?? '',
+    scope.tag ?? '',
+    scope.bookId ?? '',
+    scope.items ?? null
+  ])
+}
+
+/** `searches` with `key` set (moved to the newest position), capped at MAX_SEARCHES. */
+export function withSearch(
+  searches: Record<string, SearchEntry>,
+  key: string,
+  entry: SearchEntry
+): Record<string, SearchEntry> {
+  const next: Record<string, SearchEntry> = {}
+  const keys = Object.keys(searches).filter((k) => k !== key)
+  for (const k of keys.slice(Math.max(0, keys.length - (MAX_SEARCHES - 1)))) next[k] = searches[k]
+  next[key] = entry
+  return next
+}
+
 export function foldTokens(query: string): string[] {
   return (
     query
@@ -622,12 +659,11 @@ export const useStore = create<Store>((set, get) => {
     pendingPage: null,
     indexing: null,
     bibleIndexing: null,
-    searchResults: [],
+    searches: {},
     searchTerms: [],
     searchKind: 'all',
     searchShelf: '',
     searchTag: '',
-    activeHit: null,
     scriptureTranslations: [],
     scriptureTranslation: '',
     scripturePassage: null,
@@ -1095,20 +1131,33 @@ export const useStore = create<Store>((set, get) => {
     },
 
     runSearch: async (query, scope) => {
+      const key = searchKey(query, scope)
       if (!query.trim()) {
-        set({ searchResults: [], searchTerms: [], activeHit: null })
+        set((s) => ({ searches: withSearch(s.searches, key, { results: [], activeHit: null }) }))
         return
       }
       const results = await api.search(query, scope)
-      set({ searchResults: results, searchTerms: foldTokens(query), activeHit: null })
+      // Keyed by query and scope: a slower search for another tab can't replace these results.
+      set((s) => ({
+        searches: withSearch(s.searches, key, { results, activeHit: null }),
+        searchTerms: foldTokens(query)
+      }))
     },
 
-    clearSearch: () => set({ searchResults: [], searchTerms: [], activeHit: null }),
+    clearSearch: () => set({ searches: {}, searchTerms: [] }),
 
     setSearchKind: (k) => set({ searchKind: k }),
     setSearchShelf: (s) => set({ searchShelf: s }),
     setSearchTag: (t) => set({ searchTag: t }),
-    setActiveHit: (i) => set({ activeHit: i }),
+    setActiveHit: (key, i, query) =>
+      set((s) => {
+        const entry = s.searches[key]
+        if (!entry) return {}
+        return {
+          searches: { ...s.searches, [key]: { ...entry, activeHit: i } },
+          ...(query !== undefined ? { searchTerms: foldTokens(query) } : {})
+        }
+      }),
 
     loadScripture: async () => {
       const translations = await api.listScriptureTranslations()
