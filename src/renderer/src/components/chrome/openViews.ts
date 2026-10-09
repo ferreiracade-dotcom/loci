@@ -5,48 +5,6 @@ import { bocSectionMatches } from '@shared/bookOfConcord'
 import { parseReference } from '@shared/scriptureRef'
 import type { OmniAction } from './omnibox'
 
-/**
- * Open the Bible in a new tab at the last-read chapter (a bookmark-style open: always a new
- * tab, or the focused New Tab page).
- */
-export async function openBibleTab(): Promise<void> {
-  const s = useStore.getState()
-  let p = s.scripturePassage
-  if (!p) {
-    try {
-      const last = await api.getSession('lastScripture')
-      const parsed = last ? (JSON.parse(last) as { book?: string; chapter?: number }) : null
-      if (parsed?.book && parsed.chapter) p = { book: parsed.book, chapter: parsed.chapter, highlight: [] }
-    } catch {
-      /* ignore malformed session value */
-    }
-  }
-  p ??= { book: 'JHN', chapter: 1, highlight: [] }
-  useStore.getState().openTab({
-    kind: 'bible',
-    book: p.book,
-    chapter: p.chapter,
-    highlight: [],
-    translation: useStore.getState().scriptureTranslation
-  })
-  if (useStore.getState().scriptureTranslations.length === 0) void useStore.getState().loadScripture()
-}
-
-/** Open the Confessions in a new tab at the last-read section (AC 1 by default). */
-export async function openConfessionsTab(): Promise<void> {
-  let doc = { documentCode: 'AC', ordinal: 1 }
-  try {
-    const last = await api.getSession('lastBoc')
-    if (last) {
-      const p = JSON.parse(last) as { documentCode?: string; ordinal?: number }
-      if (p.documentCode && p.ordinal != null) doc = { documentCode: p.documentCode, ordinal: p.ordinal }
-    }
-  } catch {
-    /* ignore malformed session value */
-  }
-  useStore.getState().openTab({ kind: 'boc', documentCode: doc.documentCode, sectionOrdinal: doc.ordinal })
-}
-
 /** Where the Bible was last read (JHN 1 by default), as tab content. */
 export async function lastBibleContent(): Promise<TabContent> {
   const s = useStore.getState()
@@ -132,8 +90,7 @@ export async function runOmniAction(action: OmniAction, newTab: boolean): Promis
       navigateOrOpen(await resolveBocTarget(action.code, action.article), newTab)
       return
     case 'search':
-      s.setSearchQuery(action.query)
-      navigateOrOpen({ kind: 'newtab' }, newTab)
+      navigateOrOpen({ kind: 'search', query: action.query }, newTab)
       return
   }
 }
@@ -186,13 +143,14 @@ export async function openLinkInBackground(name: string): Promise<void> {
 }
 
 /**
- * A bookmark-style open: always a new tab (the owner's choice, see the spec's open question 1),
- * in the foreground at the end of the strip, or in the background next to the focused tab.
+ * A bookmark-style open: a new tab (the owner's choice, see the spec's open question 1), in the
+ * foreground at the end of the strip, or in the background next to the focused tab. The one
+ * exception: a foreground open while the focused tab is an empty New Tab page fills that page.
  */
 export function openInNewTab(content: TabContent, background: boolean): void {
   const s = useStore.getState()
   if (background) openInBackground(content)
-  else s.openTab(content, { forceNew: true, after: null, groupId: null })
+  else if (!s.fillEmptyNewTab(content)) s.openTab(content, { forceNew: true, after: null, groupId: null })
   if (content.kind === 'bible' && s.scriptureTranslations.length === 0) void s.loadScripture()
 }
 
@@ -204,4 +162,9 @@ export async function fixedViewContent(view: FixedView): Promise<TabContent> {
   if (view === 'bible') return lastBibleContent()
   if (view === 'confessions') return lastBocContent()
   return { kind: view }
+}
+
+/** Open a fixed view (bookmarks bar, ⋮ menu): see `openInNewTab` for where it lands. */
+export async function openFixedView(view: FixedView, background = false): Promise<void> {
+  openInNewTab(await fixedViewContent(view), background)
 }

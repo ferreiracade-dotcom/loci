@@ -1,4 +1,4 @@
-import { contentKey } from './workspace'
+import { contentKey, migrateLocation } from './workspace'
 import type { TabLocation } from './workspace'
 
 /**
@@ -305,7 +305,7 @@ export function parseBookmarks(json: string | null): Bookmarks {
             typeof m.title === 'string' &&
             !!m.location &&
             typeof m.location.kind === 'string'
-        )
+        ).map((m) => ({ ...m, location: migrateLocation(m.location) }))
       : []
     const folders = Array.isArray(raw.folders)
       ? raw.folders.filter((f): f is BookmarkFolder => !!f && typeof f.id === 'string' && typeof f.title === 'string')

@@ -1,4 +1,4 @@
-import { openTab, pinnedCount, renumber, sortedTabs, stripUnits, tabHistory } from './workspace'
+import { migrateTab, openTab, pinnedCount, renumber, sortedTabs, stripUnits, tabHistory } from './workspace'
 import type { Tab, Workspace } from './workspace'
 
 /** Chrome's nine tab group colours (dark-theme shades). */
@@ -476,7 +476,9 @@ export function parseGroups(json: string | null): TabGroup[] {
       if (!g || typeof g.id !== 'string' || seen.has(g.id)) continue
       seen.add(g.id)
       const savedTabs = Array.isArray(g.savedTabs)
-        ? g.savedTabs.filter((t): t is Tab => !!t && typeof t.id === 'string' && typeof t.kind === 'string')
+        ? g.savedTabs
+            .filter((t): t is Tab => !!t && typeof t.id === 'string' && typeof t.kind === 'string')
+            .map((t) => migrateTab(t))
         : []
       out.push({
         id: g.id,

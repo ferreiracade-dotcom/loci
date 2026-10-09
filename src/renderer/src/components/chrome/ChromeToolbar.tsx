@@ -10,7 +10,6 @@ import {
   Headphones,
   History,
   Landmark,
-  LayoutDashboard,
   Library,
   Minus,
   NotebookPen,
@@ -33,7 +32,7 @@ import { PopupMenu } from './PopupMenu'
 import type { MenuEntry } from './PopupMenu'
 import { locationTab, tabDef, tabLocationText, tabTitle } from './tabRegistry'
 import { BOOKMARK_TAB_EVENT, Omnibox } from './Omnibox'
-import { isBackgroundClick, openBibleTab, openConfessionsTab, openInBackground } from './openViews'
+import { isBackgroundClick, openFixedView, openInBackground } from './openViews'
 import { SCRIPTURE_AUDIO_EVENT } from '../library/ScriptureAudio'
 import { GROUP_COLORS, groupName } from '../../store/tabGroups'
 import { requestGroupEditor } from './TabGroupMenus'
@@ -236,12 +235,12 @@ function AppMenu({ x, y, onClose }: { x: number; y: number; onClose: () => void 
   const views: MenuEntry[] = showBar
     ? []
     : [
-        { label: 'Bible', icon: ScrollText, onSelect: () => void openBibleTab() },
-        { label: 'Confessions', icon: BookMarked, onSelect: () => void openConfessionsTab() },
-        { label: 'Church Fathers', icon: Landmark, onSelect: () => openPage('fathers') },
-        { label: 'Library', icon: Library, onSelect: () => openPage('library') },
-        { label: 'Notes', icon: NotebookPen, onSelect: () => openPage('notes') },
-        { label: 'Quotes', icon: Quote, onSelect: () => openPage('quotesIndex') }
+        { label: 'Bible', icon: ScrollText, onSelect: () => void openFixedView('bible') },
+        { label: 'Confessions', icon: BookMarked, onSelect: () => void openFixedView('confessions') },
+        { label: 'Church Fathers', icon: Landmark, onSelect: () => void openFixedView('fathers') },
+        { label: 'Library', icon: Library, onSelect: () => void openFixedView('library') },
+        { label: 'Notes', icon: NotebookPen, onSelect: () => void openFixedView('notes') },
+        { label: 'Quotes', icon: Quote, onSelect: () => void openFixedView('quotesIndex') }
       ]
   const items: MenuEntry[] = [
     { label: 'New tab', icon: Plus, shortcut: 'Ctrl+T', onSelect: () => newTab(null) },
@@ -290,9 +289,7 @@ function AppMenu({ x, y, onClose }: { x: number; y: number; onClose: () => void 
       ]
     },
     'sep',
-    ...views,
-    { label: 'Dashboard', icon: LayoutDashboard, onSelect: () => openPage('dashboard') },
-    'sep',
+    ...(views.length ? [...views, 'sep' as const] : []),
     {
       label: 'Zoom',
       icon: ZoomIn,

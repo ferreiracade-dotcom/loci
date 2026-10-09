@@ -12,15 +12,14 @@ const KINDS: { id: SearchKind; label: string }[] = [
   { id: 'scripture', label: 'Scripture' }
 ]
 
-export function SearchView({ compact = false }: { compact?: boolean }) {
+/** Full Loci search (books, quotes, notes, Scripture) for `query`, with scope filters. */
+export function SearchView({ query, onQueryChange }: { query: string; onQueryChange: (q: string) => void }) {
   const shelves = useStore((s) => s.shelves)
   const tags = useStore((s) => s.tags)
   const results = useStore((s) => s.searchResults)
-  const query = useStore((s) => s.searchQuery)
   const kind = useStore((s) => s.searchKind)
   const shelfId = useStore((s) => s.searchShelf)
   const tag = useStore((s) => s.searchTag)
-  const setSearchQuery = useStore((s) => s.setSearchQuery)
   const setSearchKind = useStore((s) => s.setSearchKind)
   const setSearchShelf = useStore((s) => s.setSearchShelf)
   const setSearchTag = useStore((s) => s.setSearchTag)
@@ -59,20 +58,19 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
   }
 
   return (
-    <div className={`search-view${compact ? ' compact' : ''}`}>
+    <div className="search-view">
       <div className="search-bar">
         <div className="search-input-wrap">
           <SearchIcon size={16} className="search-icon" />
           <input
             className="search-input"
-            autoFocus={!compact}
+            autoFocus
             placeholder="Search books, quotes, notes…"
             value={query}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => onQueryChange(e.target.value)}
           />
         </div>
-        {!compact &&
-          (indexing ? (
+        {indexing ? (
             <div className="index-progress">
               <span>
                 {indexing.total === 0 ? 'Up to date' : `Indexing ${indexing.done}/${indexing.total}`}
@@ -91,9 +89,8 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
             >
               <DatabaseZap size={14} /> Build index
             </button>
-          ))}
-        {!compact &&
-          (bibleIndexing ? (
+          )}
+        {bibleIndexing ? (
             <div className="index-progress">
               <span>
                 {bibleIndexing.total === 0
@@ -109,12 +106,12 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
           ) : (
             <button
               className="btn btn-sm"
-              title="Fetch and index every chapter of the BSB (public domain) for search — runs in the background"
+              title="Fetch and index every chapter of the BSB (public domain) for search; runs in the background"
               onClick={() => void startBibleIndexing()}
             >
               <ScrollText size={14} /> Index Bible
             </button>
-          ))}
+          )}
       </div>
 
       <div className="search-scope">
@@ -159,8 +156,8 @@ export function SearchView({ compact = false }: { compact?: boolean }) {
 
       {query.trim() && !searching && results.length === 0 ? (
         <div className="quotes-empty">
-          No matches. If books look unsearchable, use <b>Build index</b> in the Search view (it runs
-          in the background).
+          No matches. If books look unsearchable, use <b>Build index</b> above (it runs in the
+          background).
         </div>
       ) : (
         <SearchResults onHit={onHit} />

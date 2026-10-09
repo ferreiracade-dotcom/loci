@@ -41,8 +41,7 @@ const PAGES: { label: string; kind: PageKind }[] = [
   { label: 'Church Fathers', kind: 'fathers' },
   { label: 'History', kind: 'history' },
   { label: 'Bookmarks', kind: 'bookmarks' },
-  { label: 'Settings', kind: 'settings' },
-  { label: 'Dashboard', kind: 'dashboard' }
+  { label: 'Settings', kind: 'settings' }
 ]
 
 const LIMITS = { bible: 3, boc: 3, tabs: 3, bookmarks: 3, titles: 5, total: 12 }
@@ -93,7 +92,7 @@ function bibleSuggestion(ref: ParsedRef, translation: string): Suggestion {
  * so "ac 4" means the Augsburg Confession before Acts), then open tabs, bookmarks, books, notes
  * and views by title, and finally "Search Loci for …". Empty for a blank query.
  */
-export function buildSuggestions(query: string, data: OmniData): Suggestion[] {
+export function buildSuggestions(query: string, data: OmniData, opts: { searchFirst?: boolean } = {}): Suggestion[] {
   const q = query.trim()
   if (!q) return []
   const out: Suggestion[] = []
@@ -102,7 +101,8 @@ export function buildSuggestions(query: string, data: OmniData): Suggestion[] {
   const loose = exact ? [] : parseLooseReferences(q, LIMITS.bible)
   if (exact) out.push(bibleSuggestion(exact, data.translation))
 
-  for (const b of parseBocQuery(q).slice(0, LIMITS.boc)) {
+  const boc = parseBocQuery(q).slice(0, LIMITS.boc)
+  for (const b of boc) {
     const doc = bocDocument(b.code)
     out.push({
       action: { type: 'boc', code: b.code, article: b.article },
@@ -156,6 +156,10 @@ export function buildSuggestions(query: string, data: OmniData): Suggestion[] {
   }
 
   const capped = out.slice(0, LIMITS.total - 1)
-  capped.push({ action: { type: 'search', query: q }, label: `Search Loci for “${q}”`, hint: '', icon: 'search' })
+  const search: Suggestion = { action: { type: 'search', query: q }, label: `Search Loci for “${q}”`, hint: '', icon: 'search' }
+  // The New Tab page's box is a search box first: a plain query (no exact Bible or Confessions
+  // reference) puts "Search Loci for …" on top, so Enter shows the results.
+  if (opts.searchFirst && !exact && boc.length === 0) return [search, ...capped]
+  capped.push(search)
   return capped
 }

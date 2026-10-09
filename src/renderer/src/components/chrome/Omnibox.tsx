@@ -47,6 +47,30 @@ function useBocSection(tab: Tab | undefined): { number: string | null; label: st
 }
 
 /**
+ * The omnibox suggestion list for `text` (empty when blank), from the open tabs, bookmarks,
+ * books and notes. Shared by the omnibox and the New Tab page's search box.
+ */
+export function useOmniSuggestions(text: string, current: Tab | undefined, searchFirst = false): Suggestion[] {
+  const tabs = useStore((s) => s.tabs)
+  const books = useStore((s) => s.books)
+  const notes = useStore((s) => s.standaloneNotes)
+  const bookmarks = useStore((s) => s.bookmarks)
+  const translation = useStore((s) => s.scriptureTranslation)
+  return useMemo(() => {
+    if (!text.trim()) return []
+    const ctx: TitleContext = { books, notes }
+    return buildSuggestions(text, {
+      tabs: tabs.map((t) => ({ id: t.id, kind: t.kind, title: tabTitle(t, ctx) })),
+      currentTabId: current?.id ?? null,
+      bookmarks: bookmarks.bookmarks,
+      books,
+      notes,
+      translation: (current?.kind === 'bible' && current.translation) || translation
+    }, { searchFirst })
+  }, [text, tabs, current, bookmarks, books, notes, translation, searchFirst])
+}
+
+/**
  * Chrome's omnibox: a breadcrumb of the focused tab's location until it is clicked (or Ctrl+L),
  * then a text box with a suggestion list. Enter shows the pick in this tab (pushing its
  * history), Alt+Enter in a new tab, Esc puts the breadcrumb back. The ☆ inside toggles a
@@ -54,11 +78,9 @@ function useBocSection(tab: Tab | undefined): { number: string | null; label: st
  */
 export function Omnibox() {
   const tab = useStore((s) => focusedTab(s))
-  const tabs = useStore((s) => s.tabs)
   const books = useStore((s) => s.books)
   const notes = useStore((s) => s.standaloneNotes)
   const bookmarks = useStore((s) => s.bookmarks)
-  const translation = useStore((s) => s.scriptureTranslation)
   const toggleBookmark = useStore((s) => s.toggleBookmark)
   const setToast = useStore((s) => s.setToast)
   const bocSection = useBocSection(tab)
@@ -78,17 +100,7 @@ export function Omnibox() {
   const canStar = !!location && isBookmarkable(location)
   const starred = !!location && !!findBookmark(bookmarks, location)
 
-  const suggestions: Suggestion[] = useMemo(() => {
-    if (!editing || !typed) return []
-    return buildSuggestions(text, {
-      tabs: tabs.map((t) => ({ id: t.id, kind: t.kind, title: tabTitle(t, ctx) })),
-      currentTabId: tab?.id ?? null,
-      bookmarks: bookmarks.bookmarks,
-      books,
-      notes,
-      translation: (tab?.kind === 'bible' && tab.translation) || translation
-    })
-  }, [editing, typed, text, tabs, tab, bookmarks, books, notes, translation, ctx])
+  const suggestions = useOmniSuggestions(editing && typed ? text : '', tab)
 
   const begin = useCallback((): void => {
     setEditing(true)

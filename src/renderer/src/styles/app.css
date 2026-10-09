@@ -5387,39 +5387,108 @@ select.field {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 7vh 24px 40px;
+  padding: 9vh 24px 48px;
+  font-family: var(--font-ui);
 }
 .ntp-word {
-  font: 500 56px var(--font-title);
+  font: 500 64px var(--font-title);
   color: var(--accent);
   letter-spacing: 0.02em;
-  margin-bottom: 22px;
+  margin-bottom: 26px;
 }
-.ntp-search {
-  width: min(760px, 100%);
+.ntp-box {
+  position: relative;
+  width: min(584px, 100%);
+  height: 46px;
+  flex: none;
+  border-radius: 23px;
+  background: var(--card);
   display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 18px;
+  color: var(--muted);
 }
-.ntp-search .search-view {
+.ntp-box:hover {
+  background: #322c23;
+}
+.ntp-box:focus-within {
+  background: #0f0d0b;
+  box-shadow: 0 0 0 2px var(--accent-40, rgba(201, 169, 110, 0.4));
+}
+.ntp-box.open {
+  border-radius: 23px 23px 0 0;
+}
+.ntp-box input {
   flex: 1;
   min-width: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  color: var(--chrome-text);
+  font: 15px var(--font-ui);
 }
+.ntp-box input::placeholder {
+  color: var(--muted);
+}
+.ntp-box-ic {
+  flex: none;
+}
+.ntp-sugg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 46px;
+  z-index: 950;
+  background: #0f0d0b;
+  border-radius: 0 0 23px 23px;
+  padding: 4px 0 12px;
+  box-shadow: 0 0 0 2px var(--accent-40, rgba(201, 169, 110, 0.4)), 0 12px 28px rgba(0, 0, 0, 0.5);
+  color: var(--chrome-text);
+  font-size: 14px;
+  cursor: default;
+}
+.ntp-shortcuts,
 .ntp-tiles {
   display: grid;
-  grid-template-columns: repeat(4, 112px);
+  grid-template-columns: repeat(auto-fill, 112px);
+  justify-content: center;
   gap: 8px;
-  margin-top: 26px;
+  width: min(720px, 100%);
+}
+.ntp-shortcuts {
+  margin-top: 30px;
+}
+.ntp-section {
+  width: min(720px, 100%);
+  margin-top: 22px;
+}
+.ntp-section h3,
+.ntp-vault-head {
+  margin: 0 0 6px;
+  padding: 0 4px;
+  font: 600 11px var(--font-ui);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--chrome-muted);
+}
+.ntp-section .ntp-tiles {
+  width: 100%;
+  justify-content: start;
 }
 .ntp-tile {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 14px 4px;
+  gap: 6px;
+  min-width: 0;
+  padding: 14px 6px 10px;
   border-radius: 10px;
   border: 0;
   background: none;
   color: var(--text-2);
   font: 12px var(--font-ui);
+  text-align: center;
   cursor: pointer;
 }
 .ntp-tile:hover {
@@ -5428,11 +5497,76 @@ select.field {
 .ntp-tile-ic {
   width: 48px;
   height: 48px;
+  flex: none;
   border-radius: 50%;
   background: var(--card);
   display: grid;
   place-items: center;
   color: var(--accent);
+  margin-bottom: 2px;
+}
+.ntp-tile:hover .ntp-tile-ic {
+  background: #3a3329;
+}
+.ntp-tile-title {
+  max-width: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.3;
+  word-break: break-word;
+}
+.ntp-tile-sub {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  color: var(--chrome-muted);
+}
+.ntp-vault {
+  width: min(720px, 100%);
+  margin-top: 30px;
+}
+.ntp-vault-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.ntp-vault-head:hover {
+  color: var(--text-2);
+}
+.ntp-vault-chev {
+  transition: transform 0.15s;
+}
+.ntp-vault.open .ntp-vault-chev {
+  transform: rotate(90deg);
+}
+.ntp-vault .dashboard {
+  overflow: visible;
+  padding: 10px 4px 0;
+}
+.ntp-vault .dash-head {
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+/* ---- Search results tab ---- */
+.search-page {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+}
+.search-page .search-view {
+  flex: 1;
+  min-width: 0;
+  max-width: 900px;
 }
 
 /* ---- History page ---- */

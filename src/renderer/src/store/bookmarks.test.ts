@@ -182,3 +182,12 @@ describe('bookmark migration', () => {
     expect(migrateBookmarks(null, null)).toEqual({ bookmarks: EMPTY_BOOKMARKS, migrated: false })
   })
 })
+
+describe('retired kinds', () => {
+  it('a bookmark to the retired Dashboard opens the New Tab page', () => {
+    const b = parseBookmarks(
+      JSON.stringify({ bookmarks: [{ id: 'm', title: 'Dashboard', location: { kind: 'dashboard' } }], folders: [] })
+    )
+    expect(b.bookmarks[0].location).toEqual({ kind: 'newtab' })
+  })
+})

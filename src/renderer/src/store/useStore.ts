@@ -49,11 +49,13 @@ import {
   goHistory as pureGoHistory,
   goToHistoryIndex as pureGoToHistoryIndex,
   focusedTab,
+  isEmptyNewTab,
   openTab as pureOpenTab,
   parsePersistedWorkspace,
   reflectWorkspace,
   reopenClosedTab as pureReopenClosedTab,
   reorderTab as pureReorderTab,
+  replaceTabContent as pureReplaceTabContent,
   sanitizeWorkspace,
   selectTabByNumber as pureSelectTabByNumber,
   serializeWorkspace,
@@ -117,6 +119,12 @@ export type {
   TabGroup
 }
 export { focusedTab, splitPartner }
+
+/**
+ * What is typed in each New Tab page's search box (by tab id), so the empty-New-Tab reuse rule
+ * can tell an untouched page from one in use. Not persisted.
+ */
+export const newTabDrafts = new Map<string, string>()
 
 /** Rewrite a project note's `items:` frontmatter line, preserving everything else. */
 async function writeProjectItems(path: string, items: ProjectItem[]): Promise<void> {
@@ -227,7 +235,6 @@ interface Store {
   /** Folded query tokens, used to flash-highlight matches when jumping to a page. */
   searchTerms: string[]
   /** Persisted search inputs so the bar survives moving between books. */
-  searchQuery: string
   searchKind: SearchKind
   searchShelf: string
   searchTag: string
@@ -350,7 +357,6 @@ interface Store {
   cancelBibleIndexing: () => void
   runSearch: (query: string, scope: SearchScope) => Promise<void>
   clearSearch: () => void
-  setSearchQuery: (q: string) => void
   setSearchKind: (k: SearchKind) => void
   setSearchShelf: (s: string) => void
   setSearchTag: (t: string) => void
@@ -405,8 +411,16 @@ interface Store {
   ) => string
   /** Ctrl+T / "+": a New Tab page at the end of the strip. */
   newTab: (after?: string | null) => void
-  /** Open a page tab (Library, Notes, Settings, …). Settings and History focus an existing one. */
+  /**
+   * Open a page tab (Library, Notes, Settings, …) in a new tab, or in the focused tab when it is
+   * an empty New Tab page. Settings, History and Bookmarks focus an existing one.
+   */
   openPage: (kind: PageKind) => void
+  /**
+   * The empty-New-Tab reuse rule: when the focused tab is an empty New Tab page (nothing typed,
+   * no history beyond itself), show `content` there and return true; otherwise do nothing.
+   */
+  fillEmptyNewTab: (content: TabContent) => boolean
   /** Open content in a new tab joined in a split with the focused tab. */
   openTabInSplit: (content: TabContent) => void
   closeTab: (tabId: string) => void
@@ -421,6 +435,8 @@ interface Store {
   /** Move a tab (and its split partner) to a strip position. */
   reorderTab: (tabId: string, targetIndex: number) => void
   setTabContent: (tabId: string, content: TabContent) => void
+  /** Change a tab's current location without adding a history entry. */
+  replaceTabContent: (tabId: string, content: TabContent) => void
   /** Turn a tab back into a New Tab page without closing it. */
   resetTabToNewTab: (tabId: string) => void
   focusTab: (tabId: string) => void
@@ -602,7 +618,6 @@ export const useStore = create<Store>((set, get) => {
     bibleIndexing: null,
     searchResults: [],
     searchTerms: [],
-    searchQuery: '',
     searchKind: 'all',
     searchShelf: '',
     searchTag: '',
@@ -1080,7 +1095,6 @@ export const useStore = create<Store>((set, get) => {
 
     clearSearch: () => set({ searchResults: [], searchTerms: [], activeHit: null }),
 
-    setSearchQuery: (q) => set({ searchQuery: q }),
     setSearchKind: (k) => set({ searchKind: k }),
     setSearchShelf: (s) => set({ searchShelf: s }),
     setSearchTag: (t) => set({ searchTag: t }),
@@ -1315,7 +1329,7 @@ export const useStore = create<Store>((set, get) => {
         !opts.forceNew &&
         opts.activate !== false &&
         content.kind !== 'newtab' &&
-        current?.kind === 'newtab'
+        (current?.kind === 'newtab' || current?.kind === 'search')
       ) {
         get().setTabContent(current.id, content)
         return current.id
@@ -1349,8 +1363,16 @@ export const useStore = create<Store>((set, get) => {
           return
         }
       }
+      if (get().fillEmptyNewTab({ kind })) return
       // Pages open beside the focused tab but never inside its group.
-      get().openTab({ kind }, { groupId: null })
+      get().openTab({ kind }, { forceNew: true, groupId: null })
+    },
+
+    fillEmptyNewTab: (content) => {
+      const current = focusedTab(get())
+      if (!current || !isEmptyNewTab(current, newTabDrafts.get(current.id))) return false
+      get().setTabContent(current.id, content)
+      return true
     },
 
     openTabInSplit: (content) => {
@@ -1390,6 +1412,8 @@ export const useStore = create<Store>((set, get) => {
     reorderTab: (tabId, targetIndex) => commit(pureReorderTab(currentWs(), tabId, targetIndex)),
 
     setTabContent: (tabId, content) => commit(pureSetTabContent(currentWs(), tabId, content)),
+
+    replaceTabContent: (tabId, content) => commit(pureReplaceTabContent(currentWs(), tabId, content)),
 
     resetTabToNewTab: (tabId) => {
       get().setTabContent(tabId, { kind: 'newtab' })
@@ -1485,7 +1509,25 @@ export const useStore = create<Store>((set, get) => {
 
     closeGroup: (id) => commitGroups(pureCloseGroup(groupState(), id)),
 
-    openGroup: (id) => commitGroups(pureOpenGroup(groupState(), id)),
+    openGroup: (id) => {
+      // Opening a closed group from an empty New Tab page fills that page's place: the blank
+      // tab goes away (and is not offered by Reopen closed tab).
+      const before = focusedTab(get())
+      const group = get().groups.find((g) => g.id === id)
+      const replace =
+        !!group &&
+        !group.open &&
+        !!before &&
+        !before.groupId &&
+        !before.pinned &&
+        !before.splitId &&
+        isEmptyNewTab(before, newTabDrafts.get(before.id))
+      commitGroups(pureOpenGroup(groupState(), id))
+      if (replace && get().activeTabId !== before.id && get().tabs.length > 1) {
+        const closed = currentWs().closed
+        commit({ ...pureCloseTab(currentWs(), before.id), closed })
+      }
+    },
 
     deleteGroup: (id) => commitGroups(pureDeleteGroup(groupState(), id)),
 

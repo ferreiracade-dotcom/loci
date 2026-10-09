@@ -19,7 +19,7 @@ export type TabKind =
   | 'settings'
   | 'history'
   | 'bookmarks'
-  | 'dashboard'
+  | 'search'
 
 /** Page kinds: views with no location of their own. */
 export type PageKind =
@@ -31,7 +31,6 @@ export type PageKind =
   | 'settings'
   | 'history'
   | 'bookmarks'
-  | 'dashboard'
 
 export const PAGE_KINDS: PageKind[] = [
   'newtab',
@@ -41,11 +40,31 @@ export const PAGE_KINDS: PageKind[] = [
   'fathers',
   'settings',
   'history',
-  'bookmarks',
-  'dashboard'
+  'bookmarks'
 ]
 
-const KNOWN_KINDS = new Set<string>(['note', 'bible', 'pdf', 'quotes', 'boc', ...PAGE_KINDS])
+const KNOWN_KINDS = new Set<string>(['note', 'bible', 'pdf', 'quotes', 'boc', 'search', ...PAGE_KINDS])
+
+/**
+ * Kinds that no longer exist, and what a persisted tab, history entry or bookmark of that kind
+ * becomes. The Dashboard was retired into the New Tab page (phase 5).
+ */
+const RETIRED_KINDS: Record<string, PageKind> = { dashboard: 'newtab' }
+
+/** A location with a retired kind mapped to its replacement (unchanged otherwise). */
+export function migrateLocation<T extends { kind: string }>(loc: T): T {
+  const to = loc && typeof loc === 'object' ? RETIRED_KINDS[loc.kind] : undefined
+  return to ? ({ ...loc, kind: to } as T) : loc
+}
+
+/** A persisted tab with retired kinds mapped, in its own location and its back/forward history. */
+export function migrateTab<T extends { kind: string; history?: unknown }>(tab: T): T {
+  if (!tab || typeof tab !== 'object') return tab
+  const next = migrateLocation(tab)
+  if (!Array.isArray(tab.history)) return next
+  const history = (tab.history as { kind: string }[]).map((h) => migrateLocation(h))
+  return { ...next, history } as T
+}
 
 /** A group of saved quotes opened in the center: a PDF, a Bible chapter, or a commentary source. */
 export type QuoteGroupRef =
@@ -78,6 +97,8 @@ export interface Tab {
   documentCode?: string
   sectionOrdinal?: number
   bocSourceId?: string
+  /** A 'search' tab's query. */
+  query?: string
   /**
    * Back/forward stack of locations (capped at MAX_HISTORY); `history[historyIndex]` is the
    * current location. Optional on the type so older persisted tabs (and test fixtures) still
@@ -111,6 +132,7 @@ export type TabContent =
   | { kind: 'bible'; book: string; chapter: number; highlight?: number[]; translation?: string }
   | { kind: 'quotes'; quotesGroup: QuoteGroupRef }
   | { kind: 'boc'; documentCode: string; sectionOrdinal: number; bocSourceId?: string }
+  | { kind: 'search'; query: string }
   | { kind: PageKind }
 
 /** Where a tab is: one entry of its back/forward history (same shape as TabContent). */
@@ -135,6 +157,8 @@ export function tabContent(tab: Tab): TabContent {
       return { kind: 'quotes', quotesGroup: tab.quotesGroup! }
     case 'boc':
       return { kind: 'boc', documentCode: tab.documentCode!, sectionOrdinal: tab.sectionOrdinal!, bocSourceId: tab.bocSourceId }
+    case 'search':
+      return { kind: 'search', query: tab.query ?? '' }
     default:
       return { kind: tab.kind }
   }
@@ -513,6 +537,30 @@ export function goToHistoryIndex(ws: Workspace, tabId: string, index: number): W
   return { ...ws, tabs }
 }
 
+/**
+ * Change a tab's current location without pushing history (editing a search query in place:
+ * Back still returns to where the tab was before the search).
+ */
+export function replaceTabContent(ws: Workspace, tabId: string, content: TabContent): Workspace {
+  const tabs = ws.tabs.map((t) => {
+    if (t.id !== tabId) return t
+    const h = tabHistory(t)
+    const entries = [...h.entries]
+    entries[h.index] = content
+    return withContent(t, content, entries, h.index)
+  })
+  return { ...ws, tabs }
+}
+
+/**
+ * An empty New Tab page: nothing typed in its search box and no history beyond itself. Opening a
+ * bookmark, a bookmarks-bar entry or a ⋮ view while one is focused fills it instead of opening
+ * another tab.
+ */
+export function isEmptyNewTab(tab: Tab | undefined, draft = ''): boolean {
+  return !!tab && tab.kind === 'newtab' && tabHistory(tab).entries.length === 1 && !draft.trim()
+}
+
 /** Back (-1) or Forward (+1) in a tab's history; unchanged at either end. */
 export function goHistory(ws: Workspace, tabId: string, delta: number): Workspace {
   const tab = ws.tabs.find((t) => t.id === tabId)
@@ -623,7 +671,9 @@ export function validateRestoredTabs(
  * and repoint a dangling activeTabId.
  */
 export function sanitizeWorkspace(ws: Partial<Workspace> & { tabs: Tab[] }): Workspace {
-  let tabs = sortedTabs(ws.tabs.filter((t) => t && typeof t.id === 'string' && KNOWN_KINDS.has(t.kind)))
+  let tabs = sortedTabs(
+    ws.tabs.map((t) => migrateTab(t)).filter((t) => t && typeof t.id === 'string' && KNOWN_KINDS.has(t.kind))
+  )
   tabs = [...tabs.filter((t) => t.pinned), ...tabs.filter((t) => !t.pinned)]
   // Splits: exactly two members, adjacent, not pinned.
   const counts = new Map<string, number>()
@@ -650,7 +700,11 @@ export function sanitizeWorkspace(ws: Partial<Workspace> & { tabs: Tab[] }): Wor
   }
   const activeTabId = tabs.some((t) => t.id === ws.activeTabId) ? ws.activeTabId! : (tabs[0]?.id ?? null)
   const closed = Array.isArray(ws.closed)
-    ? ws.closed.filter((c) => c && c.tab && KNOWN_KINDS.has(c.tab.kind)).slice(-MAX_CLOSED)
+    ? ws.closed
+        .filter((c) => c && c.tab)
+        .map((c) => ({ ...c, tab: migrateTab(c.tab) }))
+        .filter((c) => KNOWN_KINDS.has(c.tab.kind))
+        .slice(-MAX_CLOSED)
     : []
   return { tabs, activeTabId, splitRatios, closed }
 }

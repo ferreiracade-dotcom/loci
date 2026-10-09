@@ -283,3 +283,23 @@ describe('tab groups', () => {
     expect(again.groups).toBe(r.groups)
   })
 })
+
+describe('retired kinds in saved groups', () => {
+  it('a closed group keeps a dashboard tab as a New Tab page', () => {
+    const groups = parseGroups(
+      JSON.stringify({
+        groups: [
+          {
+            id: 'g',
+            name: 'G',
+            color: 'blue',
+            open: false,
+            savedTabs: [{ id: 't', order: 0, kind: 'dashboard', history: [{ kind: 'dashboard' }], historyIndex: 0 }]
+          }
+        ]
+      })
+    )
+    expect(groups[0].savedTabs[0].kind).toBe('newtab')
+    expect(groups[0].savedTabs[0].history).toEqual([{ kind: 'newtab' }])
+  })
+})

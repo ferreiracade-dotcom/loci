@@ -7,12 +7,12 @@ import {
   FileText,
   History,
   Landmark,
-  LayoutDashboard,
   Library,
   NotebookPen,
   Plus,
   Quote,
   ScrollText,
+  Search,
   Settings as SettingsIcon
 } from 'lucide-react'
 import type { Tab, TabKind, TabLocation } from '../../store/workspace'
@@ -28,9 +28,9 @@ import { PanePicker } from '../library/PanePicker'
 import { LibraryView } from '../library/LibraryView'
 import { NotesView } from '../library/NotesView'
 import { QuotesView } from '../library/QuotesView'
-import { DashboardView } from '../library/DashboardView'
 import { Settings } from '../Settings'
 import { NewTabPage } from './NewTabPage'
+import { SearchPage } from './SearchPage'
 import { HistoryPage } from './HistoryPage'
 import { FathersPage } from './FathersPage'
 import { BookmarksManager } from './BookmarksManager'
@@ -183,11 +183,20 @@ export const TAB_REGISTRY: Record<TabKind, TabKindDef> = {
       ctx.restrictToProject ? (
         <PanePicker tabId={tab.id} restrictToProject={ctx.restrictToProject} />
       ) : (
-        <NewTabPage />
+        <NewTabPage tabId={tab.id} />
       ),
     recordHistory: false,
     breadcrumb: () => [],
     locationText: () => ''
+  },
+  search: {
+    icon: Search,
+    title: (tab) => (tab.query ? `${tab.query} - Search` : 'Search'),
+    subtitle: () => 'Loci search',
+    render: (tab) => <SearchPage tabId={tab.id} query={tab.query ?? ''} />,
+    recordHistory: true,
+    breadcrumb: (tab) => ['Search', tab.query ?? ''],
+    locationText: (tab) => tab.query ?? ''
   },
   library: page(Library, 'Library', 'Your books', () => <LibraryView />),
   notes: page(NotebookPen, 'Notes', 'All notes', () => <NotesView />),
@@ -195,8 +204,7 @@ export const TAB_REGISTRY: Record<TabKind, TabKindDef> = {
   fathers: page(Landmark, 'Church Fathers', 'Church Fathers corpus', () => <FathersPage />),
   settings: page(SettingsIcon, 'Settings', 'loci://settings', () => <Settings />),
   history: page(History, 'History', 'loci://history', () => <HistoryPage />),
-  bookmarks: page(BookmarkIcon, 'Bookmarks', 'loci://bookmarks', () => <BookmarksManager />),
-  dashboard: page(LayoutDashboard, 'Dashboard', 'Vault health and bibliography', () => <DashboardView />)
+  bookmarks: page(BookmarkIcon, 'Bookmarks', 'loci://bookmarks', () => <BookmarksManager />)
 }
 
 export function tabDef(kind: TabKind): TabKindDef {

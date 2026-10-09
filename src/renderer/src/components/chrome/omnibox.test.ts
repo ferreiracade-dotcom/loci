@@ -84,3 +84,21 @@ describe('matchScore', () => {
     expect(matchScore('Loci Communes', 'xyz')).toBeNull()
   })
 })
+
+describe('buildSuggestions for the New Tab page (searchFirst)', () => {
+  it('puts "Search Loci for" first for a plain query', () => {
+    const s = buildSuggestions('justification', data, { searchFirst: true })
+    expect(s[0].action).toEqual({ type: 'search', query: 'justification' })
+    expect(s.length).toBeGreaterThan(1)
+  })
+
+  it('keeps an exact reference first', () => {
+    const s = buildSuggestions('rom 3:28', data, { searchFirst: true })
+    expect(s[0].action.type).toBe('open')
+    expect(s[s.length - 1].action.type).toBe('search')
+  })
+
+  it('no longer offers the retired Dashboard', () => {
+    expect(buildSuggestions('dashboard', data).map((x) => x.label)).not.toContain('Dashboard')
+  })
+})

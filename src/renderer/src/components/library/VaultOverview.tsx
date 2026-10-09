@@ -29,7 +29,11 @@ function renderEntry(text: string): ReactNode {
   })
 }
 
-export function DashboardView({ compact = false }: { compact?: boolean }) {
+/**
+ * Vault health (broken [[links]]) and the bibliography of cited sources, shown on the New Tab
+ * page (it was the Dashboard view before the Chrome redesign).
+ */
+export function VaultOverview() {
   const createNote = useStore((s) => s.createNote)
   const openNote = useStore((s) => s.openNote)
   const standaloneNotes = useStore((s) => s.standaloneNotes)
@@ -71,9 +75,8 @@ export function DashboardView({ compact = false }: { compact?: boolean }) {
     : []
 
   return (
-    <div className={`dashboard${compact ? ' compact' : ''}`}>
+    <div className="dashboard">
       <div className="dash-head">
-        <h2>Dashboard</h2>
         <button className="btn btn-sm" onClick={() => void refresh()}>
           <RefreshCw size={14} className={loading ? 'spin' : ''} /> Refresh
         </button>
@@ -91,7 +94,7 @@ export function DashboardView({ compact = false }: { compact?: boolean }) {
 
       <div className="dash-section">
         <h3>
-          <Unlink size={15} /> Vault Health — broken links
+          <Unlink size={15} /> Broken links
           {health ? ` (${health.brokenLinks.length})` : ''}
         </h3>
         {health && health.brokenLinks.length === 0 && (

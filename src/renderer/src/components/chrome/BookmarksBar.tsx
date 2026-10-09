@@ -23,7 +23,7 @@ import { GROUP_COLORS, groupName } from '../../store/tabGroups'
 import { PopupMenu } from './PopupMenu'
 import type { MenuEntry, MenuPick } from './PopupMenu'
 import { TAB_REGISTRY, locationTab, tabDef, tabLocationText, tabTitle } from './tabRegistry'
-import { fixedViewContent, isBackgroundClick, openInNewTab } from './openViews'
+import { isBackgroundClick, openFixedView, openInNewTab } from './openViews'
 import type { FixedView } from './openViews'
 import { TabGroupsMenu, savedGroupActions } from './TabGroupMenus'
 import { openBookmarkDialog } from './BookmarkDialog'
@@ -41,10 +41,6 @@ const FIXED: { view: FixedView; label: string; kind: keyof typeof TAB_REGISTRY }
 const DRAG_TYPE = 'application/x-loci-bookmark'
 
 type Menu = { x: number; y: number; items: MenuEntry[] } | null
-
-async function openFixed(view: FixedView, background: boolean): Promise<void> {
-  openInNewTab(await fixedViewContent(view), background)
-}
 
 function openBookmark(m: Bookmark, pick: MenuPick | ReactMouseEvent): void {
   openInNewTab(m.location, isBackgroundClick(pick))
@@ -240,7 +236,7 @@ export function BookmarksBar() {
   }
 
   const clickItem = (it: BarItem, e: ReactMouseEvent<HTMLElement>): void => {
-    if (it.fixed) void openFixed(it.fixed, isBackgroundClick(e))
+    if (it.fixed) void openFixedView(it.fixed, isBackgroundClick(e))
     else if (it.node?.type === 'bookmark') openBookmark(it.node.item, e)
     else if (it.node?.type === 'folder') openFolder(it.node.item, e.currentTarget)
   }
@@ -254,8 +250,8 @@ export function BookmarksBar() {
       x: e.clientX,
       y: e.clientY,
       items: [
-        { label: 'Open in new tab', icon: Plus, onSelect: () => void openFixed(view, false) },
-        { label: 'Open in new background tab', icon: SquareArrowOutUpRight, onSelect: () => void openFixed(view, true) },
+        { label: 'Open in new tab', icon: Plus, onSelect: () => void openFixedView(view, false) },
+        { label: 'Open in new background tab', icon: SquareArrowOutUpRight, onSelect: () => void openFixedView(view, true) },
         'sep',
         ...barMenuItems()
       ]
@@ -379,7 +375,7 @@ export function BookmarksBar() {
                 onAuxClick={(e) => {
                   if (e.button !== 1) return
                   e.preventDefault()
-                  if (it.fixed) void openFixed(it.fixed, true)
+                  if (it.fixed) void openFixedView(it.fixed, true)
                   else if (it.node?.type === 'bookmark') openInNewTab(it.node.item.location, true)
                 }}
                 onContextMenu={(e) => contextItem(it, e)}
@@ -404,7 +400,7 @@ export function BookmarksBar() {
               items: overflow.map((it): MenuEntry => {
                 if (it.fixed) {
                   const view = it.fixed
-                  return { label: it.label, icon: it.icon, onSelect: (p) => void openFixed(view, isBackgroundClick(p)) }
+                  return { label: it.label, icon: it.icon, onSelect: (p) => void openFixedView(view, isBackgroundClick(p)) }
                 }
                 const n = it.node!
                 return n.type === 'folder'

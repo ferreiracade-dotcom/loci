@@ -15,12 +15,16 @@ import {
   duplicateTab,
   findProjectTab,
   focusTab,
+  isEmptyNewTab,
   migrateLegacyWorkspace,
+  migrateLocation,
+  migrateTab,
   openTab,
   parsePersistedWorkspace,
   reflectWorkspace,
   reopenClosedTab,
   reorderTab,
+  replaceTabContent,
   sanitizeWorkspace,
   selectTabByNumber,
   serializeWorkspace,
@@ -537,5 +541,82 @@ describe('per-tab back/forward history', () => {
   it('repairs a history whose current entry does not match the tab', () => {
     const t: Tab = { id: 't', order: 0, kind: 'pdf', bookId: 'b3', history: [pdf('b1'), pdf('b2')], historyIndex: 5 }
     expect(tabHistory(t)).toEqual({ entries: [pdf('b1'), pdf('b2'), pdf('b3')], index: 2 })
+  })
+})
+
+describe('phase 5: retired Dashboard, search tabs, empty New Tab rule', () => {
+  it('migrates persisted dashboard tabs, their history and closed tabs to New Tab pages', () => {
+    const json = JSON.stringify({
+      version: 2,
+      tabs: [
+        { id: 'a', order: 0, kind: 'dashboard', history: [{ kind: 'dashboard' }], historyIndex: 0 },
+        {
+          id: 'b',
+          order: 1,
+          kind: 'pdf',
+          bookId: 'b1',
+          history: [{ kind: 'dashboard' }, { kind: 'pdf', bookId: 'b1' }],
+          historyIndex: 1
+        }
+      ],
+      activeTabId: 'a',
+      splitRatios: {},
+      closed: [{ tab: { id: 'c', order: 0, kind: 'dashboard' }, index: 2 }]
+    })
+    const ws = parsePersistedWorkspace(json)
+    expect(ws.tabs.map((t) => t.kind)).toEqual(['newtab', 'pdf'])
+    expect(ws.activeTabId).toBe('a')
+    expect(ws.tabs[1].history?.map((h) => h.kind)).toEqual(['newtab', 'pdf'])
+    expect(ws.closed.map((c) => c.tab.kind)).toEqual(['newtab'])
+    expect(migrateLocation({ kind: 'dashboard' })).toEqual({ kind: 'newtab' })
+    expect(migrateTab({ kind: 'bible', history: [{ kind: 'dashboard' }] }).history).toEqual([{ kind: 'newtab' }])
+  })
+
+  it('migrates a legacy two-pane dashboard tab too', () => {
+    const ws = parsePersistedWorkspace(
+      JSON.stringify({
+        tabs: [{ id: 'x', paneId: 'p1', order: 0, kind: 'dashboard' }],
+        paneOrder: [{ id: 'p1', activeTabId: 'x' }]
+      })
+    )
+    expect(ws.tabs.map((t) => t.kind)).toEqual(['newtab'])
+  })
+
+  it('keeps a search tab and its query through a round trip', () => {
+    const { ws, tabId } = openTab(EMPTY_WORKSPACE, { kind: 'newtab' })
+    const searched = setTabContent(ws, tabId, { kind: 'search', query: 'justification' })
+    const back = parsePersistedWorkspace(serializeWorkspace(searched))
+    const t = back.tabs[0]
+    expect(tabContent(t)).toEqual({ kind: 'search', query: 'justification' })
+    expect(t.history?.map((h) => h.kind)).toEqual(['newtab', 'search'])
+    // Back returns to the New Tab page.
+    expect(tabContent(goHistory(back, t.id, -1).tabs[0]).kind).toBe('newtab')
+  })
+
+  it('replaceTabContent edits the current entry without pushing history', () => {
+    const { ws, tabId } = openTab(EMPTY_WORKSPACE, { kind: 'newtab' })
+    let next = setTabContent(ws, tabId, { kind: 'search', query: 'grace' })
+    next = replaceTabContent(next, tabId, { kind: 'search', query: 'grace alone' })
+    const t = next.tabs[0]
+    expect(t.query).toBe('grace alone')
+    expect(t.history).toEqual([{ kind: 'newtab' }, { kind: 'search', query: 'grace alone' }])
+    expect(t.historyIndex).toBe(1)
+  })
+
+  it('isEmptyNewTab: an untouched New Tab page only', () => {
+    const { ws, tabId } = openTab(EMPTY_WORKSPACE, { kind: 'newtab' })
+    const fresh = ws.tabs.find((t) => t.id === tabId)!
+    expect(isEmptyNewTab(fresh)).toBe(true)
+    expect(isEmptyNewTab(fresh, '   ')).toBe(true)
+    // Something typed in its search box.
+    expect(isEmptyNewTab(fresh, 'rom')).toBe(false)
+    // Reached with Back from somewhere: it has history beyond itself.
+    const went = goHistory(setTabContent(ws, tabId, pdf('b1')), tabId, -1)
+    const backTab = went.tabs[0]
+    expect(backTab.kind).toBe('newtab')
+    expect(isEmptyNewTab(backTab)).toBe(false)
+    // Not a New Tab page at all.
+    expect(isEmptyNewTab(openTab(EMPTY_WORKSPACE, pdf('b1')).ws.tabs[0])).toBe(false)
+    expect(isEmptyNewTab(undefined)).toBe(false)
   })
 })
