@@ -65,3 +65,104 @@ export function parseBocRef(ref: string): { code: BocDocumentCode; ordinal: numb
   if (!doc || ordinal < 1) return null
   return { code: doc.code, ordinal }
 }
+
+// --- Typed references (the omnibox) ----------------------------------------------------
+
+/** Short spellings people type for each document, beyond its code and abbreviation. */
+const QUERY_ALIASES: [string, BocDocumentCode[]][] = [
+  ['ac', ['AC']], ['ca', ['AC']], ['aug', ['AC']], ['augsburg', ['AC']], ['augsburg confession', ['AC']],
+  ['augustana', ['AC']],
+  ['ap', ['AP']], ['apol', ['AP']], ['apology', ['AP']],
+  ['sa', ['SA']], ['smalc', ['SA']], ['smalcald', ['SA']], ['smalcald articles', ['SA']],
+  ['tr', ['TR']], ['treatise', ['TR']],
+  ['sc', ['SC']], ['small catechism', ['SC']],
+  ['lc', ['LC']], ['large catechism', ['LC']],
+  ['fc', ['FC-EP', 'FC-SD']], ['formula', ['FC-EP', 'FC-SD']], ['formula of concord', ['FC-EP', 'FC-SD']],
+  ['fc ep', ['FC-EP']], ['fcep', ['FC-EP']], ['ep', ['FC-EP']], ['epitome', ['FC-EP']],
+  ['fc sd', ['FC-SD']], ['fcsd', ['FC-SD']], ['sd', ['FC-SD']], ['solid declaration', ['FC-SD']],
+  ['apostles creed', ['CR-AP']], ['apostles', ['CR-AP']],
+  ['nicene creed', ['CR-NI']], ['nicene', ['CR-NI']],
+  ['athanasian creed', ['CR-ATH']], ['athanasian', ['CR-ATH']]
+]
+const ALIAS_MAP = new Map<string, BocDocumentCode[]>(QUERY_ALIASES)
+
+const ROMAN: [number, string][] = [
+  [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']
+]
+
+export function toRoman(n: number): string {
+  let out = ''
+  let rest = Math.floor(n)
+  for (const [v, s] of ROMAN) {
+    while (rest >= v) {
+      out += s
+      rest -= v
+    }
+  }
+  return out
+}
+
+/** Parse a Roman numeral (I..CXCIX), case-insensitive; null if it isn't a well-formed one. */
+export function fromRoman(s: string): number | null {
+  const t = s.trim().toUpperCase()
+  if (!/^[IVXLC]+$/.test(t)) return null
+  const vals: Record<string, number> = { I: 1, V: 5, X: 10, L: 50, C: 100 }
+  let total = 0
+  for (let i = 0; i < t.length; i++) {
+    const v = vals[t[i]]
+    const next = vals[t[i + 1]] ?? 0
+    total += v < next ? -v : v
+  }
+  return total > 0 && toRoman(total) === t ? total : null
+}
+
+export interface BocQuery {
+  code: BocDocumentCode
+  /** The article as a Roman numeral ("IV"), if one was typed. */
+  article?: string
+}
+
+/**
+ * Parse what someone types for the Confessions: a document (code, abbreviation, title or a
+ * common short form) optionally followed by an article in Roman or Arabic numerals, e.g.
+ * "AC IV", "ac 4", "Apol. iv", "FC SD X", "SA", "LC", "Augsburg Confession art. 4".
+ * Returns every document it could mean ("FC 10" is the Epitome or the Solid Declaration).
+ */
+export function parseBocQuery(input: string): BocQuery[] {
+  const s = input
+    .trim()
+    .toLowerCase()
+    .replace(/[.,:'’]/g, ' ')
+    .replace(/-/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  if (!s) return []
+  const m = /^(.*?)(?:\s+(?:art|article))?(?:\s+([ivxlc]+|\d{1,3}))?$/.exec(s)
+  if (!m) return []
+  const docPart = m[1].replace(/^the /, '')
+  let article: string | undefined
+  if (m[2]) {
+    const n = /^\d+$/.test(m[2]) ? Number(m[2]) : fromRoman(m[2])
+    if (!n || n < 1) return []
+    article = toRoman(n)
+  }
+  let codes = ALIAS_MAP.get(docPart)
+  if (!codes) {
+    const exact = documentCodeFromName(docPart)
+    if (exact) codes = [exact]
+  }
+  if (!codes) return []
+  return codes.map((code) => (article ? { code, article } : { code }))
+}
+
+/**
+ * Whether an indexed section's number is the article `roman` ("IV"). Section numbers are kept
+ * verbatim from the source, so the Apology's dual numbering "II (I)" counts as II.
+ */
+export function bocSectionMatches(sectionNumber: string | null, roman: string): boolean {
+  if (!sectionNumber) return false
+  const first = sectionNumber.trim().split(/[\s(]/)[0].replace(/\.$/, '').toUpperCase()
+  if (first === roman.toUpperCase()) return true
+  const n = Number(first)
+  return Number.isInteger(n) && n > 0 && toRoman(n) === roman.toUpperCase()
+}

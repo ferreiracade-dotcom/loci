@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
-  BOC_DOCUMENTS, bocDocument, documentCodeFromName, parseBocRef, formatBocRef
+  BOC_DOCUMENTS, bocDocument, documentCodeFromName, parseBocRef, formatBocRef,
+  bocSectionMatches, fromRoman, parseBocQuery, toRoman
 } from './bookOfConcord'
 
 describe('BOC_DOCUMENTS', () => {
@@ -36,5 +37,52 @@ describe('helpers', () => {
     expect(parseBocRef('AC:0')).toBeNull()
     expect(parseBocRef('ZZ:4')).toBeNull()
     expect(parseBocRef('garbage')).toBeNull()
+  })
+})
+
+describe('parseBocQuery (omnibox)', () => {
+  it.each([
+    ['AC IV', [{ code: 'AC', article: 'IV' }]],
+    ['ac iv', [{ code: 'AC', article: 'IV' }]],
+    ['ac 4', [{ code: 'AC', article: 'IV' }]],
+    ['AC art. 28', [{ code: 'AC', article: 'XXVIII' }]],
+    ['Augsburg Confession 4', [{ code: 'AC', article: 'IV' }]],
+    ['apol iv', [{ code: 'AP', article: 'IV' }]],
+    ['Ap. IV', [{ code: 'AP', article: 'IV' }]],
+    ['sa', [{ code: 'SA' }]],
+    ['lc', [{ code: 'LC' }]],
+    ['sc', [{ code: 'SC' }]],
+    ['tr', [{ code: 'TR' }]],
+    ['fc sd x', [{ code: 'FC-SD', article: 'X' }]],
+    ['FC-SD 10', [{ code: 'FC-SD', article: 'X' }]],
+    ['fc ep iii', [{ code: 'FC-EP', article: 'III' }]],
+    ['fc x', [{ code: 'FC-EP', article: 'X' }, { code: 'FC-SD', article: 'X' }]],
+    ['nicene', [{ code: 'CR-NI' }]]
+  ])('%s', (q, expected) => {
+    expect(parseBocQuery(q)).toEqual(expected)
+  })
+
+  it.each(['', 'acts 4', 'rom 3:28', 'ac iiii', 'ac 0', 'justification', 'ac 4:2'])('rejects %s', (q) => {
+    expect(parseBocQuery(q)).toEqual([])
+  })
+})
+
+describe('roman numerals', () => {
+  it('converts both ways', () => {
+    expect(toRoman(4)).toBe('IV')
+    expect(toRoman(28)).toBe('XXVIII')
+    expect(fromRoman('xxviii')).toBe(28)
+    expect(fromRoman('IIII')).toBeNull()
+    expect(fromRoman('abc')).toBeNull()
+  })
+})
+
+describe('bocSectionMatches', () => {
+  it('matches verbatim section numbers, including dual numbering and arabic', () => {
+    expect(bocSectionMatches('IV', 'IV')).toBe(true)
+    expect(bocSectionMatches('II (I)', 'II')).toBe(true)
+    expect(bocSectionMatches('4', 'IV')).toBe(true)
+    expect(bocSectionMatches('IV', 'V')).toBe(false)
+    expect(bocSectionMatches(null, 'I')).toBe(false)
   })
 })

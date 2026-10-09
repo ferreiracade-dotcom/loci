@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { findReferences, parseCommentaryHeader, type HeaderParseState } from './scriptureRef'
+import { findReferences, parseCommentaryHeader, parseLooseReferences, type HeaderParseState } from './scriptureRef'
 
 describe('findReferences (regression: case-sensitive scan must still match real prose)', () => {
   it('matches a capitalized reference embedded in a sentence', () => {
@@ -81,5 +81,40 @@ describe('parseCommentaryHeader — contextual state machine over a document str
 
     h = parseCommentaryHeader('5:2', state, 'chapter-verse')
     expect(h).toMatchObject({ book: '1CO', chapterStart: 5, verseStart: 2 })
+  })
+})
+
+describe('parseLooseReferences (omnibox)', () => {
+  const books = (q: string): string[] => parseLooseReferences(q).map((r) => `${r.book} ${r.chapter}${r.verseStart ? `:${r.verseStart}` : ''}`)
+
+  it.each([
+    ['rom 3:28', ['ROM 3:28']],
+    ['Rom 3:28', ['ROM 3:28']],
+    ['jn 3', ['JHN 3']],
+    ['jn 3:16', ['JHN 3:16']],
+    ['1 cor 13', ['1CO 13']],
+    ['1cor 13', ['1CO 13']],
+    ['i cor 13', ['1CO 13']],
+    ['roma 8', ['ROM 8']],
+    ['romans', ['ROM 1']],
+    ['gen', ['GEN 1']],
+    ['ps 23', ['PSA 23']],
+    ['song 2', ['SNG 2']]
+  ])('%s', (q, expected) => {
+    expect(books(q)).toEqual(expected)
+  })
+
+  it('offers several books for an ambiguous prefix, in canonical order, capped', () => {
+    expect(books('j 3')).toEqual(['JOS 3', 'JDG 3', 'JOB 3'])
+    expect(parseLooseReferences('j 3', 5).length).toBeGreaterThan(3)
+  })
+
+  it('carries verse ranges', () => {
+    const [r] = parseLooseReferences('john 3:16-18')
+    expect(r).toMatchObject({ book: 'JHN', chapter: 3, verseStart: 16, verseEnd: 18 })
+  })
+
+  it.each(['', 'justification', 'ro', 'ac iv', 'luther', 'rom 17', 'lc', 'sa'])('rejects %s', (q) => {
+    expect(parseLooseReferences(q)).toEqual([])
   })
 })

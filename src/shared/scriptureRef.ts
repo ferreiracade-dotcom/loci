@@ -245,6 +245,45 @@ export function parseReference(s: string): ParsedRef | null {
   return build(m[1], m[2], m[3], m[4], s.trim(), 0)
 }
 
+const squash = (s: string): string => s.toLowerCase().replace(/[\s.]/g, '')
+const LOOSE_RE =
+  /^\s*((?:[1-3]|i{1,3})?\s*[a-z][a-z .]*?)\.?\s*(?:(\d{1,3})(?::(\d{1,3})(?:\s*[-–]\s*(\d{1,3}))?)?)?\s*$/i
+
+/**
+ * Lenient parsing for a typed reference (the omnibox): the exact grammar first, then a book
+ * named by any prefix of its full name or by an exact abbreviation, with the chapter optional
+ * ("roma 8" → Romans 8, "gen" → Genesis 1, "j 3" → Joshua 3, Judges 3, …). Exact matches rank
+ * before prefix matches; canonical order breaks ties. At most `limit` results.
+ */
+export function parseLooseReferences(input: string, limit = 3): ParsedRef[] {
+  const exact = parseReference(input)
+  if (exact) return [exact]
+  const m = LOOSE_RE.exec(input)
+  if (!m) return []
+  const part = squash(m[1])
+  const letters = part.replace(/^(?:[1-3]|i{1,3})/, '')
+  // A bare book name needs a few letters ("rom"), a reference with a chapter fewer ("j 3").
+  if (letters.length < (m[2] ? 1 : 3)) return []
+  const exactHits: ScriptureBookDef[] = []
+  const prefixHits: ScriptureBookDef[] = []
+  for (const b of BOOKS) {
+    if ([b.name, ...b.abbr].some((sp) => squash(sp) === part)) exactHits.push(b)
+    else if ([b.name, ...b.abbr.filter((a) => /^(?:I{1,3}|First|Second|Third) /.test(a))].some((sp) => squash(sp).startsWith(part))) {
+      prefixHits.push(b)
+    }
+  }
+  const chapter = m[2] ? Number(m[2]) : 1
+  const out: ParsedRef[] = []
+  for (const def of [...exactHits, ...prefixHits]) {
+    if (chapter < 1 || chapter > def.chapters) continue
+    const verseStart = m[3] ? Number(m[3]) : undefined
+    const verseEnd = m[4] ? Number(m[4]) : verseStart
+    out.push({ raw: input.trim(), index: 0, length: input.trim().length, book: def.code, bookName: def.name, chapter, verseStart, verseEnd })
+    if (out.length >= limit) break
+  }
+  return out
+}
+
 /** Human label, e.g. "Romans 3:28" or "Romans 3:28-30" or "Romans 3". */
 export function refLabel(ref: {
   bookName: string

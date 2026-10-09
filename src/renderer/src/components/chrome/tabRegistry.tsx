@@ -14,7 +14,7 @@ import {
   ScrollText,
   Settings as SettingsIcon
 } from 'lucide-react'
-import type { Tab, TabKind } from '../../store/workspace'
+import type { Tab, TabKind, TabLocation } from '../../store/workspace'
 import type { ProjectItem } from '@shared/ipc'
 import { bookByCode } from '@shared/scriptureRef'
 import { bocDocument } from '@shared/bookOfConcord'
@@ -37,6 +37,8 @@ import { FathersPage } from './FathersPage'
 export interface TitleContext {
   books: { id: string; title: string }[]
   notes: { path: string; title: string }[]
+  /** The focused Confessions section's number/label, when the caller has looked it up. */
+  bocSection?: { number: string | null; label: string } | null
 }
 
 /** What a tab's body is rendered with. */
@@ -59,6 +61,31 @@ export interface TabKindDef {
   render: (tab: Tab, ctx: RenderContext) => ReactNode | null
   /** Record visits to this kind on the History page. */
   recordHistory: boolean
+  /** The omnibox breadcrumb (`Bible › John 3:16 (BSB)`). Default: the title alone. */
+  breadcrumb?: (tab: Tab, ctx: TitleContext) => string[]
+  /** What the omnibox selects for editing (Ctrl+L) and a new bookmark is named. Default: title. */
+  locationText?: (tab: Tab, ctx: TitleContext) => string
+}
+
+/** ":16" or ":16-18" for a run of highlighted verses; "" when none. */
+function verseSuffix(highlight: number[] | undefined): string {
+  if (!highlight || highlight.length === 0) return ''
+  const lo = Math.min(...highlight)
+  const hi = Math.max(...highlight)
+  return lo === hi ? `:${lo}` : `:${lo}-${hi}`
+}
+
+function bibleRef(tab: Tab): string {
+  if (!tab.book || tab.chapter == null) return 'Bible'
+  return `${bookByCode(tab.book)?.name ?? tab.book} ${tab.chapter}${verseSuffix(tab.highlight)}`
+}
+
+function bocParts(tab: Tab, ctx: TitleContext): [string, string] {
+  const doc = tab.documentCode ? bocDocument(tab.documentCode) : undefined
+  const abbr = doc?.abbreviation ?? tab.documentCode ?? 'Confessions'
+  const sec = ctx.bocSection
+  const where = sec ? (sec.number ?? sec.label) : tab.sectionOrdinal != null ? `§${tab.sectionOrdinal}` : ''
+  return [abbr, where]
 }
 
 function quotesLabel(tab: Tab): string {
@@ -98,14 +125,16 @@ export const TAB_REGISTRY: Record<TabKind, TabKindDef> = {
     title: (tab, ctx) => ctx.books.find((b) => b.id === tab.bookId)?.title ?? 'Document',
     subtitle: () => 'Library · PDF',
     render: (tab) => (tab.bookId ? <PdfReader bookId={tab.bookId} embedded /> : null),
-    recordHistory: true
+    recordHistory: true,
+    breadcrumb: (tab, ctx) => ['Library', TAB_REGISTRY.pdf.title(tab, ctx)]
   },
   note: {
     icon: FileText,
     title: (tab, ctx) => ctx.notes.find((n) => n.path === tab.notePath)?.title ?? 'Note',
     subtitle: () => 'Note',
     render: (tab) => (tab.notePath ? <RichNoteEditor path={tab.notePath} /> : null),
-    recordHistory: true
+    recordHistory: true,
+    breadcrumb: (tab, ctx) => ['Notes', TAB_REGISTRY.note.title(tab, ctx)]
   },
   bible: {
     icon: ScrollText,
@@ -114,7 +143,9 @@ export const TAB_REGISTRY: Record<TabKind, TabKindDef> = {
     subtitle: (tab) => `Bible${tab.translation ? ` · ${tab.translation}` : ''}`,
     render: (tab, ctx) =>
       tab.book && tab.chapter != null ? <BiblePane tab={tab} onClose={ctx.close} onReplace={ctx.replace} /> : null,
-    recordHistory: true
+    recordHistory: true,
+    breadcrumb: (tab) => ['Bible', `${bibleRef(tab)}${tab.translation ? ` (${tab.translation})` : ''}`],
+    locationText: bibleRef
   },
   boc: {
     icon: BookMarked,
@@ -130,14 +161,17 @@ export const TAB_REGISTRY: Record<TabKind, TabKindDef> = {
       tab.documentCode && tab.sectionOrdinal != null ? (
         <BocPane tab={tab} onClose={ctx.close} onReplace={ctx.replace} />
       ) : null,
-    recordHistory: true
+    recordHistory: true,
+    breadcrumb: (tab, ctx) => ['Confessions', ...bocParts(tab, ctx).filter(Boolean)],
+    locationText: (tab, ctx) => bocParts(tab, ctx).filter(Boolean).join(' ')
   },
   quotes: {
     icon: Quote,
     title: quotesLabel,
     subtitle: () => 'Saved quotes',
     render: (tab) => (tab.quotesGroup ? <QuoteGroupPane group={tab.quotesGroup} /> : null),
-    recordHistory: true
+    recordHistory: true,
+    breadcrumb: (tab) => ['Quotes', quotesLabel(tab)]
   },
   newtab: {
     icon: Plus,
@@ -149,7 +183,9 @@ export const TAB_REGISTRY: Record<TabKind, TabKindDef> = {
       ) : (
         <NewTabPage />
       ),
-    recordHistory: false
+    recordHistory: false,
+    breadcrumb: () => [],
+    locationText: () => ''
   },
   library: page(Library, 'Library', 'Your books', () => <LibraryView />),
   notes: page(NotebookPen, 'Notes', 'All notes', () => <NotesView />),
@@ -166,4 +202,21 @@ export function tabDef(kind: TabKind): TabKindDef {
 
 export function tabTitle(tab: Tab, ctx: TitleContext): string {
   return tabDef(tab.kind).title(tab, ctx)
+}
+
+/** The omnibox breadcrumb for a tab (empty for a New Tab page, which shows a placeholder). */
+export function tabBreadcrumb(tab: Tab, ctx: TitleContext): string[] {
+  const def = tabDef(tab.kind)
+  return def.breadcrumb ? def.breadcrumb(tab, ctx) : [def.title(tab, ctx)]
+}
+
+/** A tab's location as one line of text: what Ctrl+L selects and a new bookmark is called. */
+export function tabLocationText(tab: Tab, ctx: TitleContext): string {
+  const def = tabDef(tab.kind)
+  return def.locationText ? def.locationText(tab, ctx) : def.title(tab, ctx)
+}
+
+/** A pseudo-tab for a history entry or bookmark location, so the registry can label it. */
+export function locationTab(loc: TabLocation): Tab {
+  return { id: '', order: 0, ...loc }
 }
