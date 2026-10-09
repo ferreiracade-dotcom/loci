@@ -602,7 +602,7 @@ export interface SearchScope {
 }
 
 export interface SearchHit {
-  kind: 'page' | 'quote' | 'note' | 'scripture'
+  kind: 'page' | 'quote' | 'note' | 'scripture' | 'confession'
   bookId: string | null
   ref: string | null
   page: number | null

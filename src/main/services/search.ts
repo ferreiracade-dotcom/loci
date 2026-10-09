@@ -9,7 +9,7 @@ function ftsQuery(raw: string): string {
 }
 
 interface HitRow {
-  kind: 'page' | 'quote' | 'note' | 'scripture'
+  kind: 'page' | 'quote' | 'note' | 'scripture' | 'confession'
   bookId: string | null
   ref: string | null
   page: number | null
