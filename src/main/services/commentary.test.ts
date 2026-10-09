@@ -263,6 +263,19 @@ describe('reader queries', () => {
     commentary.replaceExcerptsForSource(other, [excerpt({ chapterStart: 3, verseStart: 2, chapterEnd: 3, verseEnd: 2 })])
     expect(commentary.listChapter(sourceId, 'ROM', 3).map((e) => e.text)).toEqual(['a', 'b'])
   })
+
+  it('puts a section overview ahead of the verse notes that start with it, else keeps source order', () => {
+    const sourceId = makeSource('Philippi')
+    commentary.replaceExcerptsForSource(sourceId, [
+      excerpt({ chapterStart: 1, verseStart: 1, chapterEnd: 1, verseEnd: 1, text: 'Introduction' }),
+      excerpt({ chapterStart: 1, verseStart: 1, chapterEnd: 1, verseEnd: 7, text: 'Vv. 1-7 The Salutation' }),
+      excerpt({ chapterStart: 1, verseStart: 1, chapterEnd: 1, verseEnd: 1, text: 'Ver. 1' }),
+      excerpt({ chapterStart: 1, verseStart: 2, chapterEnd: 1, verseEnd: 2, text: 'Ver. 2' })
+    ])
+    const order = ['Vv. 1-7 The Salutation', 'Introduction', 'Ver. 1', 'Ver. 2']
+    expect(commentary.listChapter(sourceId, 'ROM', 1).map((e) => e.text)).toEqual(order)
+    expect(commentary.lookupVerse('ROM', 1, 1).map((m) => m.text)).toEqual(order.slice(0, 3))
+  })
 })
 
 describe('vault-backed sources', () => {

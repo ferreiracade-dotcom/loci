@@ -188,14 +188,16 @@ export function listCoverage(sourceId: string): CommentaryBookCoverage[] {
 }
 
 /** A source's non-flagged excerpts starting in one chapter, in verse order — what the
- *  commentary reader tab shows for that chapter. */
+ *  commentary reader tab shows for that chapter. Excerpts starting on the same verse run widest
+ *  first, so a section overview ("Vv. 1-7") precedes the verse notes inside it; equal ones keep
+ *  the source's own order (insertion order, the rowid). */
 export function listChapter(sourceId: string, book: string, chapter: number): CommentaryExcerpt[] {
   return (
     getDb()
       .prepare(
         `SELECT * FROM commentary_excerpts
          WHERE source_id = ? AND book = ? AND chapter_start = ? AND flagged = 0
-         ORDER BY verse_start, chapter_end, verse_end`
+         ORDER BY verse_start, chapter_end DESC, verse_end DESC, rowid`
       )
       .all(sourceId, book, chapter) as ExcerptRow[]
   ).map(toExcerpt)
@@ -272,7 +274,8 @@ interface MatchRow {
 }
 
 /** Every non-flagged excerpt whose range covers (book, chapter, verse), grouped by source
- *  in the returned order (sort_order, then the excerpt's own start ref). */
+ *  in the returned order (sort_order, then the excerpt's own start ref, widest first — see
+ *  listChapter). */
 export function lookupVerse(book: string, chapter: number, verse: number): CommentaryMatch[] {
   const rows = getDb()
     .prepare(
@@ -284,7 +287,7 @@ export function lookupVerse(book: string, chapter: number, verse: number): Comme
          AND (e.chapter_start < :chapter OR (e.chapter_start = :chapter AND e.verse_start <= :verse))
          AND (e.chapter_end > :chapter OR (e.chapter_end = :chapter AND e.verse_end >= :verse))
          AND e.flagged = 0
-       ORDER BY s.sort_order, e.chapter_start, e.verse_start`
+       ORDER BY s.sort_order, e.chapter_start, e.verse_start, e.chapter_end DESC, e.verse_end DESC, e.rowid`
     )
     .all({ book, chapter, verse }) as MatchRow[]
 
