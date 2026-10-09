@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import {
   EMPTY_WORKSPACE,
+  MAX_HISTORY,
+  canGoBack,
+  canGoForward,
+  goHistory,
+  goToHistoryIndex,
+  tabHistory,
   closeOtherTabs,
   closeTab,
   closeTabsToRight,
@@ -404,5 +410,132 @@ describe('restore: validate, sanitize, round trip, legacy migration', () => {
     expect(sortedTabs(ws.tabs).map((t) => t.id)).toEqual(['a', 'b'])
     expect(ws.tabs.every((t) => !t.splitId)).toBe(true)
     expect(ws.activeTabId).toBe('b')
+  })
+})
+
+describe('per-tab back/forward history', () => {
+  const bible = (book: string, chapter: number, highlight?: number[]): TabContent => ({
+    kind: 'bible',
+    book,
+    chapter,
+    highlight,
+    translation: 'BSB'
+  })
+
+  it('a new tab starts with its location as the only entry', () => {
+    const { ws, tabId } = openTab(EMPTY_WORKSPACE, pdf('b1'))
+    const tab = ws.tabs.find((t) => t.id === tabId)!
+    expect(tabHistory(tab)).toEqual({ entries: [pdf('b1')], index: 0 })
+    expect(canGoBack(tab)).toBe(false)
+    expect(canGoForward(tab)).toBe(false)
+  })
+
+  it('navigating pushes, Back and Forward restore in the same tab', () => {
+    let { ws, tabId } = openTab(EMPTY_WORKSPACE, bible('JHN', 3))
+    ws = setTabContent(ws, tabId, bible('ROM', 3))
+    ws = setTabContent(ws, tabId, bible('ROM', 4))
+    let tab = ws.tabs[0]
+    expect(tabHistory(tab).entries.map((e) => (e as { chapter: number }).chapter)).toEqual([3, 3, 4])
+    expect(tabHistory(tab).index).toBe(2)
+
+    ws = goHistory(ws, tabId, -1)
+    tab = ws.tabs[0]
+    expect(tab.book).toBe('ROM')
+    expect(tab.chapter).toBe(3)
+    expect(tab.id).toBe(tabId)
+    expect(canGoBack(tab)).toBe(true)
+    expect(canGoForward(tab)).toBe(true)
+
+    ws = goHistory(ws, tabId, -1)
+    expect(ws.tabs[0].book).toBe('JHN')
+    expect(canGoBack(ws.tabs[0])).toBe(false)
+    // Back at the start is a no-op.
+    expect(goHistory(ws, tabId, -1)).toBe(ws)
+
+    ws = goHistory(ws, tabId, 1)
+    ws = goHistory(ws, tabId, 1)
+    expect(ws.tabs[0].chapter).toBe(4)
+    expect(goHistory(ws, tabId, 1)).toBe(ws)
+  })
+
+  it('navigating after Back drops the forward entries', () => {
+    let { ws, tabId } = openTab(EMPTY_WORKSPACE, bible('JHN', 1))
+    ws = setTabContent(ws, tabId, bible('JHN', 2))
+    ws = setTabContent(ws, tabId, bible('JHN', 3))
+    ws = goHistory(ws, tabId, -2)
+    ws = setTabContent(ws, tabId, pdf('b1'))
+    const h = tabHistory(ws.tabs[0])
+    expect(h.entries).toEqual([bible('JHN', 1), pdf('b1')])
+    expect(h.index).toBe(1)
+    expect(canGoForward(ws.tabs[0])).toBe(false)
+  })
+
+  it('a change that keeps the location (highlighted verses) replaces the entry', () => {
+    let { ws, tabId } = openTab(EMPTY_WORKSPACE, bible('JHN', 3))
+    ws = setTabContent(ws, tabId, bible('JHN', 3, [16]))
+    const h = tabHistory(ws.tabs[0])
+    expect(h.entries).toEqual([bible('JHN', 3, [16])])
+    expect(h.index).toBe(0)
+  })
+
+  it('goToHistoryIndex jumps to any entry and ignores out-of-range indexes', () => {
+    let { ws, tabId } = openTab(EMPTY_WORKSPACE, { kind: 'newtab' })
+    ws = setTabContent(ws, tabId, pdf('b1'))
+    ws = setTabContent(ws, tabId, pdf('b2'))
+    ws = goToHistoryIndex(ws, tabId, 0)
+    expect(ws.tabs[0].kind).toBe('newtab')
+    expect(ws.tabs[0].bookId).toBeUndefined()
+    expect(tabHistory(ws.tabs[0]).entries).toHaveLength(3)
+    expect(goToHistoryIndex(ws, tabId, 7)).toBe(ws)
+    expect(goToHistoryIndex(ws, tabId, -1)).toBe(ws)
+  })
+
+  it('keeps pin and split when going back', () => {
+    let { ws, tabId: a } = openTab(EMPTY_WORKSPACE, pdf('b1'))
+    const opened = openTab(ws, pdf('b2'))
+    ws = splitTabs(opened.ws, a, opened.tabId)
+    ws = setTabContent(ws, a, bible('JHN', 3))
+    ws = goHistory(ws, a, -1)
+    const tab = ws.tabs.find((t) => t.id === a)!
+    expect(tab.kind).toBe('pdf')
+    expect(tab.splitId).toBeDefined()
+  })
+
+  it('caps history at MAX_HISTORY entries, dropping the oldest', () => {
+    let { ws, tabId } = openTab(EMPTY_WORKSPACE, bible('PSA', 1))
+    for (let c = 2; c <= MAX_HISTORY + 10; c++) ws = setTabContent(ws, tabId, bible('PSA', c))
+    const h = tabHistory(ws.tabs[0])
+    expect(h.entries).toHaveLength(MAX_HISTORY)
+    expect(h.index).toBe(MAX_HISTORY - 1)
+    expect((h.entries[0] as { chapter: number }).chapter).toBe(11)
+  })
+
+  it('duplicate and reopen keep the history', () => {
+    let { ws, tabId } = openTab(EMPTY_WORKSPACE, pdf('b1'))
+    ws = setTabContent(ws, tabId, pdf('b2'))
+    const dup = duplicateTab(ws, tabId)
+    expect(canGoBack(dup.ws.tabs.find((t) => t.id === dup.tabId))).toBe(true)
+    const extra = openTab(ws, pdf('b3')).ws
+    const reopened = reopenClosedTab(closeTab(extra, tabId))
+    const tab = reopened.ws.tabs.find((t) => t.id === reopened.tabId)!
+    expect(tabHistory(tab).entries).toEqual([pdf('b1'), pdf('b2')])
+  })
+
+  it('migrates tabs without history and survives a persistence round trip', () => {
+    const legacy: Tab = { id: 't1', order: 0, kind: 'pdf', bookId: 'b1' }
+    const ws = sanitizeWorkspace({ tabs: [legacy], activeTabId: 't1' })
+    expect(ws.tabs[0].history).toEqual([pdf('b1')])
+    expect(ws.tabs[0].historyIndex).toBe(0)
+
+    let w = openTab(EMPTY_WORKSPACE, pdf('b1'))
+    w = { ws: setTabContent(w.ws, w.tabId, pdf('b2')), tabId: w.tabId }
+    const back = goHistory(w.ws, w.tabId, -1)
+    const restored = parsePersistedWorkspace(serializeWorkspace(back))
+    expect(tabHistory(restored.tabs[0])).toEqual({ entries: [pdf('b1'), pdf('b2')], index: 0 })
+  })
+
+  it('repairs a history whose current entry does not match the tab', () => {
+    const t: Tab = { id: 't', order: 0, kind: 'pdf', bookId: 'b3', history: [pdf('b1'), pdf('b2')], historyIndex: 5 }
+    expect(tabHistory(t)).toEqual({ entries: [pdf('b1'), pdf('b2'), pdf('b3')], index: 2 })
   })
 })

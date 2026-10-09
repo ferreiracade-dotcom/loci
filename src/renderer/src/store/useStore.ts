@@ -46,6 +46,8 @@ import {
   duplicateTab as pureDuplicateTab,
   findProjectTab,
   focusTab as pureFocusTab,
+  goHistory as pureGoHistory,
+  goToHistoryIndex as pureGoToHistoryIndex,
   focusedTab,
   openTab as pureOpenTab,
   parsePersistedWorkspace,
@@ -63,10 +65,19 @@ import {
   unsplitTab as pureUnsplitTab,
   validateRestoredTabs
 } from './workspace'
-import type { ClosedTab, PageKind, Tab, TabContent, Workspace, QuoteGroupRef } from './workspace'
+import type { ClosedTab, PageKind, Tab, TabContent, TabLocation, Workspace, QuoteGroupRef } from './workspace'
+import {
+  EMPTY_BOOKMARKS,
+  parseBookmarks,
+  removeBookmark as pureRemoveBookmark,
+  renameBookmark as pureRenameBookmark,
+  serializeBookmarks,
+  toggleBookmark as pureToggleBookmark
+} from './bookmarks'
+import type { Bookmark, Bookmarks } from './bookmarks'
 import { createSequentialQueue } from '../lib/sequentialQueue'
 
-export type { ClosedTab, PageKind, Tab, TabContent, Workspace, QuoteGroupRef }
+export type { ClosedTab, PageKind, Tab, TabContent, TabLocation, Workspace, QuoteGroupRef, Bookmark, Bookmarks }
 export { focusedTab, splitPartner }
 
 /** Rewrite a project note's `items:` frontmatter line, preserving everything else. */
@@ -92,6 +103,14 @@ const queuePersist = createSequentialQueue()
 function persistWorkspace(ws: Workspace): void {
   const payload = serializeWorkspace(ws)
   queuePersist(() => api.setSession('workspace', payload))
+}
+
+const queueBookmarks = createSequentialQueue()
+
+/** Bookmarks live in session_state under one key for now (phase 3 may move them to the vault). */
+function persistBookmarks(b: Bookmarks): void {
+  const payload = serializeBookmarks(b)
+  queueBookmarks(() => api.setSession('bookmarks', payload))
 }
 
 /** Zoom steps, as Chrome's (percent). */
@@ -182,6 +201,8 @@ interface Store {
   zoom: number
   /** The Project note open in either pane, and its source collection, or null. */
   activeProject: { path: string; items: ProjectItem[] } | null
+  /** Bookmarks (☆ / Ctrl+D) and their folders. */
+  bookmarks: Bookmarks
 
   init: () => Promise<void>
   enter: () => void
@@ -326,6 +347,17 @@ interface Store {
   setSplitRatio: (splitId: string, r: number) => void
   /** Remount a tab's content (F5 / Ctrl+R); never reloads the window. */
   reloadTab: (tabId: string) => void
+  /** Navigate a tab in place, pushing its history (same as setTabContent). */
+  navigateTab: (tabId: string, content: TabContent) => void
+  /** Back / Forward (Alt+Left / Alt+Right) in a tab's own history; defaults to the focused tab. */
+  goBack: (tabId?: string) => void
+  goForward: (tabId?: string) => void
+  /** Jump to an entry of a tab's history (the Back/Forward dropdown). */
+  goToHistoryIndex: (tabId: string, index: number) => void
+  /** ☆ / Ctrl+D: bookmark a location, or remove its bookmark. Returns the new bookmark, if any. */
+  toggleBookmark: (location: TabLocation, title: string) => Bookmark | null
+  renameBookmark: (id: string, title: string) => void
+  removeBookmark: (id: string) => void
   /** Step zoom in (+1) / out (-1), or reset (0). */
   stepZoom: (dir: 1 | -1 | 0) => void
   /** Create a note and place it into a specific tab (used by the picker). */
@@ -465,6 +497,7 @@ export const useStore = create<Store>((set, get) => {
     reloadKeys: {},
     zoom: 100,
     activeProject: null,
+    bookmarks: EMPTY_BOOKMARKS,
 
     init: async () => {
       if (!listenersBound) {
@@ -505,6 +538,7 @@ export const useStore = create<Store>((set, get) => {
       if (workspace.tabs.length === 0) {
         workspace = pureOpenTab(EMPTY_WORKSPACE, { kind: 'newtab' }).ws
       }
+      const bookmarks = parseBookmarks(await api.getSession('bookmarks'))
       const zoomRaw = Number(await api.getSession('zoom'))
       const zoom = ZOOM_STEPS.includes(zoomRaw) ? zoomRaw : 100
       if (zoom !== 100) api.setZoomFactor(zoom / 100)
@@ -517,6 +551,7 @@ export const useStore = create<Store>((set, get) => {
         splitRatios: workspace.splitRatios,
         closedTabs: workspace.closed,
         zoom,
+        bookmarks,
         ...reflected,
         // Seed the selected translation from config so a Bible pane can render its
         // (offline-cached) text immediately, before the translation registry has resolved.
@@ -1217,6 +1252,41 @@ export const useStore = create<Store>((set, get) => {
     reloadTab: (tabId) => {
       const keys = get().reloadKeys
       set({ reloadKeys: { ...keys, [tabId]: (keys[tabId] ?? 0) + 1 } })
+    },
+
+    navigateTab: (tabId, content) => get().setTabContent(tabId, content),
+
+    goBack: (tabId) => {
+      const id = tabId ?? get().activeTabId
+      if (id) commit(pureGoHistory(currentWs(), id, -1))
+    },
+
+    goForward: (tabId) => {
+      const id = tabId ?? get().activeTabId
+      if (id) commit(pureGoHistory(currentWs(), id, 1))
+    },
+
+    goToHistoryIndex: (tabId, index) => commit(pureGoToHistoryIndex(currentWs(), tabId, index)),
+
+    toggleBookmark: (location, title) => {
+      const { bookmarks, added } = pureToggleBookmark(get().bookmarks, location, title)
+      set({ bookmarks })
+      persistBookmarks(bookmarks)
+      return added
+    },
+
+    renameBookmark: (id, title) => {
+      const bookmarks = pureRenameBookmark(get().bookmarks, id, title)
+      if (bookmarks === get().bookmarks) return
+      set({ bookmarks })
+      persistBookmarks(bookmarks)
+    },
+
+    removeBookmark: (id) => {
+      const bookmarks = pureRemoveBookmark(get().bookmarks, id)
+      if (bookmarks === get().bookmarks) return
+      set({ bookmarks })
+      persistBookmarks(bookmarks)
     },
 
     stepZoom: (dir) => {

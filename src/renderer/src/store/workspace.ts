@@ -34,6 +34,8 @@ export const PAGE_KINDS: PageKind[] = [
   'dashboard'
 ]
 
+const KNOWN_KINDS = new Set<string>(['note', 'bible', 'pdf', 'quotes', 'boc', ...PAGE_KINDS])
+
 /** A group of saved quotes opened in the center: a PDF, a Bible chapter, or a commentary source. */
 export type QuoteGroupRef =
   | { type: 'book'; bookId: string; title: string }
@@ -63,6 +65,13 @@ export interface Tab {
   documentCode?: string
   sectionOrdinal?: number
   bocSourceId?: string
+  /**
+   * Back/forward stack of locations (capped at MAX_HISTORY); `history[historyIndex]` is the
+   * current location. Optional on the type so older persisted tabs (and test fixtures) still
+   * parse; `sanitizeWorkspace` and `tabHistory` fill them in.
+   */
+  history?: TabLocation[]
+  historyIndex?: number
 }
 
 /** A closed tab remembered for "Reopen closed tab", with where it sat in the strip. */
@@ -91,7 +100,11 @@ export type TabContent =
   | { kind: 'boc'; documentCode: string; sectionOrdinal: number; bocSourceId?: string }
   | { kind: PageKind }
 
+/** Where a tab is: one entry of its back/forward history (same shape as TabContent). */
+export type TabLocation = TabContent
+
 export const MAX_CLOSED = 25
+export const MAX_HISTORY = 50
 export const MAX_SPLIT = 2
 
 export const EMPTY_WORKSPACE: Workspace = { tabs: [], activeTabId: null, splitRatios: {}, closed: [] }
@@ -190,7 +203,7 @@ export function openTab(
   const sorted = sortedTabs(ws.tabs)
   let index = opts.after ? indexAfter(sorted, opts.after) : sorted.length
   index = Math.max(index, pinnedCount(sorted))
-  const tab: Tab = { id: newId(), order: 0, ...content }
+  const tab: Tab = { id: newId(), order: 0, ...content, history: [content], historyIndex: 0 }
   const tabs = renumber([...sorted.slice(0, index), tab, ...sorted.slice(index)])
   return {
     ws: { ...ws, tabs, activeTabId: activate || !ws.activeTabId ? tab.id : ws.activeTabId },
@@ -404,21 +417,96 @@ export function setSplitRatio(ws: Workspace, splitId: string, ratio: number): Wo
 export function duplicateTab(ws: Workspace, tabId: string): { ws: Workspace; tabId: string | null } {
   const tab = ws.tabs.find((t) => t.id === tabId)
   if (!tab) return { ws, tabId: null }
-  const { ws: next, tabId: id } = openTab(ws, tabContent(tab), { after: tabId })
+  const { ws: opened, tabId: id } = openTab(ws, tabContent(tab), { after: tabId })
+  // Chrome's Duplicate keeps the back/forward history.
+  const h = tabHistory(tab)
+  const next = {
+    ...opened,
+    tabs: opened.tabs.map((t) => (t.id === id ? { ...t, history: h.entries, historyIndex: h.index } : t))
+  }
   if (!tab.pinned) return { ws: next, tabId: id }
   return { ws: setPinned(next, id, true), tabId: id }
 }
 
-/** Replace a tab's content in place (keeps its id, position, pin and split). */
+/** A tab's content fields replaced by `content`, keeping id, position, pin, split and history. */
+function withContent(t: Tab, content: TabContent, history: TabLocation[], historyIndex: number): Tab {
+  const base: Tab = { id: t.id, order: t.order, kind: content.kind }
+  if (t.pinned) base.pinned = true
+  if (t.splitId) base.splitId = t.splitId
+  return { ...base, ...content, history, historyIndex }
+}
+
+/**
+ * A tab's back/forward history, normalised: never empty, index in range, and the entry at the
+ * index is the tab's current location (a tab restored from an older session gets a one-entry
+ * history; a current location missing from the stack is appended).
+ */
+export function tabHistory(tab: Tab): { entries: TabLocation[]; index: number } {
+  const current = tabContent(tab)
+  const raw = Array.isArray(tab.history)
+    ? tab.history.filter((h) => h && typeof h === 'object' && KNOWN_KINDS.has((h as TabLocation).kind))
+    : []
+  if (raw.length === 0) return { entries: [current], index: 0 }
+  let index = typeof tab.historyIndex === 'number' ? Math.round(tab.historyIndex) : raw.length - 1
+  index = Math.max(0, Math.min(raw.length - 1, index))
+  if (contentKey(raw[index]) === contentKey(current)) {
+    const entries = [...raw]
+    entries[index] = current
+    return capHistory(entries, index)
+  }
+  return capHistory([...raw.slice(0, index + 1), current], index + 1)
+}
+
+function capHistory(entries: TabLocation[], index: number): { entries: TabLocation[]; index: number } {
+  const drop = Math.max(0, entries.length - MAX_HISTORY)
+  return { entries: entries.slice(drop), index: Math.max(0, index - drop) }
+}
+
+/**
+ * Navigate a tab in place (keeps its id, position, pin and split). A new location is pushed on
+ * the tab's history, dropping any forward entries, like following a link in Chrome; a change
+ * that keeps the location (e.g. only the highlighted verses) replaces the current entry.
+ */
 export function setTabContent(ws: Workspace, tabId: string, content: TabContent): Workspace {
   const tabs = ws.tabs.map((t) => {
     if (t.id !== tabId) return t
-    const base: Tab = { id: t.id, order: t.order, kind: content.kind }
-    if (t.pinned) base.pinned = true
-    if (t.splitId) base.splitId = t.splitId
-    return { ...base, ...content }
+    const h = tabHistory(t)
+    if (contentKey(h.entries[h.index]) === contentKey(content)) {
+      const entries = [...h.entries]
+      entries[h.index] = content
+      return withContent(t, content, entries, h.index)
+    }
+    const pushed = capHistory([...h.entries.slice(0, h.index + 1), content], h.index + 1)
+    return withContent(t, content, pushed.entries, pushed.index)
   })
   return { ...ws, tabs }
+}
+
+/** Move a tab to entry `index` of its own history (Back, Forward, or a pick from their lists). */
+export function goToHistoryIndex(ws: Workspace, tabId: string, index: number): Workspace {
+  const tab = ws.tabs.find((t) => t.id === tabId)
+  if (!tab) return ws
+  const h = tabHistory(tab)
+  if (index < 0 || index >= h.entries.length || index === h.index) return ws
+  const tabs = ws.tabs.map((t) => (t.id === tabId ? withContent(t, h.entries[index], h.entries, index) : t))
+  return { ...ws, tabs }
+}
+
+/** Back (-1) or Forward (+1) in a tab's history; unchanged at either end. */
+export function goHistory(ws: Workspace, tabId: string, delta: number): Workspace {
+  const tab = ws.tabs.find((t) => t.id === tabId)
+  if (!tab) return ws
+  return goToHistoryIndex(ws, tabId, tabHistory(tab).index + delta)
+}
+
+export function canGoBack(tab: Tab | undefined): boolean {
+  return !!tab && tabHistory(tab).index > 0
+}
+
+export function canGoForward(tab: Tab | undefined): boolean {
+  if (!tab) return false
+  const h = tabHistory(tab)
+  return h.index < h.entries.length - 1
 }
 
 export function focusTab(ws: Workspace, tabId: string): Workspace {
@@ -507,7 +595,6 @@ export function validateRestoredTabs(
   })
 }
 
-const KNOWN_KINDS = new Set<string>(['note', 'bible', 'pdf', 'quotes', 'boc', ...PAGE_KINDS])
 
 /**
  * Repair a workspace after tabs were filtered out from under it or it was read from disk:
@@ -531,7 +618,10 @@ export function sanitizeWorkspace(ws: Partial<Workspace> & { tabs: Tab[] }): Wor
     void _s
     return rest
   })
-  tabs = renumber(tabs)
+  tabs = renumber(tabs).map((t) => {
+    const h = tabHistory(t)
+    return { ...t, history: h.entries, historyIndex: h.index }
+  })
   const liveSplits = new Set(tabs.map((t) => t.splitId).filter(Boolean) as string[])
   const splitRatios: Record<string, number> = {}
   for (const [k, v] of Object.entries(ws.splitRatios ?? {})) {
