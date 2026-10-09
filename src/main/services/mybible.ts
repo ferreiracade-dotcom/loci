@@ -155,8 +155,29 @@ export function parseMyBibleCommentaries(rows: MyBibleRow[], options: MyBiblePar
     chunks.push(chunk)
   }
   flushIntroAsOwnChunk()
+  if (options.verseCounts) relabelFromOwnReference(chunks, options.verseCounts)
   if (options.passageComments) extendToPassages(chunks, options.verseCounts ?? {})
   return chunks
+}
+
+/** A comment keyed to a verse its chapter doesn't have, whose text opens with its own valid
+ *  reference, takes that reference: Keil & Delitzsch's "(6:28) Verse 29 (v. 28) closes the
+ *  narrative…" is keyed Daniel 6:29 (the Hebrew numbering) in the SermonIndex module. A
+ *  comment with no such label is left for the validator to flag. */
+function relabelFromOwnReference(chunks: ExtractedChunk[], verseCounts: Record<string, number[]>): void {
+  for (const c of chunks) {
+    const max = verseCounts[c.book]?.[c.chapterStart - 1]
+    if (max == null || c.verseStart <= max) continue
+    const m = /^\((\d+):(\d+)(?:-(\d+))?\)/.exec(c.text)
+    if (!m || Number(m[1]) !== c.chapterStart) continue
+    const start = Number(m[2])
+    const end = m[3] ? Number(m[3]) : start
+    if (start < 1 || end < start || end > max) continue
+    c.verseStart = start
+    c.chapterEnd = c.chapterStart
+    c.verseEnd = end
+    c.headerRaw = end === start ? `${c.chapterStart}:${start}` : `${c.chapterStart}:${start}-${end}`
+  }
 }
 
 /** See MyBibleParseOptions.passageComments. Only single-verse chunks stretch: an explicit range

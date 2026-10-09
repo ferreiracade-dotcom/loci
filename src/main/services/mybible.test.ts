@@ -111,6 +111,24 @@ describe('parseMyBibleCommentaries with passageComments', () => {
     expect(chunks.map((c) => c.headerRaw)).toEqual(['2:1-3', '2:26'])
   })
 
+  it('takes a comment’s own "(c:v)" label when its key overflows the chapter', () => {
+    const counts = { DAN: [21, 49, 30, 37, 31, 28] }
+    const chunks = parseMyBibleCommentaries(
+      [row(340, 6, 26, 'Darius decrees'), row(340, 6, 29, '(6:28) Verse 29 (v. 28) closes the narrative')],
+      { passageComments: true, verseCounts: counts }
+    )
+    expect(chunks.map((c) => c.headerRaw)).toEqual(['6:26-27', '6:28'])
+  })
+
+  it('leaves an overflowing comment without a usable label for the validator', () => {
+    const counts = { DAN: [21, 49, 30, 37, 31, 28] }
+    const chunks = parseMyBibleCommentaries(
+      [row(340, 6, 29, 'no label'), row(340, 6, 30, '(7:1) another chapter')],
+      { verseCounts: counts }
+    )
+    expect(chunks.map((c) => c.headerRaw)).toEqual(['6:29', '6:30'])
+  })
+
   it('is off by default, for modules of sparse notes', () => {
     const chunks = parseMyBibleCommentaries([row(500, 3, 16, 'Luther on 3:16')], { verseCounts: { JHN: [51, 25, 36] } })
     expect(chunks[0].headerRaw).toBe('3:16')
