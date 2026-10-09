@@ -100,7 +100,8 @@ describe('the commentaries Loci ships', () => {
 
   it.each(files)('%s indexes without a flagged excerpt', (f) => {
     const chunks = parseCommentaryMarkdown(readFileSync(join(dir, f), 'utf8'))
-    expect(chunks.length).toBeGreaterThan(50)
+    // Melanchthon on Daniel, treated chapter by chapter and by topics, is the shortest: 33 excerpts.
+    expect(chunks.length).toBeGreaterThan(25)
     const flagged = validateSource(chunks, VERSE_COUNTS).chunks.filter((c) => c.flagged)
     expect(flagged.map((c) => `${c.book} ${c.headerRaw}: ${c.reasons[0]}`)).toEqual([])
   })

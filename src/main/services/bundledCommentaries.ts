@@ -12,9 +12,9 @@ import { commentaryVaultDir, readConfig, writeConfig } from './config'
 // Greek and Hebrew repaired by tools/mybible-to-md.py; Luther's prefaces, Church Postil sermons and
 // commentaries on Genesis 4-9, Psalm 82, the Sermon on the Mount and Galatians, from SermonIndex's
 // module with each entry put back at its passage by tools/luther-sermonindex-to-md.py; Gerhard on 1 and 2 Peter and on Matthew, and
-// Calov's Biblia Illustrata on both Testaments, and Heshusius on 1 Corinthians, from The Faith
-// Received's Latin and its machine translation, by tools/tfr-to-md.py, tools/tfr-books-to-md.py and
-// tools/tfr-quotes-to-md.py). They live in resources/commentaries
+// Calov's Biblia Illustrata on both Testaments, Heshusius on 1 Corinthians, and Melanchthon's
+// commentaries, from The Faith Received's Latin and its machine translation, by tools/tfr-to-md.py,
+// tools/tfr-books-to-md.py and tools/tfr-quotes-to-md.py). They live in resources/commentaries
 // in the repository and in the installer's resources; on first launch each is copied into the
 // vault's commentaries folder, where the folder sync indexes it and vault sync carries it to
 // every device, like any other commentary file.
@@ -39,6 +39,19 @@ export const BUNDLED_COMMENTARIES: Record<string, { title: string; author: strin
   'Heshusius 1 Corinthians.md': {
     title: 'Explanation of the First Epistle to the Corinthians',
     author: 'Tilemann Heshusius'
+  },
+  'Melanchthon John.md': { title: 'Annotations on the Gospel of John (1523)', author: 'Philip Melanchthon' },
+  'Melanchthon Romans.md': { title: 'Commentaries on the Epistle to the Romans (1540)', author: 'Philip Melanchthon' },
+  'Melanchthon Daniel.md': { title: 'Commentary on the Prophet Daniel', author: 'Philip Melanchthon' },
+  'Melanchthon Proverbs.md': { title: 'Explanation of the Proverbs of Solomon (1552)', author: 'Philip Melanchthon' },
+  'Melanchthon Colossians.md': { title: 'Scholia on the Epistle to the Colossians', author: 'Philip Melanchthon' },
+  'Melanchthon Opera 14.md': {
+    title: 'Opera, vol. 14: Proverbs (1555), Ecclesiastes, the Sunday Gospels, Matthew',
+    author: 'Philip Melanchthon'
+  },
+  'Melanchthon Opera 15.md': {
+    title: 'Opera, vol. 15: John, Romans, Corinthians, Colossians, Philippians, Timothy',
+    author: 'Philip Melanchthon'
   },
   'Luther Selected Passages.md': { title: "Luther's Commentary on Selected Bible Passages", author: 'Martin Luther' },
   'Hengstenberg.md': {
