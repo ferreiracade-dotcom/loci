@@ -60,6 +60,7 @@ import {
   setPinned as pureSetPinned,
   setSplitRatio as pureSetSplitRatio,
   setTabContent as pureSetTabContent,
+  sortedTabs,
   splitPartner,
   splitTabs as pureSplitTabs,
   unsplitTab as pureUnsplitTab,
@@ -1319,12 +1320,16 @@ export const useStore = create<Store>((set, get) => {
         get().setTabContent(current.id, content)
         return current.id
       }
-      const after = opts.after === undefined ? get().activeTabId : opts.after
-      const { ws: opened, tabId } = pureOpenTab(currentWs(), content, { activate: opts.activate, after })
+      let after = opts.after === undefined ? get().activeTabId : opts.after
       // A tab opened next to a grouped tab joins its group (Chrome's links and "New tab to the
-      // right"), unless the caller says otherwise.
-      const groupId =
-        opts.groupId !== undefined ? opts.groupId : (opened.tabs.find((t) => t.id === after)?.groupId ?? null)
+      // right"), unless the caller says otherwise; then it goes just past the group instead.
+      const anchorGroup = get().tabs.find((t) => t.id === after)?.groupId
+      const groupId = opts.groupId !== undefined ? opts.groupId : (anchorGroup ?? null)
+      if (anchorGroup && groupId !== anchorGroup) {
+        const members = sortedTabs(get().tabs).filter((t) => t.groupId === anchorGroup)
+        after = members[members.length - 1]?.id ?? after
+      }
+      const { ws: opened, tabId } = pureOpenTab(currentWs(), content, { activate: opts.activate, after })
       const next = groupId
         ? { ...opened, tabs: opened.tabs.map((t) => (t.id === tabId ? { ...t, groupId } : t)) }
         : opened
@@ -1344,7 +1349,8 @@ export const useStore = create<Store>((set, get) => {
           return
         }
       }
-      get().openTab({ kind })
+      // Pages open beside the focused tab but never inside its group.
+      get().openTab({ kind }, { groupId: null })
     },
 
     openTabInSplit: (content) => {
