@@ -419,6 +419,108 @@ const migrations: Migration[] = [
         ALTER TABLE quotes ADD COLUMN boc_paragraph INTEGER;
       `)
     }
+  },
+  {
+    version: 20,
+    name: 'church-fathers',
+    up: (db) => {
+      // Church Fathers (CCEL ThML, Schaff's ANF/NPNF series). The vault's fathers/*.xml files
+      // are the source of truth; everything here is a rebuildable index of them, so a volume is
+      // re-indexed by deleting its rows and re-inserting (fathersIndex.ts). Kept apart from the
+      // Bible-commentary and Book of Concord tables for the same reason those are apart.
+      //
+      // fathers_scripture_refs.in_note: ~99% of the files' scripRefs sit inside footnotes (the
+      // editors' cross-references), so footnote refs are indexed too; char_offset is where the
+      // reference — or, for a footnote ref, its marker — sits in the section's plain text.
+      //
+      // fathers_authors is reseeded from src/main/data/fathersAuthors.ts on every sync (it is
+      // curated data, not user data), so edits there need no further migration.
+      //
+      // quotes: a Fathers quote is anchored by (volume, section) — deliberately NOT a foreign
+      // key, so re-indexing a volume can never cascade-delete the user's quotes — plus the page
+      // (a printed page label such as "415" or "xiv") and paragraph captured at quote time.
+      db.exec(`
+        CREATE TABLE fathers_volumes (
+          code        TEXT PRIMARY KEY,
+          series      TEXT NOT NULL,
+          number      INTEGER NOT NULL,
+          title       TEXT NOT NULL DEFAULT '',
+          file_key    TEXT NOT NULL,
+          mtime       INTEGER,
+          status      TEXT NOT NULL DEFAULT 'unindexed',
+          error       TEXT,
+          indexed_at  TEXT
+        );
+
+        CREATE TABLE fathers_sections (
+          volume_code  TEXT NOT NULL REFERENCES fathers_volumes(code) ON DELETE CASCADE,
+          id           TEXT NOT NULL,
+          ordinal      INTEGER NOT NULL,
+          depth        INTEGER NOT NULL,
+          titles_json  TEXT NOT NULL,
+          short_title  TEXT NOT NULL,
+          author_id    TEXT,
+          work_title   TEXT,
+          editorial    INTEGER NOT NULL DEFAULT 0,
+          start_page   TEXT,
+          html         TEXT NOT NULL,
+          text         TEXT NOT NULL,
+          PRIMARY KEY (volume_code, id)
+        );
+        CREATE INDEX idx_fathers_sections_order ON fathers_sections(volume_code, ordinal);
+        CREATE INDEX idx_fathers_sections_author ON fathers_sections(author_id);
+
+        CREATE TABLE fathers_scripture_refs (
+          volume_code    TEXT NOT NULL,
+          section_id     TEXT NOT NULL,
+          anchor         TEXT NOT NULL,
+          osis           TEXT NOT NULL,
+          passage        TEXT NOT NULL,
+          book           TEXT NOT NULL,
+          chapter_start  INTEGER NOT NULL,
+          verse_start    INTEGER,
+          chapter_end    INTEGER NOT NULL,
+          verse_end      INTEGER,
+          in_note        INTEGER NOT NULL DEFAULT 0,
+          char_offset    INTEGER NOT NULL DEFAULT 0,
+          FOREIGN KEY (volume_code, section_id) REFERENCES fathers_sections(volume_code, id) ON DELETE CASCADE
+        );
+        CREATE INDEX idx_fathers_refs_lookup ON fathers_scripture_refs(book, chapter_start, chapter_end);
+        CREATE INDEX idx_fathers_refs_section ON fathers_scripture_refs(volume_code, section_id);
+
+        CREATE TABLE fathers_notes (
+          volume_code  TEXT NOT NULL,
+          section_id   TEXT NOT NULL,
+          anchor       TEXT NOT NULL,
+          n            TEXT NOT NULL,
+          html         TEXT NOT NULL,
+          FOREIGN KEY (volume_code, section_id) REFERENCES fathers_sections(volume_code, id) ON DELETE CASCADE
+        );
+        CREATE INDEX idx_fathers_notes_section ON fathers_notes(volume_code, section_id);
+
+        CREATE TABLE fathers_pages (
+          volume_code  TEXT NOT NULL,
+          section_id   TEXT NOT NULL,
+          n            TEXT NOT NULL,
+          char_offset  INTEGER NOT NULL,
+          FOREIGN KEY (volume_code, section_id) REFERENCES fathers_sections(volume_code, id) ON DELETE CASCADE
+        );
+        CREATE INDEX idx_fathers_pages_section ON fathers_pages(volume_code, section_id);
+
+        CREATE TABLE fathers_authors (
+          id           TEXT PRIMARY KEY,
+          name         TEXT NOT NULL,
+          sort_year    INTEGER,
+          dates_label  TEXT,
+          bio          TEXT
+        );
+
+        ALTER TABLE quotes ADD COLUMN fathers_volume TEXT;
+        ALTER TABLE quotes ADD COLUMN fathers_section_id TEXT;
+        ALTER TABLE quotes ADD COLUMN fathers_page TEXT;
+        ALTER TABLE quotes ADD COLUMN fathers_paragraph INTEGER;
+      `)
+    }
   }
 ]
 
