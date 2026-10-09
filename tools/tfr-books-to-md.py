@@ -693,10 +693,35 @@ def main(argv):
             at = pick[0] if pick else next(i for i in near if flat[i][0] == page)
             index.append((code, at))
             last_verse_at = at
+        # Where the page a book opens on is set in two columns, the end of the book before can come
+        # through interleaved with the new one's preface (Psalm 150 among the preface to Proverbs):
+        # before the new book's first chapter, its page's verse comments and the old book's chapter
+        # headings, with what follows them, go back to the old book.
+        moved = {}
+        for k in range(1, len(index)):
+            (prev, _), (code, at) = index[k - 1], index[k]
+            if prev == "ADD" or code == "ADD":
+                continue
+            own = PSALM if code == "PSA" else CHAPTER
+            theirs = PSALM if prev == "PSA" else CHAPTER
+            back, going = [], False
+            for i in range(at + 1, len(flat)):
+                kind, la = flat[i][1], flat[i][3]
+                verse = VERSE.match(la)
+                if (flat[i][0] != flat[at][0] or kind == "head" and (own.search(la) or re.search(r"ARGUMENT", la))
+                        or verse and (verse.group(1) or verse.group(2)) in ("1", "I")):
+                    break  # the new book's own start ("Vers. 1." of a one-chapter epistle)
+                if kind == "head":
+                    going = bool(theirs.search(la))
+                if going or kind == "p" and verse:
+                    back.append(i)
+            moved[k - 1] = back
+        gone = {i for back in moved.values() for i in back}
         for k, (code, at) in enumerate(index):
             end = index[k + 1][1] if k + 1 < len(index) else len(flat)
             prelude = [b[1:] for b in flat[:at]] if k == 0 else []
-            body = [b[1:] for b in flat[at:end]]
+            body = [b[1:] for i, b in enumerate(flat[at:end], at) if i not in gone]
+            body += [flat[i][1:] for i in moved.get(k, [])]
             # The volume's indexes ("INDEX MATERIARUM") and its "FINIS" end the last book.
             stop = next((i for i, b in enumerate(body) if b[0] == "head" and i > 0
                          and re.match(r"^\W*(?:INDEX|FINIS(?!\s+LIBRI)|SUPPL)\b", b[2], re.I)),  # the Latin: "ELENCHUS" is an "INDEX" in English

@@ -12831,6 +12831,13 @@ Latin:
 
 Vers. 24. VOBISCVM) Hoc aut ad sensum explendum, aut ex Codicibus aliis apponunt Samaritanus, Syrus, LXX. quos Latinus sequitur.
 
+## 50:25
+Vers. 25. HE DIED HAVING COMPLETED ONE HUNDRED AND TEN YEARS OF HIS LIFE. He saw his grandsons to the third generation, namely Sutelah and Tahan, the sons of Ephraim, and Hadan (or Haran, Num. 26:36), the son of Sutelah: and likewise Machir the son of Manasseh, and Gilead, his grandson, whence the LXX Interpreters, adding these five born after the arrival of Jacob in Egypt, made the number of 75 souls, the families of Jacob and Joseph, which was said to consist of 70 heads, Gen. 46:27 and Deut. 10:22, 1 Chron. 7. Joseph therefore held the prefecture in Egypt for a full 80 years, and that under different Kings. Eusebius in his Chronicle arranged the series of years thus: Joseph becomes Leader of Egypt in the 30th year of his age, the 122nd of his father Jacob, which leadership he held for 80 years. After whose death the Hebrews served the Egyptians for 144 years. The total number of years which the Hebrews spent in Egypt is 215, which are computed from the same time that Jacob went down into Egypt with his sons.
+
+Latin:
+
+Vers. 25. MORTUUS EST EXPLETIS CENTUM DECEM VITÆ SUÆ ANNIS. Vidit Nepotes suos ad tertiam generationem, Sutelacho nimirum, & Tachane Ephraimi filiis & Hadane, (sive Harane Num. 26, 36.) Sutelachi filio : itemque Machir Manassis filio, & Gilead, nepote, unde LXX. Interpp. familiæ Jacobi & Josephi, quæ 70. capitibus constare dicebatur Gen. 46, 27. & Deut. 10, 22. hos quinque post adventum Jacobi in Ægypto natos 1. Chron. 7. adjicientes, 75. animarum numerum effecerunt. Gessit itaque Josephus præfecturam in Ægypto integris XXC. annis idque sub diversis Regibus. Annorum seriem ita digessit in Chronic. Eusebius : Joseph Dux Ægypti fit anno ætatis 30. Jacobi patris 122. quem principatum tenuit annis 80. Post cujus interitum Hebræi Ægyptiis servierunt annis 144. Fiunt autem omnes anni, quos Hebræi in Ægypto fecerunt 215. qui ab eodem tempore computantur, quo Jacob cum filiis suis descendit in Ægyptum.
+
 # Exodus
 
 ## 1:1 Introduction
@@ -12848,8 +12855,6 @@ That most of the things which Grotius inserted into his annotations on GENESIS a
 
 The former must be assumed: For Paraphrasts often use that liberty. But if the corruption of Codices is to be posited as often as one or more of them interprets otherwise, or adds some things for the sake of completing the sense, what finally will remain certain and uncorrupted?
 
-Vers. 25. HE DIED HAVING COMPLETED ONE HUNDRED AND TEN YEARS OF HIS LIFE. He saw his grandsons to the third generation, namely Sutelah and Tahan, the sons of Ephraim, and Hadan (or Haran, Num. 26:36), the son of Sutelah: and likewise Machir the son of Manasseh, and Gilead, his grandson, whence the LXX Interpreters, adding these five born after the arrival of Jacob in Egypt, made the number of 75 souls, the families of Jacob and Joseph, which was said to consist of 70 heads, Gen. 46:27 and Deut. 10:22, 1 Chron. 7. Joseph therefore held the prefecture in Egypt for a full 80 years, and that under different Kings. Eusebius in his Chronicle arranged the series of years thus: Joseph becomes Leader of Egypt in the 30th year of his age, the 122nd of his father Jacob, which leadership he held for 80 years. After whose death the Hebrews served the Egyptians for 144 years. The total number of years which the Hebrews spent in Egypt is 215, which are computed from the same time that Jacob went down into Egypt with his sons.
-
 And let these suffice in this place. For those who may perhaps desire what is needed for the explanation of this book, let them seek it from our Commentary, if they please. Which it will be useful to compare with the present Annotations.
 
 We conclude Genesis for the present with the thanksgiving of the 24 Elders, Rev. 4:11: THOU ART WORTHY, O LORD OUR GOD, to receive glory and honor and power, for thou hast created all things, and for thy pleasure they were, and were created. To Thee be glory for ever and ever. Amen.
@@ -12861,8 +12866,6 @@ PRÆLOQUIUM.
 QUæ annotatis suis in GENESIN illevit Grotius, pleraque ita comparata esse, ut si ab illis abeas, quibus eruditionem Philologicam, & πολυϊστορίαν vel orbi ostentare, vel applicare quandoque ad Sacra viro Magno visum fuit, advocatum non tantum vario- rum heterodoxorum, & hæreticorum, sed Patro- num quoque opinionum Judaicarum agere voluis- se censeri possit, Dissertationes nostræ Elencticæ, & annotationes Grot. oppositæ, haud obscure, opi- nor, docuere. Neque vero id dissimulavit ipse, quod placere omnibus studuerit, qui Christi nomen hodie præ se ferunt. Mihi autem, scripsit præfatione annotationum ad libros Evangeliorum, cum ista annotarem captivus: cum perficerem privatus, cum ederem in aliquo jam honore constitutus, propositum SEMPER fuit, non alicui earum servire partium, in quas ingenti seculi nostri malo divisi sumus Christiani, sed CHRISTIANIS PLANE OMNIBUS, meaque dirigere ad notitiam Evangelicæ veritatis & incremen- tum pietatis. Dum servire omnibus voluit, illis etiam, qui Pontifici Romano adhærent, operam suam dicavit, & βδελύγματα Romanæ Synagogæ aut excusanda aut ornanda duxit, quæ vere Chri- stiani horrent maxime. Quid? Photinianæ etiam, atque Arianæ impietati, quæ se Christiano schemate tegens, in Socinianis cœtibus aperte, in Arminii se- quacibus operte serpit, gratificari voluit; ne non omnibus plane Christianis inserviret. Verumenim- vero non illis tantum, qui Christiano dealbati sunt nomine, patrocinium suum impendit: Judæorum etiam causam non raro perorandam censuit, sive quod eruditionis fiducia, quicquid vellet, sustinere posse crediderit, sive quod variis opinionum ventis
 
 Prius assumendum : Sæpe enim ea libertate utuntur Paraphrastæ. Quod si Codicum corruptio toties statuenda, quoties unus vel plures eorum aliter interpretatur, aut sensus explendi causa nonnulla addit, quid denique certi & incorrupti superabit?
-
-Vers. 25. MORTUUS EST EXPLETIS CENTUM DECEM VITÆ SUÆ ANNIS. Vidit Nepotes suos ad tertiam generationem, Sutelacho nimirum, & Tachane Ephraimi filiis & Hadane, (sive Harane Num. 26, 36.) Sutelachi filio : itemque Machir Manassis filio, & Gilead, nepote, unde LXX. Interpp. familiæ Jacobi & Josephi, quæ 70. capitibus constare dicebatur Gen. 46, 27. & Deut. 10, 22. hos quinque post adventum Jacobi in Ægypto natos 1. Chron. 7. adjicientes, 75. animarum numerum effecerunt. Gessit itaque Josephus præfecturam in Ægypto integris XXC. annis idque sub diversis Regibus. Annorum seriem ita digessit in Chronic. Eusebius : Joseph Dux Ægypti fit anno ætatis 30. Jacobi patris 122. quem principatum tenuit annis 80. Post cujus interitum Hebræi Ægyptiis servierunt annis 144. Fiunt autem omnes anni, quos Hebræi in Ægypto fecerunt 215. qui ab eodem tempore computantur, quo Jacob cum filiis suis descendit in Ægyptum.
 
 Atque hæc hoc loco sufficiant. Quæ enim desiderari forte possint ad explicationem hujus libri, e Commentario nostro petant, quibus libuerit. Quem cum præsentibus Annotatis utiliter conferre licebit.
 
@@ -59994,6 +59997,48 @@ Latin:
 
 Vers. 13. QVONIAM FIDELES COMPROBATI SVNT] In Hebr. habiti sunt. Fama eos commendabat, quæ non errat semper, sæpe eligit: consensu monstrabantur: nemo omnes decepit.
 
+## 13:18
+Vers. 18. DID NOT OUR FATHERS DO THESE THINGS, AND DID NOT OUR GOD BRING ALL THIS EVIL UPON US, AND UPON THIS CITY) He refers to Jeremiah 17, 21. and following.
+
+Latin:
+
+Vers. 18. NUMQVID NON HÆC FECERUNT PA- TRES NOSTRI, ET ADDUXIT DEUS NOSTER SU- PER NOS OMNE MALUM HOC, ET SUPER CIVI- TATEM HANC) Respicit ad Jeremiam 17, 21. & sequentibus.
+
+## 13:21
+Vers. 21. I WILL LAY MY HAND UPON YOU) I will act by my own right, as above 9.
+
+Latin:
+
+Vers. 21. MANUM MITTAM IN VOS] Agam pro meo jure, ut supra 9.
+
+## 13:24
+AND THEIR CHILDREN SPOKE HALF IN THE SPEECH OF ASHDOD, AND COULD NOT SPEAK IN THE JEWS' LANGUAGE.
+
+Latin:
+
+Vers. 24. ET FILII EORUM EX MEDIA PARTE LOQUEBANTUR AZOTICE, ET NESCIEBANT LOQUI JUDAICE.
+
+## 13:25
+Vers. 25. AND I REBUKED THEM, AND CURSED THEM] By that word 'cursed' Aben-Ezra understands two kinds of excommunication, נדוי and חרם: but I would believe those were used in exile, when the right of life and death was in the hands of the Persians, and again when capital judgments had passed to the Romans. For there is no mention of those punishments in the law, nor in the ancient history of that people. It is truer, therefore, that Nehemiah used grave words, even with the threat of divine wrath, against those law-breakers.
+
+Latin:
+
+Vers. 25. ET OBJURGAVI EOS, ET MALEDIXI] Per illud maledixi Aben-Esdras intelligit duo excommunica- tionis genera נדוי & חרם : sed ea crediderim in exilio usurpata, cum jus vitæ necisque penes Persas esset, atque iterum cum capitalia judicia ad Romanos devenissent. Nam in lege nulla earum pœnarum mentio, neque in veteri historia populi illius. Verius ergo est, Nehemiam gravibus verbis, etiam cum iræ divinæ comminatione, usum in istos legirupas.
+
+## 13:28
+Vers. 28. BUT OF THE SONS OF JOIADA THE SON OF ELIASHIB THE HIGH PRIEST WAS SON-IN-LAW TO SANBALLAT THE HORONITE) Nay, he was the son-in-law of Sanballat the Horonite. For the Hebrew demands that, but so do the Greek.
+
+Latin:
+
+Vers. 28. DE FILIIS AUTEM JOJADA FILII ELIA- SIB SACERDOTIS MAGNI GENER ERAT SANA- BALATTA HORONITES) Imo gener erat Sanaballetæ Horonitæ. Id enim Hebræa exigunt, sed & Græca.
+
+## 13:31
+Vers. 31. AND FOR THE WOOD OFFERING, AT TIMES APPOINTED, AND FOR THE FIRSTFRUITS] I caused, namely, that the decree mentioned above in 10:34, 35 should be kept, in memory of which a solemn day of the wood-bearing (ξυλοφορίων) was instituted, which Josephus mentions in book 2 of the Jewish War.
+
+Latin:
+
+Vers. 31. ET IN OBLATIONIBUS LIGNORUM IN TEMPORIBUS, ET IN PRIMITIVIS] Effeci scil. ut fervaretur decretum memoratum supra 10, 34. 35. in cujus rei memoriam institutus solemnis dies ξυλοφορίων, cujus meminit Josephus 2. Belli Judaici.
+
 # Esther
 
 ## 1:1 Introduction
@@ -60002,21 +60047,9 @@ IN. PREFACE TO THE BOOK
 
 See what we have said at the beginning of Chronicles. Often women have been of great benefit to the Hebrews. Even in Po- Vers. 14. REMEMBER ME O MY GOD CONCERNING THIS] So also below 22. 29. 31.
 
-Vers. 18. DID NOT OUR FATHERS DO THESE THINGS, AND DID NOT OUR GOD BRING ALL THIS EVIL UPON US, AND UPON THIS CITY) He refers to Jeremiah 17, 21. and following.
-
-Vers. 21. I WILL LAY MY HAND UPON YOU) I will act by my own right, as above 9.
-
-AND THEIR CHILDREN SPOKE HALF IN THE SPEECH OF ASHDOD, AND COULD NOT SPEAK IN THE JEWS' LANGUAGE.
-
 The Ashdodite language is that of the Philistines, a part of whom were the Ashdodites, concerning which Bochart understands ch. 15. what Jerome said about the Canaanite language, that it is halfway between Hebrew and Egyptian, and Hottinger agrees in System. Theol. p. 145. because the names of the gods בעל and זבוב are Hebrew, and דגן is a common name for the Kings of the Philistines אבימלך Gen. 20, 21. 26. as also the name סרן by which the Phoenicians called their princes Jud. 16, 5. 24. from the Hebrew שר; but the Egyptian is Astharoth, Urania Venus, concerning whom Herodotus in Clio, from Tsarot, which denotes Venus to the Egyptians. This Ashdodite language was a dialect of Chaldean: Although indeed the use of the Chaldean language flourished among the Jews in captivity, and after it, as can be seen from Jerem. 10, 11. Dan. 2, 4. up to ch. 8. Ezra 4. v. 8. seqq. (which before the captivity could not be understood by the Jews 2. Kings 18, 26. Jer. 5, 18.) Yet the dialects of the Chaldean language could not be understood at all by the Jews: such as Hottinger in book 5 makes that Azotic language, as well as the Punic language, which Postellus indeed calls a twin of the Hebrew, Bochart a dialect of the same, and Amama and Selden judge, according to the verses of Plautus in the Poenulus, to have more Hebraism than Chaldaism, as Hottinger judges; but Wafer in his Mithridates and Fuller in book 4 of his Miscellanies, chapter 10, say it is akin to the Syriac: and then the Syriac: which, although it was once the very language of the Chaldeans, after the Babylonian captivity it emerged as a third language distinct from both in letters and formation, arising from Chaldaism and Hebraism, but it is closer to the Chaldean idiom than to the Hebrew.
 
-Vers. 25. AND I REBUKED THEM, AND CURSED THEM] By that word 'cursed' Aben-Ezra understands two kinds of excommunication, נדוי and חרם: but I would believe those were used in exile, when the right of life and death was in the hands of the Persians, and again when capital judgments had passed to the Romans. For there is no mention of those punishments in the law, nor in the ancient history of that people. It is truer, therefore, that Nehemiah used grave words, even with the threat of divine wrath, against those law-breakers.
-
-Vers. 28. BUT OF THE SONS OF JOIADA THE SON OF ELIASHIB THE HIGH PRIEST WAS SON-IN-LAW TO SANBALLAT THE HORONITE) Nay, he was the son-in-law of Sanballat the Horonite. For the Hebrew demands that, but so do the Greek.
-
 WHOM I CHASED FROM ME) Not Sanballat the satrap in Moab, but I ordered that grandson of Eliashib to depart, according to the decree of Ezra 10:8.
-
-Vers. 31. AND FOR THE WOOD OFFERING, AT TIMES APPOINTED, AND FOR THE FIRSTFRUITS] I caused, namely, that the decree mentioned above in 10:34, 35 should be kept, in memory of which a solemn day of the wood-bearing (ξυλοφορίων) was instituted, which Josephus mentions in book 2 of the Jewish War.
 
 REMEMBER ME O MY GOD FOR GOOD. AMEN.
 
@@ -60056,21 +60089,9 @@ IN. AD LIBRU PRÆLOQUI
 
 VIde quæ diximus ad initium Paralipomenon. Sæpe mulieres Hebræis plurimum profuerunt. Etiam in Po- Vers. 14. MEMENTO MEI DEUS MEUS PRO HOC] Sic & infra 22. 29. 31.
 
-Vers. 18. NUMQVID NON HÆC FECERUNT PA- TRES NOSTRI, ET ADDUXIT DEUS NOSTER SU- PER NOS OMNE MALUM HOC, ET SUPER CIVI- TATEM HANC) Respicit ad Jeremiam 17, 21. & sequentibus.
-
-Vers. 21. MANUM MITTAM IN VOS] Agam pro meo jure, ut supra 9.
-
-Vers. 24. ET FILII EORUM EX MEDIA PARTE LOQUEBANTUR AZOTICE, ET NESCIEBANT LOQUI JUDAICE.
-
 Azotica lingua est Philisthæorum, quorum pars Azotii erant, de qua intelligit Bochartus c. 15. quod de lingua Chanaan dixit Hieronymus, mediam esse inter Ebræam & Ægyptiam, annuitque Hottinge- rus System. Theol. p. 145. quia Ebræa sint nomina Deorum בעל & זבוב, & דגן nomen commune Re- gum Philistæorum אבימלך Gen. 20, 21. 26. ut & no- men סרן quo Principes suos vocarunt Phœnices Jud. 16, 5. 24. ab Ebræo שר; Ægyptiacum vero sit Astharoth, Urania Venus, de qua Herodotus in Clio, à Tsarot, quod Venereum Ægyptiis notat. Hæc Azotica lingua Chaldaicæ Dialectus fuit: Quanquam vero Chaldaicæ linguæ usus apud Judæos in captivi- tate, & post eandem viguerit, ut è Jerem. 10, 11. Dan. 2, 4. usque ad c. 8. Esdr. 4. v. 8. seqq. videre est (quæ ante captivitatem à Judæis intelligi non poterat 2. Reg. 18, 26. Jer. 5, 18.) Dialecti tamen Chaldaicæ linguæ intelligi minime à Judæis poterant : quales Hottingerus lib. 5. facit tum Azoticam illam lin- guam, tum linguam Punicam, quam Ebrææ gemel- lam quidem Postellus, Dialectum ejusdem Bochar- tus, Amama, Seldenus, plus Hebraismi quam Chal- daismi habere, juxta versus Plautinos in Pœnulo Hottingerus judicat; Waferus vero ad Mithridat. & Fullerus l. 4. Miscell. c. 10. Syriacæ affinem dicunt : tum Syriacam: quæ Aramæa etsi olim ipsissima Chaldæorum lingua fuerit, post captivitatem ta- men Babylonicam ex Chaldaismo & Ebraismo ter- tia ab utraq; literis & formatione distincta emersit, Chaldæo vero idiomati vicinior est, quam Ebræo.
 
-Vers. 25. ET OBJURGAVI EOS, ET MALEDIXI] Per illud maledixi Aben-Esdras intelligit duo excommunica- tionis genera נדוי & חרם : sed ea crediderim in exilio usurpata, cum jus vitæ necisque penes Persas esset, atque iterum cum capitalia judicia ad Romanos devenissent. Nam in lege nulla earum pœnarum mentio, neque in veteri historia populi illius. Verius ergo est, Nehemiam gravibus verbis, etiam cum iræ divinæ comminatione, usum in istos legirupas.
-
-Vers. 28. DE FILIIS AUTEM JOJADA FILII ELIA- SIB SACERDOTIS MAGNI GENER ERAT SANA- BALATTA HORONITES) Imo gener erat Sanaballetæ Horonitæ. Id enim Hebræa exigunt, sed & Græca.
-
 QVEM FUGAVI A ME) Non Sanaballeten Satra- pam in Moabitide, sed illum nepotem Eliasibi jussi abire, ex decreto Esdræ, 10, 8.
-
-Vers. 31. ET IN OBLATIONIBUS LIGNORUM IN TEMPORIBUS, ET IN PRIMITIVIS] Effeci scil. ut fervaretur decretum memoratum supra 10, 34. 35. in cujus rei memoriam institutus solemnis dies ξυλοφορίων, cujus meminit Josephus 2. Belli Judaici.
 
 MEMENTO MEI DEUS IN BONUM. AMEN.
 
@@ -76469,6 +76490,46 @@ Vers. 5. EXULTABUNT SANCTI IN GLORIA.
 
 Ad Sanctos defunctos traxit Coturius Jesuita, ut e sequentibus gladii ancipites in manibus eorum ad faciendam vindictam in nationibus, doceat eos esse præsides & gubernatores rerum humanarum, eoque nomine invocandos. Similiter Bellarminus, qui iti- dem in comment. ad h. l. non de moderno Sancto- rum præsidio, sed de potestate judiciaria, qua in die novissimo persequutores suos ferient, hæc explicat. In
 
+## 149:8
+Verse 8. TO BIND KINGS IN THEIR FETTERS) As was done to Adonibezek, Jud. 1, 7.
+
+Latin:
+
+Vers. 8. AD ALLIGANDOS REGES IN EORVM COMPEDIBVS) Vt factum Adonibeseco Jud. 1, 7.
+
+## 149:9
+Verse 9. TO EXECUTE UPON THEM THE WRITTEN JUDGMENT) A similitude taken from sentences which were accustomed to be recited after being written down. God is said to write down what He decrees. Jude 4, Rev. 13, 8, 20, 15.
+
+Latin:
+
+Vers. 9. VT FACIANT IN EIS JVDICIVM CON- SCRIPTVM) Similitudo sumta ex sententiis, quæ descri- ptæ recitari solebant. Deus describere dicitur, quod decer- nit. Judæ 4. Apoc. 13, 8. 20, 15.
+
+## 150:1 Argument
+PSALM 150. The cause and instruments of divine praise.
+
+PRAISE THE LORD IN HIS HOLY PLACES) In His sanctuary: that is, in the temple. He rightly corrects the Vulgate here, which is snatched away by Papists for the invocation of Saints, concerning which Sixtinus Amama, Antibarb. page 568, may be consulted. Since we have Grotius agreeing here, we do not wish to cling to those. Estius and Jansenius also agree, as does Bellarmine himself: Praise the Lord in His holy places, that is, O you elect and holy ones, praise the Lord dwelling in the heavenly sanctuary. For the Hebrew word Chodes properly signifies holiness and a sanctuary. Therefore, literally, by the word in His holy places, it seems that the heavenly sanctuary must be understood, which Heb. 9 calls the holy places. So he.
+
+Verse same. PRAISE HIM IN THE FIRMAMENT OF HIS POWER. Because of the expanse of His strength, that is, the expanded strength which is expended and diffused upon all created things, according to the interpretation of Glassius, l. 3. Phil. S. p. 26. It is taken more simply as an explanation of the previous clause: or if that is understood of the sanctuary of the Church, this may be explained of heaven with Osiander; celebrate God dwelling in the heavens, which He created to show us His immense power. For thus the word רקיע is taken in the scriptures everywhere, Gen. 1, v. 6, 7, 8, 14, 15, 17, Ps. 19, v. 1, Is. 1, 22, Dan. 12, 3, etc., namely nominally, and of heaven or the air, but never participially, of some other thing diffusing itself, or diffused.
+
+Latin:
+
+PSALM. CL. Laudis divinæ causa & instrumenta.
+
+LAVDATE DOMINVM IN SANCTIS EJVS) In sanctuario ipsius: id est, in templo. MErito hic corrigit vulgatam, quæ a Papistis ad Sanctorum invocationem abripitur, de quo conferri poterit Sixtinus Amama, Antibarb. pag. 568. Quum habeamus Grotium hic consentientem, in- hærere istis nolumus. Consentit & Estius, ac Janse- nius, ut & Bellarm. ipse: Laudate Dominum in San- ctis ejus, id est, o vos electi & sancti laudate Domi- num in sanctuario cœlesti habitantem. Nam vox Hebrea Chodes sanctitatem proprie & sanctuarium significat.---Ideo ad literam videtur omnino per vo- cem in sanctis ejus intelligendum esse sanctuarium cœ- leste, quod Hebr. 9. vocatur sancta. Hæc ille.
+
+Vers. eod. LAUDATE EUM IN FIRMA- MENTO VIRTUTIS EJUS. Ob expansum roboris ejus, id est, expansum ro- bur, quod ad omnes res creatas expenditur, & dif- funditur, interprete Glaffio l. 3. Phil. S. p. 26. Sim- plicius accipitur, ut ἐξήγησις prioris commatis: vel si illud de sanctuario Ecclesiæ intelligatur, hoc de cœlo explicetur cum Osiandro; celebrate Deum habi- tantem in cælis, quos creavit ad monstrandam nobis immensam suam potentiam. Ita enim vox רקיע ac- cipitur in scripturis passim Gen. 1. v. 6. 7. 8. 14. 15. 17. Psal. 19. v. 1. Esa. 1, 22. Dan. 12, 3. &c. nominaliter nem- pe, & de cœlo vel aere, nuspiam autem participia- liter, de re aliqua alia sese diffundente, vel diffusa.
+
+## 150:4
+Verse 4. AND ORGANS) In Hebrew עוגב: concerning which word see what is at Gen. 4, 23.
+
+LET EVERY SPIRIT PRAISE JEHOVAH HALLELUJAH. The end of the 5th and last Book of Psalms.
+
+Latin:
+
+Vers. 4. ET ORGANA) In Hebræo עוגב : de qua voce vide quæ ad Gen. 4, 23.
+
+OMNIS SPIRITUS LAUDET JEHOVAM HALLELUJAH. Finis Libri Psalmorum 5. & ultimi.
+
 # Proverbs
 
 ## 1:1 Introduction
@@ -76476,20 +76537,6 @@ Ad Sanctos defunctos traxit Coturius Jesuita, ut e sequentibus gladii ancipites 
 TO THE BOOK AT THE PRESS
 
 The Solomonic books, by the opinion of all, both Hebrews and Christians, are three: PROVERBS, ECCLESIASTES, & THE SONG OF SONGS. Yet not long ago, Ludovicus de la Cerda dared to increase this number by adding a fourth book of Solomon, whose manuscript he claims to have found in the Augustan Library, namely the PSALMS OF SOLOMON, 18 in number, which he appended to his sacred adversaries; but in Canon law they are referred to the power of excommunication. l. 6. decret. cap. 1. 2. 3. de excommunicatis. Therefore, the same Bellarmine elsewhere, contr. Barclaj. c. 7. and Baronius in Paraen. adv. Venet., ineptly apply these very things to the power of the Roman Pontiff to brandish the temporal sword against Kings and princes, and others to his judgment and power over infernal princes, to liberate those held in Purgatory from their power; see Chamier, Panstrat. T. III. l. 4. c. 3. For it concerns the vengeance and victory of the spiritual sword of the divine word, Eph. 6. verse 17, Heb. 4, 12, 2 Cor. 10, verse 4, Rev. 1, verse 16, not external victories, even if those are proposed in the form of victors who insult captives at the beginning, then bind the same captives in fetters so as to lead them in triumph, and so they do not slip away, etc., as Brentius rightly says. Conf. Is. 45, 14, c. 60, 12, seqq.
-
-Verse 8. TO BIND KINGS IN THEIR FETTERS) As was done to Adonibezek, Jud. 1, 7.
-
-Verse 9. TO EXECUTE UPON THEM THE WRITTEN JUDGMENT) A similitude taken from sentences which were accustomed to be recited after being written down. God is said to write down what He decrees. Jude 4, Rev. 13, 8, 20, 15.
-
-PSALM 150. The cause and instruments of divine praise.
-
-PRAISE THE LORD IN HIS HOLY PLACES) In His sanctuary: that is, in the temple. He rightly corrects the Vulgate here, which is snatched away by Papists for the invocation of Saints, concerning which Sixtinus Amama, Antibarb. page 568, may be consulted. Since we have Grotius agreeing here, we do not wish to cling to those. Estius and Jansenius also agree, as does Bellarmine himself: Praise the Lord in His holy places, that is, O you elect and holy ones, praise the Lord dwelling in the heavenly sanctuary. For the Hebrew word Chodes properly signifies holiness and a sanctuary. Therefore, literally, by the word in His holy places, it seems that the heavenly sanctuary must be understood, which Heb. 9 calls the holy places. So he.
-
-Verse same. PRAISE HIM IN THE FIRMAMENT OF HIS POWER. Because of the expanse of His strength, that is, the expanded strength which is expended and diffused upon all created things, according to the interpretation of Glassius, l. 3. Phil. S. p. 26. It is taken more simply as an explanation of the previous clause: or if that is understood of the sanctuary of the Church, this may be explained of heaven with Osiander; celebrate God dwelling in the heavens, which He created to show us His immense power. For thus the word רקיע is taken in the scriptures everywhere, Gen. 1, v. 6, 7, 8, 14, 15, 17, Ps. 19, v. 1, Is. 1, 22, Dan. 12, 3, etc., namely nominally, and of heaven or the air, but never participially, of some other thing diffusing itself, or diffused.
-
-Verse 4. AND ORGANS) In Hebrew עוגב: concerning which word see what is at Gen. 4, 23.
-
-LET EVERY SPIRIT PRAISE JEHOVAH HALLELUJAH. The end of the 5th and last Book of Psalms.
 
 OF PROVERBS. [FRAGMENT].
 
@@ -76516,20 +76563,6 @@ Latin:
 AD LIBRUM PR PRÆLO
 
 LIbri Salomonei omnium tam Ebræorum, quam Christianorum sententia tres sunt: PROVERBIA, ECCLESIASTES, & CANTICUM CANTICORUM. Numerum tamen hunc augere non ita pridem ausus fuit Lu- dovicus de la Cerda, addito Quarto Salomonis libro, cujus manuscriptum se in Bibliotheca Augustana invenisse ait, nimirum PSALMORUM SALOMO- NIS, numero 18. quos suis adversariis sacris subje- jure autem Canonico ad potestatem excommunica- tionis referuntur. l. 6. decret. cap. 1. 2. 3. de excom- municatis. Inepte itaque hæc ipsa idem Bellarm. alibi, contr. Barclaj. c. 7. & Baronius in Paræn. adv. Venet. ad Potestatem Romani Pontificis tempora- lem vibrandi gladium in Reges & principes, alii ad judicium & potestatem ejusdem in principes infer- nales, liberandi detentas in Purgatorio ex potestate ipsorum, adducunt: Vid. Chamier. Panstrat. T. III. l. 4. c. 3. De vindicta enim & victoria gladii spiri- tualis verbi divini agitur Eph. 6. vers. 17. Ebr. 4, 12. 2. Cor. 10, vers. 4. Apoc. 1. vers. 16. non de exter- nis victoriis, etsi illa proponantur ad formam vi- ctorum, qui captivis initio insultant, eosdem dein- de captivos constringunt compedibus, ut in trium- pho ducant, & ne elabantur &c. ut recte Brentius. Conf. Es. 45, 14. c. 60, 12. seqq.
-
-Vers. 8. AD ALLIGANDOS REGES IN EORVM COMPEDIBVS) Vt factum Adonibeseco Jud. 1, 7.
-
-Vers. 9. VT FACIANT IN EIS JVDICIVM CON- SCRIPTVM) Similitudo sumta ex sententiis, quæ descri- ptæ recitari solebant. Deus describere dicitur, quod decer- nit. Judæ 4. Apoc. 13, 8. 20, 15.
-
-PSALM. CL. Laudis divinæ causa & instrumenta.
-
-LAVDATE DOMINVM IN SANCTIS EJVS) In sanctuario ipsius: id est, in templo. MErito hic corrigit vulgatam, quæ a Papistis ad Sanctorum invocationem abripitur, de quo conferri poterit Sixtinus Amama, Antibarb. pag. 568. Quum habeamus Grotium hic consentientem, in- hærere istis nolumus. Consentit & Estius, ac Janse- nius, ut & Bellarm. ipse: Laudate Dominum in San- ctis ejus, id est, o vos electi & sancti laudate Domi- num in sanctuario cœlesti habitantem. Nam vox Hebrea Chodes sanctitatem proprie & sanctuarium significat.---Ideo ad literam videtur omnino per vo- cem in sanctis ejus intelligendum esse sanctuarium cœ- leste, quod Hebr. 9. vocatur sancta. Hæc ille.
-
-Vers. eod. LAUDATE EUM IN FIRMA- MENTO VIRTUTIS EJUS. Ob expansum roboris ejus, id est, expansum ro- bur, quod ad omnes res creatas expenditur, & dif- funditur, interprete Glaffio l. 3. Phil. S. p. 26. Sim- plicius accipitur, ut ἐξήγησις prioris commatis: vel si illud de sanctuario Ecclesiæ intelligatur, hoc de cœlo explicetur cum Osiandro; celebrate Deum habi- tantem in cælis, quos creavit ad monstrandam nobis immensam suam potentiam. Ita enim vox רקיע ac- cipitur in scripturis passim Gen. 1. v. 6. 7. 8. 14. 15. 17. Psal. 19. v. 1. Esa. 1, 22. Dan. 12, 3. &c. nominaliter nem- pe, & de cœlo vel aere, nuspiam autem participia- liter, de re aliqua alia sese diffundente, vel diffusa.
-
-Vers. 4. ET ORGANA) In Hebræo עוגב : de qua voce vide quæ ad Gen. 4, 23.
-
-OMNIS SPIRITUS LAUDET JEHOVAM HALLELUJAH. Finis Libri Psalmorum 5. & ultimi.
 
 ROVERBIORUM. OQVIUM.
 
