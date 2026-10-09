@@ -4,6 +4,7 @@
 // appendix sections) are discovered from the indexed source, not pre-authored here.
 
 export type BocDocumentCode =
+  | 'PREF'
   | 'CR-AP' | 'CR-NI' | 'CR-ATH'
   | 'AC' | 'AP' | 'SA' | 'TR' | 'SC' | 'LC' | 'FC-EP' | 'FC-SD'
   | 'CT' | 'BEC' | 'SVA'
@@ -19,22 +20,23 @@ export interface BocDocumentDef {
 }
 
 export const BOC_DOCUMENTS: BocDocumentDef[] = [
-  { code: 'CR-AP',  title: "Apostles' Creed",       abbreviation: "Ap. Creed",  sortOrder: 1,  aliases: ["The Apostles' Creed"] },
-  { code: 'CR-NI',  title: 'Nicene Creed',          abbreviation: 'Nic. Creed', sortOrder: 2,  aliases: ['The Nicene Creed'] },
-  { code: 'CR-ATH', title: 'Athanasian Creed',      abbreviation: 'Ath. Creed', sortOrder: 3,  aliases: ['The Creed of Athanasius'] },
-  { code: 'AC',     title: 'Augsburg Confession',   abbreviation: 'AC',  sortOrder: 4,  aliases: ['The Augsburg Confession', 'The Augsburg Confession (1530)'] },
-  { code: 'AP',     title: 'Apology of the Augsburg Confession', abbreviation: 'Ap', sortOrder: 5, aliases: ['The Apology of the Augsburg Confession', 'The Apology of the Augsburg Confession (1531)'] },
-  { code: 'SA',     title: 'Smalcald Articles',     abbreviation: 'SA',  sortOrder: 6,  aliases: ['The Smalcald Articles', 'The Smalcald Articles (1537)'] },
-  { code: 'TR',     title: 'Treatise on the Power and Primacy of the Pope', abbreviation: 'Tr', sortOrder: 7, aliases: ['The Power and Primacy of the Pope', 'The Power and Primacy of the Pope (1537)'] },
-  { code: 'SC',     title: 'Small Catechism',       abbreviation: 'SC',  sortOrder: 8,  aliases: ['The Small Catechism', 'The Small Catechism (1529)', 'Enchiridion: The Small Catechism'] },
-  { code: 'LC',     title: 'Large Catechism',       abbreviation: 'LC',  sortOrder: 9,  aliases: ['The Large Catechism', 'The Large Catechism (1529)'] },
-  { code: 'FC-EP',  title: 'Formula of Concord: Epitome', abbreviation: 'FC Ep', sortOrder: 10, aliases: ['The Formula of Concord, Epitome', 'The Formula of Concord, Epitome (1577)', 'Epitome'] },
-  { code: 'FC-SD',  title: 'Formula of Concord: Solid Declaration', abbreviation: 'FC SD', sortOrder: 11, aliases: ['The Formula of Concord, Solid Declaration', 'The Formula of Concord, Solid Declaration (1577)', 'Solid Declaration'] },
-  { code: 'CT',     title: 'Catalog of Testimonies', abbreviation: 'Cat. Test.', sortOrder: 12, aliases: ['Appendix A: Catalog of Testimonies'] },
-  { code: 'BEC',    title: 'A Brief Exhortation to Confession', abbreviation: 'Brief Exh.', sortOrder: 13, aliases: ['Appendix B: A Brief Exhortation to Confession'] },
-  { code: 'SVA',    title: 'Saxon Visitation Articles', abbreviation: 'SVA', sortOrder: 14, aliases: ['Appendix C: Saxon Visitation Articles'] }
+  { code: 'PREF',   title: 'Preface to the Book of Concord', abbreviation: 'Pref.', sortOrder: 1, aliases: ['Preface to the Christian Book of Concord', 'Preface to The Christian Book of Concord'] },
+  { code: 'CR-AP',  title: "Apostles' Creed",       abbreviation: "Ap. Creed",  sortOrder: 2,  aliases: ["The Apostles' Creed"] },
+  { code: 'CR-NI',  title: 'Nicene Creed',          abbreviation: 'Nic. Creed', sortOrder: 3,  aliases: ['The Nicene Creed'] },
+  { code: 'CR-ATH', title: 'Athanasian Creed',      abbreviation: 'Ath. Creed', sortOrder: 4,  aliases: ['The Creed of Athanasius'] },
+  { code: 'AC',     title: 'Augsburg Confession',   abbreviation: 'AC',  sortOrder: 5,  aliases: ['The Augsburg Confession', 'The Augsburg Confession (1530)'] },
+  { code: 'AP',     title: 'Apology of the Augsburg Confession', abbreviation: 'Ap', sortOrder: 6, aliases: ['The Apology of the Augsburg Confession', 'The Apology of the Augsburg Confession (1531)'] },
+  { code: 'SA',     title: 'Smalcald Articles',     abbreviation: 'SA',  sortOrder: 7,  aliases: ['The Smalcald Articles', 'The Smalcald Articles (1537)'] },
+  { code: 'TR',     title: 'Treatise on the Power and Primacy of the Pope', abbreviation: 'Tr', sortOrder: 8, aliases: ['The Power and Primacy of the Pope', 'The Power and Primacy of the Pope (1537)'] },
+  { code: 'SC',     title: 'Small Catechism',       abbreviation: 'SC',  sortOrder: 9,  aliases: ['The Small Catechism', 'The Small Catechism (1529)', 'Enchiridion: The Small Catechism'] },
+  { code: 'LC',     title: 'Large Catechism',       abbreviation: 'LC',  sortOrder: 10,  aliases: ['The Large Catechism', 'The Large Catechism (1529)'] },
+  { code: 'FC-EP',  title: 'Formula of Concord: Epitome', abbreviation: 'FC Ep', sortOrder: 11, aliases: ['The Formula of Concord, Epitome', 'The Formula of Concord, Epitome (1577)', 'Epitome'] },
+  { code: 'FC-SD',  title: 'Formula of Concord: Solid Declaration', abbreviation: 'FC SD', sortOrder: 12, aliases: ['The Formula of Concord, Solid Declaration', 'The Formula of Concord, Solid Declaration (1577)', 'Solid Declaration'] },
+  { code: 'CT',     title: 'Catalog of Testimonies', abbreviation: 'Cat. Test.', sortOrder: 13, aliases: ['Appendix A: Catalog of Testimonies'] },
+  { code: 'BEC',    title: 'A Brief Exhortation to Confession', abbreviation: 'Brief Exh.', sortOrder: 14, aliases: ['Appendix B: A Brief Exhortation to Confession'] },
+  { code: 'SVA',    title: 'Saxon Visitation Articles', abbreviation: 'SVA', sortOrder: 15, aliases: ['Appendix C: Saxon Visitation Articles'] }
 ]
-// 14 documents: 3 Ecumenical Creeds + Augsburg/Apology/Smalcald/Treatise/Small Cat/
+// 15 documents: the Preface to the Book of Concord + 3 Ecumenical Creeds + Augsburg/Apology/Smalcald/Treatise/Small Cat/
 // Large Cat/FC Epitome/FC Solid Declaration (8) + 3 appendices (CT/BEC/SVA).
 
 const byCode = new Map(BOC_DOCUMENTS.map((d) => [d.code, d]))
