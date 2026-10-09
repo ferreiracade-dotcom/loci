@@ -12,14 +12,14 @@ import type { SermonIndexModule } from '../../shared/ipc'
 const BASE = 'https://www.sermonindex.net'
 
 /** Commentaries offered for one-click install. A curated list, not the site's whole catalog —
- *  each entry's module file was checked against its SermonIndex page. Bengel's Gnomon is not
- *  here: Loci ships its own copy with the Greek respaced (see bundledCommentaries). */
+ *  each entry's module file was checked against its SermonIndex page. Bengel's Gnomon and
+ *  Hengstenberg are not here: Loci ships its own copies with their Greek and Hebrew repaired
+ *  (see bundledCommentaries). */
 export const SERMON_INDEX_CATALOG: SermonIndexModule[] = [
   { slug: 'lenski', moduleCode: 'SI-LENSKI', title: "Lenski's Commentary on the New Testament", author: 'R. C. H. Lenski', passageComments: true, stripAbbreviationKey: true },
   { slug: 'popular', moduleCode: 'SI-POPULAR', title: 'The Popular Commentary of the Bible', author: 'Paul E. Kretzmann' },
   { slug: 'luthercmt', moduleCode: 'SI-LUTHERCMT', title: "Luther's Commentary on Selected Bible Passages", author: 'Martin Luther' },
   { slug: 'keildelitzsch', moduleCode: 'SI-KD', title: 'Keil and Delitzsch Commentary on the Old Testament', author: 'C. F. Keil & F. Delitzsch', passageComments: true },
-  { slug: 'hengstenberg', moduleCode: 'SI-HENGSTENBERG', title: "Hengstenberg's Commentary on Selected Books", author: 'E. W. Hengstenberg' },
   { slug: 'lange', moduleCode: 'SI-LANGE', title: "Lange's Commentary on the Holy Scriptures", author: 'J. P. Lange' },
   { slug: 'calcom', moduleCode: 'SI-CALCOM', title: "Calvin's Commentaries", author: 'John Calvin' }
 ]
