@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, webFrame } from 'electron'
 import type { IpcRendererEvent } from 'electron'
 import { Channels } from '../shared/ipc'
 import type { CommentaryIndexProgress, ImportProgress, LociApi, SyncResult } from '../shared/ipc'
@@ -145,7 +145,12 @@ const api: LociApi = {
     const listener = (_e: IpcRendererEvent, p: CommentaryIndexProgress): void => cb(p)
     ipcRenderer.on(Channels.commentaryIndexProgress, listener)
     return () => ipcRenderer.removeListener(Channels.commentaryIndexProgress, listener)
-  }
+  },
+
+  addHistory: (entry) => ipcRenderer.invoke(Channels.addHistory, entry),
+  listHistory: (limit) => ipcRenderer.invoke(Channels.listHistory, limit),
+  clearHistory: () => ipcRenderer.invoke(Channels.clearHistory),
+  setZoomFactor: (factor) => webFrame.setZoomFactor(factor)
 }
 
 if (process.contextIsolated) {

@@ -419,6 +419,24 @@ const migrations: Migration[] = [
         ALTER TABLE quotes ADD COLUMN boc_paragraph INTEGER;
       `)
     }
+  },
+  {
+    version: 20,
+    name: 'history',
+    up: (db) => {
+      // Browsing history for the History page tab: one row per visited tab location.
+      // `location` is the tab's content (TabContent) as JSON, so a row can be reopened.
+      db.exec(`
+        CREATE TABLE history (
+          id          INTEGER PRIMARY KEY AUTOINCREMENT,
+          visited_at  TEXT NOT NULL,
+          kind        TEXT NOT NULL,
+          title       TEXT NOT NULL,
+          location    TEXT NOT NULL
+        );
+        CREATE INDEX idx_history_visited ON history(visited_at);
+      `)
+    }
   }
 ]
 

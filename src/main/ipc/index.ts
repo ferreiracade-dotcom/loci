@@ -14,6 +14,7 @@ import type {
   ImportProgress,
   IndexedPage,
   NewCommentarySource,
+  NewHistoryEntry,
   NewQuote,
   NewScriptureHighlight,
   NoteType,
@@ -48,6 +49,7 @@ import {
   writeConfig
 } from '../services/config'
 import { getLayout, getSession, setLayout, setSession } from '../services/state'
+import { addHistory, clearHistory, listHistory } from '../services/history'
 import { scaffoldVault, vaultExists } from '../services/vault'
 function appState(): AppState {
   const cfg = readConfig()
@@ -141,6 +143,9 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.setLayout, (_e, patch: Partial<PanelLayout>) => setLayout(patch))
   ipcMain.handle(Channels.getSession, (_e, key: string) => getSession(key))
   ipcMain.handle(Channels.setSession, (_e, key: string, value: string) => setSession(key, value))
+  ipcMain.handle(Channels.addHistory, (_e, entry: NewHistoryEntry) => addHistory(entry))
+  ipcMain.handle(Channels.listHistory, (_e, limit?: number) => listHistory(limit))
+  ipcMain.handle(Channels.clearHistory, () => clearHistory())
   ipcMain.handle(Channels.setApiKey, (_e, key: string) => setApiKey(key))
   ipcMain.handle(Channels.hasApiKey, () => hasApiKey())
 

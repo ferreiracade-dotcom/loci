@@ -107,7 +107,11 @@ export const Channels = {
   importProgress: 'library:importProgress',
   libraryChanged: 'library:libraryChanged',
   librarySynced: 'library:librarySynced',
-  commentaryIndexProgress: 'commentary:indexProgress'
+  commentaryIndexProgress: 'commentary:indexProgress',
+
+  addHistory: 'history:add',
+  listHistory: 'history:list',
+  clearHistory: 'history:clear'
 } as const
 
 export type ChannelName = (typeof Channels)[keyof typeof Channels]
@@ -372,6 +376,14 @@ export interface LociApi {
   onImportProgress(cb: (p: ImportProgress) => void): () => void
   /** Subscribe to commentary indexing progress; returns an unsubscribe function. */
   onCommentaryIndexProgress(cb: (p: CommentaryIndexProgress) => void): () => void
+
+  /** Record a visited tab location for the History page. Skips a repeat of the latest entry. */
+  addHistory(entry: NewHistoryEntry): Promise<void>
+  /** Most recent first. */
+  listHistory(limit?: number): Promise<HistoryEntry[]>
+  clearHistory(): Promise<void>
+  /** Page zoom (1 = 100%). Synchronous; applied by the preload through webFrame. */
+  setZoomFactor(factor: number): void
   /** Fired when the book/shelf data changes in the background; returns unsubscribe. */
   onLibraryChanged(cb: () => void): () => void
   /** Fired when the startup folder sync finishes, with a summary of what changed. */
@@ -836,4 +848,16 @@ export interface Quote {
   /** For Scripture AND commentary quotes: the verse range the quote is anchored to. */
   verseStart?: number
   verseEnd?: number
+}
+
+/** A location recorded for the History page. `location` is the tab content, as JSON. */
+export interface NewHistoryEntry {
+  kind: string
+  title: string
+  location: string
+}
+export interface HistoryEntry extends NewHistoryEntry {
+  id: number
+  /** ISO timestamp. */
+  visitedAt: string
 }

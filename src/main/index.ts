@@ -41,6 +41,11 @@ function maybeRebuildSidecars(): void {
   }, 1500)
 }
 
+/** Must match --frame / --text-2 and the strip height in the renderer's app.css. */
+const TITLEBAR_COLOR = '#0e0c0a'
+const TITLEBAR_SYMBOL = '#b3a68f'
+const TITLEBAR_HEIGHT = 42
+
 function createWindow(): void {
   const win = new BrowserWindow({
     width: 1280,
@@ -51,6 +56,13 @@ function createWindow(): void {
     backgroundColor: '#161310',
     title: 'Loci',
     autoHideMenuBar: true,
+    // Chrome-style frame: the renderer's tab strip is the title bar, and the OS draws its own
+    // minimise/maximise/close buttons (keeping Windows snap layouts) over its right end.
+    // Colours and height must match the strip in app.css (.chrome-strip).
+    titleBarStyle: 'hidden',
+    ...(process.platform === 'darwin'
+      ? {}
+      : { titleBarOverlay: { color: TITLEBAR_COLOR, symbolColor: TITLEBAR_SYMBOL, height: TITLEBAR_HEIGHT } }),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -60,6 +72,19 @@ function createWindow(): void {
   })
 
   win.on('ready-to-show', () => win.show())
+
+  // There is no application menu (see app.whenReady), so the default accelerators such as
+  // Ctrl+R (reload the window) and Ctrl+W (close it) are gone and the renderer owns those keys.
+  // Keep a way into DevTools.
+  win.webContents.on('before-input-event', (event, input) => {
+    if (input.type !== 'keyDown') return
+    const devtools =
+      input.key === 'F12' || (input.control && input.shift && input.key.toLowerCase() === 'i')
+    if (devtools) {
+      event.preventDefault()
+      win.webContents.toggleDevTools()
+    }
+  })
 
   // On load: reconcile the catalog with the local + Drive book folders (auto-add new books,
   // mirror the two sides, prune stale rows), tell the renderer what changed, then resume any
@@ -138,6 +163,10 @@ app.whenReady().then(() => {
   applyFilenameAuthorMigration() // one-time: derive missing authors from file names, if pending
   applySidecarResync() // one-time: refresh sidecars left stale by the migration above, if pending
   registerIpc()
+  // No application menu: its default roles bind Ctrl+R / F5 (reload the whole window),
+  // Ctrl+W (close the window) and Ctrl+Plus/Minus/0, which Loci's tabs handle themselves.
+  // Clipboard shortcuts in editable fields still work natively on Windows/Linux.
+  if (process.platform !== 'darwin') Menu.setApplicationMenu(null)
   createWindow()
   maybeRebuildSidecars() // one-time whole-library sidecar write, if pending
   // Auto-register + index any Markdown commentaries the vault carries (best-effort; new/changed

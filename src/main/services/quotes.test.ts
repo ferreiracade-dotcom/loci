@@ -40,7 +40,7 @@ import {
 
 describe('migration v19', () => {
   it('adds the BoC quote columns and reaches version 19', () => {
-    expect(db.pragma('user_version', { simple: true })).toBe(19)
+    expect(db.pragma('user_version', { simple: true })).toBeGreaterThanOrEqual(19)
     const cols = (db.prepare('PRAGMA table_info(quotes)').all() as { name: string }[]).map((c) => c.name)
     for (const c of [
       'boc_source_id',
