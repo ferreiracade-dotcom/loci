@@ -131,11 +131,67 @@ export interface BookmarkFolder { id: string; title: string; parentId?: string }
 - `reflectPanes` keeps the same output shape, resolved from the focused
   tab (the focused half of a split), so its consumers do not change.
 - Tab groups and bookmarks are stored in the vault (so they travel with
-  it), not only in `session_state`.
+  it), not only in `session_state`. See "Multi-device sync" for how.
 - History entries go in SQLite with a timestamp, for the History page.
 - Migration: on first launch, existing tabs from both panes become one
   strip (left pane first). If two panes were open, their active tabs
   become one split tab.
+
+## Multi-device sync
+
+The owner runs Loci on more than one computer sharing one vault through
+Google Drive. Bookmarks and saved tab groups mirror between them like
+Chrome sync.
+
+- **Device identity.** Each installation gets a random `deviceId` and a
+  friendly `deviceName` (the host name, editable in Settings > Sync),
+  kept in the app's own `config.json`, never in the vault.
+- **Per-device files.** A device writes only `app/sync/<deviceId>/`:
+  `bookmarks.json`, `tab-groups.json` and `open-tabs.json`. The vault
+  mirror copies these folders by exact content (own folder up, every other
+  folder down), so two devices never write the same file and whole-file
+  copying never loses a change.
+- **Records.** Every bookmark, folder and group is a record
+  `{ id, updatedAt, deviceId, deleted?, ...fields }`. `updatedAt` is
+  Lamport-style (`max(now, highest seen + 1)`), so clock skew can't order
+  an edit before one the device had already seen. The view is the union
+  over all device folders; per id the highest `(updatedAt, deviceId)`
+  wins and tombstones hide items. A device drops its own records another
+  device has superseded, and tombstones older than 90 days are pruned.
+  `src/shared/sync.ts` holds the merge rules, `src/main/services/browserSync.ts`
+  the files.
+- **Ordering.** Bookmark `order` values are fractional: a move gives only
+  the moved item a value between its neighbours, so concurrent inserts
+  don't renumber each other; equal values sort by id on every device.
+- **Writes and pushes.** The renderer diffs its state and sends only what
+  the user changed (`sync:put`); main stamps and stores it. After each
+  vault sync pass, a 30 s device-folder poll and on window focus, main
+  re-reads every device folder and pushes the merged view when it changed
+  (`sync:changed`). Changes still in flight win over a pushed view until
+  main has recorded them.
+- **Tab groups.** Synced: name, colour, pinned-to-bar, creation time and
+  the tab list (locations and split pairing; no history). Per device (in
+  the session): whether the group is open, collapsed, and each saved
+  tab's history. An open group whose synced list changes elsewhere is
+  updated in place: unchanged tabs keep their history, a changed tab is
+  navigated, missing ones are added and extra ones removed. Opening a
+  group that is open on another device opens this device's view of the
+  same group id, so nothing is duplicated. A group deleted elsewhere
+  leaves its open tabs here, ungrouped.
+- **Tabs from other devices.** Each device publishes its open tabs
+  (debounced, plus a heartbeat every 6 hours). The History page lists
+  each other device by name with its tabs; devices not seen for 30 days
+  are hidden.
+- **Per device, not synced:** the bookmarks bar's visibility.
+- **Migration.** The old `app/bookmarks.json` and `app/tab-groups.json`
+  are imported once into this device's records, stamped with the file's
+  modification time (so later edits on any device still win and two
+  devices importing the same file write identical records), then renamed
+  to `.migrated`. A file that can't be parsed is moved aside to
+  `.corrupt-<time>`; an unreadable peer file is skipped, never touched.
+- **Latency.** A change is copied to Drive about 3 s after it is made;
+  the other computer picks it up on its next 30 s poll or when its window
+  gets focus, plus whatever time Google Drive itself takes to carry it.
 
 ## Interaction reference
 
