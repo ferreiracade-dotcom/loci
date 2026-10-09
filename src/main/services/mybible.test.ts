@@ -105,10 +105,10 @@ describe('parseMyBibleCommentaries with passageComments', () => {
 
   it('leaves explicit ranges, and verses past the versification, alone', () => {
     const chunks = parseMyBibleCommentaries(
-      [row(10, 2, 1, 'range', [2, 3]), row(10, 2, 26, 'beyond the chapter')],
+      [row(10, 2, 1, 'range', [2, 3]), row(10, 2, 27, 'beyond the chapter')],
       { passageComments: true, verseCounts }
     )
-    expect(chunks.map((c) => c.headerRaw)).toEqual(['2:1-3', '2:26'])
+    expect(chunks.map((c) => c.headerRaw)).toEqual(['2:1-3', '2:27'])
   })
 
   it('takes a comment’s own "(c:v)" label when its key overflows the chapter', () => {
@@ -120,13 +120,39 @@ describe('parseMyBibleCommentaries with passageComments', () => {
     expect(chunks.map((c) => c.headerRaw)).toEqual(['6:26-27', '6:28'])
   })
 
-  it('leaves an overflowing comment without a usable label for the validator', () => {
+  it('folds a comment one verse past the chapter end into the last verse', () => {
+    // Lenski numbers 3 John's closing greeting as 1:15; the KJV and Loci end the letter at 1:14.
+    const chunks = parseMyBibleCommentaries(
+      [row(710, 1, 14, 'I hope to see thee'), row(710, 1, 15, 'Peace to thee')],
+      { passageComments: true, verseCounts: { '3JN': [14] } }
+    )
+    expect(chunks).toEqual([expect.objectContaining({ headerRaw: '1:14', text: 'I hope to see thee\n\nPeace to thee' })])
+  })
+
+  it('keys a lone overflow comment to the last verse when that verse has none', () => {
+    const chunks = parseMyBibleCommentaries([row(710, 1, 15, 'Peace to thee')], { verseCounts: { '3JN': [14] } })
+    expect(chunks.map((c) => c.headerRaw)).toEqual(['1:14'])
+  })
+
+  it('leaves a comment further past the chapter end, with no usable label, for the validator', () => {
     const counts = { DAN: [21, 49, 30, 37, 31, 28] }
     const chunks = parseMyBibleCommentaries(
-      [row(340, 6, 29, 'no label'), row(340, 6, 30, '(7:1) another chapter')],
+      [row(340, 6, 30, 'no label'), row(340, 6, 31, '(7:1) another chapter')],
       { verseCounts: counts }
     )
-    expect(chunks.map((c) => c.headerRaw)).toEqual(['6:29', '6:30'])
+    expect(chunks.map((c) => c.headerRaw)).toEqual(['6:30', '6:31'])
+  })
+
+  it('strips Lenski’s abbreviation key but keeps his own citations', () => {
+    const html =
+      '<p>Peace to thee!</p><p>Soli Deo Gloria</p>' +
+      '<p>B.-D. Friedrich Blass’ Grammatik des neutestamentlichen Griechisch, vierte Auflage.</p>' +
+      '<p>M. M The Vocabulary of the Greek Testament Illustrated from the Papyri, by Moulton and Milligan.</p>' +
+      '<p>R. A Grammar of the Greek New Testament in the Light of Historical Research, by A. T. Robertson.</p>'
+    const prose = '<p>R. 439 is right, this is not an anacoluthon.</p><p>C.-K. offers us something better.</p>'
+    const [a, b] = parseMyBibleCommentaries([row(710, 1, 14, html), row(710, 1, 13, prose)], { stripAbbreviationKey: true })
+    expect(b.text).toBe('Peace to thee!\n\nSoli Deo Gloria')
+    expect(a.text).toBe('R. 439 is right, this is not an anacoluthon.\n\nC.-K. offers us something better.')
   })
 
   it('is off by default, for modules of sparse notes', () => {

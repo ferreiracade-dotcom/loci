@@ -19,7 +19,7 @@ const isMyBibleModule = (path: string): boolean => /\.sqlite3$/i.test(path)
 
 /** Bumped when MyBible parsing changes what a module indexes to, so modules already indexed
  *  under the old rules re-index once at startup even though their file is unchanged. */
-const MYBIBLE_PARSE_VERSION = 3
+const MYBIBLE_PARSE_VERSION = 5
 
 /** `pdf_relative_path` is either already absolute or relative to the local vault (where file
  *  sources live under `commentaries/`, synced to Drive). */
@@ -69,7 +69,11 @@ function readSourceChunks(pdfRelativePath: string): ExtractedChunk[] {
       )
       .all() as MyBibleRow[]
     const entry = catalogEntryForFile(basename(abs))
-    return parseMyBibleCommentaries(rows, { passageComments: entry?.passageComments, verseCounts: VERSE_COUNTS })
+    return parseMyBibleCommentaries(rows, {
+      passageComments: entry?.passageComments,
+      stripAbbreviationKey: entry?.stripAbbreviationKey,
+      verseCounts: VERSE_COUNTS
+    })
   } finally {
     db.close()
   }

@@ -14,7 +14,7 @@ const BASE = 'https://www.sermonindex.net'
 /** Commentaries offered for one-click install. A curated list, not the site's whole catalog —
  *  each entry's module file was checked against its SermonIndex page. */
 export const SERMON_INDEX_CATALOG: SermonIndexModule[] = [
-  { slug: 'lenski', moduleCode: 'SI-LENSKI', title: "Lenski's Commentary on the New Testament", author: 'R. C. H. Lenski', passageComments: true },
+  { slug: 'lenski', moduleCode: 'SI-LENSKI', title: "Lenski's Commentary on the New Testament", author: 'R. C. H. Lenski', passageComments: true, stripAbbreviationKey: true },
   { slug: 'popular', moduleCode: 'SI-POPULAR', title: 'The Popular Commentary of the Bible', author: 'Paul E. Kretzmann' },
   { slug: 'luthercmt', moduleCode: 'SI-LUTHERCMT', title: "Luther's Commentary on Selected Bible Passages", author: 'Martin Luther' },
   { slug: 'keildelitzsch', moduleCode: 'SI-KD', title: 'Keil and Delitzsch Commentary on the Old Testament', author: 'C. F. Keil & F. Delitzsch', passageComments: true },

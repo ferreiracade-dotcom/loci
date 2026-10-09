@@ -71,6 +71,23 @@ export interface MyBibleParseOptions {
    *  would attach a note to verses it never discussed. Needs `verseCounts` for chapter ends. */
   passageComments?: boolean
   verseCounts?: Record<string, number[]>
+  /** Drop the key to Lenski's reference-work abbreviations ("B.-D. Friedrich Blass' Grammatik…",
+   *  "R. A Grammar of the Greek New Testament…") that the SermonIndex module repeats at the end
+   *  of nearly every chapter. Lenski's own citations ("R. 439 is right…") are kept. */
+  stripAbbreviationKey?: boolean
+}
+
+// An abbreviation-key entry: one of Lenski's sigla, then the full title of the work it stands
+// for. Matching the title, not just the siglum, is what keeps his in-text citations.
+const KEY_SIGLUM = /^(B\.?\s?-?\s?[DP]|C\.?\s?-?\s?K|M\.?\s?-?\s?M|R)\.?\s/
+const KEY_TITLE =
+  /Grammar of the Greek New Testament in the Light of Historical Research|Grammatik des neutestamentlichen Griechisch|Woerterbuch zu den Schriften des Neuen Testaments|Woerterbuch der Neutestamentlichen Graezitaet|Vocabulary of the Greek Testament/
+
+function stripAbbreviationKey(html: string): string {
+  return html.replace(/<p>([\s\S]*?)<\/p>/g, (p, inner: string) => {
+    const text = inner.trim()
+    return KEY_SIGLUM.test(text) && KEY_TITLE.test(text) && text.length < 400 ? '' : p
+  })
 }
 
 /** Turn a module's rows into verse-keyed chunks, in canonical (book, chapter, verse) order —
@@ -83,7 +100,8 @@ export function parseMyBibleCommentaries(rows: MyBibleRow[], options: MyBiblePar
 
   for (const r of rows) {
     const book = MYBIBLE_BOOKS[r.book_number]
-    const text = myBibleHtmlToText(r.text ?? '')
+    const html = options.stripAbbreviationKey ? stripAbbreviationKey(r.text ?? '') : (r.text ?? '')
+    const text = myBibleHtmlToText(html)
     if (!book || !text) continue
     const chapterStart = r.chapter_number_from
     const verseStart = r.verse_number_from
@@ -155,9 +173,34 @@ export function parseMyBibleCommentaries(rows: MyBibleRow[], options: MyBiblePar
     chunks.push(chunk)
   }
   flushIntroAsOwnChunk()
-  if (options.verseCounts) relabelFromOwnReference(chunks, options.verseCounts)
+  if (options.verseCounts) {
+    relabelFromOwnReference(chunks, options.verseCounts)
+    foldSplitFinalVerses(chunks, options.verseCounts)
+  }
   if (options.passageComments) extendToPassages(chunks, options.verseCounts ?? {})
   return chunks
+}
+
+/** A comment keyed exactly one verse past its chapter's end is a final verse the module's
+ *  Bible splits in two and Loci's versification does not (Lenski on 3 John 1:15, "Peace to
+ *  thee", which the KJV has as the second half of 1:14). It joins the chapter's last verse:
+ *  appended to that verse's comment when there is one, else keyed to it. Runs after
+ *  relabelFromOwnReference, so a comment with its own valid label has already moved. */
+function foldSplitFinalVerses(chunks: ExtractedChunk[], verseCounts: Record<string, number[]>): void {
+  for (let i = chunks.length - 1; i >= 0; i--) {
+    const c = chunks[i]
+    const max = verseCounts[c.book]?.[c.chapterStart - 1]
+    if (max == null || c.verseStart !== max + 1 || c.chapterEnd !== c.chapterStart) continue
+    const prev = chunks[i - 1]
+    if (prev && prev.book === c.book && prev.chapterEnd === c.chapterStart && prev.verseEnd === max) {
+      prev.text = `${prev.text}\n\n${c.text}`
+      chunks.splice(i, 1)
+    } else {
+      c.verseStart = max
+      c.verseEnd = max
+      c.headerRaw = `${c.chapterStart}:${max}`
+    }
+  }
 }
 
 /** A comment keyed to a verse its chapter doesn't have, whose text opens with its own valid

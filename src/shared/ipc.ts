@@ -781,6 +781,8 @@ export interface SermonIndexModule {
   /** Comments are keyed to a passage's first verse only; stretch them over the passage
    *  (see MyBibleParseOptions.passageComments). */
   passageComments?: boolean
+  /** Strip Lenski's repeated abbreviation key (see MyBibleParseOptions.stripAbbreviationKey). */
+  stripAbbreviationKey?: boolean
 }
 
 export interface CommentaryBookCoverage {
