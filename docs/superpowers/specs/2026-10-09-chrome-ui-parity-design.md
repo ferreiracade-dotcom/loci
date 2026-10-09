@@ -1,7 +1,7 @@
 # Chrome UI Parity: Design Spec
 
 Date: 2026-10-09
-Status: Draft, awaiting review
+Status: Implemented (phases 1 to 5)
 Mockup: `docs/superpowers/mockups/2026-10-09-chrome-ui-mockup.html`
 
 ## Summary
@@ -193,6 +193,12 @@ Each phase ships on its own and leaves the app usable.
    bookmarks manager tab.
 4. **Tab groups.** Colours, collapse, close/reopen, ⊞ menu, pin to bar.
 5. **New Tab page.** Search box and tiles; Dashboard view retired.
+   As built: a plain query opens a `search` tab (the query is its
+   location, so Back returns to the New Tab page); the Dashboard's vault
+   health and bibliography fold out at the bottom of the New Tab page;
+   removed tiles come back once the place is visited again. Opening a
+   bookmark, bookmarks-bar entry, ⋮ view or closed group while the focused
+   tab is an empty New Tab page fills that page instead of adding a tab.
 
 Phases 1 and 2 come first. Phases 3 to 5 can go in any order.
 
