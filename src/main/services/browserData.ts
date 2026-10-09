@@ -21,20 +21,34 @@ export function vaultAppDir(): string {
 }
 
 function pathFor(key: VaultDataKey): string {
-  const name = FILES[key]
-  if (!name) throw new Error(`Unknown vault data key: ${String(key)}`)
+  const name = Object.prototype.hasOwnProperty.call(FILES, key) ? FILES[key] : undefined
+  if (typeof name !== 'string') throw new Error(`Unknown vault data key: ${String(key)}`)
   return join(vaultAppDir(), name)
 }
 
-/** The stored JSON for `key`, or null when it has never been written (or is unreadable). */
+/**
+ * The stored JSON for `key`, or null when it has never been written (or is unreadable). An
+ * unreadable file (say, truncated by an interrupted copy) is moved aside to `<name>.corrupt-<time>`
+ * first, so the next write cannot destroy what may still be recoverable from it.
+ */
 export function getVaultData(key: VaultDataKey): string | null {
   const p = pathFor(key)
   if (!existsSync(p)) return null
+  let text: string
   try {
-    const text = readFileSync(p, 'utf8')
+    text = readFileSync(p, 'utf8')
+  } catch {
+    return null
+  }
+  try {
     JSON.parse(text) // only hand back well-formed JSON
     return text
   } catch {
+    try {
+      renameSync(p, `${p}.corrupt-${Date.now()}`)
+    } catch {
+      /* best effort */
+    }
     return null
   }
 }

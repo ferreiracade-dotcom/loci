@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync } from 'fs'
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync, mkdirSync } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -48,7 +48,19 @@ describe('browserData', () => {
     expect(getVaultData('tabGroups')).toBeNull()
   })
 
+  it('keeps an unreadable file aside so the next write does not destroy it', () => {
+    mkdirSync(vaultAppDir(), { recursive: true })
+    writeFileSync(join(vaultAppDir(), 'bookmarks.json'), '{"bookmarks":[{"id":"m1"')
+    expect(getVaultData('bookmarks')).toBeNull()
+    setVaultData('bookmarks', '{"bookmarks":[]}')
+    const aside = readdirSync(vaultAppDir()).filter((n) => n.startsWith('bookmarks.json.corrupt-'))
+    expect(aside).toHaveLength(1)
+    expect(readFileSync(join(vaultAppDir(), aside[0]), 'utf8')).toBe('{"bookmarks":[{"id":"m1"')
+  })
+
   it('refuses unknown keys', () => {
     expect(() => getVaultData('../../etc' as never)).toThrow()
+    expect(() => getVaultData('constructor' as never)).toThrow('Unknown vault data key')
+    expect(() => setVaultData('__proto__' as never, '{}')).toThrow('Unknown vault data key')
   })
 })
