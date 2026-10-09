@@ -6,6 +6,7 @@ import { api } from '../../lib/api'
 import { BOOKS, parseReference } from '@shared/scriptureRef'
 import { ScriptureReader } from './ScriptureReader'
 import { useOpenElsewhereMenu } from './OpenElsewhere'
+import { isBackgroundClick, openBibleInBackground } from '../chrome/openViews'
 
 /**
  * A Bible in a center workspace pane: the collapsible book-nav drawer (lifted from the old
@@ -115,7 +116,8 @@ export function BiblePane({
                 <button
                   key={ch}
                   className={`sv-chap${book === b.code && chapter === ch ? ' active' : ''}`}
-                  onClick={() => navigate(b.code, ch)}
+                  onClick={(e) => (isBackgroundClick(e) ? openBibleInBackground(b.code, ch) : navigate(b.code, ch))}
+                  onAuxClick={(e) => e.button === 1 && openBibleInBackground(b.code, ch)}
                   onContextMenu={(e) =>
                     onContextMenu(e, {
                       kind: 'bible',

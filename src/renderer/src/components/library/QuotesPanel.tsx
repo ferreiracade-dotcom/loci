@@ -11,6 +11,7 @@ import {
 } from 'react'
 import { Trash2, Plus, Pencil, Copy, Check, BookMarked, ExternalLink } from 'lucide-react'
 import { useStore } from '../../store/useStore'
+import { isBackgroundClick, openBibleInBackground, openInBackground } from '../chrome/openViews'
 import { api } from '../../lib/api'
 import { formatCitation, parseAuthors, type CitationSource, type CitationStyle } from '@shared/citation'
 import type { Annotation, Book, Quote } from '@shared/ipc'
@@ -155,7 +156,17 @@ export function QuoteCard({
   // Jump back to wherever this quote was captured: the PDF page, the Bible passage, or (for a
   // commentary quote) the verse it comments on — which also reruns the commentary lookup so the
   // matching excerpt shows again in the reference sidebar.
-  const openSource = (): void => {
+  const openSource = (e?: React.MouseEvent): void => {
+    // Ctrl/middle-click: the source in a background tab, as a link would open in Chrome.
+    if (e && isBackgroundClick(e)) {
+      if (q.bookId) openInBackground({ kind: 'pdf', bookId: q.bookId })
+      else if (q.scriptureBook != null && q.scriptureChapter != null) {
+        const end = q.verseEnd ?? q.verseStart
+        const hl = q.verseStart != null ? Array.from({ length: end! - q.verseStart + 1 }, (_, i) => q.verseStart! + i) : []
+        openBibleInBackground(q.scriptureBook, q.scriptureChapter, hl)
+      }
+      return
+    }
     if (q.bookId) {
       openBookAt(q.bookId, q.page ?? 1)
       return
@@ -279,7 +290,12 @@ export function QuoteCard({
             </div>
           )}
           {canOpenSource && (
-            <button className="cite-copy" title={openTitle} onClick={openSource}>
+            <button
+              className="cite-copy"
+              title={openTitle}
+              onClick={openSource}
+              onAuxClick={(e) => e.button === 1 && openSource(e)}
+            >
               <ExternalLink size={12} />
             </button>
           )}

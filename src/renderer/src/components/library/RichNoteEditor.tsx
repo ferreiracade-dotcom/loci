@@ -28,6 +28,7 @@ import {
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
+import { openLinkInBackground, openScriptureRefInBackground } from '../chrome/openViews'
 import { findReferences } from '@shared/scriptureRef'
 import { parseNote, serializeFrontMatter, type FrontMatter } from '../../lib/noteFrontmatter'
 import type { ScripturePassage } from '@shared/ipc'
@@ -39,12 +40,14 @@ const WIKI_RE = /\[\[([^\]\n]+)\]\]/g
 interface WikiOpts {
   isValid: (name: string) => boolean
   onOpen: (name: string) => void
+  /** Middle-click: open the link in a background tab. */
+  onOpenBackground: (name: string) => void
 }
 
 const WikiLink = Extension.create<WikiOpts>({
   name: 'wikiLink',
   addOptions() {
-    return { isValid: () => false, onOpen: () => undefined }
+    return { isValid: () => false, onOpen: () => undefined, onOpenBackground: () => undefined }
   },
   addProseMirrorPlugins() {
     const opts = this.options
@@ -82,6 +85,24 @@ const WikiLink = Extension.create<WikiOpts>({
               }
             }
             return false
+          },
+          handleDOMEvents: {
+            // Middle-click on a link: a background tab (and no Linux primary-selection paste).
+            mousedown(_view, event) {
+              if (event.button !== 1) return false
+              if (!(event.target as HTMLElement).closest?.('.tt-wikilink')) return false
+              event.preventDefault()
+              return true
+            },
+            auxclick(_view, event) {
+              if (event.button !== 1) return false
+              const el = (event.target as HTMLElement).closest?.('.tt-wikilink') as HTMLElement | null
+              const name = el?.getAttribute('data-link')
+              if (!name || !opts.isValid(name)) return false
+              event.preventDefault()
+              opts.onOpenBackground(name)
+              return true
+            }
           }
         }
       })
@@ -200,6 +221,8 @@ const WikiSuggest = Extension.create<{ getNames: () => string[] }>({
 interface ScriptureOpts {
   getTranslation: () => string
   onOpen: (raw: string) => void
+  /** Ctrl+click or middle-click: open the reference in a background tab. */
+  onOpenBackground: (raw: string) => void
 }
 
 // Module-level cache so re-hovering the same reference doesn't refetch.
@@ -208,7 +231,7 @@ const scripCache = new Map<string, ScripturePassage | null>()
 const ScriptureRef = Extension.create<ScriptureOpts>({
   name: 'scriptureRef',
   addOptions() {
-    return { getTranslation: () => '', onOpen: () => undefined }
+    return { getTranslation: () => '', onOpen: () => undefined, onOpenBackground: () => undefined }
   },
   addProseMirrorPlugins() {
     const opts = this.options
@@ -311,13 +334,28 @@ const ScriptureRef = Extension.create<ScriptureOpts>({
             if (el) {
               const raw = el.getAttribute('data-ref')
               if (raw) {
-                opts.onOpen(raw)
+                if (event.ctrlKey || event.metaKey) opts.onOpenBackground(raw)
+                else opts.onOpen(raw)
                 return true
               }
             }
             return false
           },
           handleDOMEvents: {
+            mousedown(_view, event) {
+              if (event.button !== 1 || !(event.target as HTMLElement).closest?.('.tt-scripture')) return false
+              event.preventDefault()
+              return true
+            },
+            auxclick(_view, event) {
+              if (event.button !== 1) return false
+              const el = (event.target as HTMLElement).closest?.('.tt-scripture') as HTMLElement | null
+              const raw = el?.getAttribute('data-ref')
+              if (!raw) return false
+              event.preventDefault()
+              opts.onOpenBackground(raw)
+              return true
+            },
             mouseover(_view, event) {
               const el = (event.target as HTMLElement).closest?.('.tt-scripture') as HTMLElement | null
               if (el) show(el, el.getAttribute('data-ref') ?? '')
@@ -408,12 +446,14 @@ export function RichNoteEditor({ path }: { path: string }) {
       Markdown.configure({ html: false, transformPastedText: true, breaks: true }),
       WikiLink.configure({
         isValid: (n) => validRef.current(n),
-        onOpen: (n) => openRef.current(n)
+        onOpen: (n) => openRef.current(n),
+        onOpenBackground: (n) => void openLinkInBackground(n)
       }),
       WikiSuggest.configure({ getNames: () => namesRef.current }),
       ScriptureRef.configure({
         getTranslation: () => scrTransRef.current,
-        onOpen: (raw) => openScrRef.current(raw)
+        onOpen: (raw) => openScrRef.current(raw),
+        onOpenBackground: (raw) => openScriptureRefInBackground(raw)
       })
     ],
     onUpdate: ({ editor }) => {

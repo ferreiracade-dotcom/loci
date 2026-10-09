@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ScrollText } from 'lucide-react'
 import { useStore } from '../../store/useStore'
+import { isBackgroundClick, openBibleInBackground } from '../chrome/openViews'
 import { api } from '../../lib/api'
 import { bookByCode } from '@shared/scriptureRef'
 import type { Quote, ScriptureQuoteBook } from '@shared/ipc'
@@ -103,7 +104,10 @@ export function ScriptureHighlightsPanel() {
             <button
               className="sh-chapter-head"
               title="Go to this chapter"
-              onClick={() => navigateScripture(book, g.chapter)}
+              onClick={(e) =>
+                isBackgroundClick(e) ? openBibleInBackground(book, g.chapter) : navigateScripture(book, g.chapter)
+              }
+              onAuxClick={(e) => e.button === 1 && openBibleInBackground(book, g.chapter)}
             >
               {bookName} {g.chapter}
             </button>
