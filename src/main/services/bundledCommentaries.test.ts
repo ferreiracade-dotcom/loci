@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, unlinkSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, unlinkSync, writeFileSync } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -12,7 +12,10 @@ vi.mock('electron', () => ({
   safeStorage: { isEncryptionAvailable: () => false }
 }))
 
-import { installBundledCommentaries } from './bundledCommentaries'
+import { BUNDLED_COMMENTARIES, installBundledCommentaries } from './bundledCommentaries'
+import { parseCommentaryMarkdown } from './commentaryMarkdown'
+import { validateSource } from './commentaryValidate'
+import { VERSE_COUNTS } from '../../shared/versification'
 
 const vaultFile = (name: string): string => join(dataDir, 'vault', 'commentaries', name)
 
@@ -52,5 +55,21 @@ describe('installBundledCommentaries', () => {
 
   it('does nothing when there is no shipped folder', () => {
     expect(installBundledCommentaries(join(dataDir, 'missing'))).toEqual([])
+  })
+})
+
+describe('the commentaries Loci ships', () => {
+  const dir = join(__dirname, '..', '..', '..', 'resources', 'commentaries')
+  const files = readdirSync(dir).filter((f) => /\.md$/i.test(f))
+
+  it('each has a title and author', () => {
+    for (const f of files) expect(BUNDLED_COMMENTARIES[f], f).toBeDefined()
+  })
+
+  it.each(files)('%s indexes without a flagged excerpt', (f) => {
+    const chunks = parseCommentaryMarkdown(readFileSync(join(dir, f), 'utf8'))
+    expect(chunks.length).toBeGreaterThan(100)
+    const flagged = validateSource(chunks, VERSE_COUNTS).chunks.filter((c) => c.flagged)
+    expect(flagged.map((c) => `${c.book} ${c.headerRaw}: ${c.reasons[0]}`)).toEqual([])
   })
 })
