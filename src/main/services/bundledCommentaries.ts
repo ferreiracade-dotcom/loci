@@ -12,8 +12,9 @@ import { commentaryVaultDir, readConfig, writeConfig } from './config'
 // Greek and Hebrew repaired by tools/mybible-to-md.py; Luther's prefaces, Church Postil sermons and
 // commentaries on Genesis 4-9, Psalm 82, the Sermon on the Mount and Galatians, from SermonIndex's
 // module with each entry put back at its passage by tools/luther-sermonindex-to-md.py; Gerhard on 1 and 2 Peter and on Matthew, and
-// Calov's Biblia Illustrata on both Testaments, from The Faith Received's Latin and its machine
-// translation, by tools/tfr-to-md.py and tools/tfr-books-to-md.py). They live in resources/commentaries
+// Calov's Biblia Illustrata on both Testaments, and Heshusius on 1 Corinthians, from The Faith
+// Received's Latin and its machine translation, by tools/tfr-to-md.py, tools/tfr-books-to-md.py and
+// tools/tfr-quotes-to-md.py). They live in resources/commentaries
 // in the repository and in the installer's resources; on first launch each is copied into the
 // vault's commentaries folder, where the folder sync indexes it and vault sync carries it to
 // every device, like any other commentary file.
@@ -35,6 +36,10 @@ export const BUNDLED_COMMENTARIES: Record<string, { title: string; author: strin
     author: 'Abraham Calov'
   },
   'Calov Isaiah to Malachi.md': { title: 'Biblia Illustrata: Isaiah to Malachi', author: 'Abraham Calov' },
+  'Heshusius 1 Corinthians.md': {
+    title: 'Explanation of the First Epistle to the Corinthians',
+    author: 'Tilemann Heshusius'
+  },
   'Luther Selected Passages.md': { title: "Luther's Commentary on Selected Bible Passages", author: 'Martin Luther' },
   'Hengstenberg.md': {
     title: "Hengstenberg's Commentaries on Psalms, Ecclesiastes, Ezekiel, John and Revelation",
