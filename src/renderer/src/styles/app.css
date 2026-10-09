@@ -5027,30 +5027,6 @@ select.field {
   border-bottom: 1px solid #2e2820;
   color: var(--text-2);
 }
-.ctb-location {
-  flex: 1;
-  min-width: 0;
-  height: 34px;
-  margin: 0 8px 0 4px;
-  border-radius: 17px;
-  background: #16130f;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 14px;
-  color: var(--chrome-text);
-  font-size: 13.5px;
-  white-space: nowrap;
-  overflow: hidden;
-}
-.ctb-loc-icon {
-  flex: none;
-  color: var(--text-2);
-}
-.ctb-dim {
-  color: var(--chrome-muted);
-  white-space: pre;
-}
 .ctb-btn {
   flex: none;
   width: 32px;
@@ -5074,6 +5050,211 @@ select.field {
   height: 20px;
   background: var(--chrome-border);
   margin: 0 4px;
+}
+
+.ctb-btn:disabled {
+  opacity: 0.35;
+  background: none;
+}
+
+/* ---- omnibox ---- */
+.omnibox {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 34px;
+  margin: 0 8px 0 6px;
+  border-radius: 17px;
+  background: #16130f;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 4px 0 14px;
+  color: var(--chrome-text);
+  font-size: 13.5px;
+  cursor: text;
+}
+.omnibox:hover {
+  background: #1c1813;
+}
+.omnibox.focus {
+  background: #0f0d0b;
+  box-shadow: 0 0 0 2px var(--accent-40, rgba(201, 169, 110, 0.4));
+}
+.omnibox.focus.open {
+  border-radius: 17px 17px 0 0;
+}
+.omni-icon {
+  flex: none;
+  color: var(--text-2);
+}
+.omni-crumb {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.omni-dim {
+  color: var(--chrome-muted);
+}
+.omni-sep {
+  white-space: pre;
+}
+.omni-input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  background: none;
+  border: 0;
+  outline: 0;
+  color: var(--chrome-text);
+  font: inherit;
+  font-size: 14px;
+}
+.omni-input::placeholder {
+  color: var(--chrome-muted);
+}
+.omni-star {
+  width: 28px;
+  height: 28px;
+}
+.omni-star.on svg {
+  fill: var(--accent);
+  color: var(--accent);
+}
+.omni-sugg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 34px;
+  z-index: 950;
+  background: #0f0d0b;
+  border-radius: 0 0 17px 17px;
+  padding: 4px 0 10px;
+  box-shadow: 0 0 0 2px var(--accent-40, rgba(201, 169, 110, 0.4)), 0 12px 28px rgba(0, 0, 0, 0.5);
+  cursor: default;
+}
+.omni-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 16px;
+  white-space: nowrap;
+}
+.omni-row.sel {
+  background: var(--menu-hover);
+}
+.omni-row-ic {
+  flex: none;
+  color: var(--text-2);
+}
+.omni-row-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.omni-row small {
+  margin-left: auto;
+  padding-left: 12px;
+  color: var(--chrome-muted);
+  font-size: 12px;
+}
+
+/* ---- bookmark bubble ---- */
+.bm-bubble {
+  position: fixed;
+  z-index: 1100;
+  width: 320px;
+  background: var(--menu);
+  color: var(--chrome-text);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--chrome-border);
+  font: 13px/1.4 var(--font-ui);
+}
+.bm-bubble h6 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.bm-bubble label {
+  display: block;
+  color: var(--text-2);
+}
+.bm-bubble input {
+  display: block;
+  width: 100%;
+  height: 32px;
+  margin-top: 4px;
+  border-radius: 6px;
+  border: 1px solid var(--chrome-border);
+  background: #0f0d0b;
+  color: var(--chrome-text);
+  padding: 0 8px;
+  font: inherit;
+  outline: 0;
+}
+.bm-bubble input:focus {
+  border-color: var(--accent);
+}
+.bm-bubble-btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+.bm-btn {
+  height: 32px;
+  padding: 0 16px;
+  border-radius: 16px;
+  border: 1px solid var(--chrome-border);
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  cursor: default;
+}
+.bm-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.bm-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #151210;
+  font-weight: 600;
+}
+
+/* ---- side panel (Chrome style) ---- */
+.side-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 6px 0 10px;
+  border-bottom: 1px solid var(--border);
+  flex: none;
+}
+.side-panel-pick {
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--chrome-border);
+  background: var(--card, #2a251e);
+  color: var(--chrome-text);
+  font: 13px var(--font-ui);
+  cursor: default;
+}
+.side-panel-pick:hover {
+  background: var(--menu-hover);
+}
+.side-panel-pick span {
+  flex: 1;
+  text-align: left;
 }
 
 /* ---- popup menus ---- */

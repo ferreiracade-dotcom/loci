@@ -15,17 +15,42 @@ function speedLabel(r: number): string {
   return `${r}×`
 }
 
+/** The toolbar's audio button dispatches this with `detail` = "BOOK:chapter". */
+export const SCRIPTURE_AUDIO_EVENT = 'loci:scripture-audio'
+
 /**
  * Chapter audio for translations that ship narrations (currently BSB via the Free Use
  * API — direct, non-expiring MP3s). Mounted fresh per chapter, so navigating resets it.
  */
-export function ScriptureAudio({ tracks }: { tracks: ScriptureAudioTrack[] }) {
+export function ScriptureAudio({
+  tracks,
+  chapterKey
+}: {
+  tracks: ScriptureAudioTrack[]
+  /** "BOOK:chapter"; when set, the toolbar's audio button plays/pauses this player. */
+  chapterKey?: string
+}) {
   const [reader, setReader] = useState(tracks[0]?.reader ?? '')
   const [rate, setRate] = useState(1)
   const [playing, setPlaying] = useState(false)
   const [cur, setCur] = useState(0)
   const [dur, setDur] = useState(0)
   const audioRef = useRef<HTMLAudioElement>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!chapterKey) return
+    const onToggle = (e: Event): void => {
+      if ((e as CustomEvent<string>).detail !== chapterKey) return
+      rootRef.current?.scrollIntoView({ block: 'nearest' })
+      const a = audioRef.current
+      if (!a) return
+      if (a.paused) void a.play()
+      else a.pause()
+    }
+    window.addEventListener(SCRIPTURE_AUDIO_EVENT, onToggle)
+    return () => window.removeEventListener(SCRIPTURE_AUDIO_EVENT, onToggle)
+  }, [chapterKey])
 
   // Restore narrator + speed preferences on mount.
   useEffect(() => {
@@ -85,7 +110,7 @@ export function ScriptureAudio({ tracks }: { tracks: ScriptureAudioTrack[] }) {
   }
 
   return (
-    <div className="sr-audio">
+    <div className="sr-audio" ref={rootRef}>
       <button
         className="sr-audio-btn"
         title={playing ? 'Pause' : 'Listen to this chapter'}

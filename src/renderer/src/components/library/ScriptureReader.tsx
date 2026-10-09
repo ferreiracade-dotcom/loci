@@ -255,7 +255,7 @@ export function ScriptureReader({
       </div>
 
       {passage?.audio && passage.audio.length > 0 && (
-        <ScriptureAudio key={`${book}:${chapter}`} tracks={passage.audio} />
+        <ScriptureAudio key={`${book}:${chapter}`} tracks={passage.audio} chapterKey={`${book}:${chapter}`} />
       )}
 
       <div

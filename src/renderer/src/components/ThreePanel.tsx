@@ -1,5 +1,6 @@
-import { useRef } from 'react'
-import { X } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { ChevronDown, X } from 'lucide-react'
+import { PopupMenu } from './chrome/PopupMenu'
 import { useStore } from '../store/useStore'
 import { Divider } from './Divider'
 import { EmptyState } from './EmptyState'
@@ -22,8 +23,9 @@ const DIVIDER_ALLOWANCE = 14
 const WIDE_RIGHT_TABS = new Set(['books', 'texts', 'commentary'])
 
 /**
- * The window body under the toolbar: tab content, plus the side panel (the reference panel,
- * toggled from the toolbar; its Chrome-style restyle is phase 2).
+ * The window body under the toolbar: tab content, plus Chrome's side panel (the reference
+ * panel, toggled from the toolbar): a header with a dropdown to pick Quotes / Notes / Books /
+ * Texts / Commentary and a close button.
  */
 export function ThreePanel() {
   const layout = useStore((s) => s.layout)!
@@ -31,6 +33,7 @@ export function ThreePanel() {
   const saveLayout = useStore((s) => s.saveLayout)
   const persistLayout = useStore((s) => s.persistLayout)
   const ref = useRef<HTMLDivElement>(null)
+  const [pickerAt, setPickerAt] = useState<{ x: number; y: number; w: number } | null>(null)
 
   // Normalise the active right tab. Stored values may be legacy ids from before the five-pill
   // consolidation — map them rather than dropping the user on a fallback.
@@ -61,32 +64,41 @@ export function ThreePanel() {
         <>
           <Divider onDrag={onRightDrag} onDragEnd={persistLayout} />
           <aside className="sidebar notes-panel side-panel" style={{ width: layout.notesWidth }}>
-            <div className="sidebar-head">
-              <span className="brand-word small">Reference</span>
+            <div className="side-panel-head">
               <button
-                className="icon-btn"
+                className="side-panel-pick"
+                title="Choose what the side panel shows"
+                onClick={(e) => {
+                  const r = e.currentTarget.getBoundingClientRect()
+                  setPickerAt({ x: r.left, y: r.bottom + 4, w: r.width })
+                }}
+              >
+                <activeTab.icon size={15} />
+                <span>{activeTab.label}</span>
+                <ChevronDown size={15} />
+              </button>
+              <button
+                className="ctb-btn"
                 title="Close side panel"
                 onClick={() => saveLayout({ notesCollapsed: true })}
               >
                 <X size={16} />
               </button>
             </div>
-            <div className="tabs">
-              {RIGHT_TABS.map((t) => {
-                const Icon = t.icon
-                return (
-                  <button
-                    key={t.id}
-                    className={`tab tab-icon${t.id === rightTabId ? ' active' : ''}`}
-                    title={t.label}
-                    onClick={() => selectRightTab(t.id)}
-                  >
-                    <Icon size={14} />
-                    <span>{t.label}</span>
-                  </button>
-                )
-              })}
-            </div>
+            {pickerAt && (
+              <PopupMenu
+                x={pickerAt.x}
+                y={pickerAt.y}
+                className="side-panel-menu"
+                onClose={() => setPickerAt(null)}
+                items={RIGHT_TABS.map((t) => ({
+                  label: t.label,
+                  icon: t.icon,
+                  shortcut: t.id === rightTabId ? '✓' : undefined,
+                  onSelect: () => selectRightTab(t.id)
+                }))}
+              />
+            )}
             <div className="notes-body">
               {rightTabId === 'quotes' ? (
                 <QuotesReferencePanel />

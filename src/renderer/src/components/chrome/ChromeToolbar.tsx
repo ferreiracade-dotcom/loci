@@ -1,7 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
+  ArrowLeft,
+  ArrowRight,
   BookMarked,
   EllipsisVertical,
+  Headphones,
   History,
   Landmark,
   LayoutDashboard,
@@ -12,50 +15,66 @@ import {
   PenLine,
   Plus,
   Quote,
+  RotateCw,
   ScrollText,
   Settings as SettingsIcon,
+  Star,
   Undo2,
   ZoomIn
 } from 'lucide-react'
 import { useStore, focusedTab } from '../../store/useStore'
+import type { Tab } from '../../store/useStore'
+import { canGoBack, canGoForward, tabHistory } from '../../store/workspace'
+import { api } from '../../lib/api'
 import { PopupMenu } from './PopupMenu'
 import type { MenuEntry } from './PopupMenu'
-import { tabDef, tabTitle } from './tabRegistry'
-import { openBibleTab, openConfessionsTab } from './openViews'
+import { locationTab, tabDef, tabLocationText, tabTitle } from './tabRegistry'
+import { BOOKMARK_TAB_EVENT, Omnibox } from './Omnibox'
+import { isBackgroundClick, openBibleTab, openConfessionsTab, openInBackground } from './openViews'
+import { SCRIPTURE_AUDIO_EVENT } from '../library/ScriptureAudio'
+
+/** Entries shown in a Back/Forward dropdown, like Chrome's. */
+const HISTORY_MENU_MAX = 12
+const LONG_PRESS_MS = 500
 
 /**
- * The row under the tab strip. Phase 1 shows the focused tab's location read-only where the
- * omnibox will go (with Back/Forward/Reload to its left in phase 2), then the toolbar icons and
- * the ⋮ menu.
+ * The row under the tab strip: Back / Forward / Reload for the focused tab, the omnibox, then
+ * the toolbar icons (chapter audio when there is any, quick capture, side panel) and the ⋮ menu.
  */
 export function ChromeToolbar({ onQuickCapture }: { onQuickCapture: () => void }) {
   const tab = useStore((s) => focusedTab(s))
-  const books = useStore((s) => s.books)
-  const notes = useStore((s) => s.standaloneNotes)
   const sideOpen = useStore((s) => !s.layout?.notesCollapsed)
   const saveLayout = useStore((s) => s.saveLayout)
+  const goBack = useStore((s) => s.goBack)
+  const goForward = useStore((s) => s.goForward)
+  const reloadTab = useStore((s) => s.reloadTab)
   const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
-  const ctx = useMemo(() => ({ books, notes }), [books, notes])
-
-  const def = tab ? tabDef(tab.kind) : null
-  const Icon = def?.icon
+  const hasAudio = useChapterAudio(tab)
 
   return (
     <div className="chrome-toolbar">
-      <div className="ctb-location" title={tab && def ? `${tabTitle(tab, ctx)} · ${def.subtitle(tab)}` : ''}>
-        {Icon && <Icon size={15} className="ctb-loc-icon" />}
-        {tab && def ? (
-          tab.kind === 'newtab' ? (
-            <span className="ctb-dim">New Tab</span>
-          ) : (
-            <>
-              <span className="ctb-dim">{def.subtitle(tab)}</span>
-              <span className="ctb-dim"> › </span>
-              <span>{tabTitle(tab, ctx)}</span>
-            </>
-          )
-        ) : null}
-      </div>
+      <HistoryButton tab={tab} dir={-1} onGo={() => goBack()} />
+      <HistoryButton tab={tab} dir={1} onGo={() => goForward()} />
+      <button
+        className="ctb-btn"
+        title="Reload (Ctrl+R)"
+        disabled={!tab}
+        onClick={() => tab && reloadTab(tab.id)}
+      >
+        <RotateCw size={16} />
+      </button>
+      <Omnibox />
+      {hasAudio && tab && (
+        <button
+          className="ctb-btn"
+          title="Listen to this chapter"
+          onClick={() =>
+            window.dispatchEvent(new CustomEvent(SCRIPTURE_AUDIO_EVENT, { detail: `${tab.book}:${tab.chapter}` }))
+          }
+        >
+          <Headphones size={16} />
+        </button>
+      )}
       <button className="ctb-btn" title="Quick capture (Ctrl+Shift+N)" onClick={onQuickCapture}>
         <PenLine size={16} />
       </button>
@@ -82,6 +101,112 @@ export function ChromeToolbar({ onQuickCapture }: { onQuickCapture: () => void }
   )
 }
 
+/** Whether the focused Bible tab's chapter has a narration (the reader already fetched it). */
+function useChapterAudio(tab: Tab | undefined): boolean {
+  const fallback = useStore((s) => s.scriptureTranslation)
+  const translation = tab?.kind === 'bible' ? tab.translation || fallback : ''
+  const key = tab?.kind === 'bible' && tab.book && tab.chapter != null ? `${translation}|${tab.book}|${tab.chapter}` : ''
+  const [has, setHas] = useState<{ key: string; value: boolean }>({ key: '', value: false })
+  useEffect(() => {
+    if (!key) return
+    let alive = true
+    const [t, book, chapter] = key.split('|')
+    void api
+      .getScriptureChapter(t, book, Number(chapter))
+      .then((p) => alive && setHas({ key, value: !!p?.audio?.length }))
+      .catch(() => alive && setHas({ key, value: false }))
+    return () => {
+      alive = false
+    }
+  }, [key])
+  return !!key && has.key === key && has.value
+}
+
+/**
+ * Back or Forward. Click goes one step; Ctrl/middle-click opens that entry in a background
+ * tab; right-click or a long press lists the entries to jump to, as in Chrome.
+ */
+function HistoryButton({ tab, dir, onGo }: { tab: Tab | undefined; dir: -1 | 1; onGo: () => void }) {
+  const goToHistoryIndex = useStore((s) => s.goToHistoryIndex)
+  const openPage = useStore((s) => s.openPage)
+  const books = useStore((s) => s.books)
+  const notes = useStore((s) => s.standaloneNotes)
+  const [menuAt, setMenuAt] = useState<{ x: number; y: number } | null>(null)
+  const pressTimer = useRef<number | null>(null)
+  const longPressed = useRef(false)
+  const enabled = dir === -1 ? canGoBack(tab) : canGoForward(tab)
+  const Icon = dir === -1 ? ArrowLeft : ArrowRight
+  const label = dir === -1 ? 'Back' : 'Forward'
+
+  const openMenu = (el: HTMLElement): void => {
+    const r = el.getBoundingClientRect()
+    setMenuAt({ x: r.left, y: r.bottom + 2 })
+  }
+  const clearPress = (): void => {
+    if (pressTimer.current != null) window.clearTimeout(pressTimer.current)
+    pressTimer.current = null
+  }
+
+  const items = (): MenuEntry[] => {
+    if (!tab) return []
+    const h = tabHistory(tab)
+    const ctx = { books, notes }
+    const out: MenuEntry[] = []
+    for (let i = h.index + dir, n = 0; i >= 0 && i < h.entries.length && n < HISTORY_MENU_MAX; i += dir, n++) {
+      const t = locationTab(h.entries[i])
+      const index = i
+      out.push({ label: tabLocationText(t, ctx) || tabTitle(t, ctx), icon: tabDef(t.kind).icon, onSelect: () => goToHistoryIndex(tab.id, index) })
+    }
+    out.push('sep', { label: 'Show full history', icon: History, shortcut: 'Ctrl+H', onSelect: () => openPage('history') })
+    return out
+  }
+
+  return (
+    <>
+      <button
+        className="ctb-btn"
+        title={`${label} (Alt+${dir === -1 ? 'Left' : 'Right'}); right-click to see history`}
+        disabled={!enabled}
+        onMouseDown={(e) => {
+          if (e.button === 1) e.preventDefault()
+          if (e.button !== 0) return
+          longPressed.current = false
+          const el = e.currentTarget
+          pressTimer.current = window.setTimeout(() => {
+            longPressed.current = true
+            openMenu(el)
+          }, LONG_PRESS_MS)
+        }}
+        onMouseUp={clearPress}
+        onMouseLeave={clearPress}
+        onClick={(e) => {
+          if (longPressed.current) return
+          if (isBackgroundClick(e) && tab) {
+            const h = tabHistory(tab)
+            const entry = h.entries[h.index + dir]
+            if (entry) openInBackground(entry)
+            return
+          }
+          onGo()
+        }}
+        onAuxClick={(e) => {
+          if (e.button !== 1 || !tab) return
+          const h = tabHistory(tab)
+          const entry = h.entries[h.index + dir]
+          if (entry) openInBackground(entry)
+        }}
+        onContextMenu={(e) => {
+          e.preventDefault()
+          if (enabled) openMenu(e.currentTarget)
+        }}
+      >
+        <Icon size={16} />
+      </button>
+      {menuAt && <PopupMenu x={menuAt.x} y={menuAt.y} items={items()} onClose={() => setMenuAt(null)} />}
+    </>
+  )
+}
+
 /** The ⋮ menu. Until the bookmarks bar exists (phase 3) it also carries the fixed views. */
 function AppMenu({ x, y, onClose }: { x: number; y: number; onClose: () => void }) {
   const newTab = useStore((s) => s.newTab)
@@ -102,6 +227,12 @@ function AppMenu({ x, y, onClose }: { x: number; y: number; onClose: () => void 
     },
     'sep',
     { label: 'History', icon: History, shortcut: 'Ctrl+H', onSelect: () => openPage('history') },
+    {
+      label: 'Bookmark this tab',
+      icon: Star,
+      shortcut: 'Ctrl+D',
+      onSelect: () => window.dispatchEvent(new Event(BOOKMARK_TAB_EVENT))
+    },
     'sep',
     { label: 'Bible', icon: ScrollText, onSelect: () => void openBibleTab() },
     { label: 'Confessions', icon: BookMarked, onSelect: () => void openConfessionsTab() },
