@@ -201,7 +201,7 @@ def book_code():
 
 def verse_counts():
     """The book's verses per chapter, from Loci's own versification table."""
-    counts = re.search(rf"\b{book_code()}: \[([\d, ]+)\]", (SHARED / "versification.ts").read_text()).group(1)
+    counts = re.search(rf"'?\b{book_code()}'?: \[([\d, ]+)\]", (SHARED / "versification.ts").read_text()).group(1)
     return [int(x) for x in counts.split(",")]
 
 

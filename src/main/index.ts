@@ -145,7 +145,7 @@ app.whenReady().then(() => {
   // Auto-register + index any Markdown commentaries the vault carries (best-effort; new/changed
   // files only). Makes vault commentaries appear on every device without manual re-adding.
   // Deferred so the window paints before the (synchronous) index work runs.
-  // Then, once per setup, copy in the commentaries Loci ships (Philippi, the Lutheran Commentary, Leupold, Bengel, three volumes of Gerhard) and download the default
+  // Then, once per setup, copy in the commentaries Loci ships (Philippi, the Lutheran Commentary, Leupold, Bengel, Gerhard, Calov) and download the default
   // SermonIndex ones (Lenski, Keil & Delitzsch), indexing them with a second folder pass.
   // Offline is fine: a failed download retries next launch.
   setTimeout(
