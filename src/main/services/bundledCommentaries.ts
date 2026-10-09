@@ -6,7 +6,8 @@ import { commentaryVaultDir, readConfig, writeConfig } from './config'
 
 // Commentaries Loci ships itself: books converted for Loci that no site publishes in a usable
 // form (Philippi on Romans, re-OCR'd from the 1878 scans; the Lutheran Commentary on the New
-// Testament, converted from the 1895-98 scans with its verse headings checked against the KJV/RV). They live in resources/commentaries
+// Testament, converted from the 1895-98 scans with its verse headings checked against the KJV/RV;
+// Leupold on Genesis, from CCEL's public-domain edition). They live in resources/commentaries
 // in the repository and in the installer's resources; on first launch each is copied into the
 // vault's commentaries folder, where the folder sync indexes it and vault sync carries it to
 // every device, like any other commentary file.
@@ -14,7 +15,8 @@ import { commentaryVaultDir, readConfig, writeConfig } from './config'
 /** Title and author for each shipped file (a Markdown file carries only its name). */
 export const BUNDLED_COMMENTARIES: Record<string, { title: string; author: string }> = {
   'Philippi Romans.md': { title: "Philippi's Commentary on Romans", author: 'F. A. Philippi' },
-  'Lutheran Commentary.md': { title: 'The Lutheran Commentary', author: 'ed. Henry Eyster Jacobs' }
+  'Lutheran Commentary.md': { title: 'The Lutheran Commentary', author: 'ed. Henry Eyster Jacobs' },
+  'Leupold Genesis.md': { title: 'Exposition of Genesis', author: 'H. C. Leupold' }
 }
 
 /** Where the shipped commentary files are: the installer's resources, or the repository. */
