@@ -90,6 +90,13 @@ export function registerIpc(): void {
       primaryLibraryPath: data.primaryLibraryPath,
       keepLocalCopies: data.keepLocalCopies
     })
+    // Seed the local working copy from an existing Drive vault now, as a normal start does, so
+    // the renderer reads that vault's notes, bookmarks and tab groups rather than empty ones.
+    try {
+      syncVault()
+    } catch {
+      /* Drive may be offline: the local vault still works */
+    }
     return appState()
   })
 

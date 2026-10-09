@@ -153,8 +153,13 @@ function persistWorkspace(ws: Workspace): void {
 
 const queueBookmarks = createSequentialQueue()
 
+/** Set once init has read the vault's bookmarks and tab groups; no vault writes before that. */
+let vaultDataLoaded = false
+
 /** Bookmarks and their folders live in the vault (app/bookmarks.json), so they travel with it. */
 function persistBookmarks(b: Bookmarks): Promise<void> {
+  // Never write before the vault's copy has been read: that would replace it with a partial one.
+  if (!vaultDataLoaded) return Promise.resolve()
   const payload = serializeBookmarks(b)
   return new Promise((resolve) => {
     queueBookmarks(async () => {
@@ -182,6 +187,7 @@ function persistGroups(payload: () => string, immediate = false): void {
   groupsTimer = null
   const flush = (): void => {
     groupsTimer = null
+    if (!vaultDataLoaded) return
     const make = pendingGroups
     pendingGroups = null
     if (!make) return
@@ -688,12 +694,14 @@ export const useStore = create<Store>((set, get) => {
         await api.getVaultData('bookmarks'),
         await api.getSession('bookmarks')
       )
+      const groupsJson = await api.getVaultData('tabGroups')
+      vaultDataLoaded = true
       if (migrated) {
         void persistBookmarks(bookmarks).then(async () => {
           if ((await api.getVaultData('bookmarks')) !== null) await api.setSession('bookmarks', '')
         })
       }
-      const grouped = reconcileGroups(workspace, workspace, parseGroups(await api.getVaultData('tabGroups')))
+      const grouped = reconcileGroups(workspace, workspace, parseGroups(groupsJson))
       workspace = grouped.ws
       lastGroupsPayload = serializeGroups(grouped.groups, workspace)
       const showBookmarksBar = (await api.getSession('showBookmarksBar')) !== '0'
@@ -754,10 +762,12 @@ export const useStore = create<Store>((set, get) => {
     },
 
     completeWizard: async (data) => {
-      const appState = await api.completeWizard(data)
-      const all = await loadAll()
-      applyTheme(all.config.theme)
-      set({ appState, ...all, phase: 'ready' })
+      await api.completeWizard(data)
+      // Load exactly as a normal start does: the session, plus the bookmarks and tab groups an
+      // existing vault already holds. Starting from empty ones here would overwrite the vault's
+      // copies (and, through the Drive sync, every other device's) on the first change.
+      await get().init()
+      set({ phase: 'ready' })
     },
 
     relocateVault: async () => {
