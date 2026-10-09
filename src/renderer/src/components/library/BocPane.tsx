@@ -112,11 +112,22 @@ export function BocPane({
         <div key={d.code} className="sv-book-wrap">
           <button
             className={`sv-book${documentCode === d.code ? ' active' : ''}`}
-            onClick={() => setExpanded(expanded === d.code ? null : d.code)}
+            onClick={() => {
+              // A one-page document has nothing to expand into — open it directly.
+              if (d.singleSection) {
+                setExpanded(null)
+                navigate(d.code, 1)
+              } else setExpanded(expanded === d.code ? null : d.code)
+            }}
+            onContextMenu={
+              d.singleSection
+                ? (e) => onContextMenu(e, { kind: 'boc', documentCode: d.code, sectionOrdinal: 1, bocSourceId })
+                : undefined
+            }
           >
             {d.title}
           </button>
-          {expanded === d.code && (
+          {expanded === d.code && !d.singleSection && (
             <div style={{ paddingLeft: 8 }}>
               {sectionsLoading ? (
                 <div className="sr-loading" style={{ height: 'auto', padding: '6px 8px' }}>

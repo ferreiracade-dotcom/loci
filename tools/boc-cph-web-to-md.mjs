@@ -55,12 +55,10 @@ export async function fetchPage(path) {
 }
 
 // --- Site structure -----------------------------------------------------------------------------
-// First path segment (two for the creeds, which the site groups under one slug) → document.
+// First path segment → document.
 const SLUG_TO_CODE = {
   'preface': 'PREF',
-  'ecumenical-creeds/apostles-creed': 'CR-AP',
-  'ecumenical-creeds/nicene-creed': 'CR-NI',
-  'ecumenical-creeds/athanasian-creed': 'CR-ATH',
+  'ecumenical-creeds': 'CR',
   'augsburg-confession': 'AC',
   'apology-augsburg-confession': 'AP',
   'smalcald-articles': 'SA',
@@ -76,9 +74,7 @@ const SLUG_TO_CODE = {
 // src/shared/bookOfConcord.ts), in BOC_DOCUMENTS order.
 export const DOC_TITLES = {
   'PREF': 'Preface to the Book of Concord',
-  'CR-AP': "Apostles' Creed",
-  'CR-NI': 'Nicene Creed',
-  'CR-ATH': 'Athanasian Creed',
+  'CR': 'Ecumenical Creeds',
   'AC': 'Augsburg Confession',
   'AP': 'Apology of the Augsburg Confession',
   'SA': 'Smalcald Articles',
@@ -93,9 +89,13 @@ export const DOC_TITLES = {
 }
 
 export function codeForPath(path) {
-  const segs = path.replace(/^\/en\//, '').split('/')
-  return SLUG_TO_CODE[segs.slice(0, 2).join('/')] ?? SLUG_TO_CODE[segs[0]] ?? null
+  return SLUG_TO_CODE[path.replace(/^\/en\//, '').split('/')[0]] ?? null
 }
+
+// The EPUB converter emitted each creed as its own one-section document; the site (and so the
+// corpus) has one Ecumenical Creeds document with a section per creed. Old-file headings for
+// those fold into CR at the creed's site position.
+const LEGACY_CREEDS = { "apostles' creed": 1, 'nicene creed': 2, 'athanasian creed': 3 }
 
 const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' }
 export function decodeEntities(s) {
@@ -187,18 +187,22 @@ export function parseContractMd(md) {
   const docs = new Map() // code → sections[]
   const codeByTitle = new Map(Object.entries(DOC_TITLES).map(([c, t]) => [t.toLowerCase(), c]))
   let code = null
+  let offset = 0 // ordinal shift for a legacy per-creed document folded into CR
   let cur = null
   for (const line of md.split(/\r?\n/)) {
     const h = /^(#{1,6})\s+(?=\S)(.*)$/.exec(line)
     if (h && h[1].length === 1) {
       cur = null
-      code = codeByTitle.get(h[2].trim().toLowerCase()) ?? null
+      const name = h[2].trim().toLowerCase()
+      const creed = LEGACY_CREEDS[name]
+      code = creed ? 'CR' : codeByTitle.get(name) ?? null
+      offset = creed ? creed - 1 : 0
       if (code && !docs.has(code)) docs.set(code, [])
       continue
     }
     if (h) {
       const parts = h[2].split('|').map((x) => x.trim())
-      const ordinal = Number(parts[0])
+      const ordinal = Number(parts[0]) + offset
       cur = null
       if (code && parts.length >= 3 && Number.isInteger(ordinal) && ordinal >= 1 && parts[2]) {
         cur = { ordinal, number: parts[1] || null, label: parts[2], part: parts[3] || null, text: '' }

@@ -4,12 +4,15 @@ import {
 } from './bookOfConcord'
 
 describe('BOC_DOCUMENTS', () => {
-  it('lists all 15 documents in nav order with unique codes and 1..15 sortOrder', () => {
+  it('lists all 13 documents in nav order with unique codes and 1..13 sortOrder', () => {
     expect(BOC_DOCUMENTS.map((d) => d.code)).toEqual([
-      'PREF','CR-AP','CR-NI','CR-ATH','AC','AP','SA','TR','SC','LC','FC-EP','FC-SD','CT','BEC','SVA'
+      'PREF','CR','AC','AP','SA','TR','SC','LC','FC-EP','FC-SD','CT','BEC','SVA'
     ])
-    expect(new Set(BOC_DOCUMENTS.map((d) => d.code)).size).toBe(15)
-    expect(BOC_DOCUMENTS.map((d) => d.sortOrder)).toEqual([...Array(15)].map((_, i) => i + 1))
+    expect(new Set(BOC_DOCUMENTS.map((d) => d.code)).size).toBe(13)
+    expect(BOC_DOCUMENTS.map((d) => d.sortOrder)).toEqual([...Array(13)].map((_, i) => i + 1))
+  })
+  it('flags the documents the site presents as a single page', () => {
+    expect(BOC_DOCUMENTS.filter((d) => d.singleSection).map((d) => d.code)).toEqual(['PREF', 'TR', 'CT', 'BEC'])
   })
   it('puts the three appendices last', () => {
     expect(BOC_DOCUMENTS.slice(-3).map((d) => d.code)).toEqual(['CT','BEC','SVA'])
@@ -28,7 +31,7 @@ describe('helpers', () => {
     expect(documentCodeFromName('Preface to the Christian Book of Concord')).toBe('PREF')
     expect(documentCodeFromName('AC')).toBe('AC')
     expect(documentCodeFromName('The Augsburg Confession (1530)')).toBe('AC')
-    expect(documentCodeFromName('The Creed of Athanasius')).toBe('CR-ATH')
+    expect(documentCodeFromName('The Three Universal or Ecumenical Creeds')).toBe('CR')
     expect(documentCodeFromName('Catalog of Testimonies')).toBe('CT')
     expect(documentCodeFromName('nonsense')).toBeUndefined()
   })

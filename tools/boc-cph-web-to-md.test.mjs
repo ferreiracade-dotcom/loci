@@ -27,9 +27,9 @@ const PAGE = `<main><article class="prose" data-copy-target="article">
 </article>`
 
 describe('codeForPath', () => {
-  it('maps site slugs, including the creeds the site groups under one slug', () => {
+  it('maps site slugs, with the three creeds as one document', () => {
     expect(codeForPath('/en/preface')).toBe('PREF')
-    expect(codeForPath('/en/ecumenical-creeds/nicene-creed')).toBe('CR-NI')
+    expect(codeForPath('/en/ecumenical-creeds/nicene-creed')).toBe('CR')
     expect(codeForPath('/en/augsburg-confession/chief_articles/article_iv')).toBe('AC')
     expect(codeForPath('/en/about')).toBeNull()
   })
@@ -112,6 +112,14 @@ describe('restructureSva', () => {
       text: '[1] Article 2\n\nFALSE AND ERRONEOUS DOCTRINE OF THE CALVINISTS Concerning the Person of Christ\n\nAntithesis 2'
     })
     expect(Object.fromEntries(map)).toEqual({ 1: 1, 2: 2, 3: 3, 4: 4, 5: 1, 6: 2, 7: 3, 8: 4 })
+  })
+})
+
+describe('parseContractMd', () => {
+  it('folds the EPUB\'s per-creed documents into the Ecumenical Creeds, in site order', () => {
+    const docs = parseContractMd("# Apostles' Creed\n## 1 |  | The Apostles' Creed | \nA\n# Nicene Creed\n## 1 |  | The Nicene Creed | \nN\n# Athanasian Creed\n## 1 |  | The Creed of Athanasius | \nT")
+    expect([...docs.keys()]).toEqual(['CR'])
+    expect(docs.get('CR').map((s) => [s.ordinal, s.text])).toEqual([[1, 'A'], [2, 'N'], [3, 'T']])
   })
 })
 

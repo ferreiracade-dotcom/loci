@@ -653,6 +653,23 @@ export function PanePicker({
                 </div>
               ) : (
                 BOC_DOCUMENTS.map((d) => {
+                  if (d.singleSection) {
+                    // A one-page document has nothing to expand into — open it directly.
+                    return (
+                      <div key={d.code} className="pp-bible-book-group">
+                        <button
+                          className="pp-item"
+                          title={`Open ${d.title}`}
+                          onClick={() => placeBoc(d.code, 1)}
+                          onContextMenu={(e) =>
+                            onContextMenu(e, { kind: 'boc', documentCode: d.code, sectionOrdinal: 1, bocSourceId })
+                          }
+                        >
+                          <span className="pp-item-title">{d.title}</span>
+                        </button>
+                      </div>
+                    )
+                  }
                   const open = expandedDoc === d.code
                   return (
                     <div key={d.code} className="pp-bible-book-group">

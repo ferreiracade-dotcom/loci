@@ -3,6 +3,7 @@ import { api } from '../lib/api'
 import { applyTheme } from '../lib/theme'
 import { extractAndIndexBook } from '../lib/pdfIndex'
 import { BOOKS, parseReference } from '@shared/scriptureRef'
+import { bocDocument } from '@shared/bookOfConcord'
 import { DEFAULT_THEME } from '@shared/ipc'
 import { parseNote, serializeFrontMatter } from '../lib/noteFrontmatter'
 import type { CorpusMode, RefPill } from '../lib/corpusMode'
@@ -1102,7 +1103,10 @@ export const useStore = create<Store>((set, get) => {
         if (last) {
           try {
             const p = JSON.parse(last) as { documentCode?: string; ordinal?: number }
-            if (p.documentCode && p.ordinal != null) doc = { documentCode: p.documentCode, ordinal: p.ordinal }
+            // Skip a code the registry no longer has (e.g. the pre-merge per-creed codes).
+            if (p.documentCode && bocDocument(p.documentCode) && p.ordinal != null) {
+              doc = { documentCode: p.documentCode, ordinal: p.ordinal }
+            }
           } catch {
             /* ignore malformed session value */
           }
