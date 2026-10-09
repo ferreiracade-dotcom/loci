@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3'
-import { mkdtempSync, rmSync } from 'fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -232,5 +232,74 @@ describe('review actions', () => {
     expect(commentary.lookupVerse('ROM', 1, 1)).toHaveLength(0)
     expect(commentary.lookupVerse('ROM', 2, 5)).toHaveLength(1)
     expect(loadCorrections()).toMatchObject([{ action: 'reassign', correctedChapterStart: 2 }])
+  })
+})
+
+describe('reader queries', () => {
+  it('listCoverage lists covered books in canonical order with their chapters, skipping flagged', () => {
+    const sourceId = makeSource('Coverage')
+    commentary.replaceExcerptsForSource(sourceId, [
+      excerpt({ book: 'ROM', chapterStart: 2, verseStart: 1, chapterEnd: 2, verseEnd: 1 }),
+      excerpt({ book: 'MAT', chapterStart: 5, verseStart: 3, chapterEnd: 5, verseEnd: 3 }),
+      excerpt({ book: 'ROM', chapterStart: 1, verseStart: 1, chapterEnd: 1, verseEnd: 1 }),
+      excerpt({ book: 'ROM', chapterStart: 1, verseStart: 2, chapterEnd: 1, verseEnd: 2 }),
+      excerpt({ book: 'JHN', chapterStart: 1, verseStart: 1, chapterEnd: 1, verseEnd: 1, flagged: true })
+    ])
+    expect(commentary.listCoverage(sourceId)).toEqual([
+      { book: 'MAT', chapters: [5] },
+      { book: 'ROM', chapters: [1, 2] }
+    ])
+  })
+
+  it('listChapter returns one chapter of one source in verse order', () => {
+    const sourceId = makeSource('Chapter')
+    const other = makeSource('Other')
+    commentary.replaceExcerptsForSource(sourceId, [
+      excerpt({ chapterStart: 3, verseStart: 21, chapterEnd: 3, verseEnd: 26, text: 'b' }),
+      excerpt({ chapterStart: 3, verseStart: 1, chapterEnd: 3, verseEnd: 1, text: 'a' }),
+      excerpt({ chapterStart: 4, verseStart: 1, chapterEnd: 4, verseEnd: 1, text: 'next chapter' }),
+      excerpt({ chapterStart: 3, verseStart: 9, chapterEnd: 3, verseEnd: 9, text: 'flagged', flagged: true })
+    ])
+    commentary.replaceExcerptsForSource(other, [excerpt({ chapterStart: 3, verseStart: 2, chapterEnd: 3, verseEnd: 2 })])
+    expect(commentary.listChapter(sourceId, 'ROM', 3).map((e) => e.text)).toEqual(['a', 'b'])
+  })
+})
+
+describe('vault-backed sources', () => {
+  const vaultFile = (name: string): string => join(dataDir, 'vault', 'commentaries', name)
+
+  it('createSourceFromMyBible copies the module into the vault, idempotently', () => {
+    const outside = join(dataDir, 'download.SQLite3')
+    writeFileSync(outside, 'module bytes')
+    const describe = () => ({ displayName: 'Lenski', author: 'R. C. H. Lenski' })
+    const a = commentary.createSourceFromMyBible(outside, describe)
+    const b = commentary.createSourceFromMyBible(outside, describe)
+    expect(a.id).toBe(b.id)
+    expect(a).toMatchObject({ displayName: 'Lenski', pdfRelativePath: 'commentaries/download.SQLite3' })
+    expect(readFileSync(vaultFile('download.SQLite3'), 'utf8')).toBe('module bytes')
+  })
+
+  // The startup folder sync registers every file in commentaries/, so a removed source whose
+  // file stayed behind used to come straight back on the next launch.
+  it('deleteSource removes a vault source’s file so it is not re-registered', () => {
+    mkdirSync(join(dataDir, 'vault', 'commentaries'), { recursive: true })
+    writeFileSync(vaultFile('Old Lenski.md'), '# Romans\n## 1:1\ntext')
+    const source = commentary.createSource({
+      displayName: 'Old Lenski',
+      author: null,
+      bookId: null,
+      pdfRelativePath: 'commentaries/Old Lenski.md'
+    })
+    commentary.deleteSource(source.id)
+    expect(commentary.getSource(source.id)).toBeNull()
+    expect(existsSync(vaultFile('Old Lenski.md'))).toBe(false)
+  })
+
+  it('deleteSource leaves files outside the vault alone', () => {
+    const outside = join(dataDir, 'elsewhere.pdf')
+    writeFileSync(outside, 'pdf')
+    const source = commentary.createSource({ displayName: 'PDF', author: null, bookId: null, pdfRelativePath: outside })
+    commentary.deleteSource(source.id)
+    expect(existsSync(outside)).toBe(true)
   })
 })

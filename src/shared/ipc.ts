@@ -84,6 +84,11 @@ export const Channels = {
   listCommentarySources: 'commentary:listSources',
   createCommentarySource: 'commentary:createSource',
   addMarkdownCommentarySource: 'commentary:addMarkdownSource',
+  addMyBibleCommentarySource: 'commentary:addMyBibleSource',
+  listSermonIndexCatalog: 'commentary:listSermonIndexCatalog',
+  installSermonIndexModule: 'commentary:installSermonIndexModule',
+  listCommentaryCoverage: 'commentary:listCoverage',
+  listCommentaryChapter: 'commentary:listChapter',
   updateCommentarySource: 'commentary:updateSource',
   deleteCommentarySource: 'commentary:deleteSource',
   reorderCommentarySources: 'commentary:reorderSources',
@@ -344,6 +349,18 @@ export interface LociApi {
   /** Prompt for a canonical commentary-Markdown (.md) file and register it as a source —
    *  headings are the excerpt boundaries, nothing to profile. Null if cancelled. */
   addMarkdownCommentarySource(): Promise<CommentarySource | null>
+  /** Prompt for a MyBible commentary module (.SQLite3, or the .zip it is distributed in) and
+   *  register it as a source. Null if cancelled. */
+  addMyBibleCommentarySource(): Promise<CommentarySource | null>
+  /** The SermonIndex commentaries offered for one-click install. */
+  listSermonIndexCatalog(): Promise<SermonIndexModule[]>
+  /** Download a SermonIndex module into the vault and register it (not yet indexed). Progress
+   *  arrives as `downloading` phases on onCommentaryIndexProgress. */
+  installSermonIndexModule(slug: string): Promise<CommentarySource>
+  /** Which books and chapters a source has (non-flagged) excerpts for, in canonical order. */
+  listCommentaryCoverage(sourceId: string): Promise<CommentaryBookCoverage[]>
+  /** A source's non-flagged excerpts starting in one chapter, in verse order (the reader tab). */
+  listCommentaryChapter(sourceId: string, book: string, chapter: number): Promise<CommentaryExcerpt[]>
   updateCommentarySource(id: string, patch: CommentarySourceUpdate): Promise<void>
   deleteCommentarySource(id: string): Promise<void>
   /** Persist a new display order for all commentary sources (full list of ids, in order). */
@@ -747,12 +764,25 @@ export interface CommentaryExcerptReassign {
   verseEnd: number
 }
 
-export type CommentaryIndexPhase = 'extracting' | 'validating' | 'done'
+export type CommentaryIndexPhase = 'downloading' | 'extracting' | 'validating' | 'done'
 
 export interface CommentaryIndexProgress {
   phase: CommentaryIndexPhase
   done: number
   total: number
+}
+
+/** A commentary SermonIndex publishes as a MyBible module (see sermonIndex.ts). */
+export interface SermonIndexModule {
+  slug: string
+  moduleCode: string
+  title: string
+  author: string
+}
+
+export interface CommentaryBookCoverage {
+  book: string
+  chapters: number[]
 }
 
 export interface CommentaryIndexSummary {

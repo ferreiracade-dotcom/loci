@@ -215,6 +215,9 @@ describe('tabContent', () => {
       kind: 'quotes',
       quotesGroup: group
     })
+    expect(
+      tabContent({ ...base, kind: 'commentary', commentarySourceId: 's1', book: '1CO', chapter: 10, verse: 4 })
+    ).toEqual({ kind: 'commentary', commentarySourceId: 's1', book: '1CO', chapter: 10, verse: 4 })
     expect(tabContent({ ...base, kind: 'picker' })).toEqual({ kind: 'picker' })
   })
 

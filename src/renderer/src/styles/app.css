@@ -3582,6 +3582,21 @@ select.field {
   gap: 8px;
   flex-wrap: wrap;
 }
+.commentary-mgr-section {
+  font-family: var(--font-title);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 20px 0 8px;
+}
+.commentary-mgr-actions .commentary-mgr-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 0;
+}
 .commentary-mgr-row {
   display: flex;
   align-items: center;
@@ -4826,4 +4841,86 @@ select.field {
 }
 .commentary-view-pdf {
   margin-top: 0;
+}
+
+/* Commentary reader tab: a commentary read chapter by chapter, comment by comment */
+.cr-text {
+  max-width: 720px;
+  margin: 0 auto;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.cr-source {
+  font-family: var(--font-title);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+  user-select: none;
+}
+.cr-excerpt {
+  padding: 16px 0 18px;
+  border-top: 1px solid var(--border);
+}
+.cr-excerpt:first-of-type {
+  border-top: none;
+}
+.cr-excerpt-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+  user-select: none;
+}
+.cr-ref {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent);
+  font-family: var(--font-title);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cr-ref:hover {
+  text-decoration: underline;
+}
+.cr-excerpt-actions {
+  display: flex;
+  gap: 6px;
+  opacity: 0.55;
+  transition: opacity 0.15s ease;
+}
+.cr-excerpt:hover .cr-excerpt-actions,
+.cr-excerpt-actions:focus-within {
+  opacity: 1;
+}
+.cr-excerpt-text {
+  font-family: var(--font-read);
+  font-size: 16.5px;
+  line-height: 1.75;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+.cr-none,
+.cr-empty {
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 13px;
+}
+.cr-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
 }

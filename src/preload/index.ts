@@ -97,6 +97,12 @@ const api: LociApi = {
   listCommentarySources: () => ipcRenderer.invoke(Channels.listCommentarySources),
   createCommentarySource: (input) => ipcRenderer.invoke(Channels.createCommentarySource, input),
   addMarkdownCommentarySource: () => ipcRenderer.invoke(Channels.addMarkdownCommentarySource),
+  addMyBibleCommentarySource: () => ipcRenderer.invoke(Channels.addMyBibleCommentarySource),
+  listSermonIndexCatalog: () => ipcRenderer.invoke(Channels.listSermonIndexCatalog),
+  installSermonIndexModule: (slug) => ipcRenderer.invoke(Channels.installSermonIndexModule, slug),
+  listCommentaryCoverage: (sourceId) => ipcRenderer.invoke(Channels.listCommentaryCoverage, sourceId),
+  listCommentaryChapter: (sourceId, book, chapter) =>
+    ipcRenderer.invoke(Channels.listCommentaryChapter, sourceId, book, chapter),
   updateCommentarySource: (id, patch) =>
     ipcRenderer.invoke(Channels.updateCommentarySource, id, patch),
   deleteCommentarySource: (id) => ipcRenderer.invoke(Channels.deleteCommentarySource, id),

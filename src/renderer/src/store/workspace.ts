@@ -1,6 +1,6 @@
 import type { NoteSummary } from '@shared/ipc'
 
-export type TabKind = 'note' | 'bible' | 'pdf' | 'quotes' | 'picker' | 'boc'
+export type TabKind = 'note' | 'bible' | 'pdf' | 'quotes' | 'picker' | 'boc' | 'commentary'
 
 /** A group of saved quotes opened in the center: a PDF, a Bible chapter, or a commentary source. */
 export type QuoteGroupRef =
@@ -28,6 +28,9 @@ export interface Tab {
   documentCode?: string
   sectionOrdinal?: number
   bocSourceId?: string
+  /** Commentary reader: which source (`book`/`chapter` say where; `verse` is scrolled to). */
+  commentarySourceId?: string
+  verse?: number
 }
 
 /** A pane: which tabs live in it (via `Tab.paneId`) plus which one is active. */
@@ -50,6 +53,7 @@ export type TabContent =
   | { kind: 'bible'; book: string; chapter: number; highlight?: number[]; translation?: string }
   | { kind: 'quotes'; quotesGroup: QuoteGroupRef }
   | { kind: 'boc'; documentCode: string; sectionOrdinal: number; bocSourceId?: string }
+  | { kind: 'commentary'; commentarySourceId: string; book: string; chapter: number; verse?: number }
   | { kind: 'picker' }
 
 /** The content a tab is currently showing, independent of its id/pane/order. */
@@ -65,6 +69,14 @@ export function tabContent(tab: Tab): TabContent {
       return { kind: 'quotes', quotesGroup: tab.quotesGroup! }
     case 'boc':
       return { kind: 'boc', documentCode: tab.documentCode!, sectionOrdinal: tab.sectionOrdinal!, bocSourceId: tab.bocSourceId }
+    case 'commentary':
+      return {
+        kind: 'commentary',
+        commentarySourceId: tab.commentarySourceId ?? '',
+        book: tab.book!,
+        chapter: tab.chapter!,
+        verse: tab.verse
+      }
     case 'picker':
       return { kind: 'picker' }
   }

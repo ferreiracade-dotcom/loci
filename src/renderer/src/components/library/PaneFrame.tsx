@@ -5,6 +5,7 @@ import { RichNoteEditor } from './RichNoteEditor'
 import { PdfReader } from './PdfReader'
 import { BiblePane } from './BiblePane'
 import { BocPane } from './BocPane'
+import { CommentaryPane } from './CommentaryPane'
 import { PanePicker } from './PanePicker'
 import { QuoteGroupPane } from './QuoteGroupPane'
 import { TabStrip } from './TabStrip'
@@ -97,6 +98,15 @@ export function PaneFrame({
   } else if (tab?.kind === 'boc' && tab.documentCode && tab.sectionOrdinal != null) {
     body = (
       <BocPane
+        key={tab.id}
+        tab={tab}
+        onClose={() => closeTab(tab.id)}
+        onReplace={() => resetTabToPicker(tab.id)}
+      />
+    )
+  } else if (tab?.kind === 'commentary' && tab.book && tab.chapter != null) {
+    body = (
+      <CommentaryPane
         key={tab.id}
         tab={tab}
         onClose={() => closeTab(tab.id)}

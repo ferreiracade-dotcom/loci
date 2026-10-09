@@ -1,10 +1,14 @@
 import { randomUUID } from 'crypto'
-import { copyFileSync, mkdirSync } from 'fs'
+import { copyFileSync, existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs'
 import { basename, join, relative } from 'path'
 import { getDb } from '../db/connection'
 import { newCorrection, saveCorrection } from './commentaryCorrections'
-import { commentaryVaultDir } from './config'
+import { commentaryVaultDir, localVaultDir } from './config'
+import { extractFromZip } from './mybible'
+import { removeFromDrive } from './vaultsync'
+import { BOOKS } from '../../shared/scriptureRef'
 import type {
+  CommentaryBookCoverage,
   CommentaryExcerpt,
   CommentaryExcerptReassign,
   CommentaryMatch,
@@ -89,9 +93,22 @@ export function updateSource(id: string, patch: CommentarySourceUpdate): void {
     .run(...values, id)
 }
 
+/** Remove a source. A source backed by a file in the vault's `commentaries/` folder also loses
+ *  that file (locally and on Drive): the startup folder sync registers every file it finds
+ *  there, so leaving the file behind would bring the source straight back on the next launch. */
 export function deleteSource(id: string): void {
+  const source = getSource(id)
   // commentary_excerpts rows cascade via the foreign key.
   getDb().prepare('DELETE FROM commentary_sources WHERE id = ?').run(id)
+  const path = source?.pdfRelativePath
+  if (!path?.startsWith('commentaries/')) return
+  try {
+    const abs = join(localVaultDir(), path)
+    if (existsSync(abs)) unlinkSync(abs)
+  } catch {
+    /* best effort — a locked file is retried by the user removing it again */
+  }
+  removeFromDrive(path)
 }
 
 /** Find a source by its stored (vault-relative) path, if any. */
@@ -123,6 +140,65 @@ export function createSourceFromMarkdown(
   if (existing) return existing
   const name = displayName?.trim() || fileName.replace(/\.md$/i, '')
   return createSource({ displayName: name, author, bookId: null, pdfRelativePath: storedPath })
+}
+
+/** Register a MyBible commentary module (a `.SQLite3` file, or the `.zip` it is usually
+ *  distributed in) from anywhere on disk. Copied into the vault's `commentaries/` folder like a
+ *  Markdown source, for the same travels-with-the-vault reason. `describe` supplies the display
+ *  name/author from the module itself. Idempotent on the stored path. */
+export function createSourceFromMyBible(
+  absolutePath: string,
+  describe: (fileName: string) => { displayName: string; author: string | null }
+): CommentarySource {
+  const folder = commentaryVaultDir()
+  mkdirSync(folder, { recursive: true })
+  let fileName: string
+  if (/\.zip$/i.test(absolutePath)) {
+    const { name, data } = extractFromZip(readFileSync(absolutePath), (n) => /\.sqlite3$/i.test(n))
+    fileName = basename(name)
+    writeFileSync(join(folder, fileName), data)
+  } else {
+    fileName = basename(absolutePath)
+    const dest = join(folder, fileName)
+    if (relative(dest, absolutePath) !== '') copyFileSync(absolutePath, dest)
+  }
+  const storedPath = `commentaries/${fileName}`
+  return (
+    getSourceByPath(storedPath) ??
+    createSource({ ...describe(fileName), bookId: null, pdfRelativePath: storedPath })
+  )
+}
+
+/** Which books/chapters a source has non-flagged excerpts for, in canonical book order. An
+ *  excerpt counts toward the chapter it starts in (the reader groups by start chapter). */
+export function listCoverage(sourceId: string): CommentaryBookCoverage[] {
+  const rows = getDb()
+    .prepare(
+      `SELECT DISTINCT book, chapter_start AS chapter FROM commentary_excerpts
+       WHERE source_id = ? AND flagged = 0 ORDER BY chapter_start`
+    )
+    .all(sourceId) as { book: string; chapter: number }[]
+  const byBook = new Map<string, number[]>()
+  for (const r of rows) {
+    const list = byBook.get(r.book) ?? []
+    list.push(r.chapter)
+    byBook.set(r.book, list)
+  }
+  return BOOKS.filter((b) => byBook.has(b.code)).map((b) => ({ book: b.code, chapters: byBook.get(b.code)! }))
+}
+
+/** A source's non-flagged excerpts starting in one chapter, in verse order — what the
+ *  commentary reader tab shows for that chapter. */
+export function listChapter(sourceId: string, book: string, chapter: number): CommentaryExcerpt[] {
+  return (
+    getDb()
+      .prepare(
+        `SELECT * FROM commentary_excerpts
+         WHERE source_id = ? AND book = ? AND chapter_start = ? AND flagged = 0
+         ORDER BY verse_start, chapter_end, verse_end`
+      )
+      .all(sourceId, book, chapter) as ExcerptRow[]
+  ).map(toExcerpt)
 }
 
 /** Persist a manual display order for sources — `orderedIds` is the full list, in order. */

@@ -39,14 +39,16 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const tabs = useStore((s) => s.tabs)
   const paneOrder = useStore((s) => s.paneOrder)
   const showConfessions = useStore((s) => s.showConfessions)
+  const showCommentary = useStore((s) => s.showCommentary)
   const activePaneId = useStore((s) => s.activePaneId)
   const ref = useRef<HTMLDivElement>(null)
 
   // The left rail mostly just switches the active view; "Scripture" opens/focuses a Bible pane,
-  // "Confessions" opens/focuses a Book of Concord pane.
+  // "Confessions" a Book of Concord pane, "Commentary" the commentary reader.
   const selectLeftView = (id: string): void => {
     if (id === 'scripture') void showScripture()
     else if (id === 'confessions') void showConfessions()
+    else if (id === 'commentary') void showCommentary()
     else saveLayout({ activeLeftView: id })
   }
 
@@ -61,7 +63,9 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
         ? 'scripture'
         : focusedTab.kind === 'boc'
           ? 'confessions'
-          : focusedTab.kind === 'note'
+          : focusedTab.kind === 'commentary'
+            ? 'commentary'
+            : focusedTab.kind === 'note'
             ? 'notes'
             : layout.activeLeftView
       : layout.activeLeftView

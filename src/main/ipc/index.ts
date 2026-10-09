@@ -30,6 +30,7 @@ import * as exporter from '../services/export'
 import * as scripture from '../services/scripture'
 import * as commentary from '../services/commentary'
 import * as commentaryIndex from '../services/commentaryIndex'
+import { SERMON_INDEX_CATALOG, downloadModule } from '../services/sermonIndex'
 import * as boc from '../services/boc'
 import { deleteCorrectionsForSource } from '../services/commentaryCorrections'
 import { syncVault } from '../services/vaultsync'
@@ -359,6 +360,49 @@ export function registerIpc(): void {
     }
     return source
   })
+  ipcMain.handle(Channels.addMyBibleCommentarySource, async (e) => {
+    const win = BrowserWindow.fromWebContents(e.sender)
+    const opts: OpenDialogOptions = {
+      title: 'Choose a MyBible commentary module',
+      properties: ['openFile'],
+      filters: [{ name: 'MyBible commentary', extensions: ['SQLite3', 'sqlite3', 'zip'] }]
+    }
+    const res = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts)
+    if (res.canceled || !res.filePaths[0]) return null
+    const source = commentary.createSourceFromMyBible(res.filePaths[0], commentaryIndex.describeCommentaryFile)
+    try {
+      syncVault() // push the module to Drive so it reaches other devices
+    } catch {
+      /* best effort — the periodic sync will catch it */
+    }
+    return source
+  })
+  ipcMain.handle(Channels.listSermonIndexCatalog, () => SERMON_INDEX_CATALOG)
+  ipcMain.handle(Channels.installSermonIndexModule, async (e, slug: string) => {
+    const storedPath = await downloadModule(slug, (done, total) =>
+      e.sender.send(Channels.commentaryIndexProgress, { phase: 'downloading', done, total })
+    )
+    const fileName = storedPath.slice('commentaries/'.length)
+    const source =
+      commentary.getSourceByPath(storedPath) ??
+      commentary.createSource({
+        ...commentaryIndex.describeCommentaryFile(fileName),
+        bookId: null,
+        pdfRelativePath: storedPath
+      })
+    try {
+      syncVault()
+    } catch {
+      /* best effort */
+    }
+    return source
+  })
+  ipcMain.handle(Channels.listCommentaryCoverage, (_e, sourceId: string) =>
+    commentary.listCoverage(sourceId)
+  )
+  ipcMain.handle(Channels.listCommentaryChapter, (_e, sourceId: string, book: string, chapter: number) =>
+    commentary.listChapter(sourceId, book, chapter)
+  )
   ipcMain.handle(Channels.updateCommentarySource, (_e, id: string, patch: CommentarySourceUpdate) =>
     commentary.updateSource(id, patch)
   )

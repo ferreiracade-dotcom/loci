@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { ChevronDown, ChevronRight, ExternalLink, Copy, Check, Quote } from 'lucide-react'
+import { ChevronDown, ChevronRight, ExternalLink, Copy, Check, Quote, BookOpenText } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { bookByCode } from '@shared/scriptureRef'
@@ -17,6 +17,8 @@ export interface CommentaryExcerptVM {
   rangeLabel: string
   onQuote: (text: string) => void | Promise<void>
   onViewInPdf?: () => void
+  /** Open the commentary reader tab at this comment, to read on around it. */
+  onReadInContext?: () => void
 }
 
 export interface CommentaryGroupVM {
@@ -92,6 +94,15 @@ function CommentaryExcerpt({ e }: { e: CommentaryExcerptVM }) {
         >
           {copied ? <Check size={12} /> : <Copy size={12} />} Copy
         </button>
+        {e.onReadInContext && (
+          <button
+            className="commentary-excerpt-act"
+            title="Open this commentary at this verse, to read on around it"
+            onClick={e.onReadInContext}
+          >
+            <BookOpenText size={12} /> Read in context
+          </button>
+        )}
         {/* Only PDF-sourced excerpts have a book + page to jump to. Markdown sources (EPUB/
             scraped commentary) carry the full comment inline, so there's nothing to open. */}
         {e.onViewInPdf && (
@@ -170,6 +181,7 @@ export function CommentaryPanel() {
   const matches = useStore((s) => s.commentaryMatches)
   const openBookAt = useStore((s) => s.openBookAt)
   const bumpReload = useStore((s) => s.bumpReload)
+  const showCommentary = useStore((s) => s.showCommentary)
 
   const groups: CommentaryGroupVM[] = groupMatchesBySource(matches).map((g) => ({
     sourceId: g.sourceId,
@@ -192,7 +204,16 @@ export function CommentaryPanel() {
           .then(bumpReload)
       },
       onViewInPdf:
-        m.bookId && m.pageNumber > 0 ? () => openBookAt(m.bookId!, m.pageNumber) : undefined
+        m.bookId && m.pageNumber > 0 ? () => openBookAt(m.bookId!, m.pageNumber) : undefined,
+      onReadInContext: lookup
+        ? () =>
+            void showCommentary({
+              sourceId: m.sourceId,
+              book: lookup.book,
+              chapter: m.chapterStart,
+              verse: m.verseStart
+            })
+        : undefined
     }))
   }))
 
