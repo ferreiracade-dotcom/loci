@@ -8,7 +8,8 @@ import { commentaryVaultDir, readConfig, writeConfig } from './config'
 // form (Philippi on Romans, re-OCR'd from the 1878 scans; the Lutheran Commentary on the New
 // Testament, converted from the 1895-98 scans with its verse headings checked against the KJV/RV;
 // Leupold on Genesis, from CCEL's public-domain edition; Bengel's Gnomon, from SermonIndex's module
-// with the spaces its Greek had lost restored). They live in resources/commentaries
+// with the spaces its Greek had lost restored; Gerhard on 1 Peter, from The Faith Received's Latin
+// and its machine translation, by tools/tfr-to-md.py). They live in resources/commentaries
 // in the repository and in the installer's resources; on first launch each is copied into the
 // vault's commentaries folder, where the folder sync indexes it and vault sync carries it to
 // every device, like any other commentary file.
@@ -18,7 +19,8 @@ export const BUNDLED_COMMENTARIES: Record<string, { title: string; author: strin
   'Philippi Romans.md': { title: "Philippi's Commentary on Romans", author: 'F. A. Philippi' },
   'Lutheran Commentary.md': { title: 'The Lutheran Commentary', author: 'ed. Henry Eyster Jacobs' },
   'Leupold Genesis.md': { title: 'Exposition of Genesis', author: 'H. C. Leupold' },
-  'Bengel Gnomon.md': { title: "Bengel's Gnomon of the New Testament", author: 'J. A. Bengel' }
+  'Bengel Gnomon.md': { title: "Bengel's Gnomon of the New Testament", author: 'J. A. Bengel' },
+  'Gerhard 1 Peter.md': { title: 'Commentary on the First Epistle of Peter', author: 'Johann Gerhard' }
 }
 
 /** Where the shipped commentary files are: the installer's resources, or the repository. */
