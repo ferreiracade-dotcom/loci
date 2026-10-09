@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync } from 'fs'
-import { isAbsolute, join } from 'path'
+import { basename, isAbsolute, join } from 'path'
 import Database from 'better-sqlite3'
 import { getDataDir } from '../db/connection'
 import * as commentary from './commentary'
@@ -16,6 +16,10 @@ import type { CommentaryIndexProgress, CommentaryIndexSummary } from '../../shar
  *  MyBible commentary module (what SermonIndex publishes). */
 const COMMENTARY_FILE_RE = /\.(md|sqlite3)$/i
 const isMyBibleModule = (path: string): boolean => /\.sqlite3$/i.test(path)
+
+/** Bumped when MyBible parsing changes what a module indexes to, so modules already indexed
+ *  under the old rules re-index once at startup even though their file is unchanged. */
+const MYBIBLE_PARSE_VERSION = 2
 
 /** `pdf_relative_path` is either already absolute or relative to the local vault (where file
  *  sources live under `commentaries/`, synced to Drive). */
@@ -64,7 +68,8 @@ function readSourceChunks(pdfRelativePath: string): ExtractedChunk[] {
          FROM commentaries`
       )
       .all() as MyBibleRow[]
-    return parseMyBibleCommentaries(rows)
+    const entry = catalogEntryForFile(basename(abs))
+    return parseMyBibleCommentaries(rows, { passageComments: entry?.passageComments, verseCounts: VERSE_COUNTS })
   } finally {
     db.close()
   }
@@ -152,10 +157,11 @@ export async function syncCommentaryFolder(): Promise<void> {
     const source =
       commentary.getSourceByPath(storedPath) ??
       commentary.createSource({ ...describeCommentaryFile(fileName), bookId: null, pdfRelativePath: storedPath })
-    if (!shouldReindex(mtimes[storedPath], mtime, source.status)) continue
+    const cacheKey = isMyBibleModule(fileName) ? `${storedPath}#v${MYBIBLE_PARSE_VERSION}` : storedPath
+    if (!shouldReindex(mtimes[cacheKey], mtime, source.status)) continue
     try {
       await indexSource(source.id)
-      mtimes[storedPath] = mtime
+      mtimes[cacheKey] = mtime
       changed = true
     } catch {
       /* best effort — a malformed file just won't produce excerpts */

@@ -63,10 +63,20 @@ export function myBibleHtmlToText(html: string): string {
     .trim()
 }
 
+export interface MyBibleParseOptions {
+  /** The module comments on passages but keys each comment to the passage's first verse only
+   *  (Keil & Delitzsch: "The First Day" at Gen 1:2 covers 1:2-5). Each single-verse comment is
+   *  then stretched to the verse before the next comment, or to its chapter's end, so a click on
+   *  any verse of the passage finds it. Off for modules of genuinely sparse notes, where it
+   *  would attach a note to verses it never discussed. Needs `verseCounts` for chapter ends. */
+  passageComments?: boolean
+  verseCounts?: Record<string, number[]>
+}
+
 /** Turn a module's rows into verse-keyed chunks, in canonical (book, chapter, verse) order —
  *  modules aren't guaranteed to store rows in reading order, and the validator flags anything
  *  out of sequence. Pure, so it's unit-testable without a database. */
-export function parseMyBibleCommentaries(rows: MyBibleRow[]): ExtractedChunk[] {
+export function parseMyBibleCommentaries(rows: MyBibleRow[], options: MyBibleParseOptions = {}): ExtractedChunk[] {
   type Keyed = { order: number; chunk: ExtractedChunk; intro: boolean }
   const keyed: Keyed[] = []
   const bookOrder = new Map(Object.keys(MYBIBLE_BOOKS).map((n, i) => [Number(n), i]))
@@ -145,7 +155,23 @@ export function parseMyBibleCommentaries(rows: MyBibleRow[]): ExtractedChunk[] {
     chunks.push(chunk)
   }
   flushIntroAsOwnChunk()
+  if (options.passageComments) extendToPassages(chunks, options.verseCounts ?? {})
   return chunks
+}
+
+/** See MyBibleParseOptions.passageComments. Only single-verse chunks stretch: an explicit range
+ *  in the module is already what it means. Never past a chapter end, and never onto a verse
+ *  number the versification doesn't have. */
+function extendToPassages(chunks: ExtractedChunk[], verseCounts: Record<string, number[]>): void {
+  chunks.forEach((c, i) => {
+    if (c.chapterEnd !== c.chapterStart || c.verseEnd !== c.verseStart) return
+    const next = chunks[i + 1]
+    const sameChapterNext = next && next.book === c.book && next.chapterStart === c.chapterStart
+    const end = sameChapterNext ? next.verseStart - 1 : (verseCounts[c.book]?.[c.chapterStart - 1] ?? c.verseStart)
+    if (end <= c.verseStart) return
+    c.verseEnd = end
+    c.headerRaw = `${c.chapterStart}:${c.verseStart}-${end}`
+  })
 }
 
 /** Pull one file out of a zip archive held in memory. Handles the two methods real-world

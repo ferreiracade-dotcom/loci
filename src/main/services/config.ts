@@ -26,8 +26,10 @@ export interface LociConfig {
   apiBibleKeyEncrypted: string | null
   /** safeStorage-encrypted Crossway ESV key; never sent to the renderer. */
   esvKeyEncrypted: string | null
-  /** Set once the default SermonIndex commentaries (Lenski) have been installed into the vault. */
-  sermonIndexDefaultsInstalled: boolean
+  /** Default SermonIndex commentaries already installed (or found in the vault), by slug. */
+  sermonIndexDefaults: string[] | null
+  /** Legacy single flag from before per-module tracking; true meant Lenski was installed. */
+  sermonIndexDefaultsInstalled?: boolean
 }
 
 const defaults: LociConfig = {
@@ -45,7 +47,7 @@ const defaults: LociConfig = {
   apiKeyEncrypted: null,
   apiBibleKeyEncrypted: null,
   esvKeyEncrypted: null,
-  sermonIndexDefaultsInstalled: false
+  sermonIndexDefaults: null
 }
 
 function configPath(): string {

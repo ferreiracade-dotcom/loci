@@ -14,10 +14,10 @@ const BASE = 'https://www.sermonindex.net'
 /** Commentaries offered for one-click install. A curated list, not the site's whole catalog —
  *  each entry's module file was checked against its SermonIndex page. */
 export const SERMON_INDEX_CATALOG: SermonIndexModule[] = [
-  { slug: 'lenski', moduleCode: 'SI-LENSKI', title: "Lenski's Commentary on the New Testament", author: 'R. C. H. Lenski' },
+  { slug: 'lenski', moduleCode: 'SI-LENSKI', title: "Lenski's Commentary on the New Testament", author: 'R. C. H. Lenski', passageComments: true },
   { slug: 'popular', moduleCode: 'SI-POPULAR', title: 'The Popular Commentary of the Bible', author: 'Paul E. Kretzmann' },
   { slug: 'luthercmt', moduleCode: 'SI-LUTHERCMT', title: "Luther's Commentary on Selected Bible Passages", author: 'Martin Luther' },
-  { slug: 'keildelitzsch', moduleCode: 'SI-KD', title: 'Keil and Delitzsch Commentary on the Old Testament', author: 'C. F. Keil & F. Delitzsch' },
+  { slug: 'keildelitzsch', moduleCode: 'SI-KD', title: 'Keil and Delitzsch Commentary on the Old Testament', author: 'C. F. Keil & F. Delitzsch', passageComments: true },
   { slug: 'hengstenberg', moduleCode: 'SI-HENGSTENBERG', title: "Hengstenberg's Commentary on Selected Books", author: 'E. W. Hengstenberg' },
   { slug: 'gnomon', moduleCode: 'SI-GNOMON', title: "Bengel's Gnomon of the New Testament", author: 'J. A. Bengel' },
   { slug: 'lange', moduleCode: 'SI-LANGE', title: "Lange's Commentary on the Holy Scriptures", author: 'J. P. Lange' },
@@ -69,20 +69,30 @@ export async function downloadModule(
   return `commentaries/${fileName}`
 }
 
-/** Modules installed by default on a fresh setup. Lenski replaces the PDF-converted copy. */
-const DEFAULT_MODULES = ['lenski']
+/** Modules installed by default. Lenski replaces the PDF-converted copy; Keil & Delitzsch is
+ *  the Old Testament counterpart. Adding a slug here installs it on the next launch. */
+const DEFAULT_MODULES = ['lenski', 'keildelitzsch']
 
-/** One-time: install the default modules, unless the vault already has them (e.g. synced from
- *  another device). The flag is only set once every default is present, so an offline first
- *  launch simply retries on the next one; removing a default afterwards does not bring it back. */
+/** Install each default module once, unless the vault already has it (e.g. synced from another
+ *  device). Each is recorded only once present, so an offline launch retries on the next one;
+ *  removing a default afterwards does not bring it back. */
 export async function installDefaultModules(): Promise<string[]> {
-  if (readConfig().sermonIndexDefaultsInstalled) return []
+  const cfg = readConfig()
+  // Builds before per-module tracking recorded a single flag, which then meant Lenski.
+  const done = new Set(cfg.sermonIndexDefaults ?? (cfg.sermonIndexDefaultsInstalled ? ['lenski'] : []))
   const installed: string[] = []
   for (const slug of DEFAULT_MODULES) {
+    if (done.has(slug)) continue
     const entry = SERMON_INDEX_CATALOG.find((m) => m.slug === slug)!
-    if (existsSync(join(commentaryVaultDir(), moduleFileName(entry.moduleCode)))) continue
-    installed.push(await downloadModule(slug))
+    if (!existsSync(join(commentaryVaultDir(), moduleFileName(entry.moduleCode)))) {
+      try {
+        installed.push(await downloadModule(slug))
+      } catch {
+        continue // offline or the site is down: try again next launch
+      }
+    }
+    done.add(slug)
+    writeConfig({ sermonIndexDefaults: [...done] })
   }
-  writeConfig({ sermonIndexDefaultsInstalled: true })
   return installed
 }

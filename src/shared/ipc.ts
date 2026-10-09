@@ -778,6 +778,9 @@ export interface SermonIndexModule {
   moduleCode: string
   title: string
   author: string
+  /** Comments are keyed to a passage's first verse only; stretch them over the passage
+   *  (see MyBibleParseOptions.passageComments). */
+  passageComments?: boolean
 }
 
 export interface CommentaryBookCoverage {

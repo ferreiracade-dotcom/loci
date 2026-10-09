@@ -91,6 +91,32 @@ describe('parseMyBibleCommentaries', () => {
   })
 })
 
+describe('parseMyBibleCommentaries with passageComments', () => {
+  const verseCounts = { GEN: [31, 25] }
+
+  it('stretches each passage comment to the verse before the next, and the last to the chapter end', () => {
+    const chunks = parseMyBibleCommentaries(
+      [row(10, 1, 1, 'In the beginning'), row(10, 1, 2, 'The First Day'), row(10, 1, 6, 'The Second Day'), row(10, 1, 24, 'The Sixth Day')],
+      { passageComments: true, verseCounts }
+    )
+    expect(chunks.map((c) => c.headerRaw)).toEqual(['1:1', '1:2-5', '1:6-23', '1:24-31'])
+    expect(chunks[1]).toMatchObject({ verseStart: 2, verseEnd: 5, chapterEnd: 1 })
+  })
+
+  it('leaves explicit ranges, and verses past the versification, alone', () => {
+    const chunks = parseMyBibleCommentaries(
+      [row(10, 2, 1, 'range', [2, 3]), row(10, 2, 26, 'beyond the chapter')],
+      { passageComments: true, verseCounts }
+    )
+    expect(chunks.map((c) => c.headerRaw)).toEqual(['2:1-3', '2:26'])
+  })
+
+  it('is off by default, for modules of sparse notes', () => {
+    const chunks = parseMyBibleCommentaries([row(500, 3, 16, 'Luther on 3:16')], { verseCounts: { JHN: [51, 25, 36] } })
+    expect(chunks[0].headerRaw).toBe('3:16')
+  })
+})
+
 /** A minimal single-entry zip, built the way real archivers lay one out. */
 function makeZip(name: string, content: Buffer, method: 0 | 8): Buffer {
   const data = method === 8 ? deflateRawSync(content) : content
