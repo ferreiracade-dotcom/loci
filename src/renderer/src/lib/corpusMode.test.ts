@@ -6,6 +6,7 @@ describe('modeForTabKind', () => {
     expect(modeForTabKind('pdf')).toBe('books')
     expect(modeForTabKind('bible')).toBe('bible')
     expect(modeForTabKind('boc')).toBe('confessions')
+    expect(modeForTabKind('fathers')).toBe('fathers')
   })
   it('returns null for kinds with no corpus', () => {
     expect(modeForTabKind('note')).toBeNull()
@@ -38,6 +39,12 @@ describe('resolveCorpusMode', () => {
     expect(resolveCorpusMode(both, null, undefined)).toBe('bible')
   })
 
+  it('follows a focused Fathers tab on the pills that offer it, and ignores it on Texts', () => {
+    expect(resolveCorpusMode(['bible', 'confessions', 'fathers'], null, 'fathers')).toBe('fathers')
+    expect(resolveCorpusMode(['books', 'bible', 'confessions', 'fathers'], null, 'fathers')).toBe('fathers')
+    expect(resolveCorpusMode(both, null, 'fathers')).toBe('bible') // Texts has no Fathers mode
+  })
+
   it('ignores a focused kind the pill cannot offer', () => {
     // A PDF is focused but Texts has no books mode — do not blank, keep the default.
     expect(resolveCorpusMode(both, null, 'pdf')).toBe('bible')
@@ -68,9 +75,9 @@ describe('migrateRightTabId', () => {
   })
 
   it('offers a mode list for every pill, and single-mode pills offer none', () => {
-    expect(MODES_FOR_PILL.quotes).toEqual(['books', 'bible', 'confessions'])
+    expect(MODES_FOR_PILL.quotes).toEqual(['books', 'bible', 'confessions', 'fathers'])
     expect(MODES_FOR_PILL.texts).toEqual(['bible', 'confessions'])
-    expect(MODES_FOR_PILL.commentary).toEqual(['bible', 'confessions'])
+    expect(MODES_FOR_PILL.commentary).toEqual(['bible', 'confessions', 'fathers'])
     expect(MODES_FOR_PILL.notes).toEqual([])
     expect(MODES_FOR_PILL.books).toEqual([])
   })

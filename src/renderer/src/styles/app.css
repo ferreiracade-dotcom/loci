@@ -5099,3 +5099,60 @@ select.field {
   font-family: var(--font-ui);
   font-size: 11.5px;
 }
+
+/* Catena (Commentary pill, Fathers mode) */
+.fathers-catena {
+  padding: 8px 10px 20px;
+}
+.fathers-catena-head {
+  margin-bottom: 8px;
+  color: var(--gold);
+  font-family: var(--font-title);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.fathers-catena-verse {
+  margin: 12px 0 4px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.fathers-catena-entry {
+  display: block;
+  width: 100%;
+  margin-bottom: 6px;
+  padding: 8px 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+.fathers-catena-entry:hover {
+  border-color: var(--accent);
+}
+.fathers-catena-author {
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.fathers-catena-work {
+  margin-top: 1px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+}
+.fathers-catena-snippet {
+  margin: 5px 0;
+  font-family: var(--font-read);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.fathers-catena-meta {
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 10.5px;
+}

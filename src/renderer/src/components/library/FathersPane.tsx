@@ -25,6 +25,7 @@ export function FathersPane({ tab }: { tab: Tab }) {
   const navigateFathers = useStore((s) => s.navigateFathers)
   const openFathersAuthor = useStore((s) => s.openFathersAuthor)
   const showPassageInTexts = useStore((s) => s.showPassageInTexts)
+  const addFathersQuote = useStore((s) => s.addFathersQuote)
   const { onContextMenu, menu } = useOpenElsewhereMenu()
 
   const volumeCode = tab.fathersVolume
@@ -240,6 +241,16 @@ export function FathersPane({ tab }: { tab: Tab }) {
         onNavigate={(id) => navigateFathers(volumeCode, id)}
         onPassage={(book, chapter, highlight) => showPassageInTexts(book, chapter, highlight)}
         onAuthor={(id) => openFathersAuthor(id)}
+        onQuote={(q) =>
+          void addFathersQuote({
+            volumeCode,
+            sectionId,
+            page: q.page,
+            paragraph: q.paragraph,
+            text: q.text,
+            color: q.color
+          })
+        }
         compact
       />
     )

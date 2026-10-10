@@ -16,6 +16,7 @@ import type {
   BocCommentaryMatch,
   BocQuoteInput,
   CommentaryMatch,
+  FathersQuoteInput,
   ImportProgress,
   ImportResult,
   NewQuote,
@@ -278,6 +279,8 @@ interface Store {
   // --- Reference panel pins ---
   /** Pin a reference pill to a corpus mode. Persisted to the session store. */
   setRefMode: (pill: RefPill, mode: CorpusMode) => void
+  /** Capture a selection from a Church Fathers section as a quote. */
+  addFathersQuote: (input: FathersQuoteInput) => Promise<void>
 
   // --- Book of Concord (Confessions) ---
   /** Route a document/section into a BoC pane: reuse the existing BoC pane if there is one,
@@ -531,7 +534,7 @@ export const useStore = create<Store>((set, get) => {
       await Promise.all(
         (['quotes', 'texts', 'commentary'] as RefPill[]).map(async (pill) => {
           const v = await api.getSession(`refMode:${pill}`)
-          if (v === 'books' || v === 'bible' || v === 'confessions') pins[pill] = v
+          if (v === 'books' || v === 'bible' || v === 'confessions' || v === 'fathers') pins[pill] = v
         })
       )
       set({ refModes: pins })
@@ -1001,8 +1004,9 @@ export const useStore = create<Store>((set, get) => {
       set({ commentaryMatches: matches })
       get().saveLayout({ activeRightTab: 'commentary', notesCollapsed: false })
       // A click on a verse is a request for *this* passage's commentary — more specific than
-      // whatever the pill was pinned to, so it re-pins.
-      get().setRefMode('commentary', 'bible')
+      // whatever the pill was pinned to, so it re-pins. Except a pin on Fathers: the catena
+      // follows the same click (it reads `commentaryLookup`), so leave it be.
+      if (get().refModes.commentary !== 'fathers') get().setRefMode('commentary', 'bible')
     },
 
     showScripture: async () => {
@@ -1077,6 +1081,12 @@ export const useStore = create<Store>((set, get) => {
     setRefMode: (pill, mode) => {
       set({ refModes: { ...get().refModes, [pill]: mode } })
       void api.setSession(`refMode:${pill}`, mode)
+    },
+
+    addFathersQuote: async (input) => {
+      await api.addFathersQuote(input)
+      // Bump the shared token so the Quotes panel reloads.
+      set({ noteReloadToken: get().noteReloadToken + 1 })
     },
 
     // --- Book of Concord (Confessions) ---
