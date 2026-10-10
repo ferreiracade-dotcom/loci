@@ -4924,3 +4924,23 @@ select.field {
   padding: 24px;
   text-align: center;
 }
+
+/* Dogmatics reader tab: the commentary reader's layout, with sections in place of verses */
+.dg-section-ref {
+  cursor: default;
+}
+.dg-section-ref:hover {
+  text-decoration: none;
+}
+.dg-original {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 15px;
+}
+.dg-original summary {
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  user-select: none;
+}

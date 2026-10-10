@@ -40,6 +40,7 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const paneOrder = useStore((s) => s.paneOrder)
   const showConfessions = useStore((s) => s.showConfessions)
   const showCommentary = useStore((s) => s.showCommentary)
+  const showDogmatics = useStore((s) => s.showDogmatics)
   const activePaneId = useStore((s) => s.activePaneId)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -49,6 +50,7 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
     if (id === 'scripture') void showScripture()
     else if (id === 'confessions') void showConfessions()
     else if (id === 'commentary') void showCommentary()
+    else if (id === 'dogmatics') void showDogmatics()
     else saveLayout({ activeLeftView: id })
   }
 
@@ -65,6 +67,8 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
           ? 'confessions'
           : focusedTab.kind === 'commentary'
             ? 'commentary'
+            : focusedTab.kind === 'dogmatics'
+            ? 'dogmatics'
             : focusedTab.kind === 'note'
             ? 'notes'
             : layout.activeLeftView

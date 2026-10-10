@@ -1,6 +1,6 @@
 import type { NoteSummary } from '@shared/ipc'
 
-export type TabKind = 'note' | 'bible' | 'pdf' | 'quotes' | 'picker' | 'boc' | 'commentary'
+export type TabKind = 'note' | 'bible' | 'pdf' | 'quotes' | 'picker' | 'boc' | 'commentary' | 'dogmatics'
 
 /** A group of saved quotes opened in the center: a PDF, a Bible chapter, or a commentary source. */
 export type QuoteGroupRef =
@@ -9,6 +9,7 @@ export type QuoteGroupRef =
   | { type: 'scripture'; book: string; chapter?: number; translation: string; name: string }
   | { type: 'commentary'; sourceId: string; displayName: string }
   | { type: 'boc'; documentCode: string; bocSourceId: string; name: string }
+  | { type: 'dogmatics'; sourceId: string; displayName: string }
   | { type: 'author'; author: string }
   | { type: 'tag'; tag: string }
 
@@ -31,6 +32,10 @@ export interface Tab {
   /** Commentary reader: which source (`book`/`chapter` say where; `verse` is scrolled to). */
   commentarySourceId?: string
   verse?: number
+  /** Dogmatics reader: which source, work and book (`sectionOrdinal` is scrolled to). */
+  dogmaticsSourceId?: string
+  dogmaticsWork?: number
+  dogmaticsBook?: number
 }
 
 /** A pane: which tabs live in it (via `Tab.paneId`) plus which one is active. */
@@ -54,6 +59,13 @@ export type TabContent =
   | { kind: 'quotes'; quotesGroup: QuoteGroupRef }
   | { kind: 'boc'; documentCode: string; sectionOrdinal: number; bocSourceId?: string }
   | { kind: 'commentary'; commentarySourceId: string; book: string; chapter: number; verse?: number }
+  | {
+      kind: 'dogmatics'
+      dogmaticsSourceId: string
+      dogmaticsWork: number
+      dogmaticsBook: number
+      sectionOrdinal?: number
+    }
   | { kind: 'picker' }
 
 /** The content a tab is currently showing, independent of its id/pane/order. */
@@ -76,6 +88,14 @@ export function tabContent(tab: Tab): TabContent {
         book: tab.book!,
         chapter: tab.chapter!,
         verse: tab.verse
+      }
+    case 'dogmatics':
+      return {
+        kind: 'dogmatics',
+        dogmaticsSourceId: tab.dogmaticsSourceId ?? '',
+        dogmaticsWork: tab.dogmaticsWork ?? 1,
+        dogmaticsBook: tab.dogmaticsBook ?? 1,
+        sectionOrdinal: tab.sectionOrdinal
       }
     case 'picker':
       return { kind: 'picker' }

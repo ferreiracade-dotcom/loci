@@ -20,6 +20,7 @@ import { syncCommentaryFolder } from './services/commentaryIndex'
 import { installDefaultModules } from './services/sermonIndex'
 import { installBundledCommentaries } from './services/bundledCommentaries'
 import { syncBocFolder } from './services/bocIndex'
+import { installBundledDogmatics, syncDogmaticsFolder } from './services/dogmatics'
 import { Channels } from '../shared/ipc'
 
 /** One-time whole-library sidecar write, triggered by a flag file, run off the boot path. */
@@ -169,6 +170,28 @@ app.whenReady().then(() => {
   // Same auto-register + index, for the Book of Concord's confessions/ + confessions-commentary/
   // vault folders. Staggered a beat after the commentary sync so the two don't contend.
   setTimeout(() => void syncBocFolder().catch(() => {}), 2500)
+  // And for the dogmatics/ folder: index what the vault carries, copy in the dogmatics Loci
+  // ships (once each), and index those too.
+  setTimeout(
+    () =>
+      void syncDogmaticsFolder()
+        .catch(() => 0)
+        .then(async (indexed) => {
+          let bundled: string[] = []
+          try {
+            bundled = installBundledDogmatics()
+          } catch {
+            /* best effort — a locked vault folder retries next launch */
+          }
+          return indexed + (bundled.length > 0 ? await syncDogmaticsFolder() : 0)
+        })
+        .then((indexed) => {
+          if (indexed > 0)
+            BrowserWindow.getAllWindows().forEach((w) => w.webContents.send(Channels.libraryChanged))
+        })
+        .catch(() => {}),
+    3000
+  )
 
   // Keep the Drive backup fresh during long sessions (best-effort, skips when offline).
   setInterval(() => {

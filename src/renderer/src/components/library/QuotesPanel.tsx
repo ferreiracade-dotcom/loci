@@ -135,6 +135,7 @@ export function QuoteCard({
   const openBookAt = useStore((s) => s.openBookAt)
   const navigateScripture = useStore((s) => s.navigateScripture)
   const verseClicked = useStore((s) => s.verseClicked)
+  const showDogmatics = useStore((s) => s.showDogmatics)
 
   const printedPage = q.page != null && book ? q.page - (book.pageOffset ?? 0) : q.page
   const autoCitation = book ? formatCitation(sourceFromBook(book), style, printedPage) : q.citation
@@ -160,14 +161,24 @@ export function QuoteCard({
       openBookAt(q.bookId, q.page ?? 1)
       return
     }
+    if (q.dogmaticsSourceId && q.dogmaticsRef) {
+      const [work, book, section] = q.dogmaticsRef.split('.').map(Number)
+      void showDogmatics({ sourceId: q.dogmaticsSourceId, work, book, section })
+      return
+    }
     if (q.scriptureBook == null || q.scriptureChapter == null || q.verseStart == null) return
     const end = q.verseEnd ?? q.verseStart
     const highlight = Array.from({ length: end - q.verseStart + 1 }, (_, i) => q.verseStart! + i)
     navigateScripture(q.scriptureBook, q.scriptureChapter, highlight)
     if (q.commentarySource) void verseClicked(q.scriptureBook, q.scriptureChapter, q.verseStart)
   }
-  const canOpenSource = !!q.bookId || (q.scriptureBook != null && q.scriptureChapter != null)
-  const openTitle = q.bookId ? 'Open in book' : q.commentarySource ? 'Open in Bible + Commentary' : 'Open in Bible'
+  const canOpenSource =
+    !!q.bookId || !!q.dogmaticsRef || (q.scriptureBook != null && q.scriptureChapter != null)
+  const openTitle = q.bookId
+    ? 'Open in book'
+    : q.dogmaticsRef
+      ? 'Open in Dogmatics'
+      : q.commentarySource ? 'Open in Bible + Commentary' : 'Open in Bible'
 
   const quoteMarkdown = (): string => {
     const body = q.text.trim().replace(/\n+/g, '\n> ')

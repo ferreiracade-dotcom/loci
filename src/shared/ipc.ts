@@ -55,6 +55,8 @@ export const Channels = {
   listAllQuotes: 'quotes:listAll',
   addBocQuote: 'quotes:addBoc',
   addBocCommentaryQuote: 'quotes:addBocCommentary',
+  addDogmaticsQuote: 'quotes:addDogmatics',
+  listDogmaticsQuotes: 'quotes:listDogmatics',
   saveNote: 'notes:save',
   readNote: 'notes:read',
   listStandaloneNotes: 'notes:listStandalone',
@@ -107,6 +109,10 @@ export const Channels = {
   listBocDocumentSections: 'boc:listDocumentSections',
   listBocSources: 'boc:listSources',
   listBocCommentarySources: 'boc:listCommentarySources',
+
+  listDogmaticsSources: 'dogmatics:listSources',
+  listDogmaticsOutline: 'dogmatics:listOutline',
+  listDogmaticsBook: 'dogmatics:listBook',
 
   // main → renderer events
   importProgress: 'library:importProgress',
@@ -294,6 +300,10 @@ export interface LociApi {
   /** Capture a Book of Concord commentary excerpt as a quote (anchored to the commentary
    *  source rather than the primary-text source). */
   addBocCommentaryQuote(input: BocQuoteInput): Promise<Quote>
+  /** Capture a dogmatics section (or a selected portion of one) as a quote. */
+  addDogmaticsQuote(input: DogmaticsQuoteInput): Promise<Quote>
+  /** Saved quotes from one dogmatics source, in reading order. */
+  listDogmaticsQuotes(sourceId: string): Promise<Quote[]>
   saveNote(path: string, content: string): Promise<void>
   readNote(path: string): Promise<string>
   listStandaloneNotes(): Promise<NoteSummary[]>
@@ -384,6 +394,13 @@ export interface LociApi {
   listBocDocumentSections(documentCode: string, sourceId: string): Promise<BocSectionRow[]>
   listBocSources(): Promise<BocSource[]>
   listBocCommentarySources(): Promise<BocSource[]>
+
+  /** Dogmatics sources (one per Markdown file in the vault's dogmatics folder). */
+  listDogmaticsSources(): Promise<DogmaticsSource[]>
+  /** A source's works and their books, for the reader's navigation. */
+  listDogmaticsOutline(sourceId: string): Promise<DogmaticsOutlineWork[]>
+  /** Every section of one book of one work. */
+  listDogmaticsBook(sourceId: string, workOrdinal: number, bookOrdinal: number): Promise<DogmaticsSectionRow[]>
 
   /** Subscribe to import progress; returns an unsubscribe function. */
   onImportProgress(cb: (p: ImportProgress) => void): () => void
@@ -526,7 +543,8 @@ export function normalizeQuoteGroups(g: Partial<QuoteGroups> | null | undefined)
     books: g?.books ?? [],
     scripture: g?.scripture ?? [],
     commentary: g?.commentary ?? [],
-    boc: g?.boc ?? []
+    boc: g?.boc ?? [],
+    dogmatics: g?.dogmatics ?? []
   }
 }
 
@@ -548,6 +566,8 @@ export interface QuoteGroups {
     sourceName: string
     count: number
   }[]
+  /** Dogmatics sources with captured quotes. */
+  dogmatics: { sourceId: string; displayName: string; author: string | null; count: number }[]
 }
 
 export interface Annotation {
@@ -830,6 +850,39 @@ export interface BocSectionRow {
   part: string | null
   text: string
 }
+/** A dogmatics source: one Markdown file, holding one or more works. */
+export interface DogmaticsSource {
+  id: string
+  displayName: string
+  author: string | null
+  mdRelativePath: string
+  sortOrder: number
+  status: string
+  indexedAt: string | null
+}
+/** A work in a dogmatics source and its books (the reader's navigation list). */
+export interface DogmaticsOutlineWork {
+  ordinal: number
+  title: string
+  books: { ordinal: number; number: string | null; title: string; sections: number }[]
+}
+/** One section of a book: its printed number and title (either may be empty) and its text. */
+export interface DogmaticsSectionRow {
+  ordinal: number
+  number: string | null
+  title: string
+  text: string
+}
+export interface DogmaticsQuoteInput {
+  sourceId: string
+  workOrdinal: number
+  bookOrdinal: number
+  sectionOrdinal: number
+  /** The section text to store (whole, or the user's selection within it). */
+  text: string
+  color?: string
+}
+
 export interface BocCommentaryMatch {
   excerptId: string
   sourceId: string
@@ -871,4 +924,11 @@ export interface Quote {
   /** For Scripture AND commentary quotes: the verse range the quote is anchored to. */
   verseStart?: number
   verseEnd?: number
+  /** For dogmatics quotes: the source row, its name and author, the "work.book.section"
+   *  ordinal ref (for jumping back) and the cited location. */
+  dogmaticsSourceId?: string
+  dogmaticsSource?: string
+  dogmaticsAuthor?: string
+  dogmaticsRef?: string
+  dogmaticsLabel?: string
 }

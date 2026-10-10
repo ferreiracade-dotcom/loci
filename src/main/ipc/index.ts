@@ -5,6 +5,7 @@ import type {
   Annotation,
   AppState,
   BocQuoteInput,
+  DogmaticsQuoteInput,
   BookUpdate,
   CommentaryExcerptReassign,
   CommentaryIndexProgress,
@@ -32,6 +33,7 @@ import * as commentary from '../services/commentary'
 import * as commentaryIndex from '../services/commentaryIndex'
 import { SERMON_INDEX_CATALOG, downloadModule } from '../services/sermonIndex'
 import * as boc from '../services/boc'
+import * as dogmatics from '../services/dogmatics'
 import { deleteCorrectionsForSource } from '../services/commentaryCorrections'
 import { syncVault } from '../services/vaultsync'
 import {
@@ -449,4 +451,9 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.listBocDocumentSections, (_e, d: string, s: string) => boc.listSections(d, s))
   ipcMain.handle(Channels.listBocSources, () => boc.listSources())
   ipcMain.handle(Channels.listBocCommentarySources, () => boc.listCommentarySources())
+  ipcMain.handle(Channels.listDogmaticsSources, () => dogmatics.listSources())
+  ipcMain.handle(Channels.listDogmaticsOutline, (_e, s: string) => dogmatics.listOutline(s))
+  ipcMain.handle(Channels.listDogmaticsBook, (_e, s: string, w: number, b: number) => dogmatics.listBook(s, w, b))
+  ipcMain.handle(Channels.addDogmaticsQuote, (_e, input: DogmaticsQuoteInput) => quotes.addDogmaticsQuote(input))
+  ipcMain.handle(Channels.listDogmaticsQuotes, (_e, sourceId: string) => quotes.listDogmaticsQuotes(sourceId))
 }

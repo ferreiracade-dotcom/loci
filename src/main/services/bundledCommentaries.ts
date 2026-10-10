@@ -75,13 +75,23 @@ const sha256 = (path: string): string => createHash('sha256').update(readFileSyn
  *  vault copy while that copy is still the one Loci put there, never one the user has changed.
  *  Returns the file names copied or updated. */
 export function installBundledCommentaries(sourceDir: string = bundledCommentaryDir()): string[] {
+  return installBundled(sourceDir, commentaryVaultDir(), 'bundledCommentaries', 'bundledCommentaryHashes')
+}
+
+/** The same once-only, update-while-untouched install, for any shipped folder (the dogmatics
+ *  use it too), recording what it did under the given config keys. */
+export function installBundled(
+  sourceDir: string,
+  folder: string,
+  recordKey: 'bundledCommentaries' | 'bundledDogmatics',
+  hashKey: 'bundledCommentaryHashes' | 'bundledDogmaticsHashes'
+): string[] {
   if (!existsSync(sourceDir)) return []
   const config = readConfig()
-  const recorded = config.bundledCommentaries ?? []
+  const recorded = config[recordKey] ?? []
   const done = new Set(recorded)
-  const hashes = { ...(config.bundledCommentaryHashes ?? {}) }
+  const hashes = { ...(config[hashKey] ?? {}) }
   const before = JSON.stringify(hashes)
-  const folder = commentaryVaultDir()
   const copied: string[] = []
   for (const fileName of readdirSync(sourceDir).filter((f) => /\.(md|sqlite3)$/i.test(f))) {
     const source = join(sourceDir, fileName)
@@ -113,8 +123,8 @@ export function installBundledCommentaries(sourceDir: string = bundledCommentary
     }
   }
   const patch: Partial<typeof config> = {}
-  if (done.size !== recorded.length) patch.bundledCommentaries = [...done]
-  if (JSON.stringify(hashes) !== before) patch.bundledCommentaryHashes = hashes
+  if (done.size !== recorded.length) patch[recordKey] = [...done]
+  if (JSON.stringify(hashes) !== before) patch[hashKey] = hashes
   if (Object.keys(patch).length) writeConfig(patch)
   return copied
 }
