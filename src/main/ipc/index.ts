@@ -31,6 +31,7 @@ import * as scripture from '../services/scripture'
 import * as commentary from '../services/commentary'
 import * as commentaryIndex from '../services/commentaryIndex'
 import * as boc from '../services/boc'
+import * as fathers from '../services/fathers'
 import { deleteCorrectionsForSource } from '../services/commentaryCorrections'
 import { syncVault } from '../services/vaultsync'
 import {
@@ -405,4 +406,13 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.listBocDocumentSections, (_e, d: string, s: string) => boc.listSections(d, s))
   ipcMain.handle(Channels.listBocSources, () => boc.listSources())
   ipcMain.handle(Channels.listBocCommentarySources, () => boc.listCommentarySources())
+
+  ipcMain.handle(Channels.listFathersVolumes, () => fathers.listVolumes())
+  ipcMain.handle(Channels.listFathersSections, (_e, v: string) => fathers.listSections(v))
+  ipcMain.handle(Channels.getFathersSection, (_e, v: string, s: string) => fathers.getSection(v, s))
+  ipcMain.handle(Channels.listFathersAuthors, () => fathers.listAuthors())
+  ipcMain.handle(Channels.getFathersAuthor, (_e, id: string) => fathers.getAuthor(id))
+  ipcMain.handle(Channels.fathersCatena, (_e, book: string, chapter: number, verse?: number | null) =>
+    fathers.catena(book, chapter, verse)
+  )
 }

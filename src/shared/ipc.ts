@@ -1,5 +1,6 @@
 // Shared IPC contract — imported by main, preload, and renderer.
 // The renderer never touches Node/fs directly; everything goes through this surface.
+import type { FathersSeries } from './fathers'
 
 export const Channels = {
   getAppState: 'app:getState',
@@ -102,6 +103,13 @@ export const Channels = {
   listBocDocumentSections: 'boc:listDocumentSections',
   listBocSources: 'boc:listSources',
   listBocCommentarySources: 'boc:listCommentarySources',
+
+  listFathersVolumes: 'fathers:listVolumes',
+  listFathersSections: 'fathers:listSections',
+  getFathersSection: 'fathers:getSection',
+  listFathersAuthors: 'fathers:listAuthors',
+  getFathersAuthor: 'fathers:getAuthor',
+  fathersCatena: 'fathers:catena',
 
   // main → renderer events
   importProgress: 'library:importProgress',
@@ -367,6 +375,17 @@ export interface LociApi {
   listBocDocumentSections(documentCode: string, sourceId: string): Promise<BocSectionRow[]>
   listBocSources(): Promise<BocSource[]>
   listBocCommentarySources(): Promise<BocSource[]>
+
+  /** Church Fathers volumes (ANF/NPNF) present in the vault, with index status. */
+  listFathersVolumes(): Promise<FathersVolume[]>
+  /** Every section of a volume in reading order (no html/text), for the navigation drawer. */
+  listFathersSections(volumeCode: string): Promise<FathersSectionSummary[]>
+  getFathersSection(volumeCode: string, sectionId: string): Promise<FathersSection | null>
+  /** Authors with indexed sections, oldest first (undated last). */
+  listFathersAuthors(): Promise<FathersAuthorSummary[]>
+  getFathersAuthor(authorId: string): Promise<FathersAuthor | null>
+  /** The Fathers on a Bible passage, grouped by verse and ordered by author date. */
+  fathersCatena(book: string, chapter: number, verse?: number | null): Promise<FathersCatenaGroup[]>
 
   /** Subscribe to import progress; returns an unsubscribe function. */
   onImportProgress(cb: (p: ImportProgress) => void): () => void
@@ -804,6 +823,103 @@ export interface BocCommentaryMatch {
   text: string
   sectionStart: number
   sectionEnd: number
+}
+
+// ---------- Church Fathers (CCEL ThML) ----------
+
+export interface FathersVolume {
+  /** CCEL code, e.g. 'anf01', 'npnf105'. */
+  code: string
+  series: FathersSeries
+  number: number
+  title: string
+  status: 'indexed' | 'error' | 'unindexed'
+  /** Why indexing failed, when status is 'error'. */
+  error: string | null
+  sectionCount: number
+}
+export interface FathersSectionSummary {
+  /** CCEL div id, e.g. 'ix.ii.ii'. */
+  id: string
+  ordinal: number
+  depth: number
+  /** Ancestor titles, outermost first, own title last. */
+  titles: string[]
+  shortTitle: string
+  authorId: string | null
+  /** Curated name, or one derived from the id when the author table lacks it. */
+  authorName: string | null
+  workTitle: string | null
+  /** Editor's matter (introductory notes, prefaces, indexes) rather than a Father's text. */
+  editorial: boolean
+  /** Printed page the section starts on ('415', or a roman numeral for front matter). */
+  startPage: string | null
+}
+export interface FathersNote {
+  anchor: string
+  n: string
+  /** Sanitized HTML (allow-listed tags only). */
+  html: string
+}
+export interface FathersSection extends FathersSectionSummary {
+  volumeCode: string
+  series: FathersSeries
+  volumeNumber: number
+  volumeTitle: string
+  /** Sanitized display HTML (allow-listed tags only). */
+  html: string
+  notes: FathersNote[]
+  prevId: string | null
+  nextId: string | null
+}
+export interface FathersAuthorSummary {
+  id: string
+  name: string
+  datesLabel: string | null
+  sortYear: number | null
+  workCount: number
+  sectionCount: number
+}
+export interface FathersWork {
+  volumeCode: string
+  series: FathersSeries
+  volumeNumber: number
+  volumeTitle: string
+  workTitle: string
+  firstSectionId: string
+  sectionCount: number
+}
+export interface FathersAuthor {
+  id: string
+  name: string
+  sortYear: number | null
+  datesLabel: string | null
+  bio: string | null
+  works: FathersWork[]
+}
+export interface FathersCatenaEntry {
+  volumeCode: string
+  series: FathersSeries
+  volumeNumber: number
+  sectionId: string
+  sectionTitle: string
+  workTitle: string
+  authorId: string | null
+  authorName: string | null
+  datesLabel: string | null
+  /** The citation as the Father's text prints it, e.g. "1 Pet. v. 1-5". */
+  passage: string
+  /** The reference sits in an editor's footnote rather than the Father's own text. */
+  inNote: boolean
+  /** Printed page of the reference. */
+  page: string | null
+  snippet: string
+}
+export interface FathersCatenaGroup {
+  /** The verse the group's references start on; null = chapter-level. */
+  verse: number | null
+  label: string
+  entries: FathersCatenaEntry[]
 }
 
 export interface Quote {

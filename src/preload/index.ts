@@ -126,6 +126,13 @@ const api: LociApi = {
   listBocSources: () => ipcRenderer.invoke(Channels.listBocSources),
   listBocCommentarySources: () => ipcRenderer.invoke(Channels.listBocCommentarySources),
 
+  listFathersVolumes: () => ipcRenderer.invoke(Channels.listFathersVolumes),
+  listFathersSections: (v) => ipcRenderer.invoke(Channels.listFathersSections, v),
+  getFathersSection: (v, s) => ipcRenderer.invoke(Channels.getFathersSection, v, s),
+  listFathersAuthors: () => ipcRenderer.invoke(Channels.listFathersAuthors),
+  getFathersAuthor: (id) => ipcRenderer.invoke(Channels.getFathersAuthor, id),
+  fathersCatena: (book, chapter, verse) => ipcRenderer.invoke(Channels.fathersCatena, book, chapter, verse),
+
   onImportProgress: (cb) => {
     const listener = (_e: IpcRendererEvent, p: ImportProgress): void => cb(p)
     ipcRenderer.on(Channels.importProgress, listener)
