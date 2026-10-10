@@ -32,6 +32,7 @@ import * as boc from './boc'
 import {
   addBocQuote,
   addBocCommentaryQuote,
+  buildBibliography,
   listAllQuotes,
   listBocQuotes,
   listBocQuotesForDocument,
@@ -497,5 +498,25 @@ describe('listFathersQuotes ordering', () => {
     const p1 = addFathersQuote({ volumeCode: 'anf01', sectionId: 'ix.ii.ii', page: '415', paragraph: 1, text: 'p1' })
     const first = addFathersQuote({ volumeCode: 'anf01', sectionId: 'ix.ii.i', page: '414', paragraph: 9, text: 'first' })
     expect(listFathersQuotes('anf01').map((q) => q.id)).toEqual([first.id, p1.id, p3.id])
+  })
+})
+
+describe('article bibliography entries', () => {
+  it('prints a quoted article in article form and a quoted book in book form', () => {
+    db.prepare(
+      `INSERT INTO books (id, title, title_sanitized, author, year, kind, journal, volume, issue, pages)
+       VALUES ('a1', 'On Grace', 'On Grace', 'Jane Smith', 1998, 'article', 'Concordia Journal', '12', '3', '45–67')`
+    ).run()
+    db.prepare(
+      `INSERT INTO books (id, title, title_sanitized, author, publisher, city, year)
+       VALUES ('b1', 'Loci Communes', 'Loci Communes', 'Martin Chemnitz', 'Concordia', 'St. Louis', 1989)`
+    ).run()
+    db.prepare("INSERT INTO quotes (id, book_id, text, created) VALUES ('q1', 'a1', 'x', 1)").run()
+    db.prepare("INSERT INTO quotes (id, book_id, text, created) VALUES ('q2', 'b1', 'y', 1)").run()
+
+    const entries = buildBibliography().map((e) => e.entry)
+
+    expect(entries).toContain('Smith, Jane. "On Grace." *Concordia Journal* 12, no. 3 (1998): 45–67.')
+    expect(entries).toContain('Chemnitz, Martin. *Loci Communes*. Concordia, 1989.')
   })
 })

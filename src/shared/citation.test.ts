@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { bocLabel, bocCitation, fathersCitation, fathersSectionLabel, romanToInt } from './citation'
+import {
+  bocLabel,
+  bocCitation,
+  bookCitationSource,
+  formatCitation,
+  fathersCitation,
+  fathersSectionLabel,
+  romanToInt,
+  type CitationSource
+} from './citation'
 
 describe('bocCitation', () => {
   const base = { abbreviation: 'AC', sectionNumber: 'IV', sectionLabel: 'Justification', sourceName: "Reader's Edition" }
@@ -86,5 +95,100 @@ describe('fathersSectionLabel / romanToInt', () => {
     expect(romanToInt('MCMXC')).toBe(1990)
     expect(romanToInt('xii')).toBeNull()
     expect(romanToInt('')).toBeNull()
+  })
+})
+
+describe('article citations', () => {
+  const art: CitationSource = {
+    kind: 'article',
+    authors: ['Jane Smith'],
+    title: 'On Grace',
+    publisher: null,
+    city: null,
+    year: 1998,
+    journal: 'Concordia Journal',
+    volume: '12',
+    issue: '3',
+    pages: '45–67'
+  }
+
+  it('footnote: full form with the quoted page last', () => {
+    expect(formatCitation(art, 'footnote', 52)).toBe(
+      'Jane Smith, "On Grace," *Concordia Journal* 12, no. 3 (1998): 45–67, 52.'
+    )
+  })
+  it('footnote: no quoted page', () => {
+    expect(formatCitation(art, 'footnote', null)).toBe(
+      'Jane Smith, "On Grace," *Concordia Journal* 12, no. 3 (1998): 45–67.'
+    )
+  })
+  it('footnote: omits "no." without an issue', () => {
+    expect(formatCitation({ ...art, issue: null }, 'footnote', 52)).toBe(
+      'Jane Smith, "On Grace," *Concordia Journal* 12 (1998): 45–67, 52.'
+    )
+  })
+  it('footnote: omits ": pages" without a range but still ends with the quoted page', () => {
+    expect(formatCitation({ ...art, pages: null }, 'footnote', 52)).toBe(
+      'Jane Smith, "On Grace," *Concordia Journal* 12, no. 3 (1998), 52.'
+    )
+  })
+  it('footnote: omits the volume and year cleanly', () => {
+    expect(formatCitation({ ...art, volume: null, issue: null, year: null, pages: null }, 'footnote', null)).toBe(
+      'Jane Smith, "On Grace," *Concordia Journal*.'
+    )
+  })
+  it('footnote: only a title and author', () => {
+    const bare: CitationSource = { kind: 'article', authors: ['Jane Smith'], title: 'On Grace', publisher: null, city: null, year: null }
+    expect(formatCitation(bare, 'footnote', null)).toBe('Jane Smith, "On Grace."')
+  })
+  it('footnote: two authors and a missing author placeholder', () => {
+    expect(formatCitation({ ...art, authors: ['Jane Smith', 'John Doe'] }, 'footnote', null)).toBe(
+      'Jane Smith and John Doe, "On Grace," *Concordia Journal* 12, no. 3 (1998): 45–67.'
+    )
+    expect(formatCitation({ ...art, authors: [] }, 'footnote', null)).toContain('[author], "On Grace,"')
+  })
+  it('short note, author-date and bibliography', () => {
+    expect(formatCitation(art, 'short', 52)).toBe('Smith, "On Grace," 52.')
+    expect(formatCitation(art, 'short', null)).toBe('Smith, "On Grace."')
+    expect(formatCitation(art, 'author-date', 52)).toBe('(Smith 1998, 52)')
+    expect(formatCitation(art, 'bibliography', 52)).toBe(
+      'Smith, Jane. "On Grace." *Concordia Journal* 12, no. 3 (1998): 45–67.'
+    )
+  })
+  it('book citations are unchanged', () => {
+    const book: CitationSource = {
+      kind: 'book',
+      authors: ['Martin Chemnitz'],
+      title: 'Examination of the Council of Trent',
+      publisher: 'Concordia',
+      city: 'St. Louis',
+      year: 1971
+    }
+    expect(formatCitation(book, 'footnote', 12)).toBe(
+      'Martin Chemnitz, *Examination of the Council of Trent* (Concordia, 1971), 12.'
+    )
+  })
+})
+
+describe('bookCitationSource', () => {
+  it('builds a book source by default', () => {
+    expect(
+      bookCitationSource({ author: 'A B', title: 'T', publisher: 'P', city: 'C', year: 1900 })
+    ).toEqual({ kind: 'book', authors: ['A B'], title: 'T', publisher: 'P', city: 'C', year: 1900 })
+  })
+  it('builds an article source from kind = article', () => {
+    const s = bookCitationSource({
+      kind: 'article',
+      author: 'A B & C D',
+      title: 'T',
+      publisher: null,
+      city: null,
+      year: 2001,
+      journal: 'J',
+      volume: '1',
+      issue: null,
+      pages: '2–3'
+    })
+    expect(s).toMatchObject({ kind: 'article', authors: ['A B', 'C D'], journal: 'J', volume: '1', issue: null, pages: '2–3' })
   })
 })

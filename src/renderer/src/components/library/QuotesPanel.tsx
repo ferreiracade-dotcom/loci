@@ -13,7 +13,7 @@ import { Trash2, Plus, Pencil, Copy, Check, BookMarked, ExternalLink } from 'luc
 import { useStore } from '../../store/useStore'
 import { isBackgroundClick, openBibleInBackground, openInBackground } from '../chrome/openViews'
 import { api } from '../../lib/api'
-import { formatCitation, parseAuthors, type CitationSource, type CitationStyle } from '@shared/citation'
+import { bookCitationSource, formatCitation, type CitationSource, type CitationStyle } from '@shared/citation'
 import type { Annotation, Book, Quote } from '@shared/ipc'
 import { QuoteBodyEditor } from './QuoteBodyEditor'
 
@@ -25,14 +25,7 @@ const STYLE_OPTIONS: { id: CitationStyle; label: string }[] = [
 ]
 
 function sourceFromBook(book: Book): CitationSource {
-  return {
-    kind: 'book',
-    authors: parseAuthors(book.author),
-    title: book.title,
-    publisher: book.publisher,
-    city: book.city,
-    year: book.year
-  }
+  return bookCitationSource(book)
 }
 
 /** Render a citation string with *markdown italics* and [amber placeholders]. */

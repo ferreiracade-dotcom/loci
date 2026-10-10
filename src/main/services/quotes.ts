@@ -7,9 +7,9 @@ import * as search from './search'
 import * as fathers from './fathers'
 import {
   bocCitation,
+  bookCitationSource,
   fathersCitation,
   formatCitation,
-  parseAuthors,
   scriptureCitation,
   type BocCiteRef,
   type CitationSource,
@@ -41,6 +41,11 @@ interface BookMetaRow {
   city: string | null
   year: number | null
   page_offset: number
+  kind: string
+  journal: string | null
+  volume: string | null
+  issue: string | null
+  pages: string | null
 }
 
 interface QuoteRow {
@@ -242,14 +247,7 @@ function parseAnnotations(raw: string): Annotation[] {
 }
 
 function sourceFor(b: BookMetaRow): CitationSource {
-  return {
-    kind: 'book',
-    authors: parseAuthors(b.author),
-    title: b.title,
-    publisher: b.publisher,
-    city: b.city,
-    year: b.year
-  }
+  return bookCitationSource({ ...b, kind: b.kind === 'article' ? 'article' : 'book' })
 }
 
 /** Printed page = stored (PDF) page minus the book's front-matter offset. */
@@ -266,7 +264,7 @@ function citationFor(b: BookMetaRow, page: number | null): string {
 export function buildBibliography(): { entry: string; quotes: number }[] {
   const rows = getDb()
     .prepare(
-      `SELECT b.title, b.author, b.publisher, b.city, b.year,
+      `SELECT b.title, b.author, b.publisher, b.city, b.year, b.kind, b.journal, b.volume, b.issue, b.pages,
               (SELECT COUNT(*) FROM quotes q WHERE q.book_id = b.id) AS qn
        FROM books b
        WHERE EXISTS (SELECT 1 FROM quotes q WHERE q.book_id = b.id)`
@@ -277,19 +275,16 @@ export function buildBibliography(): { entry: string; quotes: number }[] {
     publisher: string | null
     city: string | null
     year: number | null
+    kind: string
+    journal: string | null
+    volume: string | null
+    issue: string | null
+    pages: string | null
     qn: number
   }[]
   const items = rows.map((r) => {
-    const authors = parseAuthors(r.author)
-    const src: CitationSource = {
-      kind: 'book',
-      authors,
-      title: r.title,
-      publisher: r.publisher,
-      city: r.city,
-      year: r.year
-    }
-    const sortKey = (authors[0]?.trim().split(/\s+/).pop() || r.title).toLowerCase()
+    const src = bookCitationSource({ ...r, kind: r.kind === 'article' ? 'article' : 'book' })
+    const sortKey = (src.authors[0]?.trim().split(/\s+/).pop() || r.title).toLowerCase()
     return { entry: formatCitation(src, 'bibliography', null), quotes: r.qn, sortKey }
   })
   items.sort((a, b) => a.sortKey.localeCompare(b.sortKey))
@@ -299,7 +294,7 @@ export function buildBibliography(): { entry: string; quotes: number }[] {
 function bookMeta(bookId: string): BookMetaRow | undefined {
   return getDb()
     .prepare(
-      'SELECT title, title_sanitized, author, publisher, city, year, page_offset FROM books WHERE id = ?'
+      'SELECT title, title_sanitized, author, publisher, city, year, page_offset, kind, journal, volume, issue, pages FROM books WHERE id = ?'
     )
     .get(bookId) as BookMetaRow | undefined
 }

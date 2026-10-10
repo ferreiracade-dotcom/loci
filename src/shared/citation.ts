@@ -5,7 +5,7 @@
 import { FATHERS_SERIES_LABEL } from './fathers'
 import type { FathersSeries } from './fathers'
 
-export type SourceKind = 'book' | 'video' | 'image'
+export type SourceKind = 'book' | 'article' | 'video' | 'image'
 export type CitationStyle = 'footnote' | 'short' | 'bibliography' | 'author-date'
 
 export interface CitationSource {
@@ -19,6 +19,12 @@ export interface CitationSource {
   /** Video extras. */
   channel?: string | null
   url?: string | null
+  /** Article extras. */
+  journal?: string | null
+  volume?: string | null
+  issue?: string | null
+  /** Page range text, e.g. "45–67". */
+  pages?: string | null
 }
 
 const ph = (label: string): string => `[${label}]`
@@ -108,6 +114,87 @@ function shortTitle(src: CitationSource): string {
   return words.length <= 4 ? t : words.slice(0, 4).join(' ')
 }
 
+const clean = (s: string | null | undefined): string => (s ?? '').trim()
+
+/** `*Journal* 12, no. 3 (1998)` — each part only when present. */
+function journalPart(src: CitationSource): string {
+  const journal = clean(src.journal)
+  const volume = clean(src.volume)
+  const issue = clean(src.issue)
+  let s = journal ? `*${journal}*` : ''
+  if (volume) s = s ? `${s} ${volume}` : volume
+  if (issue) s = s ? `${s}, no. ${issue}` : `no. ${issue}`
+  if (src.year != null) s = s ? `${s} (${src.year})` : `(${src.year})`
+  return s
+}
+
+/** `*Journal* 12, no. 3 (1998): 45–67, 52` — the page range and the quoted page are optional. */
+function articleTail(src: CitationSource, page: number | null): string {
+  let s = journalPart(src)
+  const pages = clean(src.pages)
+  if (pages) s += s ? `: ${pages}` : pages
+  if (page != null) s += s ? `, ${page}` : String(page)
+  return s
+}
+
+function formatArticle(src: CitationSource, style: CitationStyle, page: number | null): string {
+  const name = title(src)
+  switch (style) {
+    case 'footnote': {
+      const tail = articleTail(src, page)
+      const who = authorsNote(src.authors)
+      return tail ? `${who}, "${name}," ${tail}.` : `${who}, "${name}."`
+    }
+    case 'short': {
+      const who = authorsShort(src.authors)
+      return page != null ? `${who}, "${shortTitle(src)}," ${page}.` : `${who}, "${shortTitle(src)}."`
+    }
+    case 'author-date':
+      return `(${authorsShort(src.authors)} ${yearStr(src)}${pagePart(page)})`
+    case 'bibliography': {
+      const tail = articleTail(src, null)
+      const who = authorsBib(src.authors)
+      return tail ? `${who}. "${name}." ${tail}.` : `${who}. "${name}."`
+    }
+  }
+}
+
+/** What a library item needs to be cited: the subset of a `books` row / `Book` used here. */
+export interface BookLike {
+  kind?: 'book' | 'article'
+  author: string | null
+  title: string
+  publisher: string | null
+  city: string | null
+  year: number | null
+  journal?: string | null
+  volume?: string | null
+  issue?: string | null
+  pages?: string | null
+}
+
+/** The citation source for a library item — an article when its kind says so, else a book. */
+export function bookCitationSource(b: BookLike): CitationSource {
+  const base = {
+    authors: parseAuthors(b.author),
+    title: b.title,
+    publisher: b.publisher,
+    city: b.city,
+    year: b.year
+  }
+  if (b.kind === 'article') {
+    return {
+      kind: 'article',
+      ...base,
+      journal: b.journal ?? null,
+      volume: b.volume ?? null,
+      issue: b.issue ?? null,
+      pages: b.pages ?? null
+    }
+  }
+  return { kind: 'book', ...base }
+}
+
 const pagePart = (page: number | null): string => (page != null ? `, ${page}` : '')
 
 export function formatCitation(
@@ -122,6 +209,7 @@ export function formatCitation(
     if (style === 'author-date') return `(${authorsShort(src.authors)} ${yearStr(src)})`
     return `${who}, "${title(src)}," video, ${chan}, ${yearStr(src)}${tail}.`
   }
+  if (src.kind === 'article') return formatArticle(src, style, page)
 
   switch (style) {
     case 'footnote':
