@@ -1090,9 +1090,13 @@ export const useStore = create<Store>((set, get) => {
     },
 
     addFathersQuote: async (input) => {
-      await api.addFathersQuote(input)
-      // Bump the shared token so the Quotes panel reloads.
-      set({ noteReloadToken: get().noteReloadToken + 1 })
+      try {
+        await api.addFathersQuote(input)
+        // Bump the shared token so the Quotes panel reloads.
+        set({ noteReloadToken: get().noteReloadToken + 1 })
+      } catch (err) {
+        set({ toast: err instanceof Error ? err.message : 'Could not save this quote' })
+      }
     },
 
     // --- Book of Concord (Confessions) ---

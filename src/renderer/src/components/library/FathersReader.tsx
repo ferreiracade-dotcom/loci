@@ -176,7 +176,11 @@ export function FathersReader({
       setHlSel(null)
       return
     }
-    const picked = sel.toString().trim()
+    // The selection's text without footnote markers (sup.fn digits would otherwise run into the
+    // words), whitespace collapsed.
+    const frag = range.cloneContents()
+    frag.querySelectorAll('sup.fn').forEach((n) => n.remove())
+    const picked = (frag.textContent ?? '').replace(/s+/g, ' ').trim()
     if (!picked) {
       setHlSel(null)
       return
