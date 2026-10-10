@@ -258,6 +258,37 @@ describe('catena', () => {
     expect(catena('JHN', 5, 1)).toEqual([])
   })
 
+  it('does not match same-chapter references that end before or start after the verse', () => {
+    section('anf01', 'c1', 6, { author: 'mid', title: 'C1' })
+    section('anf01', 'c2', 7, { author: 'mid', title: 'C2' })
+    section('anf01', 'c3', 8, { author: 'mid', title: 'C3' })
+    ref('anf01', 'c1', { cs: 3, vs: 10, ve: 15 })
+    ref('anf01', 'c2', { cs: 3, vs: 18, ve: 20 })
+    ref('anf01', 'c3', { cs: 2, vs: 20, ce: 3, ve: 3 })
+    const at16 = catena('JHN', 3, 16)[0].entries.map((e) => e.sectionId)
+    expect(at16).not.toContain('c1')
+    expect(at16).not.toContain('c2')
+    expect(catena('JHN', 3, 4).flatMap((g) => g.entries.map((e) => e.sectionId))).not.toContain('c3')
+  })
+
+  it('dedupes before limiting: many refs in one early section do not crowd out a later author', () => {
+    author('zlate', 'Zlate Father', 900)
+    section('anf01', 'big', 9, { author: 'early', title: 'Big' })
+    section('anf01', 'z1', 10, { author: 'zlate', title: 'Z1' })
+    const ins = db.prepare(
+      `INSERT INTO fathers_scripture_refs
+         (volume_code, section_id, anchor, osis, passage, book, chapter_start, verse_start, chapter_end, verse_end, in_note, char_offset)
+       VALUES ('anf01','big',?, 'Bible:x','p','JHN',3,5,3,5,1,?)`
+    )
+    db.transaction(() => {
+      for (let i = 0; i < 700; i++) ins.run(`big-${i}`, i)
+    })()
+    ref('anf01', 'z1', { cs: 3, vs: 5 })
+    const entries = catena('JHN', 3).flatMap((g) => g.entries)
+    expect(entries.filter((e) => e.sectionId === 'big')).toHaveLength(1)
+    expect(entries.map((e) => e.sectionId)).toContain('z1')
+  })
+
   it('returns nothing for a passage no Father cites', () => {
     expect(catena('REV', 22, 21)).toEqual([])
   })

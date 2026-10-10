@@ -169,7 +169,7 @@ export function listAuthors(): FathersAuthorSummary[] {
   const rows = getDb()
     .prepare(
       `SELECT s.author_id AS id, a.name, a.dates_label AS datesLabel, a.sort_year AS sortYear,
-              COUNT(DISTINCT s.volume_code || '|' || s.work_title) AS workCount, COUNT(*) AS sectionCount
+              COUNT(DISTINCT s.volume_code || '|' || COALESCE(s.work_title, '')) AS workCount, COUNT(*) AS sectionCount
        FROM fathers_sections s LEFT JOIN fathers_authors a ON a.id = s.author_id
        WHERE s.author_id IS NOT NULL AND s.editorial = 0
        GROUP BY s.author_id
@@ -241,21 +241,33 @@ const CATENA_LIMIT = 600
 export function catena(book: string, chapter: number, verse?: number | null): FathersCatenaGroup[] {
   const db = getDb()
   const v = verse ?? null
+  // Dedupe in SQL (one row per verse-group, section: the earliest reference) BEFORE limiting, so
+  // the many footnote refs of one early section cannot crowd later-dated Fathers out of the limit.
   const rows = db
     .prepare(
-      `SELECT r.volume_code AS volumeCode, r.section_id AS sectionId, r.passage, r.in_note AS inNote,
-              r.chapter_start AS cs, r.verse_start AS vs, r.char_offset AS off,
+      `WITH m AS (
+         SELECT r.volume_code, r.section_id, r.passage, r.in_note, r.chapter_start, r.verse_start, r.char_offset,
+                CASE WHEN @v IS NOT NULL THEN @v WHEN r.chapter_start = @ch THEN r.verse_start END AS gv
+         FROM fathers_scripture_refs r
+         JOIN fathers_sections s ON s.volume_code = r.volume_code AND s.id = r.section_id
+         WHERE r.book = @book AND s.editorial = 0
+           AND (r.chapter_start < @ch OR (r.chapter_start = @ch AND (@v IS NULL OR COALESCE(r.verse_start, 0) <= @v)))
+           AND (r.chapter_end > @ch OR (r.chapter_end = @ch AND (@v IS NULL OR COALESCE(r.verse_end, 9999) >= @v)))
+       ), f AS (
+         SELECT m.*, ROW_NUMBER() OVER (PARTITION BY m.gv, m.volume_code, m.section_id ORDER BY m.char_offset) AS rn
+         FROM m
+       )
+       SELECT f.volume_code AS volumeCode, f.section_id AS sectionId, f.passage, f.in_note AS inNote,
+              f.chapter_start AS cs, f.verse_start AS vs, f.char_offset AS off,
               s.short_title AS sectionTitle, s.work_title AS workTitle, s.author_id AS authorId,
               s.text, s.start_page AS startPage,
               v.series, v.number AS volumeNumber, a.name AS authorName, a.dates_label AS datesLabel
-       FROM fathers_scripture_refs r
-       JOIN fathers_sections s ON s.volume_code = r.volume_code AND s.id = r.section_id
-       JOIN fathers_volumes v ON v.code = r.volume_code
+       FROM f
+       JOIN fathers_sections s ON s.volume_code = f.volume_code AND s.id = f.section_id
+       JOIN fathers_volumes v ON v.code = f.volume_code
        LEFT JOIN fathers_authors a ON a.id = s.author_id
-       WHERE r.book = @book AND s.editorial = 0
-         AND (r.chapter_start < @ch OR (r.chapter_start = @ch AND (@v IS NULL OR COALESCE(r.verse_start, 0) <= @v)))
-         AND (r.chapter_end > @ch OR (r.chapter_end = @ch AND (@v IS NULL OR COALESCE(r.verse_end, 9999) >= @v)))
-       ORDER BY (a.sort_year IS NULL), a.sort_year, r.volume_code, s.ordinal, r.char_offset
+       WHERE f.rn = 1
+       ORDER BY (a.sort_year IS NULL), a.sort_year, f.volume_code, s.ordinal, f.char_offset
        LIMIT ${CATENA_LIMIT}`
     )
     .all({ book, ch: chapter, v }) as {
