@@ -323,3 +323,131 @@ describe('listBocQuotesForDocument', () => {
     expect(listBocQuotesForDocument('AP')).toEqual([])
   })
 })
+
+// ---------- Church Fathers quotes ----------
+import { existsSync, readFileSync } from 'fs'
+import { addFathersQuote, deleteQuote, listFathersQuotes, setQuoteCitation } from './quotes'
+
+function seedFathers(): void {
+  db.prepare(
+    "INSERT INTO fathers_volumes (code, series, number, title, file_key, status) VALUES ('anf01','anf',1,'Apostolic Fathers','fathers/anf01.xml','indexed')"
+  ).run()
+  db.prepare(
+    "INSERT INTO fathers_authors (id, name, sort_year, dates_label, bio) VALUES ('irenaeus','Irenaeus',202,'c. 130–c. 202','Bishop of Lyons.')"
+  ).run()
+  const sec = db.prepare(
+    `INSERT INTO fathers_sections
+       (volume_code, id, ordinal, depth, titles_json, short_title, author_id, work_title, editorial, start_page, html, text)
+     VALUES ('anf01', ?, ?, 3, '[]', ?, ?, ?, 0, '415', '<p>x</p>', 'x')`
+  )
+  sec.run('ix.ii.i', 0, 'Preface.', 'irenaeus', 'Against Heresies: Book III')
+  sec.run('ix.ii.ii', 1, 'Chapter III.—Apostolic succession.', 'irenaeus', 'Against Heresies: Book III')
+  sec.run('x.i', 2, 'Chapter I.—Orphan.', null, 'Fragments')
+}
+
+function reinsertSuccessionSection(): void {
+  db.prepare(
+    `INSERT INTO fathers_sections
+       (volume_code, id, ordinal, depth, titles_json, short_title, author_id, work_title, editorial, start_page, html, text)
+     VALUES ('anf01', 'ix.ii.ii', 1, 3, '[]', 'Chapter III.—Apostolic succession.', 'irenaeus', 'Against Heresies: Book III', 0, '415', '<p>x</p>', 'x')`
+  ).run()
+}
+
+describe('addFathersQuote', () => {
+  it('creates a Fathers quote cited "Author, *Work* III.3 (ANF 1:415)" and files it under notes/fathers/<author>.md', () => {
+    seedFathers()
+    const q = addFathersQuote({
+      volumeCode: 'anf01', sectionId: 'ix.ii.ii', page: '415', paragraph: 2,
+      text: 'the tradition of the apostles'
+    })
+    expect(q.bookId).toBe('')
+    expect(q.citation).toBe('Irenaeus, *Against Heresies* III.3 (ANF 1:415)')
+    expect(q.notePath).toBe('notes/fathers/Irenaeus.md')
+
+    const row = db
+      .prepare('SELECT book_id, fathers_volume, fathers_section_id, fathers_page, fathers_paragraph FROM quotes WHERE id = ?')
+      .get(q.id)
+    expect(row).toEqual({
+      book_id: null, fathers_volume: 'anf01', fathers_section_id: 'ix.ii.ii', fathers_page: '415', fathers_paragraph: 2
+    })
+
+    const note = readFileSync(join(dataDir, 'vault', 'notes', 'fathers', 'Irenaeus.md'), 'utf-8')
+    expect(note).toContain('type: fathers-note')
+    expect(note).toContain('> the tradition of the apostles')
+    expect(note).toContain('— Irenaeus, *Against Heresies* III.3 (ANF 1:415)')
+  })
+
+  it('omits the page from the citation when the reader could not tell', () => {
+    seedFathers()
+    const q = addFathersQuote({ volumeCode: 'anf01', sectionId: 'ix.ii.ii', page: null, paragraph: null, text: 'x' })
+    expect(q.citation).toBe('Irenaeus, *Against Heresies* III.3 (ANF 1)')
+  })
+
+  it('files a section with no author under "Unattributed" and omits the author from the citation', () => {
+    seedFathers()
+    const q = addFathersQuote({ volumeCode: 'anf01', sectionId: 'x.i', page: '9', paragraph: 1, text: 'orphan text' })
+    expect(q.notePath).toBe('notes/fathers/Unattributed.md')
+    expect(q.citation).toBe('*Fragments* 1 (ANF 1:9)')
+  })
+
+  it('throws for a section that is not indexed', () => {
+    seedFathers()
+    expect(() =>
+      addFathersQuote({ volumeCode: 'anf01', sectionId: 'nope', page: null, paragraph: null, text: 'x' })
+    ).toThrow(/not found/)
+  })
+
+  it('recomputes the citation on a later independent read and honours a hand-edited override', () => {
+    seedFathers()
+    const q = addFathersQuote({ volumeCode: 'anf01', sectionId: 'ix.ii.ii', page: '415', paragraph: 1, text: 'x' })
+    expect(listAllQuotes().find((x) => x.id === q.id)?.citation).toBe('Irenaeus, *Against Heresies* III.3 (ANF 1:415)')
+    setQuoteCitation(q.id, 'My own citation')
+    expect(listAllQuotes().find((x) => x.id === q.id)?.citation).toBe('My own citation')
+  })
+
+  it('survives re-indexing: deleting and re-inserting the volume sections keeps the quote', () => {
+    seedFathers()
+    const q = addFathersQuote({ volumeCode: 'anf01', sectionId: 'ix.ii.ii', page: '415', paragraph: 1, text: 'x' })
+    db.prepare("DELETE FROM fathers_sections WHERE volume_code = 'anf01'").run()
+    expect((db.prepare('SELECT COUNT(*) AS n FROM quotes').get() as { n: number }).n).toBe(1)
+    // With the section gone the citation degrades to empty rather than throwing ...
+    expect(listAllQuotes().find((x) => x.id === q.id)?.citation).toBe('')
+    // ... and comes back once the volume is indexed again.
+    reinsertSuccessionSection()
+    expect(listAllQuotes().find((x) => x.id === q.id)?.citation).toBe('Irenaeus, *Against Heresies* III.3 (ANF 1:415)')
+  })
+
+  it('deleting the quote removes its block, prunes the empty note file and drops the row', () => {
+    seedFathers()
+    const q = addFathersQuote({ volumeCode: 'anf01', sectionId: 'ix.ii.ii', page: '415', paragraph: 1, text: 'x' })
+    deleteQuote(q.id)
+    expect(existsSync(join(dataDir, 'vault', 'notes', 'fathers', 'Irenaeus.md'))).toBe(false)
+    expect((db.prepare('SELECT COUNT(*) AS n FROM quotes').get() as { n: number }).n).toBe(0)
+  })
+
+  it('indexes the quote text for search', () => {
+    seedFathers()
+    addFathersQuote({ volumeCode: 'anf01', sectionId: 'ix.ii.ii', page: '415', paragraph: 1, text: 'unmistakable phrase' })
+    const hits = db.prepare("SELECT ref FROM search_fts WHERE kind='quote' AND search_fts MATCH 'unmistakable'").all()
+    expect(hits).toHaveLength(1)
+  })
+})
+
+describe('listFathersQuotes', () => {
+  it('returns one volume quotes in reading order, then oldest first, excluding other volumes', () => {
+    seedFathers()
+    db.prepare(
+      "INSERT INTO fathers_volumes (code, series, number, title, file_key, status) VALUES ('anf02','anf',2,'Second','fathers/anf02.xml','indexed')"
+    ).run()
+    db.prepare(
+      `INSERT INTO fathers_sections (volume_code, id, ordinal, depth, titles_json, short_title, author_id, work_title, editorial, html, text)
+       VALUES ('anf02', 'z', 0, 1, '[]', 'Z', 'irenaeus', 'W', 0, '', 'x')`
+    ).run()
+    const later = addFathersQuote({ volumeCode: 'anf01', sectionId: 'ix.ii.ii', page: '415', paragraph: 1, text: 'later section' })
+    const earlier = addFathersQuote({ volumeCode: 'anf01', sectionId: 'ix.ii.i', page: '414', paragraph: 1, text: 'earlier section' })
+    addFathersQuote({ volumeCode: 'anf02', sectionId: 'z', page: '1', paragraph: 1, text: 'other volume' })
+    expect(listFathersQuotes('anf01').map((q) => q.id)).toEqual([earlier.id, later.id])
+    expect(listFathersQuotes('anf02')).toHaveLength(1)
+    expect(listFathersQuotes('npnf101')).toEqual([])
+  })
+})

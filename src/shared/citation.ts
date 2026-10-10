@@ -2,6 +2,9 @@
 // Notes–bibliography style by default, with author–date as an alternate.
 // Missing fields render as [bracketed] placeholders the UI highlights in amber.
 
+import { FATHERS_SERIES_LABEL } from './fathers'
+import type { FathersSeries } from './fathers'
+
 export type SourceKind = 'book' | 'video' | 'image'
 export type CitationStyle = 'footnote' | 'short' | 'bibliography' | 'author-date'
 
@@ -185,4 +188,72 @@ export function bocLabel(r: BocCiteRef): string {
 /** "AC IV, 2 (Reader's Edition)" — the attribution shown under a confessional quote. */
 export function bocCitation(r: BocCiteRef): string {
   return `${bocLabel(r)} (${r.sourceName})`
+}
+
+// ---------- Church Fathers references ----------
+// "Irenaeus, *Against Heresies* III.3 (ANF 1:415)": author, italicised work, the section's
+// book/chapter numbers when it has them, then the series, volume and printed page.
+
+export interface FathersCiteRef {
+  authorName: string | null
+  /** The work as CCEL titles it, e.g. "Against Heresies: Book III". */
+  workTitle: string | null
+  /** The section's short title, e.g. "Chapter III.—Apostolic succession." */
+  shortTitle: string
+  series: FathersSeries
+  volume: number
+  /** Printed page ('415', 'xiv'), if known. */
+  page: string | null
+}
+
+/** Roman numeral -> integer; null if `s` is not a well-formed uppercase numeral. */
+export function romanToInt(s: string): number | null {
+  if (!/^[IVXLCDM]+$/.test(s)) return null
+  const v: Record<string, number> = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 }
+  let total = 0
+  for (let i = 0; i < s.length; i++) {
+    const cur = v[s[i]]
+    const next = i + 1 < s.length ? v[s[i + 1]] : 0
+    total += cur < next ? -cur : cur
+  }
+  return total
+}
+
+const WORK_BOOK_RE = /^(.*?)[\s:,—–-]*\b[Bb]ook\s+([IVXLCDM]+|\d+)\s*$/
+const SECTION_NUMBER_RE =
+  /^(?:[Cc]hapter|[Cc]hap\.|[Ss]ection|[Aa]rticle|[Ll]etter|[Ee]pistle|[Hh]omily|[Ss]ermon|[Bb]ook|[Pp]art)\s+([IVXLCDM]+|\d+)(?![A-Za-z])/
+
+/** Split a CCEL work title and section title into the cited work name and a locator:
+ *  ("Against Heresies: Book III", "Chapter III.—Apostolic succession.") -> ("Against Heresies", "III.3").
+ *  The locator is the book numeral as printed, then the chapter as an arabic number; with neither
+ *  it falls back to the section title's first clause ("Preface"), or "" if that is the work itself. */
+export function fathersSectionLabel(
+  workTitle: string | null,
+  shortTitle: string
+): { work: string; label: string } {
+  let work = (workTitle ?? shortTitle).trim()
+  let book = ''
+  const wb = WORK_BOOK_RE.exec(work)
+  if (wb && wb[1].trim()) {
+    work = wb[1].trim()
+    book = wb[2]
+  }
+  let chapter = ''
+  const sn = SECTION_NUMBER_RE.exec(shortTitle.trim())
+  if (sn) chapter = /^\d+$/.test(sn[1]) ? sn[1] : String(romanToInt(sn[1]) ?? sn[1])
+  let label = [book, chapter].filter(Boolean).join('.')
+  if (!label) {
+    const head = shortTitle.split(/[.—–:]/)[0].trim()
+    const short = head.length > 40 ? `${head.slice(0, 40).replace(/\s+\S*$/, '')}…` : head
+    label = head.toLowerCase() === work.toLowerCase() ? '' : short
+  }
+  return { work, label }
+}
+
+/** "Irenaeus, *Against Heresies* III.3 (ANF 1:415)". */
+export function fathersCitation(r: FathersCiteRef): string {
+  const { work, label } = fathersSectionLabel(r.workTitle, r.shortTitle)
+  const who = r.authorName ? `${r.authorName}, ` : ''
+  const where = `${FATHERS_SERIES_LABEL[r.series]} ${r.volume}${r.page ? `:${r.page}` : ''}`
+  return `${who}*${work}*${label ? ` ${label}` : ''} (${where})`
 }

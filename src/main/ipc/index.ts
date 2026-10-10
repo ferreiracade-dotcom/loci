@@ -11,6 +11,7 @@ import type {
   CommentaryQuoteInput,
   CommentarySourceUpdate,
   ExportOptions,
+  FathersQuoteInput,
   ImportProgress,
   IndexedPage,
   NewCommentarySource,
@@ -267,6 +268,8 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.addBocCommentaryQuote, (_e, input: BocQuoteInput) =>
     quotes.addBocCommentaryQuote(input)
   )
+  ipcMain.handle(Channels.addFathersQuote, (_e, input: FathersQuoteInput) => quotes.addFathersQuote(input))
+  ipcMain.handle(Channels.listFathersQuotes, (_e, volumeCode: string) => quotes.listFathersQuotes(volumeCode))
 
   // --- Notes (Phase 2c) ---
   ipcMain.handle(Channels.saveNote, (_e, path: string, content: string) =>

@@ -56,6 +56,8 @@ export const Channels = {
   listAllQuotes: 'quotes:listAll',
   addBocQuote: 'quotes:addBoc',
   addBocCommentaryQuote: 'quotes:addBocCommentary',
+  addFathersQuote: 'quotes:addFathers',
+  listFathersQuotes: 'quotes:listFathers',
   saveNote: 'notes:save',
   readNote: 'notes:read',
   listStandaloneNotes: 'notes:listStandalone',
@@ -297,6 +299,10 @@ export interface LociApi {
   /** Capture a Book of Concord commentary excerpt as a quote (anchored to the commentary
    *  source rather than the primary-text source). */
   addBocCommentaryQuote(input: BocQuoteInput): Promise<Quote>
+  /** Capture a selection from a Church Fathers section as a quote, cited "Author, *Work* III.3 (ANF 1:415)". */
+  addFathersQuote(input: FathersQuoteInput): Promise<Quote>
+  /** Every quote captured from one Fathers volume, in reading order. */
+  listFathersQuotes(volumeCode: string): Promise<Quote[]>
   saveNote(path: string, content: string): Promise<void>
   readNote(path: string): Promise<string>
   listStandaloneNotes(): Promise<NoteSummary[]>
@@ -513,6 +519,19 @@ export interface BocQuoteInput {
   sectionNumber: string | null
   sectionLabel: string
   /** The specific `[N]` paragraph quoted, if any. */
+  paragraph: number | null
+  text: string
+  color?: string
+}
+
+/** Capture a selection from a Church Fathers section as a quote (`addFathersQuote`). */
+export interface FathersQuoteInput {
+  volumeCode: string
+  /** CCEL section id within the volume, e.g. 'ix.ii.ii'. */
+  sectionId: string
+  /** Printed page the selection starts on ('415', 'xiv'), if the reader could tell. */
+  page: string | null
+  /** 1-based paragraph index within the section, if known. */
   paragraph: number | null
   text: string
   color?: string
