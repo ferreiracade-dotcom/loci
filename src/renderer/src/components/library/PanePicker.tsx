@@ -485,7 +485,7 @@ export function PanePicker({
 
           {browseTab === 'quotes' && (
             <div className="pp-scroll">
-              {tabQuoteBookHits.length > 0 && <div className="pp-sec">Books</div>}
+              {tabQuoteBookHits.length > 0 && <div className="pp-sec">Library</div>}
               {tabQuoteBookHits.map((b) => {
                 const ref: QuoteGroupRef = { type: 'book', bookId: b.bookId, title: b.title }
                 return (

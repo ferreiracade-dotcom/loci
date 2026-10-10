@@ -7,7 +7,7 @@ import type { SearchHit, SearchKind } from '@shared/ipc'
 
 const KINDS: { id: SearchKind; label: string }[] = [
   { id: 'all', label: 'All' },
-  { id: 'page', label: 'Books' },
+  { id: 'page', label: 'Library' },
   { id: 'quote', label: 'Quotes' },
   { id: 'note', label: 'Notes' },
   { id: 'scripture', label: 'Scripture' },

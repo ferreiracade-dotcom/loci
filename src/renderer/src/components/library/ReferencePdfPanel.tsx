@@ -34,6 +34,9 @@ export function ReferencePdfPanel() {
   // Set once a saved item is restored: its own kind wins over the separately saved list choice,
   // whichever of the two session reads resolves first.
   const restoredRef = useRef(false)
+  // The saved item is restored only the first time the library has loaded, so importing or
+  // deleting while browsing never snaps the switch back.
+  const restoredOnceRef = useRef(false)
 
   useEffect(() => {
     void api.getSession('refLibraryKind').then((v) => {
@@ -43,6 +46,8 @@ export function ReferencePdfPanel() {
 
   // Restore the last reference item, if it still exists (and show the list it belongs to).
   useEffect(() => {
+    if (restoredOnceRef.current || books.length === 0) return
+    restoredOnceRef.current = true
     void api.getSession('refPdf').then((id) => {
       const hit = id ? books.find((b) => b.id === id) : undefined
       if (hit) {

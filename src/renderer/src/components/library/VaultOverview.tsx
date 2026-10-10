@@ -67,7 +67,7 @@ export function VaultOverview() {
 
   const stats = health
     ? [
-        { icon: BookOpen, label: 'Books', value: String(health.books) },
+        { icon: BookOpen, label: 'Library', value: String(health.books) },
         { icon: DatabaseZap, label: 'Indexed', value: `${health.indexed}/${health.books}` },
         { icon: FileText, label: 'Notes', value: String(health.notes) },
         { icon: QuoteIcon, label: 'Quotes', value: String(health.quotes) }

@@ -210,7 +210,7 @@ export function QuotesView() {
           <>
             {groups.books.length > 0 && (
               <>
-                <div className="notes-group-head">Books</div>
+                <div className="notes-group-head">Library</div>
                 {groups.books.map((b) =>
                   row(
                     { type: 'book', bookId: b.bookId, title: b.title },

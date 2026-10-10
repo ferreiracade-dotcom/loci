@@ -3,7 +3,7 @@ import { useStore } from '../../store/useStore'
 import { MODES_FOR_PILL, resolveCorpusMode, type CorpusMode, type RefPill } from '../../lib/corpusMode'
 
 const MODE_LABELS: Record<CorpusMode, string> = {
-  books: 'Books',
+  books: 'Library',
   bible: 'Bible',
   confessions: 'Confessions',
   fathers: 'Fathers'
