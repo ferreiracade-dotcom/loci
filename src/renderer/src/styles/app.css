@@ -5086,3 +5086,32 @@ select.field {
   color: var(--muted);
   white-space: nowrap;
 }
+.cr-all-mode {
+  display: inline-flex;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.cr-all-mode button {
+  background: none;
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  padding: 3px 10px;
+  cursor: pointer;
+}
+.cr-all-mode button.active {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.cr-all-chip.verse {
+  min-width: 30px;
+  padding: 3px 6px;
+}
+.cr-byline {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--gold);
+  margin-right: auto;
+}

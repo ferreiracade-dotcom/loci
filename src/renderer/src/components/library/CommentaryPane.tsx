@@ -42,11 +42,14 @@ function verseLabel(e: CommentaryExcerpt): string {
 function ReaderExcerpt({
   excerpt,
   bookName,
+  byline,
   onOpenVerse,
   onQuote
 }: {
   excerpt: CommentaryExcerpt
   bookName: string
+  /** Whose comment this is, where comments from several commentaries stand together. */
+  byline?: string
   onOpenVerse: () => void
   onQuote: (text: string) => Promise<void>
 }) {
@@ -78,6 +81,7 @@ function ReaderExcerpt({
           <ScrollText size={12} />
           {bookName} {verseLabel(excerpt)}
         </button>
+        {byline && <span className="cr-byline">{byline}</span>}
         <div className="cr-excerpt-actions">
           <button
             className="commentary-excerpt-act"
@@ -102,8 +106,9 @@ function ReaderExcerpt({
   )
 }
 
-/** Every commentary's comments on one chapter: a row of commentator names to jump by, then
- *  each commentator's comments under their name, which folds them away. */
+/** Every commentary's comments on one chapter, by commentator (each one's comments under their
+ *  name) or by verse (each verse's comments from every commentator), with a row of names or verse
+ *  numbers to jump by; a group's heading folds it away. */
 function AllCommentaries({
   excerpts,
   sources,
@@ -117,20 +122,61 @@ function AllCommentaries({
   onOpenVerse: (e: CommentaryExcerpt) => void
   onQuote: (e: CommentaryExcerpt, text: string) => Promise<void>
 }) {
+  const [byVerse, setByVerse] = useState(false)
   const [folded, setFolded] = useState<Set<string>>(new Set())
   const groupRefs = useRef(new Map<string, HTMLDivElement>())
-  // Excerpts arrive grouped by commentary already, in the user's order.
-  const groups: { source: CommentarySource | undefined; sourceId: string; excerpts: CommentaryExcerpt[] }[] = []
-  for (const e of excerpts) {
-    const last = groups[groups.length - 1]
-    if (last?.sourceId === e.sourceId) last.excerpts.push(e)
-    else groups.push({ sourceId: e.sourceId, source: sources.find((s) => s.id === e.sourceId), excerpts: [e] })
+
+  useEffect(() => {
+    void api.getSession('commentaryAllByVerse').then((v) => setByVerse(v === '1'))
+  }, [])
+  const pickMode = (verse: boolean): void => {
+    setByVerse(verse)
+    setFolded(new Set())
+    void api.setSession('commentaryAllByVerse', verse ? '1' : '0')
   }
+
+  const sourceOf = (id: string): CommentarySource | undefined => sources.find((s) => s.id === id)
   // A commentator's name, unless two of their commentaries are here (Melanchthon on Romans).
-  const authors = groups.map((g) => g.source?.author)
-  const chipLabel = (src: CommentarySource | undefined): string =>
-    (src?.author && authors.filter((a) => a === src.author).length === 1 ? src.author : src?.displayName) ??
+  const present = [...new Set(excerpts.map((e) => e.sourceId))].map(sourceOf)
+  const nameOf = (src: CommentarySource | undefined): string =>
+    (src?.author && present.filter((p) => p?.author === src.author).length === 1 ? src.author : src?.displayName) ??
     'Commentary'
+
+  // Excerpts arrive grouped by commentary, in the user's order, each in verse order. By verse,
+  // they are regrouped under the verse each begins at, keeping that order of commentaries.
+  interface Group { key: string; chip: string; head: React.ReactNode; excerpts: CommentaryExcerpt[] }
+  const groups: Group[] = []
+  if (byVerse) {
+    const verses = [...new Set(excerpts.map((e) => e.verseStart))].sort((a, b) => a - b)
+    for (const v of verses) {
+      groups.push({
+        key: `v${v}`,
+        chip: String(v),
+        head: <span className="cr-all-name">Verse {v}</span>,
+        excerpts: excerpts.filter((e) => e.verseStart === v)
+      })
+    }
+  } else {
+    for (const e of excerpts) {
+      const last = groups[groups.length - 1]
+      if (last?.key === e.sourceId) {
+        last.excerpts.push(e)
+        continue
+      }
+      const src = sourceOf(e.sourceId)
+      groups.push({
+        key: e.sourceId,
+        chip: nameOf(src),
+        head: (
+          <>
+            <span className="cr-all-name">{src?.displayName ?? 'Commentary'}</span>
+            {src?.author && <span className="cr-all-author">{src.author}</span>}
+          </>
+        ),
+        excerpts: [e]
+      })
+    }
+  }
   const toggle = (id: string): void =>
     setFolded((f) => {
       const next = new Set(f)
@@ -140,40 +186,48 @@ function AllCommentaries({
     })
   return (
     <>
+      <div className="cr-all-mode">
+        <button className={byVerse ? '' : 'active'} onClick={() => pickMode(false)}>
+          By commentator
+        </button>
+        <button className={byVerse ? 'active' : ''} onClick={() => pickMode(true)}>
+          By verse
+        </button>
+      </div>
       <div className="cr-all-jump">
         {groups.map((g) => (
           <button
-            key={g.sourceId}
-            title={g.source?.displayName}
-            className="cr-all-chip"
-            onClick={() => groupRefs.current.get(g.sourceId)?.scrollIntoView({ block: 'start' })}
+            key={g.key}
+            title={byVerse ? `Verse ${g.chip}` : sourceOf(g.key)?.displayName}
+            className={`cr-all-chip${byVerse ? ' verse' : ''}`}
+            onClick={() => groupRefs.current.get(g.key)?.scrollIntoView({ block: 'start' })}
           >
-            {chipLabel(g.source)}
+            {g.chip}
           </button>
         ))}
       </div>
       {groups.map((g) => (
         <div
-          key={g.sourceId}
+          key={g.key}
           className="cr-all-group"
           ref={(el) => {
-            if (el) groupRefs.current.set(g.sourceId, el)
-            else groupRefs.current.delete(g.sourceId)
+            if (el) groupRefs.current.set(g.key, el)
+            else groupRefs.current.delete(g.key)
           }}
         >
-          <button className="cr-all-head" onClick={() => toggle(g.sourceId)}>
-            <span className="cr-all-name">{g.source?.displayName ?? 'Commentary'}</span>
-            {g.source?.author && <span className="cr-all-author">{g.source.author}</span>}
+          <button className="cr-all-head" onClick={() => toggle(g.key)}>
+            {g.head}
             <span className="cr-all-count">
-              {folded.has(g.sourceId) ? `${g.excerpts.length} comment${g.excerpts.length === 1 ? '' : 's'}` : ''}
+              {folded.has(g.key) ? `${g.excerpts.length} comment${g.excerpts.length === 1 ? '' : 's'}` : ''}
             </span>
           </button>
-          {!folded.has(g.sourceId) &&
+          {!folded.has(g.key) &&
             g.excerpts.map((e) => (
               <ReaderExcerpt
                 key={e.id}
                 excerpt={e}
                 bookName={bookName}
+                byline={byVerse ? nameOf(sourceOf(e.sourceId)) : undefined}
                 onOpenVerse={() => onOpenVerse(e)}
                 onQuote={(text) => onQuote(e, text)}
               />
