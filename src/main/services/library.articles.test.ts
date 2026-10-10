@@ -22,6 +22,10 @@ vi.mock('./config', () => ({
   readConfig: () => ({ ...cfg }),
   localVaultDir: () => join(dataDir, 'vault')
 }))
+vi.mock('fs', async (orig) => {
+  const actual = await orig<typeof import('fs')>()
+  return { ...actual, renameSync: vi.fn(actual.renameSync) }
+})
 vi.mock('./vaultsync', () => ({ removeFromDrive: () => undefined }))
 
 beforeEach(() => {
@@ -43,6 +47,7 @@ afterEach(() => {
 })
 
 // Imported after the mocks are declared; vitest hoists vi.mock above this either way.
+import * as fs from 'fs'
 import { listBooks, moveBook, quickImport, syncLibrary, updateBook } from './library'
 
 function insertBook(id: string, title = id): void {
@@ -249,6 +254,46 @@ describe('moveBook', () => {
 
     moveBook(id, 'book')
     expect(existsSync(localFile)).toBe(true)
+  })
+
+  it('a locked file (EBUSY) is not copied: source intact, no dest, DB unchanged, null', async () => {
+    const id = await seedVaultBook('Books', 'Alpha - Bob.pdf')
+    const src = join(vault, 'pdfs', 'Books', 'Alpha - Bob.pdf')
+    vi.mocked(fs.renameSync).mockImplementationOnce(() => {
+      throw Object.assign(new Error('busy'), { code: 'EBUSY' })
+    })
+    expect(moveBook(id, 'article')).toBeNull()
+    expect(existsSync(src)).toBe(true)
+    expect(existsSync(join(vault, 'pdfs', 'Articles', 'Alpha - Bob.pdf'))).toBe(false)
+    expect(db.prepare('SELECT kind, pdf_path FROM books WHERE id = ?').get(id)).toEqual({ kind: 'book', pdf_path: src })
+  })
+
+  it('EXDEV falls back to copy + unlink', async () => {
+    const id = await seedVaultBook('Books', 'Alpha - Bob.pdf')
+    vi.mocked(fs.renameSync).mockImplementationOnce(() => {
+      throw Object.assign(new Error('xdev'), { code: 'EXDEV' })
+    })
+    expect(moveBook(id, 'article')?.kind).toBe('article')
+    expect(existsSync(join(vault, 'pdfs', 'Articles', 'Alpha - Bob.pdf'))).toBe(true)
+    expect(existsSync(join(vault, 'pdfs', 'Books', 'Alpha - Bob.pdf'))).toBe(false)
+  })
+
+  it('never overwrites when the -<id8> name is taken too', async () => {
+    const id = await seedVaultBook('Books', 'Alpha - Bob.pdf')
+    writePdf(join(vault, 'pdfs', 'Articles', 'Alpha - Bob.pdf'), 999)
+    writePdf(join(vault, 'pdfs', 'Articles', `Alpha - Bob-${id.slice(0, 8)}.pdf`), 998)
+    expect(moveBook(id, 'article')?.kind).toBe('article')
+    const row = db.prepare('SELECT pdf_path FROM books WHERE id = ?').get(id) as { pdf_path: string }
+    expect(row.pdf_path).toBe(join(vault, 'pdfs', 'Articles', `Alpha - Bob-${id.slice(0, 8)}-2.pdf`))
+    expect(fs.statSync(join(vault, 'pdfs', 'Articles', 'Alpha - Bob.pdf')).size).toBe(999)
+    expect(fs.statSync(join(vault, 'pdfs', 'Articles', `Alpha - Bob-${id.slice(0, 8)}.pdf`)).size).toBe(998)
+  })
+
+  it('a missing file under a root is a failure: null and kind unchanged', async () => {
+    const id = await seedVaultBook('Books', 'Alpha - Bob.pdf')
+    rmSync(join(vault, 'pdfs', 'Books', 'Alpha - Bob.pdf'))
+    expect(moveBook(id, 'article')).toBeNull()
+    expect((db.prepare('SELECT kind FROM books WHERE id = ?').get(id) as { kind: string }).kind).toBe('book')
   })
 
   it('returns null for an unknown id and is a no-op when the kind already matches', async () => {

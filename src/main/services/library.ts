@@ -1225,9 +1225,20 @@ function moveFile(src: string, dest: string): void {
   mkdirSync(dirname(dest), { recursive: true })
   try {
     renameSync(src, dest)
-  } catch {
-    copyFileSync(src, dest)
-    unlinkSync(src)
+  } catch (e) {
+    // Only a cross-device move may fall back to copy; a locked file (EBUSY/EPERM) must not leave a duplicate.
+    if ((e as NodeJS.ErrnoException)?.code !== 'EXDEV') throw e
+    try {
+      copyFileSync(src, dest)
+      unlinkSync(src)
+    } catch (e2) {
+      try {
+        unlinkSync(dest)
+      } catch {
+        /* best effort */
+      }
+      throw e2
+    }
   }
 }
 
@@ -1235,7 +1246,10 @@ function moveFile(src: string, dest: string): void {
 function collisionFree(dest: string, id: string): string {
   if (!existsSync(dest)) return dest
   const ext = extname(dest)
-  return join(dirname(dest), `${basename(dest, ext)}-${id.slice(0, 8)}${ext}`)
+  const stem = `${basename(dest, ext)}-${id.slice(0, 8)}`
+  let candidate = join(dirname(dest), `${stem}${ext}`)
+  for (let n = 2; existsSync(candidate); n++) candidate = join(dirname(dest), `${stem}-${n}${ext}`)
+  return candidate
 }
 
 /**
@@ -1263,9 +1277,14 @@ export function moveBook(id: string, to: BookKind): Book | null {
   const moved = new Map<string, string>()
   let ok = true
   for (const p of [r.pdf_path, r.local_path]) {
-    if (!p || moved.has(p) || isInside(p, cacheDir) || !existsSync(p)) continue
+    if (!p || moved.has(p) || isInside(p, cacheDir)) continue
     const target = retargetPath(p, roots, to)
     if (!target || target === p) continue
+    if (!existsSync(p)) {
+      ok = false
+      logImport(`FAIL move ${p} :: file missing`)
+      break
+    }
     try {
       const dest = collisionFree(target, id)
       moveFile(p, dest)
