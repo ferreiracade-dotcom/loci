@@ -16,7 +16,8 @@ import {
   HardDrive,
   CloudOff,
   X,
-  MessageSquareQuote
+  MessageSquareQuote,
+  FileText
 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
@@ -29,7 +30,8 @@ import { ShelvesManager } from './ShelvesManager'
 import { CommentariesManager } from './CommentariesManager'
 import { DriveStatus } from './DriveStatus'
 import { OpenElsewhereItems } from './OpenElsewhere'
-import type { Book, PdfSource, ReadingStatus } from '@shared/ipc'
+import type { Book, BookKind, PdfSource, ReadingStatus } from '@shared/ipc'
+import { KIND_PLURAL, ofKind } from '@shared/libraryKind'
 
 const SOURCE_META: Record<PdfSource, string> = {
   local: 'On this PC — opens locally',
@@ -65,9 +67,10 @@ function bySeriesNumber(a: Book, b: Book): number {
   return a.title.localeCompare(b.title)
 }
 
-type ContentTab = 'books' | 'images' | 'videos'
+type ContentTab = 'books' | 'articles' | 'images' | 'videos'
 const CONTENT_TABS: { id: ContentTab; label: string; icon: typeof BookOpen }[] = [
   { id: 'books', label: 'Books', icon: BookOpen },
+  { id: 'articles', label: 'Articles', icon: FileText },
   { id: 'images', label: 'Images', icon: ImageIcon },
   { id: 'videos', label: 'Videos', icon: Video }
 ]
@@ -213,6 +216,16 @@ export function LibraryView() {
   const [dropShelf, setDropShelf] = useState<string | null>(null)
   const [menu, setMenu] = useState<{ x: number; y: number; bookId: string } | null>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
+  // Books and Articles share this page's list/grid, shelves, search and grouping; the active tab
+  // picks which kind is shown (and which kind "Add…" imports).
+  const isLibraryTab = contentTab === 'books' || contentTab === 'articles'
+  const kind: BookKind = contentTab === 'articles' ? 'article' : 'book'
+  const inKind = useMemo(() => ofKind(books, kind), [books, kind])
+  const tabCounts = useMemo(
+    () => ({ books: ofKind(books, 'book').length, articles: ofKind(books, 'article').length }),
+    [books]
+  )
+  const plural = KIND_PLURAL[kind].toLowerCase()
 
   // Restore the library scroll position when returning from a book / re-render.
   useLayoutEffect(() => {
@@ -228,7 +241,7 @@ export function LibraryView() {
       } else if (v) setGroupBy(v)
     })
     void api.getSession('libraryTab').then((v) => {
-      if (v === 'images' || v === 'videos') setContentTab(v)
+      if (v === 'articles' || v === 'images' || v === 'videos') setContentTab(v)
     })
   }, [])
 
@@ -275,8 +288,8 @@ export function LibraryView() {
   }
 
   const filtered = useMemo(
-    () => (activeShelf ? books.filter((b) => b.shelfIds.includes(activeShelf)) : books),
-    [books, activeShelf]
+    () => (activeShelf ? inKind.filter((b) => b.shelfIds.includes(activeShelf)) : inKind),
+    [inKind, activeShelf]
   )
 
   const searched = useMemo(() => {
@@ -319,7 +332,7 @@ export function LibraryView() {
   }, [groupBy, searched, shelves])
 
   async function doImportFiles(): Promise<void> {
-    const res = await importFiles()
+    const res = await importFiles(kind)
     const tail = res.imported > 0 ? ' · fetching metadata in background…' : ''
     setToast(
       `Imported ${res.imported} · skipped ${res.skipped}${res.failed ? ` · failed ${res.failed}` : ''}${tail}`
@@ -376,19 +389,20 @@ export function LibraryView() {
                   onClick={() => changeTab(t.id)}
                 >
                   <Icon size={14} /> {t.label}
+                  {(t.id === 'books' || t.id === 'articles') && <span className="chip-n"> {tabCounts[t.id]}</span>}
                 </button>
               )
             })}
           </div>
-          {contentTab === 'books' && (
+          {isLibraryTab && (
             <>
               <button
                 className="btn btn-sm"
                 disabled={libraryBusy}
-                title="Books in your local and Drive folders are added automatically — use this to import PDFs from elsewhere"
+                title={`${KIND_PLURAL[kind]} in your local and Drive folders are added automatically — use this to import files from elsewhere`}
                 onClick={() => void doImportFiles()}
               >
-                <FolderInput size={14} /> Add PDFs…
+                <FolderInput size={14} /> Add {plural}…
               </button>
               {libraryBusy && (
                 <span className="muted-inline">
@@ -399,7 +413,7 @@ export function LibraryView() {
                 <Search size={14} />
                 <input
                   value={query}
-                  placeholder="Search books…"
+                  placeholder={`Search ${plural}…`}
                   onChange={(e) => setQuery(e.target.value)}
                 />
                 {query && (
@@ -413,9 +427,9 @@ export function LibraryView() {
         </div>
         <div className="tb-right">
           <DriveStatus />
-          {contentTab === 'books' && (
+          {isLibraryTab && (
             <>
-          <div className="group-wrap" title="Group books by">
+          <div className="group-wrap" title="Group by">
             <Layers size={14} />
             <select
               className="group-select"
@@ -461,7 +475,7 @@ export function LibraryView() {
         </div>
       </div>
 
-      {contentTab === 'books' ? (
+      {isLibraryTab ? (
         <>
           {importProgress && (
         <div className="import-progress">
@@ -482,7 +496,7 @@ export function LibraryView() {
 
       <div className="shelf-bar">
         <button className={`chip${!activeShelf ? ' active' : ''}`} onClick={() => setActiveShelf(null)}>
-          All <span className="chip-n">{books.length}</span>
+          All <span className="chip-n">{inKind.length}</span>
         </button>
         {shelves.map((s) => (
           <button
@@ -532,20 +546,22 @@ export function LibraryView() {
       >
         {searched.length === 0 ? (
           <EmptyState
-            icon={BookOpen}
+            icon={kind === 'article' ? FileText : BookOpen}
             title={
               query.trim()
-                ? 'No books match'
-                : books.length === 0
-                  ? 'Your library is empty'
-                  : 'No books on this shelf'
+                ? `No ${plural} match`
+                : inKind.length === 0
+                  ? `No ${plural} yet`
+                  : `No ${plural} on this shelf`
             }
             subtitle={
               query.trim()
                 ? `Nothing matches “${query.trim()}”.`
-                : books.length === 0
-                  ? 'Add PDFs to your local library or Drive folder and they appear here automatically — or use “Add PDFs…” above.'
-                  : 'Try another shelf, or add more books.'
+                : inKind.length === 0
+                  ? kind === 'article'
+                    ? 'Put article files in an “Articles” folder in your local library or Drive vault and they appear here automatically — or use “Add articles…” above.'
+                    : 'Add files to your local library or Drive folder and they appear here automatically — or use “Add books…” above.'
+                  : `Try another shelf, or add more ${plural}.`
             }
           />
         ) : groups ? (
@@ -577,7 +593,7 @@ export function LibraryView() {
       )}
 
       {toast && <div className="toast">{toast}</div>}
-      {infoId && <BookInfoDrawer bookId={infoId} onClose={() => setInfoId(null)} />}
+      {infoId && <BookInfoDrawer key={infoId} bookId={infoId} onClose={() => setInfoId(null)} />}
       {shelvesOpen && <ShelvesManager onClose={() => setShelvesOpen(false)} />}
       {commentariesOpen && <CommentariesManager onClose={() => setCommentariesOpen(false)} />}
 
@@ -614,7 +630,7 @@ export function LibraryView() {
                   setMenu(null)
                 }}
               >
-                <Info size={14} /> Book info…
+                <Info size={14} /> {mb.kind === 'article' ? 'Article info…' : 'Book info…'}
               </button>
               <div className="ctx-sep" />
               <div className="ctx-label">Shelves</div>

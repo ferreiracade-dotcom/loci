@@ -1,4 +1,4 @@
-import { File, BookOpenText, MessageSquareQuote, Quote, FileText } from 'lucide-react'
+import { Library, BookOpenText, MessageSquareQuote, Quote, FileText } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 export interface RailItem {
@@ -12,7 +12,7 @@ export interface RailItem {
 export const RIGHT_TABS: RailItem[] = [
   { id: 'quotes', label: 'Quotes', icon: Quote },
   { id: 'notes', label: 'Notes', icon: FileText },
-  { id: 'books', label: 'Books', icon: File },
+  { id: 'books', label: 'Library', icon: Library },
   { id: 'texts', label: 'Texts', icon: BookOpenText },
   { id: 'commentary', label: 'Commentary', icon: MessageSquareQuote }
 ]
