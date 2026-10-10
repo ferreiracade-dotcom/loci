@@ -12,3 +12,6 @@ Thumbs.db
 
 # Copyrighted source EPUBs/derived Markdown for the Book of Concord converter
 tools/sources/
+
+# Python bytecode from the converters in tools/
+__pycache__/
