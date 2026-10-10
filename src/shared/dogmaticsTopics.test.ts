@@ -59,3 +59,18 @@ describe('topicsOf on Hollaz and Baier', () => {
     expect(topicsOf('Concerning Christ the Redeemer')).toEqual(['person-of-christ'])
   })
 })
+
+describe('topicsOf on Meisner and Musaeus', () => {
+  it('takes their disputations and chapters for their topics', () => {
+    expect(topicsOf('Disputation II. On Original Justice')).toEqual(['man'])
+    expect(topicsOf('Disputation V. On the Book of Life')).toEqual(['grace'])
+    expect(topicsOf('Disputation VIII. On the Number and Certainty of the Elect')).toEqual(['grace'])
+    expect(topicsOf("Disputation X. On Bellarmine's Arguments against the Certainty of Grace")).toEqual(['justification'])
+    expect(topicsOf('On Natural Theology')).toEqual(['prolegomena'])
+    expect(topicsOf('On the Signs and Motives of Credibility: External')).toEqual(['scripture'])
+  })
+
+  it('does not take every mention of the elect for predestination', () => {
+    expect(topicsOf('Concerning the Cross, as the Token of the Elect and the Faithful')).toEqual(['cross'])
+  })
+})

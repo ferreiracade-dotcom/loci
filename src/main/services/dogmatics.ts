@@ -38,7 +38,9 @@ export const BUNDLED_DOGMATICS: Record<string, { title: string; author: string }
   'Baier Compendium Theologiae Positivae.md': {
     title: "Compendium Theologiae Positivae (1686, with Walther's Notes)",
     author: 'Johann Wilhelm Baier'
-  }
+  },
+  'Meisner Anthropologia Sacra.md': { title: 'Anthropologia Sacra', author: 'Balthasar Meisner' },
+  'Musaeus Introductio in Theologiam.md': { title: 'Introductio in Theologiam', author: 'Johannes Musaeus' }
 }
 
 interface SourceRow {

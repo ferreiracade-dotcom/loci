@@ -34,11 +34,11 @@ Several slugs (a work's volumes) make one file, one work per slug unless --one-w
   --dedupe             a locus or section listed twice in a volume is kept only where it comes last
   --skip-match REGEX   entries whose pages are left out until the next locus (default: indices)
   --book [VOL:]PAGE=TITLE  a locus the contents miss, starting at the heading on PAGE matching TITLE
-  --not-book PAGE      a level-two entry on PAGE that is not a locus (its entries join the one before)
+  --not-book [VOL:]PAGE  a level-two entry on PAGE that is not a locus (its entries join the one before)
   --rename [VOL:]PAGE=TITLE  a locus's title, where the contents garble it
                        (VOL: in that volume only, counting the slugs from 1)
 
-Hutter, Quenstedt, Calov, Hollaz and Baier, as Loci ships them:
+Hutter, Quenstedt, Calov, Hollaz, Baier, Meisner and Musaeus, as Loci ships them:
 
   python3 tools/tfr-dogmatics-to-md.py "resources/dogmatics/Hutter Loci Communes.md" leonhard-hutter-loci-communes-theologici --title "Loci Communes Theologici" \\
     --book "136=Topic II. Concerning the Person, or the two Natures of Christ the Savior" \\
@@ -156,6 +156,48 @@ Loci ships Baier merged with his 1686 edition by tools/merge-dogmatics-editions.
 command writes to tools/sources/baier/, for the merge.
 
 Downloads are cached in tools/sources/tfr/ (not committed).
+
+  M=balthasar-meisner-anthropologia-sacra
+  python3 tools/tfr-dogmatics-to-md.py "resources/dogmatics/Meisner Anthropologia Sacra.md" $M-vol-1 $M-vol-2 $M-vol-3 \\
+    --one-work --title "Anthropologia Sacra" --open-titles --drop-running-heads \\
+    --end 1:9999 --end 2:9999 --end 3:9999 \\
+    --section-match '^\\W*(?:single\\s+)?(?:question|quaestio|problem|proem|thesis|argument|class|classis)\\b' \\
+    --not-book 2:236 --not-book 2:303 --not-book 1:425 \\
+    --not-book 1:6 --not-book 2:12 --not-book 3:8 --not-book 1:396 \\
+    --book "1:4=TO THE MOST NOBLE AND MAGNIFICENT MEN" --book "2:4=To the Most Reverend, Most Noble, and Magnificent Man, Lord Matthias Hoe ab Hoenegg" \\
+    --book "3:4=TO THE MOST ILLUSTRIOUS COUNT AND LORD, LORD GEORGE THURZO" --book "1:396=DISPUTATION X. CONCERNING THE SIN AGAINST THE HOLY SPIRIT" \\
+    --rename "1:4=Preface to the First Decade" --rename "2:4=Preface to the Second Decade" --rename "3:4=Preface to the Third Decade" \\
+    --rename "1:18=Disputation I. On the Image of God" --rename "1:156=Disputation V. On the Existence and Propagation of Original Sin" \\
+    --rename "1:258=Disputation VII. On the Punishment of Original Sin" --rename "1:287=Disputation VIII. On the Remission and Removal of Original Sin" \\
+    --rename "1:396=Disputation X. On the Sin Against the Holy Spirit" \\
+    --rename "2:50=Disputation II. On the Universal Will and Love of God" --rename "2:100=Disputation III. On the Universal Merit of Christ, and the Calling of Men to Salvation" \\
+    --rename "2:256=Disputation VI. On the Immutability of Predestination, and the Use of the Whole Article" --rename "2:382=Disputation IX. On the Fall of the Elect and the Casting Off of the Holy Spirit" \\
+    --rename "3:327=Disputation VI. On the Photinian Arguments against the Merit and Satisfaction of Christ" \\
+    --rename "2:304=Disputation VII. On the Universal Election Devised by Huber" --rename "2:340=Disputation VIII. On the Number and Certainty of the Elect" \\
+    --rename "2:413=Disputation X. On the Reprobation of Unbelievers" \\
+    --rename "3:18=Disputation I. On the Nature of Free Will and Its Powers in Civil Actions" \\
+    --rename "3:162=Disputation III. On the Papist Arguments for Free Will" \\
+    --rename "3:214=Disputation IV. On the Terms of the Article of Justification, and Its Efficient, Impelling and Meritorious Causes" \\
+    --rename "3:425=Disputation VII. On the Formal Cause of Our Justification, against the Papists" \\
+    --rename "3:487=Disputation VIII. On the Papist Arguments against Justification by Faith Alone" \\
+    --rename "3:548=Disputation IX. On the Certainty of Justification, or of the Remission of Sins" \\
+    --rename "3:607=Disputation X. On Bellarmine's Arguments against the Certainty of Grace"
+
+  python3 tools/tfr-dogmatics-to-md.py "resources/dogmatics/Musaeus Introductio in Theologiam.md" johannes-musaeus-de-theologia-revelata \\
+    --title "Introductio in Theologiam" --any-depth --open-titles --drop-running-heads \\
+    --book-match '(?!x)x' --section-match '(?!x)x' \\
+    --book "23=INTRODUCTION TO THEOLOGY CHAPTER I. ON THE NAME AND DISTINCTIONS OF THEOLOGY" --rename "23=On the Name and Distinctions of Theology" \\
+    --book "45=CHAPTER II. ON NATURAL THEOLOGY." --rename "45=On Natural Theology" \\
+    --book "127=CHAPTER III. CONCERNING REVEALED THEOLOGY." --rename "127=On Revealed Theology" \\
+    --book "243=THE SECOND PART OF THE INTRODUCTION TO THEOLOGY" --rename "243=Part II: On Holy Scripture, the First Principle of Revealed Theology" \\
+    --book "264=CHAPTER II. On the Nature and Quiddity of Holy Scripture." --rename "264=On the Nature and Quiddity of Holy Scripture" \\
+    --book "304=CHAPTER III. Concerning the Authority of Holy Scripture." --rename "304=On the Authority of Holy Scripture" \\
+    --book "318=CHAPTER IV. Concerning the authority of Holy Scripture, viewed in order to the causing of the assent of faith" --rename "318=On the Authority of Holy Scripture in Causing the Assent of Faith" \\
+    --book "325=CHAPTER V. Whence the knowledge of human and opinion-based faith becomes known to us" --rename "325=On the Signs and Motives of Credibility: Internal" \\
+    --book "399=CHAPTER V. SECOND SECTION Concerning the external signs and motives of credibility." --rename "399=On the Signs and Motives of Credibility: External" \\
+    --book "480=CHAPTER VI. Which still concerns the Authority of Holy Scripture" --rename "480=On the Authority of Holy Scripture in Causing Divine Faith" \\
+    --book "559=CHAPTER VII. Concerning the Authority of Holy Scripture in order to norm the doctrine of faith" --rename "559=On the Authority of Holy Scripture as the Norm of Doctrine" \\
+    --book "580=CHAP. VIII. Concerning the Efficacy of Holy Scripture." --rename "580=On the Efficacy of Holy Scripture"
 """
 import argparse
 import difflib
@@ -343,6 +385,12 @@ def split_long(title, prefix, body, open_titles=False):
             else:
                 t = t if t.endswith("(continued)") else f"{t} (continued)"
         out.append((t, bs))
+    if open_titles:
+        # A part headed only by its thesis's number ("XII.") is named by the thesis's words as well.
+        for k, (t, bs) in enumerate(out):
+            num = t[len(prefix) + 2:] if t.startswith(f"{prefix}: ") else ""
+            if re.fullmatch(r"(?:[IVXLC]+|\d+)\.?(?:\s+(?:[IVXLC]+|\d+)\.?)*", num):
+                out[k] = (f"{prefix}: {num.split()[0].rstrip('.')}. {opening(bs)}", bs)
     return out
 
 
@@ -366,7 +414,7 @@ def main():
     ap.add_argument("--section-match")
     ap.add_argument("--chapter-match")
     ap.add_argument("--book", action="append", default=[])
-    ap.add_argument("--not-book", action="append", type=int, default=[])
+    ap.add_argument("--not-book", action="append", default=[])
     ap.add_argument("--rename", action="append", default=[])
     args = ap.parse_args()
 
@@ -379,6 +427,7 @@ def main():
     adds = [scoped(x) for x in args.book]
     ends = [scoped(x + "=") for x in args.end]
     renames = [scoped(x) for x in args.rename]
+    not_books = [scoped(x + "=")[:2] for x in args.not_book]
     depth = args.book_depth
     book_rx = re.compile(args.book_match, re.I) if args.book_match else None
     skip_rx = re.compile(args.skip_match, re.I)
@@ -426,7 +475,7 @@ def main():
             elif e["depth"] == depth:
                 if skip_rx.search(e["title"]):
                     e["kind"] = "skip"
-                elif e["page"] in args.not_book or book_rx and not book_rx.search(e["title"]):
+                elif any(page == e["page"] and vol in (None, k + 1) for vol, page in not_books) or book_rx and not book_rx.search(e["title"]):
                     continue  # a part's title page and the like: not a boundary
                 else:
                     e["kind"] = "book"
