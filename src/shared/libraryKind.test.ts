@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { KIND_LABEL, KIND_PLURAL, kindFromPath, ofKind, type KindRoots } from './libraryKind'
+import { KIND_LABEL, KIND_PLURAL, kindFromPath, ofKind, retargetPath, type KindRoots } from './libraryKind'
 
 const roots: KindRoots = { vaultPdfs: 'G:\\Drive\\Loci\\pdfs', localLibrary: 'D:\\Theology\\PDF' }
 
@@ -34,6 +34,8 @@ describe('kindFromPath (local library folder)', () => {
   })
   it('a directory that merely contains the word is not Articles', () => {
     expect(kindFromPath('D:\\Theology\\PDF\\Smalcald Articles\\x.pdf', roots)).toBe('book')
+    expect(kindFromPath('D:\\Theology\\PDF\\articlesX\\x.pdf', roots)).toBe('book')
+    expect(kindFromPath('D:\\Theology\\PDF\\My Articles Old\\x.pdf', roots)).toBe('book')
   })
 })
 
@@ -59,5 +61,44 @@ describe('labels and ofKind', () => {
     ]
     expect(ofKind(items, 'article').map((i) => i.id)).toEqual([2])
     expect(ofKind(items, 'book').map((i) => i.id)).toEqual([1])
+  })
+})
+
+describe('retargetPath', () => {
+  it('vault: swaps the first segment and keeps the rest of the layout', () => {
+    expect(retargetPath('G:\\Drive\\Loci\\pdfs\\Books\\A - B.pdf', roots, 'article')).toBe(
+      'G:\\Drive\\Loci\\pdfs\\Articles\\A - B.pdf'
+    )
+    expect(retargetPath('G:\\Drive\\Loci\\pdfs\\Articles\\CJ\\A - B.pdf', roots, 'book')).toBe(
+      'G:\\Drive\\Loci\\pdfs\\Books\\CJ\\A - B.pdf'
+    )
+  })
+  it('vault: a legacy folder is nested under the target', () => {
+    expect(retargetPath('G:\\Drive\\Loci\\pdfs\\Old\\x.pdf', roots, 'article')).toBe(
+      'G:\\Drive\\Loci\\pdfs\\Articles\\Old\\x.pdf'
+    )
+  })
+  it('local: to article nests under <root>/Articles; to book removes every Articles segment', () => {
+    expect(retargetPath('D:\\Theology\\PDF\\x.pdf', roots, 'article')).toBe('D:\\Theology\\PDF\\Articles\\x.pdf')
+    expect(retargetPath('D:\\Theology\\PDF\\Luther\\x.pdf', roots, 'article')).toBe(
+      'D:\\Theology\\PDF\\Articles\\Luther\\x.pdf'
+    )
+    expect(retargetPath('D:\\Theology\\PDF\\Articles\\Luther\\x.pdf', roots, 'book')).toBe(
+      'D:\\Theology\\PDF\\Luther\\x.pdf'
+    )
+    expect(retargetPath('D:\\Theology\\PDF\\articles\\x.pdf', roots, 'book')).toBe('D:\\Theology\\PDF\\x.pdf')
+  })
+  it('local: a file already in an Articles folder is unchanged when moving to article', () => {
+    expect(retargetPath('D:\\Theology\\PDF\\Articles\\x.pdf', roots, 'article')).toBe(
+      'D:\\Theology\\PDF\\Articles\\x.pdf'
+    )
+  })
+  it('keeps forward slashes when given forward slashes', () => {
+    expect(retargetPath('G:/Drive/Loci/pdfs/Books/x.pdf', roots, 'article')).toBe(
+      'G:\\Drive\\Loci\\pdfs'.replace(/\\/g, '/') + '/Articles/x.pdf'
+    )
+  })
+  it('returns null outside both roots', () => {
+    expect(retargetPath('C:\\tmp\\x.pdf', roots, 'article')).toBeNull()
   })
 })

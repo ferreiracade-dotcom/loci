@@ -43,7 +43,7 @@ afterEach(() => {
 })
 
 // Imported after the mocks are declared; vitest hoists vi.mock above this either way.
-import { listBooks, quickImport, syncLibrary, updateBook } from './library'
+import { listBooks, moveBook, quickImport, syncLibrary, updateBook } from './library'
 
 function insertBook(id: string, title = id): void {
   db.prepare('INSERT INTO books (id, title, title_sanitized, date_added) VALUES (?, ?, ?, 0)').run(id, title, title)
@@ -119,9 +119,13 @@ describe('syncLibrary assigns kind from the folder', () => {
     expect(kindsByTitle()).toEqual({ Beta: 'article' })
   })
 
-  it('does not prune an article that is catalogued in pdfs/Articles', async () => {
+  it('does not prune articles catalogued in pdfs/Articles when the scan comes back empty', async () => {
     writePdf(join(vault, 'pdfs', 'Articles', 'Beta - Carl.pdf'), 102)
     await syncLibrary()
+    expect(listBooks()).toHaveLength(1)
+    // The Articles folder vanishes (e.g. Drive not hydrated): zero files found, one catalogued.
+    // The completeness guard must count the Articles rows too, or this row would be pruned.
+    rmSync(join(vault, 'pdfs', 'Articles'), { recursive: true, force: true })
     const res = await syncLibrary()
     expect(res.removed).toBe(0)
     expect(listBooks()).toHaveLength(1)
@@ -183,5 +187,74 @@ describe('restoring a book from its sidecar', () => {
       pages: '45–67',
       doi: '10.1000/xyz123'
     })
+  })
+})
+
+describe('moveBook', () => {
+  async function seedVaultBook(dir: 'Books' | 'Articles', name: string): Promise<string> {
+    writePdf(join(vault, 'pdfs', dir, name), 300)
+    await syncLibrary()
+    return (db.prepare('SELECT id FROM books').get() as { id: string }).id
+  }
+
+  it('moves a vault book to Articles, keeps the id and the quotes, updates path and kind', async () => {
+    const id = await seedVaultBook('Books', 'Alpha - Bob.pdf')
+    db.prepare("INSERT INTO quotes (id, book_id, text, created) VALUES ('q1', ?, 'a quote', 1)").run(id)
+
+    const moved = moveBook(id, 'article')
+
+    expect(moved).not.toBeNull()
+    expect(moved?.id).toBe(id)
+    expect(moved?.kind).toBe('article')
+    expect(existsSync(join(vault, 'pdfs', 'Articles', 'Alpha - Bob.pdf'))).toBe(true)
+    expect(existsSync(join(vault, 'pdfs', 'Books', 'Alpha - Bob.pdf'))).toBe(false)
+    const row = db.prepare('SELECT pdf_path, kind FROM books WHERE id = ?').get(id) as { pdf_path: string; kind: string }
+    expect(row).toEqual({ pdf_path: join(vault, 'pdfs', 'Articles', 'Alpha - Bob.pdf'), kind: 'article' })
+    expect((db.prepare('SELECT COUNT(*) n FROM quotes WHERE book_id = ?').get(id) as { n: number }).n).toBe(1)
+  })
+
+  it('a name collision gets the -<id8> suffix', async () => {
+    const id = await seedVaultBook('Books', 'Alpha - Bob.pdf')
+    writePdf(join(vault, 'pdfs', 'Articles', 'Alpha - Bob.pdf'), 999) // already taken by another file
+    const moved = moveBook(id, 'article')
+    expect(moved?.kind).toBe('article')
+    const row = db.prepare('SELECT pdf_path FROM books WHERE id = ?').get(id) as { pdf_path: string }
+    expect(row.pdf_path).toBe(join(vault, 'pdfs', 'Articles', `Alpha - Bob-${id.slice(0, 8)}.pdf`))
+    expect(existsSync(row.pdf_path)).toBe(true)
+    expect(existsSync(join(vault, 'pdfs', 'Articles', 'Alpha - Bob.pdf'))).toBe(true) // the other file untouched
+  })
+
+  it('moves back to Books, and the next sync keeps the kind', async () => {
+    const id = await seedVaultBook('Articles', 'Beta - Carl.pdf')
+    expect(moveBook(id, 'book')?.kind).toBe('book')
+    expect(existsSync(join(vault, 'pdfs', 'Books', 'Beta - Carl.pdf'))).toBe(true)
+    await syncLibrary()
+    expect(listBooks().map((b) => b.kind)).toEqual(['book'])
+    expect(listBooks()).toHaveLength(1) // not re-catalogued as a second row
+  })
+
+  it('moves the local library copy too (into / out of an Articles folder)', async () => {
+    cfg.primaryLibraryPath = local
+    const id = await seedVaultBook('Books', 'Alpha - Bob.pdf')
+    const localFile = join(local, 'Alpha - Bob.pdf')
+    writePdf(localFile, 300)
+    db.prepare('UPDATE books SET local_path = ? WHERE id = ?').run(localFile, id)
+
+    moveBook(id, 'article')
+    expect(existsSync(join(local, 'Articles', 'Alpha - Bob.pdf'))).toBe(true)
+    expect(existsSync(localFile)).toBe(false)
+    expect((db.prepare('SELECT local_path FROM books WHERE id = ?').get(id) as { local_path: string }).local_path).toBe(
+      join(local, 'Articles', 'Alpha - Bob.pdf')
+    )
+
+    moveBook(id, 'book')
+    expect(existsSync(localFile)).toBe(true)
+  })
+
+  it('returns null for an unknown id and is a no-op when the kind already matches', async () => {
+    expect(moveBook('nope', 'article')).toBeNull()
+    const id = await seedVaultBook('Books', 'Alpha - Bob.pdf')
+    expect(moveBook(id, 'book')?.kind).toBe('book')
+    expect(existsSync(join(vault, 'pdfs', 'Books', 'Alpha - Bob.pdf'))).toBe(true)
   })
 })

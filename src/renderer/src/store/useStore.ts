@@ -404,6 +404,8 @@ interface Store {
   importFromSource: () => Promise<ImportResult>
   importFiles: (kind?: BookKind) => Promise<ImportResult>
   updateBook: (id: string, patch: BookUpdate) => Promise<void>
+  /** Move to the other folder (changes kind); resolves true on success. */
+  moveBook: (id: string, kind: BookKind) => Promise<boolean>
   deleteBook: (id: string) => Promise<void>
   backfillLocal: () => Promise<BackfillResult>
   relinkBook: (id: string) => Promise<Book | null>
@@ -1148,6 +1150,12 @@ export const useStore = create<Store>((set, get) => {
       const res = await api.backfillLocal()
       await get().refreshLibrary()
       return res
+    },
+
+    moveBook: async (id, kind) => {
+      const moved = await api.moveBook(id, kind)
+      await get().refreshLibrary()
+      return !!moved
     },
 
     relinkBook: async (id) => {

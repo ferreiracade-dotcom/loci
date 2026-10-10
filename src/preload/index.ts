@@ -42,6 +42,7 @@ const api: LociApi = {
   setBookLastPage: (id, page) => ipcRenderer.invoke(Channels.setBookLastPage, id, page),
   backfillLocal: () => ipcRenderer.invoke(Channels.backfillLocal),
   relinkBook: (id) => ipcRenderer.invoke(Channels.relinkBook, id),
+  moveBook: (id, kind) => ipcRenderer.invoke(Channels.moveBook, id, kind),
   addQuote: (input) => ipcRenderer.invoke(Channels.addQuote, input),
   listQuotes: (bookId) => ipcRenderer.invoke(Channels.listQuotes, bookId),
   buildBibliography: () => ipcRenderer.invoke(Channels.buildBibliography),

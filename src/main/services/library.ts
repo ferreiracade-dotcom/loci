@@ -17,7 +17,7 @@ import { getDataDir, getDb } from '../db/connection'
 import { localVaultDir, readConfig } from './config'
 import { removeFromDrive } from './vaultsync'
 import * as search from './search'
-import { kindFromPath, type KindRoots } from '../../shared/libraryKind'
+import { kindFromPath, retargetPath, type KindRoots } from '../../shared/libraryKind'
 import {
   moveSidecar,
   readSidecar,
@@ -1217,6 +1217,80 @@ function migrateBookNoteKey(bookId: string, oldSan: string, newSan: string): voi
       /* best effort */
     }
   }
+}
+
+/** Move `src` to `dest`, creating the destination folder. Rename first; copy + unlink when the
+ *  rename fails (a local library on a different drive than the Drive vault). */
+function moveFile(src: string, dest: string): void {
+  mkdirSync(dirname(dest), { recursive: true })
+  try {
+    renameSync(src, dest)
+  } catch {
+    copyFileSync(src, dest)
+    unlinkSync(src)
+  }
+}
+
+/** `dest`, or `<name>-<id8><ext>` beside it when something already occupies that name. */
+function collisionFree(dest: string, id: string): string {
+  if (!existsSync(dest)) return dest
+  const ext = extname(dest)
+  return join(dirname(dest), `${basename(dest, ext)}-${id.slice(0, 8)}${ext}`)
+}
+
+/**
+ * Change an item between book and article by moving its file to the other folder (vault and local
+ * library copies), keeping the row id so quotes, highlights and shelves stay attached. The id-named
+ * cache copy and files outside both roots are left alone. If a file move fails part-way, the paths
+ * already moved are saved, `kind` is left unchanged (the next sync re-derives it from where the
+ * files really are) and null is returned.
+ */
+export function moveBook(id: string, to: BookKind): Book | null {
+  const db = getDb()
+  const r = db
+    .prepare('SELECT kind, pdf_path, local_path, source_path FROM books WHERE id = ?')
+    .get(id) as
+    | { kind: string; pdf_path: string | null; local_path: string | null; source_path: string | null }
+    | undefined
+  if (!r) return null
+  if (r.kind === to) {
+    return rowToBook(db.prepare('SELECT * FROM books WHERE id = ?').get(id) as BookRow)
+  }
+
+  const cfg = readConfig()
+  const roots = kindRoots(cfg.vaultPath, cfg.primaryLibraryPath)
+  const cacheDir = join(getDataDir(), 'pdf-cache')
+  const moved = new Map<string, string>()
+  let ok = true
+  for (const p of [r.pdf_path, r.local_path]) {
+    if (!p || moved.has(p) || isInside(p, cacheDir) || !existsSync(p)) continue
+    const target = retargetPath(p, roots, to)
+    if (!target || target === p) continue
+    try {
+      const dest = collisionFree(target, id)
+      moveFile(p, dest)
+      moved.set(p, dest)
+    } catch (e) {
+      ok = false
+      logImport(`FAIL move ${p} :: ${(e as Error)?.message ?? String(e)}`)
+      break
+    }
+  }
+  const follow = (p: string | null): string | null => (p ? (moved.get(p) ?? p) : p)
+  const newPdf = follow(r.pdf_path)
+  const newLocal = follow(r.local_path)
+  const newSource = follow(r.source_path)
+  db.prepare(
+    'UPDATE books SET kind = ?, pdf_path = ?, local_path = ?, source_path = ? WHERE id = ?'
+  ).run(ok ? to : r.kind, newPdf, newLocal, newSource, id)
+
+  // The sidecar folder follows the file name's folder; a no-op when only Books<->Articles changed.
+  moveSidecar(r.pdf_path, newPdf)
+  moveSidecar(r.local_path, newLocal)
+  invalidatePrimaryIndex()
+  writeSidecarForBook(id)
+  if (!ok) return null
+  return rowToBook(db.prepare('SELECT * FROM books WHERE id = ?').get(id) as BookRow)
 }
 
 export function updateBook(id: string, patch: BookUpdate): void {

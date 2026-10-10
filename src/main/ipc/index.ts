@@ -196,7 +196,11 @@ export function registerIpc(): void {
     }
     const notify = (p: ImportProgress): void => e.sender.send(Channels.importProgress, p)
     const changed = (): void => e.sender.send(Channels.libraryChanged)
-    const result = await library.quickImport(res.filePaths, notify, kind)
+    const result = await library.quickImport(
+      res.filePaths,
+      notify,
+      kind === 'article' ? 'article' : 'book'
+    )
     changed()
     void library.enrichPending(notify, changed) // background, throttled
     return result
@@ -253,6 +257,11 @@ export function registerIpc(): void {
     if (res.canceled || !res.filePaths[0]) return null
     const book = library.relinkBookToFile(id, res.filePaths[0])
     if (book) e.sender.send(Channels.libraryChanged)
+    return book
+  })
+  ipcMain.handle(Channels.moveBook, (e, id: string, kind: BookKind) => {
+    const book = library.moveBook(id, kind === 'article' ? 'article' : 'book')
+    e.sender.send(Channels.libraryChanged)
     return book
   })
 

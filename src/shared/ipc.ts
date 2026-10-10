@@ -42,6 +42,7 @@ export const Channels = {
   setBookLastPage: 'library:setBookLastPage',
   backfillLocal: 'library:backfillLocal',
   relinkBook: 'library:relinkBook',
+  moveBook: 'library:moveBook',
   addQuote: 'quotes:add',
   listQuotes: 'quotes:list',
   buildBibliography: 'quotes:bibliography',
@@ -294,6 +295,8 @@ export interface LociApi {
   backfillLocal(): Promise<BackfillResult>
   /** Point a book at a chosen PDF on disk (copies it local); returns the updated book. */
   relinkBook(id: string): Promise<Book | null>
+  /** Move a book or article to the other folder (changes its kind); null if the move failed. */
+  moveBook(id: string, kind: BookKind): Promise<Book | null>
   addQuote(input: NewQuote): Promise<Quote>
   listQuotes(bookId: string): Promise<Quote[]>
   /** CMOS 18 bibliography entries for every cited book, sorted by author. */

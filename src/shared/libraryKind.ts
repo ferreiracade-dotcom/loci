@@ -46,3 +46,33 @@ export function kindFromPath(file: string, roots: KindRoots): BookKind | null {
   if (l) return l.slice(0, -1).some(isArticlesDir) ? 'article' : 'book'
   return null
 }
+
+const trimRoot = (root: string): string => root.replace(/[\\/]+$/, '')
+
+/**
+ * Where `file` belongs once it is made a `to` item, keeping its relative layout, or null when the
+ * file is under neither root. Vault: the first segment becomes `Books`/`Articles` (a legacy folder
+ * is nested under the target). Local library: to article nests the path under `<root>/Articles`;
+ * to book removes every `Articles` directory segment. The separator style of `file` is kept.
+ */
+export function retargetPath(file: string, roots: KindRoots, to: BookKind): string | null {
+  const sep = file.includes('\\') ? '\\' : '/'
+  const join = (root: string, segs: string[]): string =>
+    [trimRoot(root).replace(/[\\/]/g, sep), ...segs].join(sep)
+
+  const v = segmentsUnder(file, roots.vaultPdfs)
+  if (v && roots.vaultPdfs) {
+    const rest = v.length > 1 && /^(books|articles)$/i.test(v[0]) ? v.slice(1) : v
+    return join(roots.vaultPdfs, [to === 'article' ? 'Articles' : 'Books', ...rest])
+  }
+  const l = segmentsUnder(file, roots.localLibrary)
+  if (l && roots.localLibrary) {
+    const dirs = l.slice(0, -1)
+    const name = l[l.length - 1]
+    if (to === 'article') {
+      return join(roots.localLibrary, dirs.some(isArticlesDir) ? l : ['Articles', ...l])
+    }
+    return join(roots.localLibrary, [...dirs.filter((d) => !isArticlesDir(d)), name])
+  }
+  return null
+}
