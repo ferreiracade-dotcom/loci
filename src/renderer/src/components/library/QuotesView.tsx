@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { BookMarked, ScrollText, MessageSquareQuote, Layers, UserRound, Tag as TagIcon } from 'lucide-react'
+import { BookMarked, ScrollText, MessageSquareQuote, Layers, UserRound, Tag as TagIcon, Landmark } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { authorFor } from '../../lib/quoteGrouping'
@@ -28,7 +28,7 @@ export function QuotesView() {
   const tabs = useStore((s) => s.tabs)
   const books = useStore((s) => s.books)
 
-  const [groups, setGroups] = useState<QuoteGroups>({ books: [], scripture: [], commentary: [], boc: [] })
+  const [groups, setGroups] = useState<QuoteGroups>({ books: [], scripture: [], commentary: [], boc: [], dogmatics: [] })
   const [allQuotes, setAllQuotes] = useState<Quote[]>([])
   const [groupMode, setGroupMode] = useState<GroupMode>('source')
 
@@ -107,6 +107,9 @@ export function QuotesView() {
     if (activeGroup.type === 'commentary' && ref.type === 'commentary') {
       return activeGroup.sourceId === ref.sourceId
     }
+    if (activeGroup.type === 'dogmatics' && ref.type === 'dogmatics') {
+      return activeGroup.sourceId === ref.sourceId
+    }
     if (activeGroup.type === 'boc' && ref.type === 'boc') {
       return activeGroup.bocSourceId === ref.bocSourceId && activeGroup.documentCode === ref.documentCode
     }
@@ -138,7 +141,7 @@ export function QuotesView() {
       ? byAuthor.length
       : groupMode === 'tag'
         ? byTag.tags.length + (byTag.untagged > 0 ? 1 : 0)
-        : groups.books.length + groups.scripture.length + groups.commentary.length + groups.boc.length
+        : groups.books.length + groups.scripture.length + groups.commentary.length + groups.boc.length + groups.dogmatics.length
 
   return (
     <div className="quotes-nav">
@@ -277,6 +280,21 @@ export function QuotesView() {
                     `${b.name} — ${b.sourceName}`,
                     b.count,
                     `${b.bocSourceId}:${b.documentCode}`
+                  )
+                )}
+              </>
+            )}
+
+            {groups.dogmatics.length > 0 && (
+              <>
+                <div className="notes-group-head">Dogmatics</div>
+                {groups.dogmatics.map((d) =>
+                  row(
+                    { type: 'dogmatics', sourceId: d.sourceId, displayName: d.displayName },
+                    <Landmark size={14} />,
+                    d.displayName,
+                    d.count,
+                    d.sourceId
                   )
                 )}
               </>

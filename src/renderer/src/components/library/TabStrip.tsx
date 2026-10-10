@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
-import { FileText, BookOpen, ScrollText, BookMarked, Quote, FilePlus, Plus, X, Landmark } from 'lucide-react'
+import { FileText, BookOpen, ScrollText, BookMarked, Quote, FilePlus, Plus, X, MessageSquareQuote, Landmark } from 'lucide-react'
 import { useStore, tabsForPane } from '../../store/useStore'
 import type { Tab } from '../../store/useStore'
 import { bookByCode } from '@shared/scriptureRef'
@@ -36,6 +36,13 @@ function tabTitle(
     const label = tab.fathersVolume && !tab.fathersAuthor ? fathersVolumeLabel(tab.fathersVolume) : 'Church Fathers'
     return { icon: <Landmark size={13} />, label }
   }
+  if (tab.kind === 'commentary') {
+    const label = tab.book && tab.chapter != null ? `${bookByCode(tab.book)?.name ?? tab.book} ${tab.chapter}` : 'Commentary'
+    return { icon: <MessageSquareQuote size={13} />, label }
+  }
+  if (tab.kind === 'dogmatics') {
+    return { icon: <Landmark size={13} />, label: 'Dogmatics' }
+  }
   if (tab.kind === 'quotes') {
     const g = tab.quotesGroup
     const label = !g
@@ -46,7 +53,7 @@ function tabTitle(
           ? g.chapter != null
             ? `${g.name} ${g.chapter}`
             : g.name
-          : g.type === 'commentary'
+          : g.type === 'commentary' || g.type === 'dogmatics'
             ? g.displayName
             : g.type === 'boc'
               ? g.name

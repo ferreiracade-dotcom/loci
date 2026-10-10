@@ -1,6 +1,6 @@
 import type { NoteSummary } from '@shared/ipc'
 
-export type TabKind = 'note' | 'bible' | 'pdf' | 'quotes' | 'picker' | 'boc' | 'fathers'
+export type TabKind = 'note' | 'bible' | 'pdf' | 'quotes' | 'picker' | 'boc' | 'commentary' | 'dogmatics' | 'fathers'
 
 /** A group of saved quotes opened in the center: a PDF, a Bible chapter, or a commentary source. */
 export type QuoteGroupRef =
@@ -9,6 +9,7 @@ export type QuoteGroupRef =
   | { type: 'scripture'; book: string; chapter?: number; translation: string; name: string }
   | { type: 'commentary'; sourceId: string; displayName: string }
   | { type: 'boc'; documentCode: string; bocSourceId: string; name: string }
+  | { type: 'dogmatics'; sourceId: string; displayName: string }
   | { type: 'author'; author: string }
   | { type: 'tag'; tag: string }
 
@@ -33,6 +34,15 @@ export interface Tab {
   fathersSection?: string
   /** ... or, instead, the author whose page is shown. All three unset = the empty Fathers pane. */
   fathersAuthor?: string
+  /** Commentary reader: which source (`book`/`chapter` say where; `verse` is scrolled to). */
+  commentarySourceId?: string
+  verse?: number
+  /** Dogmatics reader: which source, work and book (`sectionOrdinal` is scrolled to). */
+  dogmaticsSourceId?: string
+  dogmaticsWork?: number
+  dogmaticsBook?: number
+  /** Dogmatics reader: the topic being read across the works, if any (book 0 = its overview). */
+  dogmaticsTopic?: string
 }
 
 /** A pane: which tabs live in it (via `Tab.paneId`) plus which one is active. */
@@ -56,6 +66,15 @@ export type TabContent =
   | { kind: 'quotes'; quotesGroup: QuoteGroupRef }
   | { kind: 'boc'; documentCode: string; sectionOrdinal: number; bocSourceId?: string }
   | { kind: 'fathers'; fathersVolume?: string; fathersSection?: string; fathersAuthor?: string }
+  | { kind: 'commentary'; commentarySourceId: string; book: string; chapter: number; verse?: number }
+  | {
+      kind: 'dogmatics'
+      dogmaticsSourceId: string
+      dogmaticsWork: number
+      dogmaticsBook: number
+      sectionOrdinal?: number
+      dogmaticsTopic?: string
+    }
   | { kind: 'picker' }
 
 /** The content a tab is currently showing, independent of its id/pane/order. */
@@ -77,6 +96,23 @@ export function tabContent(tab: Tab): TabContent {
         fathersVolume: tab.fathersVolume,
         fathersSection: tab.fathersSection,
         fathersAuthor: tab.fathersAuthor
+      }
+    case 'commentary':
+      return {
+        kind: 'commentary',
+        commentarySourceId: tab.commentarySourceId ?? '',
+        book: tab.book!,
+        chapter: tab.chapter!,
+        verse: tab.verse
+      }
+    case 'dogmatics':
+      return {
+        kind: 'dogmatics',
+        dogmaticsSourceId: tab.dogmaticsSourceId ?? '',
+        dogmaticsWork: tab.dogmaticsWork ?? 1,
+        dogmaticsBook: tab.dogmaticsBook ?? 1,
+        sectionOrdinal: tab.sectionOrdinal,
+        dogmaticsTopic: tab.dogmaticsTopic
       }
     case 'picker':
       return { kind: 'picker' }

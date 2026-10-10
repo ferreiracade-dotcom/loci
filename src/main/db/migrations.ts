@@ -422,6 +422,48 @@ const migrations: Migration[] = [
   },
   {
     version: 20,
+    name: 'dogmatics',
+    up: (db) => {
+      // Dogmatics: works read the way a commentary is, with the work in the Bible book's place,
+      // its books in the chapters' and its sections in the verses'. One source per Markdown file
+      // (which may hold several works); sections are discovered from the file, so the edition's
+      // printed numbers and titles are stored per row. Quotes carry the source, a "w.b.s"
+      // ordinal ref for navigation and the citable location captured at quote time.
+      db.exec(`
+        CREATE TABLE dogmatics_sources (
+          id                TEXT PRIMARY KEY,
+          display_name      TEXT NOT NULL,
+          author            TEXT,
+          md_relative_path  TEXT NOT NULL UNIQUE,
+          sort_order        INTEGER NOT NULL DEFAULT 0,
+          indexed_at        TEXT,
+          status            TEXT NOT NULL DEFAULT 'unindexed'
+        );
+
+        CREATE TABLE dogmatics_sections (
+          id               TEXT PRIMARY KEY,
+          source_id        TEXT NOT NULL REFERENCES dogmatics_sources(id) ON DELETE CASCADE,
+          work_ordinal     INTEGER NOT NULL,
+          work_title       TEXT NOT NULL,
+          book_ordinal     INTEGER NOT NULL,
+          book_number      TEXT,
+          book_title       TEXT NOT NULL,
+          section_ordinal  INTEGER NOT NULL,
+          section_number   TEXT,
+          section_title    TEXT NOT NULL,
+          text             TEXT NOT NULL
+        );
+        CREATE UNIQUE INDEX idx_dogmatics_sections_key
+          ON dogmatics_sections(source_id, work_ordinal, book_ordinal, section_ordinal);
+
+        ALTER TABLE quotes ADD COLUMN dogmatics_source_id TEXT REFERENCES dogmatics_sources(id) ON DELETE CASCADE;
+        ALTER TABLE quotes ADD COLUMN dogmatics_ref TEXT;
+        ALTER TABLE quotes ADD COLUMN dogmatics_label TEXT;
+      `)
+    }
+  },
+  {
+    version: 20,
     name: 'church-fathers',
     up: (db) => {
       // Church Fathers (CCEL ThML, Schaff's ANF/NPNF series). The vault's fathers/*.xml files

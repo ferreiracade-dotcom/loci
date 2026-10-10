@@ -40,15 +40,19 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const paneOrder = useStore((s) => s.paneOrder)
   const showConfessions = useStore((s) => s.showConfessions)
   const showFathers = useStore((s) => s.showFathers)
+  const showCommentary = useStore((s) => s.showCommentary)
+  const showDogmatics = useStore((s) => s.showDogmatics)
   const activePaneId = useStore((s) => s.activePaneId)
   const ref = useRef<HTMLDivElement>(null)
 
   // The left rail mostly just switches the active view; "Scripture" opens/focuses a Bible pane,
-  // "Confessions" opens/focuses a Book of Concord pane.
+  // "Confessions" a Book of Concord pane, "Commentary" the commentary reader.
   const selectLeftView = (id: string): void => {
     if (id === 'scripture') void showScripture()
     else if (id === 'confessions') void showConfessions()
     else if (id === 'fathers') void showFathers()
+    else if (id === 'commentary') void showCommentary()
+    else if (id === 'dogmatics') void showDogmatics()
     else saveLayout({ activeLeftView: id })
   }
 
@@ -63,11 +67,15 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
         ? 'scripture'
         : focusedTab.kind === 'boc'
           ? 'confessions'
-          : focusedTab.kind === 'fathers'
+          : focusedTab.kind === 'commentary'
+            ? 'commentary'
+            : focusedTab.kind === 'dogmatics'
+            ? 'dogmatics'
+            : focusedTab.kind === 'fathers'
             ? 'fathers'
             : focusedTab.kind === 'note'
-              ? 'notes'
-              : layout.activeLeftView
+            ? 'notes'
+            : layout.activeLeftView
       : layout.activeLeftView
 
   // Normalise the active right tab. Stored values may be legacy ids from before the five-pill

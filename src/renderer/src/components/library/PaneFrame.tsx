@@ -6,6 +6,8 @@ import { PdfReader } from './PdfReader'
 import { BiblePane } from './BiblePane'
 import { BocPane } from './BocPane'
 import { FathersPane } from './FathersPane'
+import { DogmaticsPane } from './DogmaticsPane'
+import { CommentaryPane } from './CommentaryPane'
 import { PanePicker } from './PanePicker'
 import { QuoteGroupPane } from './QuoteGroupPane'
 import { TabStrip } from './TabStrip'
@@ -93,6 +95,14 @@ export function PaneFrame({
   } else if (tab?.kind === 'boc' && tab.documentCode && tab.sectionOrdinal != null) {
     body = (
       <BocPane key={tab.id} tab={tab} />
+    )
+  } else if (tab?.kind === 'commentary' && tab.book && tab.chapter != null) {
+    body = (
+      <CommentaryPane key={tab.id} tab={tab} />
+    )
+  } else if (tab?.kind === 'dogmatics') {
+    body = (
+      <DogmaticsPane key={tab.id} tab={tab} />
     )
   } else if (tab?.kind === 'picker') {
     body = (

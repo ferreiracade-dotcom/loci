@@ -1,21 +1,101 @@
 import { existsSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync } from 'fs'
-import { isAbsolute, join } from 'path'
+import { basename, isAbsolute, join } from 'path'
+import Database from 'better-sqlite3'
 import { getDataDir } from '../db/connection'
 import * as commentary from './commentary'
 import { commentaryVaultDir, localVaultDir } from './config'
 import { parseCommentaryMarkdown, type ExtractedChunk } from './commentaryMarkdown'
+import { parseMyBibleCommentaries, type MyBibleRow } from './mybible'
+import { catalogEntryForFile } from './sermonIndex'
+import { BUNDLED_COMMENTARIES } from './bundledCommentaries'
 import { applyCorrections, correctionsForSource, hashChunkContent } from './commentaryCorrections'
 import { validateSource } from './commentaryValidate'
 import { VERSE_COUNTS } from '../../shared/versification'
 import type { CommentaryIndexProgress, CommentaryIndexSummary } from '../../shared/ipc'
 
-/** Read a Markdown source's text. `pdf_relative_path` is either already absolute or relative
- *  to the local vault (where Markdown sources live under `commentaries/`, synced to Drive). */
-function readSourceMarkdown(pdfRelativePath: string): string {
-  const abs = isAbsolute(pdfRelativePath)
-    ? pdfRelativePath
-    : join(localVaultDir(), pdfRelativePath)
-  return readFileSync(abs, 'utf8')
+/** Commentary files the vault's `commentaries/` folder can hold: canonical Markdown, or a
+ *  MyBible commentary module (what SermonIndex publishes). */
+const COMMENTARY_FILE_RE = /\.(md|sqlite3)$/i
+const isMyBibleModule = (path: string): boolean => /\.sqlite3$/i.test(path)
+
+/** Bumped when MyBible parsing changes what a module indexes to, so modules already indexed
+ *  under the old rules re-index once at startup even though their file is unchanged. */
+const MYBIBLE_PARSE_VERSION = 5
+
+/** `pdf_relative_path` is either already absolute or relative to the local vault (where file
+ *  sources live under `commentaries/`, synced to Drive). */
+function sourceFilePath(pdfRelativePath: string): string {
+  return isAbsolute(pdfRelativePath) ? pdfRelativePath : join(localVaultDir(), pdfRelativePath)
+}
+
+/** Open a MyBible module read-only; the caller closes it. Throws on a file that isn't one. */
+function openModule(abs: string): Database.Database {
+  const db = new Database(abs, { readonly: true, fileMustExist: true })
+  const hasTable = db
+    .prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'commentaries'")
+    .get()
+  if (!hasTable) {
+    db.close()
+    throw new Error('Not a MyBible commentary module (no commentaries table)')
+  }
+  return db
+}
+
+/** A module's own title (its `info.description`), if it has one. */
+export function myBibleModuleTitle(abs: string): string | null {
+  const db = openModule(abs)
+  try {
+    const row = db.prepare("SELECT value FROM info WHERE name = 'description'").get() as
+      | { value: string }
+      | undefined
+    return row?.value?.trim() || null
+  } catch {
+    return null // no info table: fall back to the file name
+  } finally {
+    db.close()
+  }
+}
+
+/** Extract a source's raw verse-keyed chunks, whichever file format it is. */
+function readSourceChunks(pdfRelativePath: string): ExtractedChunk[] {
+  const abs = sourceFilePath(pdfRelativePath)
+  if (!isMyBibleModule(abs)) return parseCommentaryMarkdown(readFileSync(abs, 'utf8'))
+  const db = openModule(abs)
+  try {
+    const rows = db
+      .prepare(
+        `SELECT book_number, chapter_number_from, verse_number_from, chapter_number_to,
+                verse_number_to, text
+         FROM commentaries`
+      )
+      .all() as MyBibleRow[]
+    const entry = catalogEntryForFile(basename(abs))
+    return parseMyBibleCommentaries(rows, {
+      passageComments: entry?.passageComments,
+      stripAbbreviationKey: entry?.stripAbbreviationKey,
+      verseCounts: VERSE_COUNTS
+    })
+  } finally {
+    db.close()
+  }
+}
+
+/** Display name + author for a commentaries-folder file being registered for the first time. */
+export function describeCommentaryFile(fileName: string): { displayName: string; author: string | null } {
+  const shipped = BUNDLED_COMMENTARIES[fileName]
+  if (shipped) return { displayName: shipped.title, author: shipped.author }
+  if (!isMyBibleModule(fileName)) return { displayName: fileName.replace(/\.md$/i, ''), author: null }
+  const entry = catalogEntryForFile(fileName)
+  let title: string | null = null
+  try {
+    title = myBibleModuleTitle(join(commentaryVaultDir(), fileName))
+  } catch {
+    /* unreadable module: the indexer will report it */
+  }
+  return {
+    displayName: entry?.title ?? title ?? fileName.replace(/(\.commentaries)?\.sqlite3$/i, ''),
+    author: entry?.author ?? null
+  }
 }
 
 /** Local, rebuildable record of the mtime (whole seconds) each commentary Markdown file had when
@@ -56,9 +136,10 @@ export function shouldReindex(
   return cachedMtime !== currentMtime || status === 'unindexed'
 }
 
-/** Discover and index commentary-Markdown files sitting in the vault's `commentaries/` folder.
- *  Called at startup (after the vault sync pulls them down from Drive) so that on any device
- *  the vault reaches, its `.md` commentaries auto-register and index without manual re-adding —
+/** Discover and index commentary files (Markdown or MyBible modules) sitting in the vault's
+ *  `commentaries/` folder. Called at startup (after the vault sync pulls them down from Drive)
+ *  so that on any device the vault reaches, its commentaries auto-register and index without
+ *  manual re-adding —
  *  the local index is derived, but the vault files that define it travel with the vault.
  *  Registers unseen files and re-indexes ones whose file changed since it was last indexed. */
 export async function syncCommentaryFolder(): Promise<void> {
@@ -66,7 +147,7 @@ export async function syncCommentaryFolder(): Promise<void> {
   if (!existsSync(folder)) return
   let files: string[]
   try {
-    files = readdirSync(folder).filter((f) => /\.md$/i.test(f))
+    files = readdirSync(folder).filter((f) => COMMENTARY_FILE_RE.test(f))
   } catch {
     return
   }
@@ -82,16 +163,12 @@ export async function syncCommentaryFolder(): Promise<void> {
     }
     const source =
       commentary.getSourceByPath(storedPath) ??
-      commentary.createSource({
-        displayName: fileName.replace(/\.md$/i, ''),
-        author: null,
-        bookId: null,
-        pdfRelativePath: storedPath
-      })
-    if (!shouldReindex(mtimes[storedPath], mtime, source.status)) continue
+      commentary.createSource({ ...describeCommentaryFile(fileName), bookId: null, pdfRelativePath: storedPath })
+    const cacheKey = isMyBibleModule(fileName) ? `${storedPath}#v${MYBIBLE_PARSE_VERSION}` : storedPath
+    if (!shouldReindex(mtimes[cacheKey], mtime, source.status)) continue
     try {
       await indexSource(source.id)
-      mtimes[storedPath] = mtime
+      mtimes[cacheKey] = mtime
       changed = true
     } catch {
       /* best effort — a malformed file just won't produce excerpts */
@@ -101,8 +178,9 @@ export async function syncCommentaryFolder(): Promise<void> {
 }
 
 /** Full extraction + validation + corrections replay, writing excerpts to the index. Markdown's
- *  excerpt boundaries are explicit headings, so a trivial, always-reliable parse is the whole
- *  extraction step — no profiling, no paged progress, nothing to cancel. */
+ *  excerpt boundaries are explicit headings and a MyBible module's are data, so a trivial,
+ *  always-reliable parse is the whole extraction step — no profiling, no paged progress,
+ *  nothing to cancel. */
 export async function indexSource(
   sourceId: string,
   onProgress?: (p: CommentaryIndexProgress) => void
@@ -111,7 +189,7 @@ export async function indexSource(
   if (!source) throw new Error('Commentary source not found')
 
   onProgress?.({ phase: 'extracting', done: 0, total: 1 })
-  const rawChunks = parseCommentaryMarkdown(readSourceMarkdown(source.pdfRelativePath))
+  const rawChunks = readSourceChunks(source.pdfRelativePath)
   onProgress?.({ phase: 'validating', done: 0, total: 1 })
   return finalizeIndex(sourceId, source.pdfRelativePath, rawChunks, onProgress)
 }

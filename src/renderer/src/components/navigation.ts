@@ -26,6 +26,8 @@ export const LEFT_VIEWS: RailItem[] = [
   { id: 'scripture', label: 'Scripture', icon: ScrollText },
   { id: 'confessions', label: 'Confessions', icon: BookMarked },
   { id: 'fathers', label: 'Church Fathers', icon: Landmark },
+  { id: 'commentary', label: 'Commentary', icon: MessageSquareQuote },
+  { id: 'dogmatics', label: 'Dogmatics', icon: Landmark },
   { id: 'graph', label: 'Graph', icon: Network },
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'pages', label: 'Pages', icon: Files }
@@ -83,6 +85,16 @@ export const CENTER_EMPTY: Record<string, EmptyCopy> = {
     icon: Landmark,
     title: 'Church Fathers',
     subtitle: 'Pick a volume or an author from the drawer to begin reading the Ante-Nicene and Nicene Fathers.'
+  },
+  commentary: {
+    icon: MessageSquareQuote,
+    title: 'Commentary',
+    subtitle: 'Read a commentary chapter by chapter, verse by verse.'
+  },
+  dogmatics: {
+    icon: Landmark,
+    title: 'Dogmatics',
+    subtitle: 'Read a dogmatics book by book, section by section.'
   },
   graph: {
     icon: Network,

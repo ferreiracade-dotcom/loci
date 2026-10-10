@@ -63,6 +63,8 @@ const api: LociApi = {
   addBocCommentaryQuote: (input) => ipcRenderer.invoke(Channels.addBocCommentaryQuote, input),
   addFathersQuote: (input) => ipcRenderer.invoke(Channels.addFathersQuote, input),
   listFathersQuotes: (volumeCode) => ipcRenderer.invoke(Channels.listFathersQuotes, volumeCode),
+  addDogmaticsQuote: (input) => ipcRenderer.invoke(Channels.addDogmaticsQuote, input),
+  listDogmaticsQuotes: (sourceId) => ipcRenderer.invoke(Channels.listDogmaticsQuotes, sourceId),
   saveNote: (path, content) => ipcRenderer.invoke(Channels.saveNote, path, content),
   readNote: (path) => ipcRenderer.invoke(Channels.readNote, path),
   listStandaloneNotes: () => ipcRenderer.invoke(Channels.listStandaloneNotes),
@@ -99,6 +101,12 @@ const api: LociApi = {
   listCommentarySources: () => ipcRenderer.invoke(Channels.listCommentarySources),
   createCommentarySource: (input) => ipcRenderer.invoke(Channels.createCommentarySource, input),
   addMarkdownCommentarySource: () => ipcRenderer.invoke(Channels.addMarkdownCommentarySource),
+  addMyBibleCommentarySource: () => ipcRenderer.invoke(Channels.addMyBibleCommentarySource),
+  listSermonIndexCatalog: () => ipcRenderer.invoke(Channels.listSermonIndexCatalog),
+  installSermonIndexModule: (slug) => ipcRenderer.invoke(Channels.installSermonIndexModule, slug),
+  listCommentaryCoverage: (sourceId) => ipcRenderer.invoke(Channels.listCommentaryCoverage, sourceId),
+  listCommentaryChapter: (sourceId, book, chapter) =>
+    ipcRenderer.invoke(Channels.listCommentaryChapter, sourceId, book, chapter),
   updateCommentarySource: (id, patch) =>
     ipcRenderer.invoke(Channels.updateCommentarySource, id, patch),
   deleteCommentarySource: (id) => ipcRenderer.invoke(Channels.deleteCommentarySource, id),
@@ -127,6 +135,11 @@ const api: LociApi = {
   listBocDocumentSections: (d, s) => ipcRenderer.invoke(Channels.listBocDocumentSections, d, s),
   listBocSources: () => ipcRenderer.invoke(Channels.listBocSources),
   listBocCommentarySources: () => ipcRenderer.invoke(Channels.listBocCommentarySources),
+  listDogmaticsSources: () => ipcRenderer.invoke(Channels.listDogmaticsSources),
+  listDogmaticsOutline: (sourceId) => ipcRenderer.invoke(Channels.listDogmaticsOutline, sourceId),
+  listDogmaticsBook: (sourceId, work, book) => ipcRenderer.invoke(Channels.listDogmaticsBook, sourceId, work, book),
+  listDogmaticsTopics: () => ipcRenderer.invoke(Channels.listDogmaticsTopics),
+  listDogmaticsTopic: (topicId) => ipcRenderer.invoke(Channels.listDogmaticsTopic, topicId),
 
   listFathersVolumes: () => ipcRenderer.invoke(Channels.listFathersVolumes),
   listFathersSections: (v) => ipcRenderer.invoke(Channels.listFathersSections, v),

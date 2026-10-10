@@ -17,8 +17,11 @@ import { applyRelinkMap, applyTitleClean } from './services/relink'
 import { rebuildAllSidecars } from './services/sidecar'
 import { syncVault } from './services/vaultsync'
 import { syncCommentaryFolder } from './services/commentaryIndex'
+import { installDefaultModules } from './services/sermonIndex'
+import { installBundledCommentaries } from './services/bundledCommentaries'
 import { syncBocFolder } from './services/bocIndex'
 import { syncFathersFolder } from './services/fathersIndex'
+import { installBundledDogmatics, syncDogmaticsFolder } from './services/dogmatics'
 import { Channels } from '../shared/ipc'
 
 /** One-time whole-library sidecar write, triggered by a flag file, run off the boot path. */
@@ -144,10 +147,52 @@ app.whenReady().then(() => {
   // Auto-register + index any Markdown commentaries the vault carries (best-effort; new/changed
   // files only). Makes vault commentaries appear on every device without manual re-adding.
   // Deferred so the window paints before the (synchronous) index work runs.
-  setTimeout(() => void syncCommentaryFolder().catch(() => {}), 2000)
+  // Then, once per setup, copy in the commentaries Loci ships (Philippi, the Lutheran Commentary, Leupold, Bengel, Hengstenberg, Luther, Gerhard, Calov, Heshusius, Melanchthon) and download the default
+  // SermonIndex ones (Lenski, Keil & Delitzsch), indexing them with a second folder pass.
+  // Offline is fine: a failed download retries next launch.
+  setTimeout(
+    () =>
+      void syncCommentaryFolder()
+        .catch(() => {})
+        .then(async () => {
+          let bundled: string[] = []
+          try {
+            bundled = installBundledCommentaries()
+          } catch {
+            /* best effort — a locked vault folder retries next launch */
+          }
+          return [...bundled, ...(await installDefaultModules())]
+        })
+        .then((installed) => (installed.length > 0 ? syncCommentaryFolder() : undefined))
+        .then(() => BrowserWindow.getAllWindows().forEach((w) => w.webContents.send(Channels.libraryChanged)))
+        .catch(() => {}),
+    2000
+  )
   // Same auto-register + index, for the Book of Concord's confessions/ + confessions-commentary/
   // vault folders. Staggered a beat after the commentary sync so the two don't contend.
   setTimeout(() => void syncBocFolder().catch(() => {}), 2500)
+  // And for the dogmatics/ folder: index what the vault carries, copy in the dogmatics Loci
+  // ships (once each), and index those too.
+  setTimeout(
+    () =>
+      void syncDogmaticsFolder()
+        .catch(() => 0)
+        .then(async (indexed) => {
+          let bundled: string[] = []
+          try {
+            bundled = installBundledDogmatics()
+          } catch {
+            /* best effort — a locked vault folder retries next launch */
+          }
+          return indexed + (bundled.length > 0 ? await syncDogmaticsFolder() : 0)
+        })
+        .then((indexed) => {
+          if (indexed > 0)
+            BrowserWindow.getAllWindows().forEach((w) => w.webContents.send(Channels.libraryChanged))
+        })
+        .catch(() => {}),
+    3000
+  )
   // Church Fathers (CCEL ThML) volumes in the vault's fathers/ folder. Parsing a 5 MB volume is
   // synchronous, so this starts last and yields between volumes (see syncFathersFolder).
   setTimeout(() => void syncFathersFolder().catch(() => {}), 3500)
