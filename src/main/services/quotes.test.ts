@@ -326,7 +326,7 @@ describe('listBocQuotesForDocument', () => {
 
 // ---------- Church Fathers quotes ----------
 import { existsSync, readFileSync } from 'fs'
-import { addFathersQuote, deleteQuote, listFathersQuotes, setQuoteCitation } from './quotes'
+import { addFathersQuote, deleteQuote, listFathersQuotes, setQuoteCitation, setQuoteText } from './quotes'
 
 function seedFathers(): void {
   db.prepare(
@@ -410,8 +410,8 @@ describe('addFathersQuote', () => {
     const q = addFathersQuote({ volumeCode: 'anf01', sectionId: 'ix.ii.ii', page: '415', paragraph: 1, text: 'x' })
     db.prepare("DELETE FROM fathers_sections WHERE volume_code = 'anf01'").run()
     expect((db.prepare('SELECT COUNT(*) AS n FROM quotes').get() as { n: number }).n).toBe(1)
-    // With the section gone the citation degrades to empty rather than throwing ...
-    expect(listAllQuotes().find((x) => x.id === q.id)?.citation).toBe('')
+    // With the section gone the citation falls back to the one stored at capture ...
+    expect(listAllQuotes().find((x) => x.id === q.id)?.citation).toBe('Irenaeus, *Against Heresies* III.3 (ANF 1:415)')
     // ... and comes back once the volume is indexed again.
     reinsertSuccessionSection()
     expect(listAllQuotes().find((x) => x.id === q.id)?.citation).toBe('Irenaeus, *Against Heresies* III.3 (ANF 1:415)')
@@ -449,5 +449,53 @@ describe('listFathersQuotes', () => {
     expect(listFathersQuotes('anf01').map((q) => q.id)).toEqual([earlier.id, later.id])
     expect(listFathersQuotes('anf02')).toHaveLength(1)
     expect(listFathersQuotes('npnf101')).toEqual([])
+  })
+})
+
+describe('fathers quotes: persisted citation', () => {
+  it('keeps the captured citation (and the note block) after the section row is deleted', () => {
+    seedFathers()
+    const q = addFathersQuote({ volumeCode: 'anf01', sectionId: 'ix.ii.ii', page: '415', paragraph: 1, text: 'x' })
+    expect((db.prepare('SELECT fathers_citation AS c FROM quotes WHERE id = ?').get(q.id) as { c: string }).c).toBe(
+      'Irenaeus, *Against Heresies* III.3 (ANF 1:415)'
+    )
+    db.prepare("DELETE FROM fathers_sections WHERE volume_code = 'anf01'").run()
+    setQuoteText(q.id, 'edited text')
+    const note = readFileSync(join(dataDir, 'vault', 'notes', 'fathers', 'Irenaeus.md'), 'utf-8')
+    expect(note).toContain('edited text')
+    expect(note).toContain('— Irenaeus, *Against Heresies* III.3 (ANF 1:415)')
+  })
+
+  it('falls back to "ANF 1 <section>:<page>" when nothing else is known', () => {
+    seedFathers()
+    db.prepare(
+      "INSERT INTO quotes (id, text, color, used_in, created, fathers_volume, fathers_section_id, fathers_page) VALUES ('legacy','t','amber','[]',1,'anf01','gone','7')"
+    ).run()
+    expect(listAllQuotes().find((x) => x.id === 'legacy')?.citation).toBe('ANF 1 gone:7')
+  })
+})
+
+describe('fathers quotes: navigator group', () => {
+  it('lists one Fathers group per volume and exposes volume, section and author on the quote', () => {
+    seedFathers()
+    addFathersQuote({ volumeCode: 'anf01', sectionId: 'ix.ii.ii', page: '415', paragraph: 1, text: 'a' })
+    addFathersQuote({ volumeCode: 'anf01', sectionId: 'x.i', page: '9', paragraph: 1, text: 'b' })
+    expect(listQuoteGroups('BSB').fathers).toEqual([{ volumeCode: 'anf01', name: 'ANF 1', count: 2 }])
+    const quotes = listFathersQuotes('anf01')
+    const byText = (t: string) => quotes.find((x) => x.text === t)!
+    expect(byText('a').fathersVolume).toBe('anf01')
+    expect(byText('a').fathersSectionId).toBe('ix.ii.ii')
+    expect(byText('a').fathersAuthor).toBe('Irenaeus')
+    expect(byText('b').fathersAuthor).toBeUndefined()
+  })
+})
+
+describe('listFathersQuotes ordering', () => {
+  it('orders by section, then paragraph, then created', () => {
+    seedFathers()
+    const p3 = addFathersQuote({ volumeCode: 'anf01', sectionId: 'ix.ii.ii', page: '415', paragraph: 3, text: 'p3' })
+    const p1 = addFathersQuote({ volumeCode: 'anf01', sectionId: 'ix.ii.ii', page: '415', paragraph: 1, text: 'p1' })
+    const first = addFathersQuote({ volumeCode: 'anf01', sectionId: 'ix.ii.i', page: '414', paragraph: 9, text: 'first' })
+    expect(listFathersQuotes('anf01').map((q) => q.id)).toEqual([first.id, p1.id, p3.id])
   })
 })

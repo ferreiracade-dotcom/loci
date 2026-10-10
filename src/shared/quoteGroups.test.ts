@@ -25,7 +25,8 @@ describe('normalizeQuoteGroups', () => {
       scripture: [{ book: 'JHN', chapter: 3, name: 'John', count: 2 }],
       commentary: [{ sourceId: 's', displayName: 'D', author: null, count: 3 }],
       boc: [{ bocSourceId: 'x', documentCode: 'AC', name: 'Augsburg Confession', sourceName: 'RE', count: 4 }],
-      dogmatics: [{ sourceId: 'g', displayName: 'Loci', author: null, count: 5 }]
+      dogmatics: [{ sourceId: 'g', displayName: 'Loci', author: null, count: 5 }],
+      fathers: [{ volumeCode: 'anf01', name: 'ANF 1', count: 6 }]
     }
     expect(normalizeQuoteGroups(full)).toEqual(full)
   })

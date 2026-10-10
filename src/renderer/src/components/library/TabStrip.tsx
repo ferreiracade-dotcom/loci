@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
-import { FileText, BookOpen, ScrollText, BookMarked, Quote, FilePlus, Plus, X, MessageSquareQuote, Landmark } from 'lucide-react'
+import { FileText, BookOpen, ScrollText, BookMarked, Quote, FilePlus, Plus, X, MessageSquareQuote, Landmark, Church } from 'lucide-react'
 import { useStore, tabsForPane } from '../../store/useStore'
 import type { Tab } from '../../store/useStore'
 import { bookByCode } from '@shared/scriptureRef'
@@ -34,7 +34,7 @@ function tabTitle(
   if (tab.kind === 'fathers') {
     // Volume code only: the tab strip has no section titles, and the author page is "Church Fathers".
     const label = tab.fathersVolume && !tab.fathersAuthor ? fathersVolumeLabel(tab.fathersVolume) : 'Church Fathers'
-    return { icon: <Landmark size={13} />, label }
+    return { icon: <Church size={13} />, label }
   }
   if (tab.kind === 'commentary') {
     const label = tab.book && tab.chapter != null ? `${bookByCode(tab.book)?.name ?? tab.book} ${tab.chapter}` : 'Commentary'
@@ -55,6 +55,8 @@ function tabTitle(
             : g.name
           : g.type === 'commentary' || g.type === 'dogmatics'
             ? g.displayName
+            : g.type === 'fathers'
+              ? g.name
             : g.type === 'boc'
               ? g.name
               : g.type === 'author'

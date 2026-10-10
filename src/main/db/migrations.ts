@@ -570,6 +570,16 @@ const migrations: Migration[] = [
         if (!have.has(col)) db.exec(`ALTER TABLE quotes ADD COLUMN ${col} ${type}`)
       }
     }
+  },
+  {
+    version: 22,
+    name: 'fathers-quote-citation',
+    up: (db) => {
+      // The citation computed at capture, so a Fathers quote still cites correctly (and its note
+      // block re-mirrors) when its volume is not currently indexed.
+      const have = new Set((db.prepare('PRAGMA table_info(quotes)').all() as { name: string }[]).map((c) => c.name))
+      if (!have.has('fathers_citation')) db.exec('ALTER TABLE quotes ADD COLUMN fathers_citation TEXT')
+    }
   }
 ]
 

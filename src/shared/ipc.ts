@@ -588,7 +588,8 @@ export function normalizeQuoteGroups(g: Partial<QuoteGroups> | null | undefined)
     scripture: g?.scripture ?? [],
     commentary: g?.commentary ?? [],
     boc: g?.boc ?? [],
-    dogmatics: g?.dogmatics ?? []
+    dogmatics: g?.dogmatics ?? [],
+    fathers: g?.fathers ?? []
   }
 }
 
@@ -612,6 +613,8 @@ export interface QuoteGroups {
   }[]
   /** Dogmatics sources with captured quotes. */
   dogmatics: { sourceId: string; displayName: string; author: string | null; count: number }[]
+  /** Church Fathers volumes (ANF/NPNF) with captured quotes. */
+  fathers: { volumeCode: string; name: string; count: number }[]
 }
 
 export interface Annotation {
@@ -1096,4 +1099,9 @@ export interface Quote {
   dogmaticsAuthor?: string
   dogmaticsRef?: string
   dogmaticsLabel?: string
+  /** For Church Fathers quotes: the volume code, the section id (for jumping back) and the
+   *  author's display name (for grouping), if known. */
+  fathersVolume?: string
+  fathersSectionId?: string
+  fathersAuthor?: string
 }

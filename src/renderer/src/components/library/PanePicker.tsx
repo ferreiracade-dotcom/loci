@@ -81,7 +81,8 @@ export function PanePicker({
     scripture: [],
     commentary: [],
     boc: [],
-    dogmatics: []
+    dogmatics: [],
+    fathers: []
   })
 
   // Load once (and whenever the translation changes, since scripture-quote groups are
@@ -174,6 +175,9 @@ export function PanePicker({
   )
   const tabQuoteDogmaticsHits = quoteGroups.dogmatics.filter(
     (d) => !browseQl || d.displayName.toLowerCase().includes(browseQl)
+  )
+  const tabQuoteFathersHits = quoteGroups.fathers.filter(
+    (f) => !browseQl || f.name.toLowerCase().includes(browseQl)
   )
   const tabQuoteBocHits = quoteGroups.boc.filter(
     (b) => !browseQl || `${b.name} ${b.sourceName}`.toLowerCase().includes(browseQl)
@@ -567,10 +571,26 @@ export function PanePicker({
                   </button>
                 )
               })}
+              {tabQuoteFathersHits.length > 0 && <div className="pp-sec">Church Fathers</div>}
+              {tabQuoteFathersHits.map((f) => {
+                const ref: QuoteGroupRef = { type: 'fathers', volumeCode: f.volumeCode, name: f.name }
+                return (
+                  <button
+                    key={`qf-${f.volumeCode}`}
+                    className="pp-item"
+                    onClick={() => place({ kind: 'quotes', quotesGroup: ref })}
+                    onContextMenu={(e) => onContextMenu(e, { kind: 'quotes', quotesGroup: ref })}
+                  >
+                    <Quote size={14} />
+                    <span className="pp-item-title">{f.name}</span>
+                  </button>
+                )
+              })}
               {tabQuoteBookHits.length === 0 &&
                 tabQuoteScriptureHits.length === 0 &&
                 tabQuoteCommentaryHits.length === 0 &&
                 tabQuoteBocHits.length === 0 &&
+                tabQuoteFathersHits.length === 0 &&
                 tabQuoteDogmaticsHits.length === 0 && (
                 <div className="pp-empty">No matching quotes.</div>
               )}

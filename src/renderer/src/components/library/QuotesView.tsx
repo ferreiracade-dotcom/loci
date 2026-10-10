@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { BookMarked, ScrollText, MessageSquareQuote, Layers, UserRound, Tag as TagIcon, Landmark } from 'lucide-react'
+import { BookMarked, ScrollText, MessageSquareQuote, Layers, UserRound, Tag as TagIcon, Landmark, Church } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { authorFor } from '../../lib/quoteGrouping'
@@ -28,7 +28,14 @@ export function QuotesView() {
   const tabs = useStore((s) => s.tabs)
   const books = useStore((s) => s.books)
 
-  const [groups, setGroups] = useState<QuoteGroups>({ books: [], scripture: [], commentary: [], boc: [], dogmatics: [] })
+  const [groups, setGroups] = useState<QuoteGroups>({
+    books: [],
+    scripture: [],
+    commentary: [],
+    boc: [],
+    dogmatics: [],
+    fathers: []
+  })
   const [allQuotes, setAllQuotes] = useState<Quote[]>([])
   const [groupMode, setGroupMode] = useState<GroupMode>('source')
 
@@ -110,6 +117,9 @@ export function QuotesView() {
     if (activeGroup.type === 'dogmatics' && ref.type === 'dogmatics') {
       return activeGroup.sourceId === ref.sourceId
     }
+    if (activeGroup.type === 'fathers' && ref.type === 'fathers') {
+      return activeGroup.volumeCode === ref.volumeCode
+    }
     if (activeGroup.type === 'boc' && ref.type === 'boc') {
       return activeGroup.bocSourceId === ref.bocSourceId && activeGroup.documentCode === ref.documentCode
     }
@@ -141,7 +151,7 @@ export function QuotesView() {
       ? byAuthor.length
       : groupMode === 'tag'
         ? byTag.tags.length + (byTag.untagged > 0 ? 1 : 0)
-        : groups.books.length + groups.scripture.length + groups.commentary.length + groups.boc.length + groups.dogmatics.length
+        : groups.books.length + groups.scripture.length + groups.commentary.length + groups.boc.length + groups.dogmatics.length + groups.fathers.length
 
   return (
     <div className="quotes-nav">
@@ -280,6 +290,21 @@ export function QuotesView() {
                     `${b.name} — ${b.sourceName}`,
                     b.count,
                     `${b.bocSourceId}:${b.documentCode}`
+                  )
+                )}
+              </>
+            )}
+
+            {groups.fathers.length > 0 && (
+              <>
+                <div className="notes-group-head">Church Fathers</div>
+                {groups.fathers.map((f) =>
+                  row(
+                    { type: 'fathers', volumeCode: f.volumeCode, name: f.name },
+                    <Church size={14} />,
+                    f.name,
+                    f.count,
+                    f.volumeCode
                   )
                 )}
               </>

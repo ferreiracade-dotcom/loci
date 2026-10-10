@@ -10,6 +10,7 @@ export type QuoteGroupRef =
   | { type: 'commentary'; sourceId: string; displayName: string }
   | { type: 'boc'; documentCode: string; bocSourceId: string; name: string }
   | { type: 'dogmatics'; sourceId: string; displayName: string }
+  | { type: 'fathers'; volumeCode: string; name: string }
   | { type: 'author'; author: string }
   | { type: 'tag'; tag: string }
 

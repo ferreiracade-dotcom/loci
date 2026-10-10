@@ -15,6 +15,7 @@ import {
   type CitationSource,
   type ScriptureCiteRef
 } from '../../shared/citation'
+import { fathersVolumeLabel } from '../../shared/fathers'
 import { bookByCode } from '../../shared/scriptureRef'
 import { bocDocument, formatBocRef, parseBocRef, type BocDocumentCode } from '../../shared/bookOfConcord'
 import { groupValuesById, sanitizeName } from './library'
@@ -67,6 +68,7 @@ interface QuoteRow {
   fathers_section_id: string | null
   fathers_page: string | null
   fathers_paragraph: number | null
+  fathers_citation: string | null
   dogmatics_source_id: string | null
   dogmatics_ref: string | null
   dogmatics_label: string | null
@@ -422,6 +424,11 @@ function citationForRow(r: QuoteRow, ctx?: QuoteListCtx): string {
     // re-indexed volume is reflected; only the page was captured at quote time.
     const meta = fathers.citeMeta(r.fathers_volume, r.fathers_section_id)
     if (meta) return fathersCitation({ ...meta, page: r.fathers_page })
+    // Volume not indexed right now: the citation captured with the quote, else a bare locator.
+    return (
+      r.fathers_citation ||
+      `${fathersVolumeLabel(r.fathers_volume)} ${r.fathers_section_id}${r.fathers_page ? ':' + r.fathers_page : ''}`
+    )
   }
   if (r.dogmatics_source_id) {
     const src = dogmaticsSourceMeta(r.dogmatics_source_id)
@@ -484,6 +491,10 @@ function rowToQuote(r: QuoteRow, ctx?: QuoteListCtx): Quote {
     dogmaticsSource = src?.display_name
     dogmaticsAuthor = src?.author ?? undefined
   }
+  const fathersAuthor =
+    r.fathers_volume && r.fathers_section_id
+      ? (fathers.citeMeta(r.fathers_volume, r.fathers_section_id)?.authorName ?? undefined)
+      : undefined
   return {
     id: r.id,
     bookId: r.book_id ?? '',
@@ -508,7 +519,10 @@ function rowToQuote(r: QuoteRow, ctx?: QuoteListCtx): Quote {
     dogmaticsSource,
     dogmaticsAuthor,
     dogmaticsRef: r.dogmatics_ref ?? undefined,
-    dogmaticsLabel: r.dogmatics_label ?? undefined
+    dogmaticsLabel: r.dogmatics_label ?? undefined,
+    fathersVolume: r.fathers_volume ?? undefined,
+    fathersSectionId: r.fathers_section_id ?? undefined,
+    fathersAuthor
   }
 }
 
@@ -1118,8 +1132,8 @@ export function addFathersQuote(input: FathersQuoteInput): Quote {
     .prepare(
       `INSERT INTO quotes
          (id, book_id, text, page, color, note_path, used_in, created,
-          fathers_volume, fathers_section_id, fathers_page, fathers_paragraph)
-       VALUES (?, NULL, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?)`
+          fathers_volume, fathers_section_id, fathers_page, fathers_paragraph, fathers_citation)
+       VALUES (?, NULL, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
     .run(
       id,
@@ -1131,7 +1145,8 @@ export function addFathersQuote(input: FathersQuoteInput): Quote {
       input.volumeCode,
       input.sectionId,
       input.page,
-      input.paragraph
+      input.paragraph,
+      citation
     )
 
   reindexQuote(id)
@@ -1146,7 +1161,7 @@ export function listFathersQuotes(volumeCode: string): Quote[] {
       `SELECT q.* FROM quotes q
        LEFT JOIN fathers_sections s ON s.volume_code = q.fathers_volume AND s.id = q.fathers_section_id
        WHERE q.fathers_volume = ?
-       ORDER BY COALESCE(s.ordinal, 1000000000), q.created`
+       ORDER BY COALESCE(s.ordinal, 1000000000), COALESCE(q.fathers_paragraph, 1000000000), q.created`
     )
     .all(volumeCode) as QuoteRow[]
   const ctx = buildQuoteListCtx()
@@ -1351,7 +1366,14 @@ export function listQuoteGroups(translation: string): QuoteGroups {
     )
     .all() as QuoteGroups['dogmatics']
 
-  return { books, scripture, commentary, boc, dogmatics }
+  const fathersRows = db
+    .prepare('SELECT fathers_volume AS volumeCode, COUNT(*) AS count FROM quotes WHERE fathers_volume IS NOT NULL GROUP BY fathers_volume')
+    .all() as { volumeCode: string; count: number }[]
+  const fathersGroups = fathersRows
+    .map((r) => ({ volumeCode: r.volumeCode, name: fathersVolumeLabel(r.volumeCode), count: r.count }))
+    .sort((a, b) => a.volumeCode.localeCompare(b.volumeCode))
+
+  return { books, scripture, commentary, boc, dogmatics, fathers: fathersGroups }
 }
 
 /** Every quote captured from one BoC source within one document, in section order. Mirrors
