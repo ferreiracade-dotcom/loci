@@ -47,12 +47,22 @@ interface HlSel {
   y: number
 }
 
-/** The printed page in force at `node`: the last page-break marker before it, else the page the
- *  section started on. Page breaks are empty `span.pb[data-page]` elements in the section HTML. */
-function pageForNode(root: HTMLElement, node: Node, startPage: string | null): string | null {
+/** The printed page in force at the range point (`container`, `offset`): the last page-break marker
+ *  before that point, else the page the section started on. Page breaks are empty
+ *  `span.pb[data-page]` elements in the section HTML. The point may be a text node or an element
+ *  (a triple-click or margin drag starts on the <p> or root div), so the offset is honoured. */
+function pageForPoint(
+  root: HTMLElement,
+  container: Node,
+  offset: number,
+  startPage: string | null
+): string | null {
+  const start = document.createRange()
+  start.setStart(container, offset)
   let page = startPage
   for (const pb of Array.from(root.querySelectorAll<HTMLElement>('span.pb'))) {
-    if (pb.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING) page = pb.dataset.page ?? page
+    // comparePoint is -1 when the marker sits before the start point.
+    if (start.comparePoint(pb, 0) === -1) page = pb.dataset.page ?? page
     else break
   }
   return page
@@ -96,10 +106,15 @@ export function FathersReader({
         if (!alive) return
         setSection(s)
         setLoading(false)
-        if (!s) setError('Could not load this section.')
+        if (!s) {
+          // Drop the previous section so its header, notes and prev/next are not shown beside the error.
+          setSection(null)
+          setError('Could not load this section.')
+        }
       })
       .catch(() => {
         if (!alive) return
+        setSection(null)
         setLoading(false)
         setError('Could not load this section.')
       })
@@ -170,7 +185,7 @@ export function FathersReader({
     const host = body.getBoundingClientRect()
     setHlSel({
       text: picked,
-      page: pageForNode(text, range.startContainer, section.startPage),
+      page: pageForPoint(text, range.startContainer, range.startOffset, section.startPage),
       paragraph: paragraphForNode(text, range.startContainer),
       x: rect.left - host.left + body.scrollLeft + rect.width / 2,
       y: rect.bottom - host.top + body.scrollTop + 6
