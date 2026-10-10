@@ -43,6 +43,7 @@ export const Channels = {
   backfillLocal: 'library:backfillLocal',
   relinkBook: 'library:relinkBook',
   moveBook: 'library:moveBook',
+  lookupDoi: 'library:lookupDoi',
   addQuote: 'quotes:add',
   listQuotes: 'quotes:list',
   buildBibliography: 'quotes:bibliography',
@@ -297,6 +298,8 @@ export interface LociApi {
   relinkBook(id: string): Promise<Book | null>
   /** Move a book or article to the other folder (changes its kind); null if the move failed. */
   moveBook(id: string, kind: BookKind): Promise<Book | null>
+  /** Look a DOI up on Crossref (no key). Never throws: failures come back as { ok: false }. */
+  lookupDoi(doi: string): Promise<DoiLookupResult>
   addQuote(input: NewQuote): Promise<Quote>
   listQuotes(bookId: string): Promise<Quote[]>
   /** CMOS 18 bibliography entries for every cited book, sorted by author. */
@@ -554,6 +557,23 @@ export interface BookUpdate {
   pages?: string | null
   doi?: string | null
 }
+
+/** Bibliographic fields a Crossref DOI lookup can fill into an article. */
+export interface ArticleFields {
+  title: string | null
+  /** "First Last" order, one entry per author. */
+  authors: string[]
+  journal: string | null
+  volume: string | null
+  issue: string | null
+  /** Page range with an en dash, e.g. "45–67". */
+  pages: string | null
+  year: number | null
+  /** The normalised DOI (no URL prefix). */
+  doi: string
+}
+
+export type DoiLookupResult = { ok: true; fields: ArticleFields } | { ok: false; error: string }
 
 export interface ImportResult {
   imported: number

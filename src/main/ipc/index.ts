@@ -27,6 +27,7 @@ import type {
   WizardData
 } from '../../shared/ipc'
 import * as library from '../services/library'
+import { lookupDoi } from '../services/crossref'
 import * as quotes from '../services/quotes'
 import * as notes from '../services/notes'
 import * as search from '../services/search'
@@ -264,6 +265,7 @@ export function registerIpc(): void {
     e.sender.send(Channels.libraryChanged)
     return book
   })
+  ipcMain.handle(Channels.lookupDoi, (_e, doi: string) => lookupDoi(doi))
 
   // --- Quotes (Phase 2b) ---
   ipcMain.handle(Channels.addQuote, (_e, input: NewQuote) => quotes.addQuote(input))
