@@ -5,16 +5,23 @@ import type { ArticleFields, DoiLookupResult } from '../../shared/ipc'
 const CROSSREF_WORKS = 'https://api.crossref.org/works/'
 const USER_AGENT = 'Loci/1.0 (personal study app)'
 
-/** Strip `https://doi.org/`, `dx.doi.org/`, `doi:` prefixes and whitespace; null if it is not a DOI. */
+/**
+ * Strip `https://doi.org/`, `dx.doi.org/`, `doi:` prefixes and surrounding whitespace; null if it is
+ * not a DOI. Internal whitespace and `.` / `..` path segments are rejected so the DOI cannot escape
+ * the `/works/` path once it is put in a URL.
+ */
 export function normalizeDoi(input: string): string | null {
-  let s = input.trim().replace(/\s+/g, '')
-  s = s.replace(/^doi:/i, '').replace(/^(?:https?:\/\/)?(?:dx\.)?doi\.org\//i, '')
+  if (typeof input !== 'string') return null
+  let s = input.trim()
+  s = s.replace(/^doi:\s*/i, '').replace(/^(?:https?:\/\/)?(?:dx\.)?doi\.org\//i, '')
   try {
     s = decodeURIComponent(s)
   } catch {
     /* keep it as typed */
   }
-  return /^10\.\d{4,9}\/\S+$/.test(s) ? s : null
+  if (!/^10\.\d{4,9}\/\S+$/.test(s)) return null
+  if (s.split('/').some((seg) => seg === '.' || seg === '..')) return null
+  return s
 }
 
 /** Crossref titles can carry JATS/HTML tags and entities. */
@@ -77,7 +84,10 @@ export async function lookupDoi(raw: string): Promise<DoiLookupResult> {
   const url = CROSSREF_WORKS + doi.split('/').map(encodeURIComponent).join('/')
   let res: Response
   try {
-    res = await fetch(url, { headers: { 'User-Agent': USER_AGENT, Accept: 'application/json' } })
+    res = await fetch(url, {
+      headers: { 'User-Agent': USER_AGENT, Accept: 'application/json' },
+      signal: AbortSignal.timeout(10_000)
+    })
   } catch {
     return { ok: false, error: 'Could not reach Crossref — check your connection.' }
   }

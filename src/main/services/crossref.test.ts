@@ -26,6 +26,23 @@ describe('normalizeDoi', () => {
     expect(normalizeDoi('https://example.com/10.1000/x')).toBeNull()
     expect(normalizeDoi('10.12/short-registrant')).toBeNull()
   })
+
+  it('rejects dot segments, including percent-encoded ones', () => {
+    expect(normalizeDoi('10.1000/../x')).toBeNull()
+    expect(normalizeDoi('10.1000/./x')).toBeNull()
+    expect(normalizeDoi('10.1000/%2E%2E/x')).toBeNull()
+    expect(normalizeDoi('10.1000/x/../../members')).toBeNull()
+  })
+
+  it('rejects internal whitespace instead of joining it', () => {
+    expect(normalizeDoi('10.1000/xy z')).toBeNull()
+    expect(normalizeDoi('10.1000/xy\tz')).toBeNull()
+  })
+
+  it('returns null for a non-string input', () => {
+    expect(normalizeDoi(undefined as unknown as string)).toBeNull()
+    expect(normalizeDoi(42 as unknown as string)).toBeNull()
+  })
 })
 
 describe('parseCrossref', () => {
@@ -101,5 +118,32 @@ describe('lookupDoi', () => {
   it('reports an unexpected response body', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(okResponse({ message: {} })))
     expect(await lookupDoi('10.1000/x1')).toEqual({ ok: false, error: 'Crossref returned an unexpected response.' })
+  })
+
+  it('never fetches a dot-segment DOI', async () => {
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+    const res = await lookupDoi('10.1000/../../members')
+    expect(res.ok).toBe(false)
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('encodes ?, #, and % inside the DOI path', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(okResponse(CROSSREF_ARTICLE))
+    vi.stubGlobal('fetch', fetchMock)
+    await lookupDoi('10.1000/a%3Fb%23c%25d')
+    const url: string = fetchMock.mock.calls[0][0]
+    expect(url).toBe('https://api.crossref.org/works/10.1000/a%3Fb%23c%25d')
+    expect(url.startsWith('https://api.crossref.org/works/')).toBe(true)
+  })
+
+  it('times out and reports the connection message', async () => {
+    const fetchMock = vi.fn().mockRejectedValue(new DOMException('The operation timed out.', 'TimeoutError'))
+    vi.stubGlobal('fetch', fetchMock)
+    expect(await lookupDoi('10.1000/x1')).toEqual({
+      ok: false,
+      error: 'Could not reach Crossref — check your connection.'
+    })
+    expect(fetchMock.mock.calls[0][1]).toHaveProperty('signal')
   })
 })
