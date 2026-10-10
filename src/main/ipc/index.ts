@@ -262,7 +262,7 @@ export function registerIpc(): void {
   })
   ipcMain.handle(Channels.moveBook, (e, id: string, kind: BookKind) => {
     const book = library.moveBook(id, kind === 'article' ? 'article' : 'book')
-    e.sender.send(Channels.libraryChanged)
+    if (book) e.sender.send(Channels.libraryChanged)
     return book
   })
   ipcMain.handle(Channels.lookupDoi, (_e, doi: string) => lookupDoi(doi))

@@ -877,6 +877,24 @@ export function setQuoteCitation(quoteId: string, citation: string | null): void
   reindexQuote(quoteId)
 }
 
+/** Re-write the citation in every vault Markdown block of a book's quotes (after the book's kind or
+ *  article details changed, e.g. a Move to Articles). Hand-edited citations are left as they are. */
+export function remirrorBookQuotes(bookId: string): void {
+  const vault = localVaultDir()
+  if (!vault) return
+  const rows = getDb()
+    .prepare('SELECT * FROM quotes WHERE book_id = ? AND note_path IS NOT NULL')
+    .all(bookId) as QuoteRow[]
+  for (const r of rows) {
+    try {
+      remirrorQuoteBlock(vault, r, r.text, citationForRow(r), parseAnnotations(r.annotation ?? ''))
+      reindexQuote(r.id)
+    } catch {
+      /* best effort — a missing note must not fail the move/edit */
+    }
+  }
+}
+
 export function deleteQuote(quoteId: string): void {
   const vault = localVaultDir()
   const r = getDb().prepare('SELECT * FROM quotes WHERE id = ?').get(quoteId) as QuoteRow | undefined

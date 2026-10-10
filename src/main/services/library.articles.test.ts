@@ -48,7 +48,8 @@ afterEach(() => {
 
 // Imported after the mocks are declared; vitest hoists vi.mock above this either way.
 import * as fs from 'fs'
-import { listBooks, moveBook, quickImport, syncLibrary, updateBook } from './library'
+import { backfillLocalCopies, listBooks, moveBook, quickImport, syncLibrary, updateBook } from './library'
+import { addQuote } from './quotes'
 
 function insertBook(id: string, title = id): void {
   db.prepare('INSERT INTO books (id, title, title_sanitized, date_added) VALUES (?, ?, ?, 0)').run(id, title, title)
@@ -301,5 +302,62 @@ describe('moveBook', () => {
     const id = await seedVaultBook('Books', 'Alpha - Bob.pdf')
     expect(moveBook(id, 'book')?.kind).toBe('book')
     expect(existsSync(join(vault, 'pdfs', 'Books', 'Alpha - Bob.pdf'))).toBe(true)
+  })
+})
+
+describe('cross-device move heal', () => {
+  it('a file moved by another device re-points the row: same id, new path, new kind, quotes kept', async () => {
+    writePdf(join(vault, 'pdfs', 'Books', 'Mu - Ned.pdf'), 410)
+    await syncLibrary()
+    const id = (db.prepare('SELECT id FROM books').get() as { id: string }).id
+    db.prepare("INSERT INTO quotes (id, book_id, text, created) VALUES ('q1', ?, 'a quote', 1)").run(id)
+    // Another device moved it; Drive synced the file (the sidecar folder is keyed by name, not folder).
+    mkdirSync(join(vault, 'pdfs', 'Articles'), { recursive: true })
+    fs.renameSync(join(vault, 'pdfs', 'Books', 'Mu - Ned.pdf'), join(vault, 'pdfs', 'Articles', 'Mu - Ned.pdf'))
+
+    await syncLibrary()
+
+    const rows = db.prepare('SELECT id, pdf_path, source_path, kind FROM books').all() as {
+      id: string
+      pdf_path: string
+      source_path: string
+      kind: string
+    }[]
+    expect(rows).toHaveLength(1)
+    expect(rows[0].id).toBe(id)
+    expect(rows[0].pdf_path).toBe(join(vault, 'pdfs', 'Articles', 'Mu - Ned.pdf'))
+    expect(rows[0].kind).toBe('article')
+    expect((db.prepare('SELECT COUNT(*) n FROM quotes WHERE book_id = ?').get(id) as { n: number }).n).toBe(1)
+  })
+})
+
+describe('backfillLocalCopies', () => {
+  it('places an article offline copy under <library>/Articles', async () => {
+    cfg.primaryLibraryPath = local
+    cfg.keepLocalCopies = true
+    writePdf(join(vault, 'pdfs', 'Articles', 'Nu - Oda.pdf'), 420)
+    await syncLibrary()
+    db.prepare('UPDATE books SET local_path = NULL').run()
+    fs.rmSync(join(local, 'Articles'), { recursive: true, force: true })
+    fs.rmSync(join(local, 'Nu - Oda.pdf'), { force: true })
+    await backfillLocalCopies()
+    const lp = (db.prepare('SELECT local_path FROM books').get() as { local_path: string }).local_path
+    expect(lp).toBe(join(local, 'Articles', 'Nu - Oda.pdf'))
+    expect(existsSync(lp)).toBe(true)
+  })
+})
+
+describe('moveBook re-mirrors quote citations', () => {
+  it('the vault block carries the article citation after a move', async () => {
+    writePdf(join(vault, 'pdfs', 'Books', 'Xi - Pat.pdf'), 430)
+    await syncLibrary()
+    const id = (db.prepare('SELECT id FROM books').get() as { id: string }).id
+    updateBook(id, { journal: 'Concordia Journal', volume: '12', pages: '45–67' })
+    const q = addQuote({ bookId: id, text: 'hello world', page: 3 })
+    const notePath = (db.prepare('SELECT note_path FROM quotes WHERE id = ?').get(q.id) as { note_path: string }).note_path
+    const noteFile = join(dataDir, 'vault', notePath)
+    expect(fs.readFileSync(noteFile, 'utf-8')).not.toContain('Concordia Journal')
+    moveBook(id, 'article')
+    expect(fs.readFileSync(noteFile, 'utf-8')).toContain('Concordia Journal')
   })
 })

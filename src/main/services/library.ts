@@ -17,6 +17,7 @@ import { getDataDir, getDb } from '../db/connection'
 import { localVaultDir, readConfig } from './config'
 import { removeFromDrive } from './vaultsync'
 import * as search from './search'
+import { remirrorBookQuotes } from './quotes'
 import { kindFromPath, retargetPath, type KindRoots } from '../../shared/libraryKind'
 import {
   moveSidecar,
@@ -463,8 +464,9 @@ export async function backfillLocalCopies(onChanged?: () => void): Promise<{
 }> {
   const db = getDb()
   const cfg = readConfig()
-  const rows = db.prepare('SELECT id, pdf_path, local_path FROM books').all() as {
+  const rows = db.prepare('SELECT id, pdf_path, local_path, kind FROM books').all() as {
     id: string
+    kind: string
     pdf_path: string | null
     local_path: string | null
   }[]
@@ -512,9 +514,12 @@ export async function backfillLocalCopies(onChanged?: () => void): Promise<{
         res.alreadyLocal++
       } else if (r.pdf_path && existsSync(r.pdf_path)) {
         try {
-          const dest = libraryDir
-            ? join(libraryDir, basename(r.pdf_path))
-            : join(cacheDir, `${r.id}.pdf`)
+          let destDir = libraryDir
+          if (libraryDir && r.kind === 'article') {
+            destDir = join(libraryDir, 'Articles')
+            mkdirSync(destDir, { recursive: true })
+          }
+          const dest = destDir ? join(destDir, basename(r.pdf_path)) : join(cacheDir, `${r.id}.pdf`)
           if (!existsSync(dest)) await copyFile(r.pdf_path, dest)
           setLocal.run(dest, r.id)
           res.connected++
@@ -599,7 +604,20 @@ async function importOneLocal(
     if (side?.id && typeof side.id === 'string') {
       // Same book already catalogued (a copy in both the vault and the local library,
       // or in pdfs/Books and pdfs/cache) — adopt its id once, never duplicate it.
-      if (getDb().prepare('SELECT 1 FROM books WHERE id = ?').get(side.id)) {
+      const existing = getDb().prepare('SELECT pdf_path FROM books WHERE id = ?').get(side.id) as
+        | { pdf_path: string | null }
+        | undefined
+      if (existing) {
+        // The file moved (another device used Move, Drive synced it here): the row still points
+        // at the old path, so re-point it — otherwise kind stays stale and Pass C would prune it.
+        if (isInside(sourcePath, cfg.vaultPath) && (!existing.pdf_path || !existsSync(existing.pdf_path))) {
+          getDb()
+            .prepare(
+              'UPDATE books SET pdf_path = @src, source_path = CASE WHEN source_path = pdf_path THEN @src ELSE source_path END WHERE id = @id'
+            )
+            .run({ src: sourcePath, id: side.id })
+          invalidatePrimaryIndex()
+        }
         logImport(`skip (already catalogued, id ${side.id}) ${sourcePath}`)
         return 'skipped'
       }
@@ -826,7 +844,7 @@ export function shouldPruneBook(driveExists: boolean, localExists: boolean, prim
 }
 
 /**
- * Reconcile the catalog with the two book folders — the Drive vault's `pdfs/Books` and the local
+ * Reconcile the catalog with the two book folders — the Drive vault's `pdfs/Books` and `pdfs/Articles` and the local
  * library folder — so books added to either place show up automatically and the folders mirror
  * each other:
  *  - Pass A: every Drive book is catalogued (source of truth; carries the sidecar id) and its
@@ -1309,6 +1327,7 @@ export function moveBook(id: string, to: BookKind): Book | null {
   invalidatePrimaryIndex()
   writeSidecarForBook(id)
   if (!ok) return null
+  remirrorBookQuotes(id)
   return rowToBook(db.prepare('SELECT * FROM books WHERE id = ?').get(id) as BookRow)
 }
 
@@ -1411,6 +1430,9 @@ export function updateBook(id: string, patch: BookUpdate): void {
   db.prepare(`UPDATE books SET ${sets.join(', ')} WHERE id = @id`).run(params)
   // Refresh the metadata sidecar to reflect the change.
   writeSidecarForBook(id)
+  // The citation can depend on kind and the article details; carry it into the vault blocks.
+  const citeKeys = ['title', 'author', 'year', 'publisher', 'city', 'journal', 'volume', 'issue', 'pages', 'doi']
+  if (citeKeys.some((k) => k in patch)) remirrorBookQuotes(id)
 }
 
 /** Move a file into the vault's `deleted/` folder under a collision-free name. Uses rename, with a
