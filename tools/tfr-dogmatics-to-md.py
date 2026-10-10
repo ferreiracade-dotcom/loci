@@ -19,6 +19,8 @@ Several slugs (a work's volumes) make one file, one work per slug unless --one-w
   --one-work           all the slugs are one work (volumes of it), under one heading
   --end [VOL:]PAGE     stop before this page (default: the first index page, if listed)
   --drop-running-heads leave out short paragraphs in capitals recurring on three pages or more
+  --dump-json PATH     also write each locus's title and paired English/Latin blocks (for merging
+                       two editions of a work, as tools/merge-dogmatics-editions.py does)
   --open-titles        name a long stretch's parts by their opening words, not "(continued)"
   --book-depth N       the contents depth of the loci (default 2); deeper entries are sections
   --book-match REGEX   only entries at that depth matching REGEX are loci (the rest run on)
@@ -111,7 +113,7 @@ Hutter, Quenstedt, Calov, Hollaz and Baier, as Loci ships them:
     --book "1381=OF THEOLOGY CHAPTER III. OF THE POLITICAL MAGISTRATE." --rename "1381=Of the Political Magistrate"
 
   B=baier-compendium-theologiae-positivae
-  python3 tools/tfr-dogmatics-to-md.py "resources/dogmatics/Baier Compendium Theologiae Positivae.md" $B-vol-1 $B-vol-2 $B-vol-3a $B-vol-3b \\
+  python3 tools/tfr-dogmatics-to-md.py tools/sources/baier/baier-walther.md $B-vol-1 $B-vol-2 $B-vol-3a $B-vol-3b \\
     --one-work --title "Compendium Theologiae Positivae" --any-depth --open-titles --drop-running-heads \\
     --book-match '(?!x)x' --section-match '(?!x)x' --end 4:219 \\
     --book "1:1=Prolegomena, Chapter I. On the nature of theology" --rename "1:1=Prolegomena: On the Nature of Theology" \\
@@ -140,7 +142,8 @@ Hutter, Quenstedt, Calov, Hollaz and Baier, as Loci ships them:
     --book "4:71=PART III. CAP. IX. Chapter IX. ON THE SACRAMENTS OF THE OLD TESTAMENT. § I." --rename "4:71=On the Sacraments of the Old Testament" \\
     --book "4:84=Chapter X. ON BAPTISM. § 1." --rename "4:84=On Baptism" \\
     --book "4:131=PART III. CHAP. XI. Chapter XI. OF THE SACRED SUPPER. § 1." --rename "4:131=Of the Holy Supper" \\
-    --book "4:165=Chapter XII. On predestination and reprobation" --rename "4:165=On Predestination and Reprobation"
+    --book "4:165=Chapter XII. On predestination and reprobation" --rename "4:165=On Predestination and Reprobation" \\
+    --dump-json tools/sources/baier/walther.json
 
 Calov's tomes are those of the Wittenberg edition (1655-77; the sixth is bound with the fifth),
 each opening with a synopsis of its own contents before the text. Hollaz's and Baier's contents
@@ -149,6 +152,8 @@ opening words (Hollaz's chapters end with a prayer, a "Suspirium", before the ne
 Walther's edition, of which The Faith Received's last volume breaks off after Predestination (the
 Church, the Ministry, the Magistrate and the Household survive only in fragments, left out); where a
 chapter's opening words did not survive, it starts at the top of the page its running heads begin.
+Loci ships Baier merged with his 1686 edition by tools/merge-dogmatics-editions.py, so this Baier
+command writes to tools/sources/baier/, for the merge.
 
 Downloads are cached in tools/sources/tfr/ (not committed).
 """
@@ -350,6 +355,7 @@ def main():
     ap.add_argument("--end", action="append", default=[])
     ap.add_argument("--open-titles", action="store_true")
     ap.add_argument("--drop-running-heads", action="store_true")
+    ap.add_argument("--dump-json")
     ap.add_argument("--book-depth", type=int, default=2)
     ap.add_argument("--book-match")
     ap.add_argument("--any-depth", action="store_true")
@@ -380,6 +386,7 @@ def main():
     chapter_rx = re.compile(args.chapter_match, re.I) if args.chapter_match else None
 
     out, n_books, n_sections = [], 0, 0
+    dump = []  # with --dump-json: each locus's title and its paired blocks, for merging editions
     for k, slug in enumerate(args.slugs):
         meta, flat = blocks_of(slug)
         if args.drop_running_heads:
@@ -468,12 +475,20 @@ def main():
             body = flat[start:finish]
             if body and body[0][1] == "head":
                 body = body[1:]  # the heading itself is the title
+            if args.dump_json and (e["kind"] == "book" or e["kind"] == "section" and not skipping):
+                if e["kind"] == "book":
+                    dump.append({"title": None, "blocks": []})
+                if dump:
+                    dump[-1]["blocks"] += [{"page": b[0], "kind": b[1], "en": b[2], "la": b[3], "part": b[4]}
+                                           for b in flat[start:finish]]
             if e["kind"] == "book":
                 skipping = False
                 n_books += 1
                 chapter = None
                 title = next((t for vol, page, t in renames if page == e["page"] and vol in (None, k + 1)),
                              None) or tidy(e["title"])
+                if dump:
+                    dump[-1]["title"] = title
                 out.append(f"\n## {n_books} {title}\n")
                 # A long opening, too, is cut: its first part is the locus's introduction.
                 for k_, (sub, part) in enumerate(split_long(title, title, body, args.open_titles)):
@@ -506,6 +521,8 @@ def main():
                     out.append(text + "\n")
                 n_sections += 1
     Path(args.out).write_text("\n".join(out).lstrip() + "\n")
+    if args.dump_json:
+        Path(args.dump_json).write_text(json.dumps(dump, ensure_ascii=False))
     print(f"{args.out}: {n_books} loci, {n_sections} sections")
 
 

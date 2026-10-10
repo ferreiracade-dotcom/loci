@@ -11,8 +11,10 @@ numbered as the edition numbers it.
 
 As Loci ships it:
 
-  python3 tools/pdf-dogmatics-to-md.py baier.pdf "resources/dogmatics/Baier Compendium 1686.md" \\
+  python3 tools/pdf-dogmatics-to-md.py baier.pdf tools/sources/baier/baier-1686.md \\
       --title "Compendium Theologiae Positivae (1686)"
+
+which tools/merge-dogmatics-editions.py then merges with Walther's edition.
 """
 import argparse
 import re
