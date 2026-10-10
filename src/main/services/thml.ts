@@ -469,7 +469,7 @@ export function parseThml(xml: string, code: string): ThmlResult {
       } else elems.push({ kind: 'unwrap', block: false })
       return
     }
-    if (name in BLOCK_OUT || name === 'l' || name === 'verse') {
+    if (Object.hasOwn(BLOCK_OUT, name) || name === 'l' || name === 'verse') {
       const s = sink()
       const tagName = BLOCK_OUT[name]
       const open = tagName ? `<${tagName}>` : `<div class="${name === 'l' ? 'l' : 'verse'}">`
@@ -478,7 +478,7 @@ export function parseThml(xml: string, code: string): ThmlResult {
       elems.push({ kind: 'out', close, block: true, emitted: !!s })
       return
     }
-    if (name in INLINE_OUT) {
+    if (Object.hasOwn(INLINE_OUT, name)) {
       const s = sink()
       s?.openInline(`<${INLINE_OUT[name]}>`)
       elems.push({ kind: 'out', close: `</${INLINE_OUT[name]}>`, block: false, emitted: !!s })

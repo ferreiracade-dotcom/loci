@@ -270,6 +270,23 @@ describe('parseThml — notes, page breaks, display HTML', () => {
     expect(warnings).toEqual([{ kind: 'unknown-tag', detail: 'font', count: 1 }])
   })
 
+  it('treats Object.prototype names as unknown tags, not allow-listed ones', () => {
+    const xml = miniThml(
+      `<div1 id="a" title="A"><p><constructor>x</constructor> and <toString>y</toString></p></div1>`
+    )
+    const { volume, warnings } = parseThml(xml, 'anf99')
+    const html = volume.sections[0].html
+    expect(volume.sections[0].text).toBe('x and y')
+    expect(html).toBe('<p>x and y</p>')
+    expect(html).not.toMatch(/function|\[object/)
+    expect(warnings).toEqual(
+      expect.arrayContaining([
+        { kind: 'unknown-tag', detail: 'constructor', count: 1 },
+        { kind: 'unknown-tag', detail: 'toString', count: 1 }
+      ])
+    )
+  })
+
   it('never emits attributes from the source or unescaped markup', () => {
     const xml = miniThml(
       `<div1 id="a" title="A"><p onclick="evil()" style="x">5 &lt; 6 &amp; 7 <script>alert("x")</script></p></div1>`
