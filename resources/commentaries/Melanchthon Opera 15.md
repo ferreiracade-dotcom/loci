@@ -13160,6 +13160,35 @@ And there are many similar sayings. Let us learn the meaning of this saying in o
 
 Faith looks upon the Messiah, and most firmly establishes that we are received 'Gratis' for His sake, not because of our own dignity, and that we are heirs of eternal life. Chapter X. He institutes nothing new, but repeats the former opinion concerning the cause of the defection of the Jews, and the cause for which they oppose the Gospel.
 
+Latin:
+
+Verbum consummans et abbrevians.
+
+Postquam hanc dulcissimam consolationem tradidit, quod semper aliqua sit Ecclesia electa propter filium, sicut Psalm. 16. dicitur: Tu es, qui sustentas haereditatem meam mihi. Addit nunc testimonia de destructione politiae Iudaicae et de collectione Ecclesiae ex Iudaeis et Gentibus. In Osea dicitur: Vocabo eos qui non sunt populus, ut sint meus populus.
+
+Et apud Esaiam dicitur Cap. 10.: Etiamsi erit numerus filiorum Israël ut arena maris, reliquiae salvae erunt, id est, etsi magna multitudo erit populi Israël, tamen maior pars horribiliter peritura est deleta politia, et tantum reliquiae, id est, exigua pars convertetur ad Deum.
+
+Sic enim declarat se Propheta: Consummationem et praefinitionem faciet Dominus in medio terrae, id est, faciet finem constituto tempore politiae Israël, et tunc consummatio praefinita exundabit iusticiam, id est, in illo interitu politiae largissime donabitur iusticia Iudaeis et Gentibus, videlicet: Ipse filius Dei et eius beneficia, remissio peccatorum, reconciliatio, nova et aeterna iusticia et vita donanda per filium, sanctificatis voce Evangelii et Spiritu sancto, prorsus ut Daniel inquit, Cap. 9.: Fiet propiciatio pro peccato, delebitur iniquitas et adducetur iusticia sempiterna, et ungetur Sanctus sanctorum, et populus desinet esse, et civitatem et templum delebit populus Ducis venturi, scilicet Titus.
+
+Haec Danielis verba congruunt cum Esai. dicto. Hanc igitur interpretationem veram, nativam, simplicem et perspicuam retineamus.
+
+Et quanquam lectio in Paulo sumta et translatione Graeca Prophetarum obscurior est, tamen sententia re vera cum Ebraea lectione congruit. Verbum abbreviatum faciet Dominus, id est, rem seu negotium abbreviatum, seu abbreviationem, id est, finem politiae Israël, et tunc faciens Deus hanc abbreviationem, seu finem politiae, exundabit iusticiam, id est, tunc exhibebit Messiam et eius beneficia.
+
+Observanda est autem dulcis metaphora in verbo Exundat, quod significat largam et gratuitam iusticiam donatam immensa bonitate Dei propter mediatorem gratis. Commonefacti igitur hac dulci metaphora, cogitemus amplitudinem gratiae, ut fides et invocatio accendantur, et sumenda est declaratio ex superioribus de gratuita reconciliatione, et universali promissione.
+
+Israël sectando legem iusticiae, ad iusticiam non pervenit. Hic expresse ponit causam reprobationis, quia impii non volunt credere Evangelio, ideo supra dixi similitudinem de Luto non sic accipiendam esse, quasi non sit in ipsa hominum voluntate causa reprobationis: ait enim, ideo multos in Israël perire, quia sectando legem iusticiae pertinaciter retineant hanc opinionem, quod suis operibus et cultibus mereantur remissionem peccatorum, et sint iusti, id est, accepti Deo, et haeredes vitae aeternae propter has umbras, id est, propter opera moralia, non propter Messiam.
+
+Sic intelligatur phrasis: Sectari legem ex operibus. In fine additum est dulcissimum testimonium: Omnis qui credit in eum, non confundetur, id est, non frustrabitur.
+
+Est enim usitata phrasis, confundi, pro frustrari, Quanquam apud Esaiam cap. 28. Verbum est in Ebraeo, quod significat festinationem, trepidationem, consternationem, seu fugam.
+
+Sed Paulus sententiam reddidit, iuxta dictum in 2. Psalm.: Beati omnes qui confidunt in eo.
+
+Et sunt similia dicta multa. Discamus autem huius dicti sententiam in quotidianis consolationibus, et sciamus hic comprehendi, et Messiam, et particulam Gratis.
+
+Fides intuetur Messiam, et firmissime statuat Gratis propter ipsum, non propter dignitatem nostram nos recipi, et esse haeredes vitae aeternae. Caput X.
+
+## 10:1 Argument
 Therefore they war (he says) against the Gospel, because they do not want the justice of the law to be diminished, nor do they understand that the justice of the Gospel is something else: they even fight for their own polity, which they see being dissolved by the preaching of the Gospel.
 
 Just as now Bishops and Monks fight for their own ceremonies, so that the status and splendor of their polity may be preserved. He adds, however, a complaint about the destruction of the nation, as above, and attributes to them zeal, that is, study or an ardent will, or fervor, which seems good to them, but is not good, because it is joined with errors: and there are errors in the principal articles of faith, concerning the merits of Christ, the kingdom, and the offices, whence comes the remission of sins, what sin is, and what true justice is. Moreover, a grave threat is added against the defenders of impious opinions concerning the justice of the law, when he says:
@@ -13282,53 +13311,7 @@ And the Lord says: Come unto me all etc.
 
 It is, however, an eternal command, that all should believe in Him.
 
-How shall they call on him in whom they have not believed?
-
-In this gradation, a most copious doctrine is contained. The first member teaches that in invocation, faith and the contemplation of the divine promise are necessary. Here, the whole doctrine must be considered concerning invocation, and concerning the distinction between Christian and ethnic invocation.
-
-For they address something that is not God, and they fashion various idols, just as Hecuba says in Euripides: O Jupiter, whoever you are, whether this heaven, or the mind in heaven, although I have long invoked idle helpers.
-
-Afterward, concerning the will, they do not know whether or why they are heard, because the Gentiles are ignorant of the mediator and the promise: but the true Church of God thinks rightly about the Essence, because it addresses the true God, who revealed Himself by sending His Son, by giving the voice of the Gospel, and by providing illustrious testimonies. Then it knows the promises, and approaches God with the confidence of the mediator. Therefore it says: How shall they call on him in whom they have not believed?
-
-How shall they hear without a preacher?
-
-This saying manifestly shows that Paul affirms this: that God, through the voice of the Gospel sounding in the ministry and contemplated by the hearer or reader, is efficacious, if faith is kindled, with God moving the heart through this very voice. Therefore, the error of Stenckfeld and similar Enthusiasts is to be condemned, because they lead men away from the voice of doctrine to speculations, which they call illuminations outside the written word, and they destroy the exercises of faith, because God wills that we contemplate this very word issued by the voice of Christ, the Prophets, and the Apostles, and He wills that we assent to this written word just as if we were hearing a new voice of God sounding from heaven. Therefore, Paul also says elsewhere: That through the consolation of the scriptures we might have hope. These exercises of faith must be learned in daily invocation, in which we feel our hearts resting in God, with our contemplation raised to the divine promises.
-
-But since we know that the ministry of the Gospel is necessary, let us the more venerate and defend the ministers of the Gospel. Here, this also must be considered: since the knowledge of the written doctrine is necessary, it is certain that the labors of those learning and those teaching are pleasing to God. Wherefore, let us love the studies of doctrine more. Let us also add invocation, being reminded by doctrine, so that the Son of God, who is the λόγος (Word) of the eternal Father, may rule our judgments, and not allow us to wander from His word, and may kindle true light in our hearts.
-
-Paul cites the most sweet saying of Isaiah from chapter 52: How beautiful are the feet of those who preach the Gospel of peace. He speaks also of the saying concerning the voice sounding in the ministry, and teaches that the Church is gathered in this way, namely, by the voice of the Gospel. The metaphor of the feet signifies the runner or messenger, and he says these are beautiful and lovely, because they bring the most joyful promise of grace and eternal life.
-
-But these most sweet praises are opposed by the judgments of the enemies of the Gospel; they do not say the feet of the Apostles are beautiful, but they shout that the Apostles are the torches of dissension and the plagues of the human race.
-
-But when Isaiah says that they bring the Gospel, and also peace and good things, he signifies that the kingdom of Christ is administered by the word, not by corporal arms, and he distinguishes this word from the law: The Law denounces wrath, but in the Gospel, peace and other good things are offered, that is, liberation from sins, from death, from the wrath of God, and the restitution of righteousness, eternal life, and eternal joy in God.
-
 Latin:
-
-Verbum consummans et abbrevians.
-
-Postquam hanc dulcissimam consolationem tradidit, quod semper aliqua sit Ecclesia electa propter filium, sicut Psalm. 16. dicitur: Tu es, qui sustentas haereditatem meam mihi. Addit nunc testimonia de destructione politiae Iudaicae et de collectione Ecclesiae ex Iudaeis et Gentibus. In Osea dicitur: Vocabo eos qui non sunt populus, ut sint meus populus.
-
-Et apud Esaiam dicitur Cap. 10.: Etiamsi erit numerus filiorum Israël ut arena maris, reliquiae salvae erunt, id est, etsi magna multitudo erit populi Israël, tamen maior pars horribiliter peritura est deleta politia, et tantum reliquiae, id est, exigua pars convertetur ad Deum.
-
-Sic enim declarat se Propheta: Consummationem et praefinitionem faciet Dominus in medio terrae, id est, faciet finem constituto tempore politiae Israël, et tunc consummatio praefinita exundabit iusticiam, id est, in illo interitu politiae largissime donabitur iusticia Iudaeis et Gentibus, videlicet: Ipse filius Dei et eius beneficia, remissio peccatorum, reconciliatio, nova et aeterna iusticia et vita donanda per filium, sanctificatis voce Evangelii et Spiritu sancto, prorsus ut Daniel inquit, Cap. 9.: Fiet propiciatio pro peccato, delebitur iniquitas et adducetur iusticia sempiterna, et ungetur Sanctus sanctorum, et populus desinet esse, et civitatem et templum delebit populus Ducis venturi, scilicet Titus.
-
-Haec Danielis verba congruunt cum Esai. dicto. Hanc igitur interpretationem veram, nativam, simplicem et perspicuam retineamus.
-
-Et quanquam lectio in Paulo sumta et translatione Graeca Prophetarum obscurior est, tamen sententia re vera cum Ebraea lectione congruit. Verbum abbreviatum faciet Dominus, id est, rem seu negotium abbreviatum, seu abbreviationem, id est, finem politiae Israël, et tunc faciens Deus hanc abbreviationem, seu finem politiae, exundabit iusticiam, id est, tunc exhibebit Messiam et eius beneficia.
-
-Observanda est autem dulcis metaphora in verbo Exundat, quod significat largam et gratuitam iusticiam donatam immensa bonitate Dei propter mediatorem gratis. Commonefacti igitur hac dulci metaphora, cogitemus amplitudinem gratiae, ut fides et invocatio accendantur, et sumenda est declaratio ex superioribus de gratuita reconciliatione, et universali promissione.
-
-Israël sectando legem iusticiae, ad iusticiam non pervenit. Hic expresse ponit causam reprobationis, quia impii non volunt credere Evangelio, ideo supra dixi similitudinem de Luto non sic accipiendam esse, quasi non sit in ipsa hominum voluntate causa reprobationis: ait enim, ideo multos in Israël perire, quia sectando legem iusticiae pertinaciter retineant hanc opinionem, quod suis operibus et cultibus mereantur remissionem peccatorum, et sint iusti, id est, accepti Deo, et haeredes vitae aeternae propter has umbras, id est, propter opera moralia, non propter Messiam.
-
-Sic intelligatur phrasis: Sectari legem ex operibus. In fine additum est dulcissimum testimonium: Omnis qui credit in eum, non confundetur, id est, non frustrabitur.
-
-Est enim usitata phrasis, confundi, pro frustrari, Quanquam apud Esaiam cap. 28. Verbum est in Ebraeo, quod significat festinationem, trepidationem, consternationem, seu fugam.
-
-Sed Paulus sententiam reddidit, iuxta dictum in 2. Psalm.: Beati omnes qui confidunt in eo.
-
-Et sunt similia dicta multa. Discamus autem huius dicti sententiam in quotidianis consolationibus, et sciamus hic comprehendi, et Messiam, et particulam Gratis.
-
-Fides intuetur Messiam, et firmissime statuat Gratis propter ipsum, non propter dignitatem nostram nos recipi, et esse haeredes vitae aeternae. Caput X.
 
 Nihil novi instituit, sed repetit priorem sententiam de causa defectionis Iudaeorum, et de causa, propter quam Evangelio adversantur. Ideo belligerantur (inquit) cum Evangelio, quia nolunt extenuari iusticiam legis, nec intelligunt aliud esse iusticiam Evangelii: dimicant etiam de sua politia, quam praedicatione Evangelii vident dissolvi.
 
@@ -13452,6 +13435,17 @@ Et Dominus inquit: Venite ad me omnes etc.
 
 Est autem mandatum aeternum, ut omnes credant in eum.
 
+## 10:14
+How shall they call on him in whom they have not believed?
+
+In this gradation, a most copious doctrine is contained. The first member teaches that in invocation, faith and the contemplation of the divine promise are necessary. Here, the whole doctrine must be considered concerning invocation, and concerning the distinction between Christian and ethnic invocation.
+
+For they address something that is not God, and they fashion various idols, just as Hecuba says in Euripides: O Jupiter, whoever you are, whether this heaven, or the mind in heaven, although I have long invoked idle helpers.
+
+Afterward, concerning the will, they do not know whether or why they are heard, because the Gentiles are ignorant of the mediator and the promise: but the true Church of God thinks rightly about the Essence, because it addresses the true God, who revealed Himself by sending His Son, by giving the voice of the Gospel, and by providing illustrious testimonies. Then it knows the promises, and approaches God with the confidence of the mediator. Therefore it says: How shall they call on him in whom they have not believed?
+
+Latin:
+
 Quomodo invocabunt si non credent?
 
 In hac gradatione copiosissima doctrina continetur. Primum membrum docet in invocatione necessariam esse fidem, et cogitationem promissionis divinae. Hic tota doctrina cogitanda est de invocatione, et de discrimine invocationis Christianae et ethnicae.
@@ -13459,6 +13453,21 @@ In hac gradatione copiosissima doctrina continetur. Primum membrum docet in invo
 Errat enim ethnica praecipue dupliciter, de Essentia et de voluntate Dei. Alloquitur enim aliquid, quod non est Deus, et fingit varia idola, sicut ait Hecuba apud Euripidem: O Iupiter, quicquid es, sive hoc coelum, sive mens in coelo, quanquam diu iam ignavos opitulatores invoco.
 
 Postea de voluntate nesciunt, An et cur exaudiantur, quia Ethnici ignorant mediatorem et promissionem: sed vera Ecclesia Dei recte cogitat de Essentia, quia alloquitur verum Deum, qui se patefecit misso filio, data voce Evangelii, et editis illustribus testimoniis. Deinde scit promissiones, et accedit ad Deum fiducia mediatoris. Ideo dicit: Quomodo invocabunt si non credent?
+
+## 10:14
+How shall they hear without a preacher?
+
+This saying manifestly shows that Paul affirms this: that God, through the voice of the Gospel sounding in the ministry and contemplated by the hearer or reader, is efficacious, if faith is kindled, with God moving the heart through this very voice. Therefore, the error of Stenckfeld and similar Enthusiasts is to be condemned, because they lead men away from the voice of doctrine to speculations, which they call illuminations outside the written word, and they destroy the exercises of faith, because God wills that we contemplate this very word issued by the voice of Christ, the Prophets, and the Apostles, and He wills that we assent to this written word just as if we were hearing a new voice of God sounding from heaven. Therefore, Paul also says elsewhere: That through the consolation of the scriptures we might have hope. These exercises of faith must be learned in daily invocation, in which we feel our hearts resting in God, with our contemplation raised to the divine promises.
+
+But since we know that the ministry of the Gospel is necessary, let us the more venerate and defend the ministers of the Gospel. Here, this also must be considered: since the knowledge of the written doctrine is necessary, it is certain that the labors of those learning and those teaching are pleasing to God. Wherefore, let us love the studies of doctrine more. Let us also add invocation, being reminded by doctrine, so that the Son of God, who is the λόγος (Word) of the eternal Father, may rule our judgments, and not allow us to wander from His word, and may kindle true light in our hearts.
+
+Paul cites the most sweet saying of Isaiah from chapter 52: How beautiful are the feet of those who preach the Gospel of peace. He speaks also of the saying concerning the voice sounding in the ministry, and teaches that the Church is gathered in this way, namely, by the voice of the Gospel. The metaphor of the feet signifies the runner or messenger, and he says these are beautiful and lovely, because they bring the most joyful promise of grace and eternal life.
+
+But these most sweet praises are opposed by the judgments of the enemies of the Gospel; they do not say the feet of the Apostles are beautiful, but they shout that the Apostles are the torches of dissension and the plagues of the human race.
+
+But when Isaiah says that they bring the Gospel, and also peace and good things, he signifies that the kingdom of Christ is administered by the word, not by corporal arms, and he distinguishes this word from the law: The Law denounces wrath, but in the Gospel, peace and other good things are offered, that is, liberation from sins, from death, from the wrath of God, and the restitution of righteousness, eternal life, and eternal joy in God.
+
+Latin:
 
 Quomodo audient sine praedicante?
 
@@ -14392,44 +14401,6 @@ He adds to the exhortation an argument taken from the debt of the new revelation
 
 Those things are to be done which are becoming in the light.
 
-Chapter XIV. He exhorts to tolerate the weak in faith; and to raise them up little by little, so that they may become stronger.
-
-He exhorts also the weaker ones, not to judge rashly concerning the stronger ones.
-
-Proposition.
-
-Help the weak in faith, so that he may not be left ambiguous in faith. To the exposition of the proposition pertains: Let each one be certain in his own mind, that is, nothing is to be done with an ambiguous conscience.
-
-For when you doubt whether that which you undertake pleases God, and yet you undertake it, that certainly is to despise God. In the same vein at the end he adds a maxim (γνώμην): Everything that is not of faith is sin.
-
-Chapter XV. At the beginning it contains the conclusion of the previous exhortation.
-
-He adds a reason from example, just as Christ bore our errors, so let us bear the weakness of our brothers. Amplification.
-
-What things were written, were written for our instruction, that we might have hope through the consolation of the scriptures. He seems to have added this sentence at the end on purpose, to admonish us concerning the dignity of the ministry of the word, so that we might know that other illuminations are not to be sought, but that by this word, which stands written, minds are to be raised up and consoled.
-
-Let us therefore establish that such promises in scripture pertain to us: Call upon me in the day of tribulation, and I will deliver you etc. An epilogue is also added, which gathers that the Gospel pertains to the Jews and the Gentiles.
-
-For this was also a part of the controversy, as appears above, whether the Gospel pertains to those who do not observe the law. And here testimonies are cited concerning the calling of the Gentiles.
-
-Next he ascribes certain things concerning his own office, he warns also, that they should not receive a doctrine repugnant to this doctrine of his. And he indicates by what art evil teachers create a deception, namely through 'chrestologies' (χρηστολογίας) and 'eulogies' (εὐλογίας).
-
-The Greeks call 'chrestologies' smooth speeches, such as those of people promising kindly and flatterers: they call 'euloga' (εὔλογα) plausible things, which are not said rashly, but have reasons that are likely in appearance, just as impious doctrine is accustomed to collect plausible arguments of reason.
-
-Thus by twin arts the impious teachers deceive, they flatter the desires of the people, as once the monks did. chi promised riches to the worshippers of Anna, they promised heaven to those putting on the cowl, and now the Anabaptists commend themselves to the common people with a wonderful appearance of humility, they condemn all magistrates, all public laws, all doctrine.
-
-Since the common people hate these things by nature, they bring great momentum to impelling minds.
-
-But the other part imposes even upon the more prudent because they bring forward learned thoughts, which do not recoil from the judgment of reason, as when they teach that our works satisfy for sins, that the justice of God is nothing but this simulation of civil works.
-
-These things are defended by arguments born in reason, but let us follow the admonition of Paul, and let us receive no dogmas against scripture.
-
-For in the judgment of God, the human mind cannot stand without the word of God.
-
-May Christ stir our hearts, that we may truly acknowledge him, and may he bring the scattered Churches into a pious and perpetual concord.
-
-Amen.
-
 Latin:
 
 Caput XIII.
@@ -14539,44 +14510,6 @@ Contrahit praecepta in decalogum, et decalogi secundam tabulam in praeceptum de 
 Addit adhortationi argumentum ex debito sumtum a nova revelatione verbi, quam luci comparat. Ex ea metaphora ducit argumentum.
 
 Ea sunt agenda, in quae luce decent.
-
-Caput XIV. Hortatur tolerare imbecilles in fide; et eos paulatim erigere, ut fiant firmiores.
-
-Hortatur et infirmiores, ne temere iudicent de firmioribus.
-
-Propositio.
-
-Infirmum in fide adiuvate, ne relinquatur in fide ambiguus. Ad expositionem propositionis pertinet: Unusquisque in sua sententia certus sit, id est, nihil faciendum ambigua conscientia.
-
-Nam cum dubitas, utrum Deo placeat id quod suscipis, et suscipis tamen, id certe est contemnere Deum. In eandem sententiam in fine addit γνώμην: Omne quod non est ex fide, peccatum est.
-
-Caput XV. Initio conclusionem proximae adhortationis continet.
-
-Addit rationem ab exemplo, sicut Christus tulit nostra errata, sic nos fratrum imbecillitatem feramus. Amplificatio.
-
-Quae scripta sunt, ad nostram doctrinam scripta sunt, ut spem habeamus per consolationem scripturarum. Consulto videtur in fine adiecisse hanc sententiam, ut admoneret nos de dignitate ministerii verbi, ut sciremus non esse alias illuminationes requirendas, sed hoc verbo, quod scriptum extat, erigendas mentes et consolandas esse.
-
-Vere igitur ad nos pertinere statuamus huiusmodi promissiones in scriptura: Invoca me in die tribulationis, et eripiam te etc. Additus est et epilogus, qui colligit Evangelium ad Iudaeos ac gentes pertinere.
-
-Fuit enim et haec controversiae pars, ut supra apparet, utrum Evangelium pertineat ad hos, qui legem non observant. Et citantur hic testimonia de vocatione gentium.
-
-Deinceps ascribit quaedam de officio suo, monet etiam, ne recipiant doctrinam repugnantem huic suae doctrinae. Et indicat, qua arte mali doctores fucum faciant, nempe per χρηστολογίας et εὐλογίας.
-
-Graeci vocant χρηστολογίας blandos sermones, ut sunt benigne pollicentium et assentatorum: εὔλογα vocant probabilia, quae non temere dicuntur, sed habent rationes in speciem versimiles sicut solet impia doctrina rationis argumenta plausibilia colligere.
-
-Ita geminis artibus fallunt impii doctores, assentantur cupiditatibus populi, ut olim monachorum. chi pollicebantur divitias cultoribus Annae, promittebant coelum induentibus cucullum, et nunc Anabaptistae mira specie humilitatis se commendant vulgo, damnant omnes magistratus, omnia publica iura, omnem doctrinam.
-
-Haec cum natura vulgus oderit, magnum momentum adferunt ad impellendos animos.
-
-Sed altera pars imponit etiam prudentioribus quod afferunt erudite cogitata, quae non abhorrent a iudicio rationis, ut cum docent, quod opera nostra satisfaciant pro peccatis, quod iusticia Dei nihil sit nisi haec civilium operum simulatio.
-
-Haec defenduntur argumentis in ratione natis, sed nos sequamur Pauli admonitionem, et nulla dogmata recipiamus contra scripturam.
-
-Nam in iudicio Dei non potest humana mens consistere sine verbo Dei.
-
-Christus excitet corda nostra, ut vere agnoscamus ipsum, et dissipatas Ecclesias redigat in concordiam piam et perpetuam.
-
-Amen.
 
 ## 13:1 Argument
 Chapter XIII.
@@ -15282,6 +15215,29 @@ Sic et hoc dictum ad Romanos intelligitur: Induamini Christum, quasi dicat: Verb
 
 Imitemini Christum, ut exemplum in virtutibus, quae debent esse communes omnibus, videlicet in cura docendi Evangelii, constantia confessionis, humilitate, patientia in tolerandis iniuriis, ut si dicam Principi: Induito animum Augusti in moderatione iracundiae.
 
+## 14:1 Disposition of Romans: Argument
+Chapter XIV. He exhorts to tolerate the weak in faith; and to raise them up little by little, so that they may become stronger.
+
+He exhorts also the weaker ones, not to judge rashly concerning the stronger ones.
+
+Proposition.
+
+Help the weak in faith, so that he may not be left ambiguous in faith. To the exposition of the proposition pertains: Let each one be certain in his own mind, that is, nothing is to be done with an ambiguous conscience.
+
+For when you doubt whether that which you undertake pleases God, and yet you undertake it, that certainly is to despise God. In the same vein at the end he adds a maxim (γνώμην): Everything that is not of faith is sin.
+
+Latin:
+
+Caput XIV. Hortatur tolerare imbecilles in fide; et eos paulatim erigere, ut fiant firmiores.
+
+Hortatur et infirmiores, ne temere iudicent de firmioribus.
+
+Propositio.
+
+Infirmum in fide adiuvate, ne relinquatur in fide ambiguus. Ad expositionem propositionis pertinet: Unusquisque in sua sententia certus sit, id est, nihil faciendum ambigua conscientia.
+
+Nam cum dubitas, utrum Deo placeat id quod suscipis, et suscipis tamen, id certe est contemnere Deum. In eandem sententiam in fine addit γνώμην: Omne quod non est ex fide, peccatum est.
+
 ## 14:1 Argument
 Chapter XIV.
 
@@ -15520,6 +15476,65 @@ Respondeo: Paulus loquitur de iudiciis Ec- clesiae, Semper habent sancti testimo
 Ideo 1. Corinth. 10. eadem regula traditur: Quicquid facitis, facite ad gloriam Dei, et non sitis scandalo Ecclesiae.
 
 Vult igitur respici iudicia Ecclesiae, ideo et de tuenda fama saepe praecipitur, ut Syracides 41.: Cura de bono nomine, antecellit enim multis thesauris: et sit notus versiculus: Levis est, nec illum stimulat gloriae decus.
+
+## 15:1 Disposition of Romans: Argument
+Chapter XV. At the beginning it contains the conclusion of the previous exhortation.
+
+He adds a reason from example, just as Christ bore our errors, so let us bear the weakness of our brothers. Amplification.
+
+What things were written, were written for our instruction, that we might have hope through the consolation of the scriptures. He seems to have added this sentence at the end on purpose, to admonish us concerning the dignity of the ministry of the word, so that we might know that other illuminations are not to be sought, but that by this word, which stands written, minds are to be raised up and consoled.
+
+Let us therefore establish that such promises in scripture pertain to us: Call upon me in the day of tribulation, and I will deliver you etc. An epilogue is also added, which gathers that the Gospel pertains to the Jews and the Gentiles.
+
+For this was also a part of the controversy, as appears above, whether the Gospel pertains to those who do not observe the law. And here testimonies are cited concerning the calling of the Gentiles.
+
+Next he ascribes certain things concerning his own office, he warns also, that they should not receive a doctrine repugnant to this doctrine of his. And he indicates by what art evil teachers create a deception, namely through 'chrestologies' (χρηστολογίας) and 'eulogies' (εὐλογίας).
+
+The Greeks call 'chrestologies' smooth speeches, such as those of people promising kindly and flatterers: they call 'euloga' (εὔλογα) plausible things, which are not said rashly, but have reasons that are likely in appearance, just as impious doctrine is accustomed to collect plausible arguments of reason.
+
+Thus by twin arts the impious teachers deceive, they flatter the desires of the people, as once the monks did. chi promised riches to the worshippers of Anna, they promised heaven to those putting on the cowl, and now the Anabaptists commend themselves to the common people with a wonderful appearance of humility, they condemn all magistrates, all public laws, all doctrine.
+
+Since the common people hate these things by nature, they bring great momentum to impelling minds.
+
+But the other part imposes even upon the more prudent because they bring forward learned thoughts, which do not recoil from the judgment of reason, as when they teach that our works satisfy for sins, that the justice of God is nothing but this simulation of civil works.
+
+These things are defended by arguments born in reason, but let us follow the admonition of Paul, and let us receive no dogmas against scripture.
+
+For in the judgment of God, the human mind cannot stand without the word of God.
+
+May Christ stir our hearts, that we may truly acknowledge him, and may he bring the scattered Churches into a pious and perpetual concord.
+
+Amen.
+
+Latin:
+
+Caput XV. Initio conclusionem proximae adhortationis continet.
+
+Addit rationem ab exemplo, sicut Christus tulit nostra errata, sic nos fratrum imbecillitatem feramus. Amplificatio.
+
+Quae scripta sunt, ad nostram doctrinam scripta sunt, ut spem habeamus per consolationem scripturarum. Consulto videtur in fine adiecisse hanc sententiam, ut admoneret nos de dignitate ministerii verbi, ut sciremus non esse alias illuminationes requirendas, sed hoc verbo, quod scriptum extat, erigendas mentes et consolandas esse.
+
+Vere igitur ad nos pertinere statuamus huiusmodi promissiones in scriptura: Invoca me in die tribulationis, et eripiam te etc. Additus est et epilogus, qui colligit Evangelium ad Iudaeos ac gentes pertinere.
+
+Fuit enim et haec controversiae pars, ut supra apparet, utrum Evangelium pertineat ad hos, qui legem non observant. Et citantur hic testimonia de vocatione gentium.
+
+Deinceps ascribit quaedam de officio suo, monet etiam, ne recipiant doctrinam repugnantem huic suae doctrinae. Et indicat, qua arte mali doctores fucum faciant, nempe per χρηστολογίας et εὐλογίας.
+
+Graeci vocant χρηστολογίας blandos sermones, ut sunt benigne pollicentium et assentatorum: εὔλογα vocant probabilia, quae non temere dicuntur, sed habent rationes in speciem versimiles sicut solet impia doctrina rationis argumenta plausibilia colligere.
+
+Ita geminis artibus fallunt impii doctores, assentantur cupiditatibus populi, ut olim monachorum. chi pollicebantur divitias cultoribus Annae, promittebant coelum induentibus cucullum, et nunc Anabaptistae mira specie humilitatis se commendant vulgo, damnant omnes magistratus, omnia publica iura, omnem doctrinam.
+
+Haec cum natura vulgus oderit, magnum momentum adferunt ad impellendos animos.
+
+Sed altera pars imponit etiam prudentioribus quod afferunt erudite cogitata, quae non abhorrent a iudicio rationis, ut cum docent, quod opera nostra satisfaciant pro peccatis, quod iusticia Dei nihil sit nisi haec civilium operum simulatio.
+
+Haec defenduntur argumentis in ratione natis, sed nos sequamur Pauli admonitionem, et nulla dogmata recipiamus contra scripturam.
+
+Nam in iudicio Dei non potest humana mens consistere sine verbo Dei.
+
+Christus excitet corda nostra, ut vere agnoscamus ipsum, et dissipatas Ecclesias redigat in concordiam piam et perpetuam.
+
+Amen.
 
 ## 15:1 Argument
 Chapter XV.

@@ -2484,56 +2484,6 @@ Therefore this admonition is often repeated, as in Cicero: Hold to that of Epich
 
 Then, that we should not, trusting in human protections, move things that are not necessary, because the wills of men are often changed, as: Octavius deserted Cicero. Dion killed his associate Heraclides. Calippus killed Dion, to whom he had been most familiar.
 
-Chapter XXVIII. Because of the sins of the land, one prince after another arises. And because of a prudent and intelligent man, the empire is more durable. There are customary complaints about the negligence of princes, about plunderings, about the neglect of judgments and defense.
-
-And the people accuse the princes and courts themselves, according to the verse: Whatever madness the kings commit, the Achaeans are punished. But the divine voice accuses both, princes and people, as it is said in Hosea 4: Like people, like priest. And it is often predicted that because of the sins of the people, salutary princes are not given, as in Isaiah 3: The Lord will take away the warrior and the judge and the Prophet. Thus he says here: Because of the sins of the land, namely, of the princes and the people, many become princes, that is, none reign for long, or many discordant ones reign. reigning, and some drive out others etc., as in Pannonia John reigned for some time, Ferdinand for some time, and now the Turk.
-
-Such changes do not happen without great calamities, as Xenophon most truly said: πᾶσαι πολιτεῖων μεταβολαὶ θανατηφόροι, that is, all changes of empires bring slaughter. And concerning seditions, Thucydides says: ἐν στάσει πᾶσα ἰδέα κακοῦ ἔνι (in sedition every form of evil is present). Item: ἐν δὲ διχοστασίῃ καὶ πάγκακος ἔμμορε τιμῆς (and in discord even the most wicked man has a share of honor). Let us recognize, therefore, that the causes of public calamities are the sins of the many, and for the sake of public safety, let individuals restrain their own impulses.
-
-An antithesis is added, however, which contains a singular admonition, necessary for princes and people.
-
-He says that empires are more durable because of a prudent and intelligent man, that is: A wise prince sometimes yields from his own right, and suffers some inconvenience, so that he may avoid greater inconveniences, just as Fabius the Dictator allowed the Master of the Horse to be made his equal.
-
-For he did not place rumors before safety: Cicero yielded the province to Lucius Antonius, so that he might have a colleague who agreed with him.
-
-Thus, those who give counsel to the people should persuade them not to bring about greater evils by seditious counsels, as there is no doubt that in Judea many turbulent men shouted that the Romans should be driven out by arms, just as their fathers had driven out Antiochus. But Zacharias and Simeon understood that the causes and the times were different, and they dissuaded them from war. For they knew that the end of the Jewish polity was then at hand, and that God had mitigated the servitude with singular moderation, because they had αὐτονομίαν (autonomy) in their worship, and they saw that suitable leaders were lacking; but Antiochus had not granted αὐτονομίαν in worship, and the learned knew that the end of the Jewish polity was not yet.
-
-Thus, salutary governors consider where one must fight and where one must not fight; Isaiah dissuades from surrender, Jeremiah on the other hand is a persuader of surrender in his own time. Thus, let us consider dissimilar examples and dissimilar causes, and let us bear servitude wisely when it must be tolerated, and with true groans let us seek counsel and protection from God, just as those very Prophets seek it.
-
-Isaiah cries out: We are your clay, do not be angry too much.
-
-And Jeremiah: Do not reduce us to nothing. And Psalm 7: Arise, O Lord, to the precept which you have commanded, that the Synagogue of the peoples may surround you, that is, preserve your law and the Church, lest a universal dissipation occur, just as it is said in these verses: May the Church always remain keeping you, O Christ, And may your right hand rule us, inserted into it.
-
-He who covers his iniquities shall not be happy.
-
-But to him who confesses and abandons them, the Lord will be propitious. Some persist in atrocious crimes with manifest stubbornness, which men understand.
-
-There is no doubt that these rush into punishments, according to the saying: Because of these things the wrath of God comes upon the disobedient.
-
-But here mention is made of those who cover their crimes, that is, those who sophistically excuse them, such as those who establish impious cults, and adorn false dogmas with specious excuses.
-
-He threatens them with punishments, because even if they cannot be repressed by men, yet they will eventually be repressed divinely, according to the saying: Every plant which my Father has not planted shall be rooted up. The Jews did not want to yield to the Apostles, but in the end the destruction of the entire Jewish polity was a testimony of divine judgment against them.
-
-Thus the Manichaeans, Arians, and the like were destroyed. But as in every conversion, contrition comes first, that is, the recognition of error and offense, and sorrow and change of will: so here Confession is required, and indeed such a one in which amendment also takes place, as Paul confesses that he had erred when he was an enemy of the Church, and then becomes a witness and propagator of the Gospel.
-
-And it is explicitly said here: The Lord will be propitious to him who abandons [them] etc. For it is necessary in conversion to cast away an evil purpose, nor is there conversion or repentance as long as there remains perseverance in an evil purpose.
-
-But to the converted, the remission of eternal punishment and the mitigation of temporal punishment is promised because of the mediator, just as it was said: As I live, says the Lord, I do not desire the death of the sinner, but that he may be converted and live.
-
-Item, Zechariah 1: Be converted to me, and I will be converted to you. Item, Isaiah 1: If your sins are as scarlet and crimson, you shall be white as snow. Item: The mercies of the Lord, that we are not consumed.
-
-Blessed is the man who is always fearful.
-
-But he who hardens his heart shall fall into destruction.
-
-A neighboring sentiment to the previous one.
-
-For he exhorts men to the exercises of Repentance, he commands that there be in to us fear, acknowledging the judgment and wrath of God against sins, let there be solicitude in avoiding evil opinions and lapses, as Paul says: Work out your salvation with fear and trembling, that is, retain the purity of doctrine, having considered the sources with great care and solicitude, and with great solicitude avoid lapses against conscience. Nor does this doctrine conflict with the sentiment concerning faith, concerning the consolation of consciences, and concerning joy in the mediator, but it enjoins both, so that there may be in the heart a sorrow lamenting our contumacy and impurity, doubts and many evils, which cling to us. But let faith govern fear and sorrow, which may establish that we, although unworthy and miserable, nevertheless please God on account of the mediator. This saying therefore censures carnal security, and pride trusting in one's own wisdom, justice, and power, and not caring for the judgment of God, just as Pharaoh rushed into the destruction of his own power's confidence.
-
-Bellerophon, secure, wishing to be carried into heaven by Pegasus, is cast off. Antiochus, secure in the confidence of his own power, attempts to destroy the law of God. Therefore, let these admonitions concerning the fear of God and the goals of our calling always be in sight: Blessed is the man who is always fearful.
-
-Item: Where will the Lord dwell? In a contrite and humble spirit, and [in those who] tremble at my words.
-
 Latin:
 
 Caput XXVII.
@@ -2585,6 +2535,59 @@ Sicut facies in aquis apparentes lubricae sunt et evanescentes: ita corda sunt i
 Ideo haec admonitio saepe repetita est, ut apud Ciceronem: Epicharmion illud teneto, μέμνησο ἀπιστεῖν, nervos atque artus esse sapientiae. Item: Quos credis fidos, effuge, tutus eris. Et in Ieremia: Maledictus qui confidit in homine. Haec dicta monent primum de doctrina, ne dogmata de Deo, sola humana autoritate moti approbemus, sed fontes quaeramus in doctrina a Deo tradita.
 
 Deinde ne confisi humanis praesidiis moveamus res non necessarias, quia saepe mutatur hominum voluntates, ut: Octavius deseruit Ciceronem. Dion interfecit Heraclidem socium. Calippus Dionem, cui familiarissimus fuerat. Caput XXVIII.
+
+## 28:1 Argument
+Chapter XXVIII. Because of the sins of the land, one prince after another arises. And because of a prudent and intelligent man, the empire is more durable. There are customary complaints about the negligence of princes, about plunderings, about the neglect of judgments and defense.
+
+And the people accuse the princes and courts themselves, according to the verse: Whatever madness the kings commit, the Achaeans are punished. But the divine voice accuses both, princes and people, as it is said in Hosea 4: Like people, like priest. And it is often predicted that because of the sins of the people, salutary princes are not given, as in Isaiah 3: The Lord will take away the warrior and the judge and the Prophet. Thus he says here: Because of the sins of the land, namely, of the princes and the people, many become princes, that is, none reign for long, or many discordant ones reign. reigning, and some drive out others etc., as in Pannonia John reigned for some time, Ferdinand for some time, and now the Turk.
+
+Such changes do not happen without great calamities, as Xenophon most truly said: πᾶσαι πολιτεῖων μεταβολαὶ θανατηφόροι, that is, all changes of empires bring slaughter. And concerning seditions, Thucydides says: ἐν στάσει πᾶσα ἰδέα κακοῦ ἔνι (in sedition every form of evil is present). Item: ἐν δὲ διχοστασίῃ καὶ πάγκακος ἔμμορε τιμῆς (and in discord even the most wicked man has a share of honor). Let us recognize, therefore, that the causes of public calamities are the sins of the many, and for the sake of public safety, let individuals restrain their own impulses.
+
+An antithesis is added, however, which contains a singular admonition, necessary for princes and people.
+
+He says that empires are more durable because of a prudent and intelligent man, that is: A wise prince sometimes yields from his own right, and suffers some inconvenience, so that he may avoid greater inconveniences, just as Fabius the Dictator allowed the Master of the Horse to be made his equal.
+
+For he did not place rumors before safety: Cicero yielded the province to Lucius Antonius, so that he might have a colleague who agreed with him.
+
+Thus, those who give counsel to the people should persuade them not to bring about greater evils by seditious counsels, as there is no doubt that in Judea many turbulent men shouted that the Romans should be driven out by arms, just as their fathers had driven out Antiochus. But Zacharias and Simeon understood that the causes and the times were different, and they dissuaded them from war. For they knew that the end of the Jewish polity was then at hand, and that God had mitigated the servitude with singular moderation, because they had αὐτονομίαν (autonomy) in their worship, and they saw that suitable leaders were lacking; but Antiochus had not granted αὐτονομίαν in worship, and the learned knew that the end of the Jewish polity was not yet.
+
+Thus, salutary governors consider where one must fight and where one must not fight; Isaiah dissuades from surrender, Jeremiah on the other hand is a persuader of surrender in his own time. Thus, let us consider dissimilar examples and dissimilar causes, and let us bear servitude wisely when it must be tolerated, and with true groans let us seek counsel and protection from God, just as those very Prophets seek it.
+
+Isaiah cries out: We are your clay, do not be angry too much.
+
+And Jeremiah: Do not reduce us to nothing. And Psalm 7: Arise, O Lord, to the precept which you have commanded, that the Synagogue of the peoples may surround you, that is, preserve your law and the Church, lest a universal dissipation occur, just as it is said in these verses: May the Church always remain keeping you, O Christ, And may your right hand rule us, inserted into it.
+
+He who covers his iniquities shall not be happy.
+
+But to him who confesses and abandons them, the Lord will be propitious. Some persist in atrocious crimes with manifest stubbornness, which men understand.
+
+There is no doubt that these rush into punishments, according to the saying: Because of these things the wrath of God comes upon the disobedient.
+
+But here mention is made of those who cover their crimes, that is, those who sophistically excuse them, such as those who establish impious cults, and adorn false dogmas with specious excuses.
+
+He threatens them with punishments, because even if they cannot be repressed by men, yet they will eventually be repressed divinely, according to the saying: Every plant which my Father has not planted shall be rooted up. The Jews did not want to yield to the Apostles, but in the end the destruction of the entire Jewish polity was a testimony of divine judgment against them.
+
+Thus the Manichaeans, Arians, and the like were destroyed. But as in every conversion, contrition comes first, that is, the recognition of error and offense, and sorrow and change of will: so here Confession is required, and indeed such a one in which amendment also takes place, as Paul confesses that he had erred when he was an enemy of the Church, and then becomes a witness and propagator of the Gospel.
+
+And it is explicitly said here: The Lord will be propitious to him who abandons [them] etc. For it is necessary in conversion to cast away an evil purpose, nor is there conversion or repentance as long as there remains perseverance in an evil purpose.
+
+But to the converted, the remission of eternal punishment and the mitigation of temporal punishment is promised because of the mediator, just as it was said: As I live, says the Lord, I do not desire the death of the sinner, but that he may be converted and live.
+
+Item, Zechariah 1: Be converted to me, and I will be converted to you. Item, Isaiah 1: If your sins are as scarlet and crimson, you shall be white as snow. Item: The mercies of the Lord, that we are not consumed.
+
+Blessed is the man who is always fearful.
+
+But he who hardens his heart shall fall into destruction.
+
+A neighboring sentiment to the previous one.
+
+For he exhorts men to the exercises of Repentance, he commands that there be in to us fear, acknowledging the judgment and wrath of God against sins, let there be solicitude in avoiding evil opinions and lapses, as Paul says: Work out your salvation with fear and trembling, that is, retain the purity of doctrine, having considered the sources with great care and solicitude, and with great solicitude avoid lapses against conscience. Nor does this doctrine conflict with the sentiment concerning faith, concerning the consolation of consciences, and concerning joy in the mediator, but it enjoins both, so that there may be in the heart a sorrow lamenting our contumacy and impurity, doubts and many evils, which cling to us. But let faith govern fear and sorrow, which may establish that we, although unworthy and miserable, nevertheless please God on account of the mediator. This saying therefore censures carnal security, and pride trusting in one's own wisdom, justice, and power, and not caring for the judgment of God, just as Pharaoh rushed into the destruction of his own power's confidence.
+
+Bellerophon, secure, wishing to be carried into heaven by Pegasus, is cast off. Antiochus, secure in the confidence of his own power, attempts to destroy the law of God. Therefore, let these admonitions concerning the fear of God and the goals of our calling always be in sight: Blessed is the man who is always fearful.
+
+Item: Where will the Lord dwell? In a contrite and humble spirit, and [in those who] tremble at my words.
+
+Latin:
 
 Propter delicta terrae cito alii post alios fiunt principes. Et propter virum prudentem et intelligentem durabilius est imperium. Usitatae querelae sunt, de principum negligentia, de expilationibus, de neglectione iudiciorum et defensione.
 
@@ -6298,6 +6301,65 @@ Christ, however, was not such a Nazirite by ceremonies, because He drank wine, b
 
 Likewise without the desire for glory, etc. Chapter III.
 
+Latin:
+
+Caput II. Historia de Magis.
+
+Primum dicendum, quod Deus tradiderit testimonia de nato Filio, ut Ecclesia sit certa. Etsi enim ea quae geruntur in Ecclesia, non ita incurrunt in oculos, ut Alexandri aut Iulii praelia, tamen et his, quae in Ecclesia geruntur, Deus tribuit testimonium. Et haec testimonia colligamus ad nos confirmandos. Filium Dei Messiam natum esse testantur Angeli, Pastores, Simeon, Anna, Zacharias, Elizabeth, Magi.
+
+Secunda doctrina.
+
+Etiam gentes pertinent ad Ecclesiam, et haec est confessio gentium prima post natum Christum. Quando autem dicitur de collectione Ecclesiae ex gentibus, simul dicitur, quod remissio peccatorum gratis detur, non propter legem, sed propter Messiam, iuxta illud: In semine tuo benedicentur omnes gentes.
+
+3. Qui fuerunt illi Magi? Homines Persici, haud dubie ex schola Danielis reliqui. Nam Daniel in Persia praeses fuit. Sic semper Deus aliquam Ecclesiam ex gentibus collegit: ideoque dispersi sunt Israëlitae, ut alibi docerent, et consentaneum est in Germania quondam multos fuisse recte agnoscentes et invocantes Deum in agnitione promissionis de Messia.
+
+4. Miraculum de stella testimonium est praesentiae Dei apud hos Magos, quia haec fuit nova stella propior terrae, quam aliae, quia monstratrix fuit ipsius domunculae, in qua erat Maria. Et necesse est fuisse viros doctos, qui discrimina stellarum aliquo modo sciverunt.
+
+5. Doctrina, Expavescit Herodes et Principes: Ita praedicatione Evangelii exorta, semper Principes metuunt suae tranquillitati.
+
+6. Dictum Micheae: Et tu Bethlehem, docet generatione divina et humana, affirmat Messiam fuisse ante initium mundi. Et tamen nasciturum esse in Bethlehem. Ergo assumet naturam humanam. Dicit et de officio: Dux qui pascet populum meum Israël, Dux qui liberabit nos a summis malis, peccato, morte, regno diaboli.
+
+7. Doli Herodis. Evangelium vi et fraude oppugnatur.
+
+8. Magi veniunt ad puerum, et ibi ostendunt suam confessionem, adfirmant hunc esse Messiam, fuerunt autem haud dubie dulcia colloquia de promissionibus propheticis. Donaverunt aurum et alia, sic divites semper aliquid conferre debent ad ministerium tuendum.
+
+9. Est et haec allegoria donorum suavis, Aurum fides: Doctrina Thus, Invocatio, Sacrificium: Myrrha, Crux.
+
+10. Fuga Christi et Mariae, et solicitudo Dei pro Ecclesia: iubet fugere, et dat hospitium alibi.
+
+11. Persecutio, interfectio puerorum facta per Herodem. Hic primum dicatur de Infantibus. Haec historia testimonium est, quod infantes in Ecclesia placeant Deo, habeant Spiritum sanctum, et sint haeredes vitae aeternae, quia hi infantes sine ulla dubitatione fuerunt sancti, et laudantur tanquam sancti, per dictum, quod citat Apostolus de vere sanctis, quia filii Rachel sunt filii Ecclesiae et haeredes vitae aeternae.
+
+Et ubi est haereditas vitae aeternae, ibi est Spiritus sanctus. Ergo ut in his infantibus, ita in nostris Spiritus sanctus est efficax etc. Et damnandi sunt Anabaptistae contrarium docentes.
+
+Hic discendum est, varias esse causas afflictionum in Ecclesia, verum est, saepe nos puniri propter certa delicta.
+
+Ut David propter adulterium punitur. Sed praeter hanc causam etiam aliae sunt, videlicet, Immanitas odii in diabolo saepe grassantis etiam in eos, qui non habent propria delicta, ut Daniel, Ieremias et similes, non habuerunt delicta, propter quae ipsi, ut caeteri abducerentur in exilium, sed causae aliae fuerunt, cur communi calamitati impliciti sint.
+
+Ita nunc, quando venient calamitates, sciamus multos esse, quorum delicta meruerunt. Sed sciamus simul diabolum propter odii magnitudinem grassari in multos innocentes. Quare non desperemus, sed sciamus Deum exauditurum esse clamores Ecclesiae, et repressurum saevitiam diaboli, sicut in hac historia, in dicto Ieremiae Ecclesia plorat et clamat, et metuit universalem interitum, sicut dicit: Noluit consolationem admittere, quia non sint filii, quia prorsus omnes perituri videantur.
+
+Et Deus vult nos in talibus periculis non solum propter peccata nostra orare, sed etiam adversus diabolum, et scire, quod Deus velit nos audire petentes auxilium contra diabolum.
+
+Propter peccata nostra iuste patimur. Sed quod ad diabolum attinet, iniuste patimur, ideo Deus exaudit nos.
+
+Hic etiam consideremus, quanta haec persecutio fuerit. Non solum passi sunt pueri, sed multo magis parentes, quia nullus dolor humanus maior est, quam dolor ex liberorum calamitate, Quare?
+
+Quia Deus hunc affectum voluit esse signum sui amoris erga Filium et erga nos. Consolatio est consideranda, Ecclesia tunc non habuit defensionem, et tamen servata est.
+
+Herodes interfecit pueros, et antea interfecerat septuaginta Seniores, qui erant summum regimen.
+
+Pharisaei ipsi interfecerant Zachariam, et talia multa fiebant. Ideo non simus adeo tenelli, zertlich, ut nihil velimus pati, sed agnoscamus Ecclesiae usitatam crucem, et speremus Deum tamen reliquias servaturum esse.
+
+Nazaraeus.
+
+Nazaraei fuerunt votivi in populo, quibus Deus formam voti tradiderat, et non bibebant vinum, non radebant capillos etc.
+
+Hoc fuit institutum sicut alia multa externa exercitia in lege, ut esset insignior confessio, quia singulares ceremoniae faciunt hominem conspectiorem, sed significabat verum concionatorem dicatum Deo, non corrumpentem doctrinam sua temulentia etc. non ebrium cupiditate gloriae, humanis opinionibus.
+
+Christus autem non fuit talis Nazaraeus ceremoniis, quia bibit vinum, sed fuit Nazaraeus significatus, id est, purissimus, et Deo dicatus concionator, non ebrius humanis opinionibus, sed verbum pure praedicans.
+
+Item sine cupiditate gloriae etc. Caput III.
+
+## 3:1 Sermons on Matthew: Argument
 First, let the state of the Church of that time be considered here.
 
 There were three sects, and one was entirely impious, the Sadducees.
@@ -6324,6 +6386,35 @@ On the calling of the Gentiles.
 
 5. On the end of the Jewish polity, and the future preaching of the Gospel. 6. On the future judgment and eternal life.
 
+Latin:
+
+Primum hic consideretur status Ecclesiae eius temporis.
+
+Sectae tres erant, et una prorsus impia Sadducaea.
+
+Et Pharisaei plurimi etiam erant impii, pauci fortasse, sicut aliqui Monachi apud nos, erant saniores. Hoc exemplum ostendit saepe maiorem partem Ecclesiae valde errare.
+
+Interea tamen Deus aliquos servat, ut tunc erant Zacharias, Simeon, Elizabeth, Anna, Maria, Ioseph et multi alii. Ita Deus servat sibi semen, etiamsi impii dominantur.
+
+Hanc imaginem nobis proponamus, ut nos consolemur nunc quoque, cum clamant adversarii, Ecclesiam non errare, et se esse Ecclesiam etc. In talibus tenebris Deus rursus accendit lucem, vocat Iohannem, et iubet eum instituere baptismum, et praedicare Evangelium in deserto.
+
+Ita Deus mirabili misericordia subinde instaurat Ecclesiam. Sed hic quaeritur, an liceat facere contra potestatem ordinariam, sicut Iohannes discessit a templo.
+
+Respondeo: Semper necesse est anteferri mandatum Dei potestati ordinariae, sicut Apostoli dixerunt: Oportet Deo magis obedire quam hominibus.
+
+Quid docuit Iohannes? 1.
+
+Doctrinam de poenitentia. 2.
+
+De remissione peccatorum. 3.
+
+De bonis operibus omnium statuum. 4.
+
+De vocatione gentium.
+
+5. De fine politiae Iudaicae, et praedi- catione Evangelii futura. 6. De futuro iudicio et vita aeterna.
+
+## 3:8 Sermons on Matthew
 Bring forth fruits worthy of repentance.
 
 Who they are must be learned from the other sermons of John. The first fruit is to grow in faith; John often inculcates this: Behold the Lamb of God. John 5: Everyone who believes in him has eternal life. The second fruit, the works of the second table, and it is the most common: Alms. He who has two tunics, let him give to him who has none. Behold, he teaches who ought to give, and to what kind of people, according to the rule of Paul: Not that there may be tribulation for you, and relief for others. Let those give who have and can bestow something of their own; let it be given to the truly needy, who cannot work and are honest; Solomon: Do not give your substance to the cruel.
@@ -6452,317 +6543,7 @@ Likewise, those who obscure the doctrine of faith. Let us hold rather to this co
 
 Think diligently on these principal things concerning John, and give thanks to God that He preserves the Church, and pray that He may preserve it hereafter as well.
 
-Chapter IV. Concerning the temptations of Christ. Preface.
-
-Although those temptations are great and obscure, and cannot be sufficiently understood or explained by us, yet they are not written in vain, but the Holy Spirit wished to teach us something when He willed those mysteries to be written.
-
-But first, they warn of this: that there is a great war between the Son of God and the devil, just as it was immediately foretold in Genesis: I will put enmity between you and the seed of the woman. Therefore, the devil has always attacked the Church in various ways—with slaughters, errors, and many great confusions—so that he might draw many away from the truth of God.
-
-II.
-
-It is not enough to know of the struggle, but it must also be known how we can conquer. It is therefore foretold that the Son of God is the victor. And thus Genesis says: The seed of the woman shall crush the head of the serpent. The exact same thing is understood in this saying: The Son of God came to destroy the works of the devil.
-
-III.
-
-Therefore, the battle of Christ and the devil is narrated here so that we may see an example that Christ was the victor, and that we may learn that we too must conquer. We shall conquer, however, not alone, without Christ as our leader, but by faith and the invocation of the Son of God.
-
-IIII.
-
-And the war is marvelous. The devils are most powerful and most cunning spirits, and the Church is a gathering of the most infirm and foolish men, children, women, and other miserable people. The devil rages against these, as if robust men were to break into a gathering of infants, and some were to seize others and dash them against the walls.
-
-In such a battle, however, we miserable ones conquer, but we do not conquer by our own strength, but by the invocation of the Son of God, because He drives those robust ones away from the infants daily.
-
-These things concerning the application—that we ought to run to Christ the victor in every temptation—should be learned first in this history; afterwards, the history may be viewed.
-
-There are three principal persecutions by which the devil has attacked the Church. Types of these persecutions are proposed in the person of Christ. 1. Corporal persecution, famine and the sword. 2. Persecution through heresies. 3. Persecution through manifest idolatry.
-
-Thus, Christ is first tempted concerning sustenance.
-
-If you are the Son of God, if you are the Messiah, feed yourself. There is irony in the saying: Command that these stones become bread, as if he were saying, "Forsooth, you will have your sustenance from stones."
-
-Just as now pastors and other ministers go hungry, and many are deterred from the ministry because of poverty.
-
-Christ opposes the word of God and sustains Himself by faith.
-
-Thus He teaches us also to do battle, to seek the word of God, to stir up faith, and to gaze upon the victor Himself. Then we shall not only have spiritual consolation, but temporal evils will also be mitigated.
-
-Man does not live by bread alone, but by every word that proceeds from the mouth of God.
-
-It is a great consolation that the word of God is to be sought first and received by faith. This is more the cause of life than natural instruments.
-
-Example. Let us first seek the Gospel, and receive it by faith, then we shall have defense through God more than through armies.
-
-We should always carry this consolation in our minds. Many are greatly anxious about their own sustenance and that of their children, but from this they ought to seek consolation.
-
-And universally in every government this rule must be held. First embrace the word of God, and obey God, afterwards commend the outcomes to God. And let not man think that all outcomes can be foreseen or governed by human counsel. Therefore the Psalm says: Commend your way to God, and he will act. Likewise: Be subject to God, and pray to him.
-
-But it is a great evil in men that they wish to foresee and govern all things by their own counsel, meanwhile neglecting the word of God. Thus the devil leads men to this wisdom: omit the word, omit the ministry, consult for yourself, be certain of sustenance, of protections, do not bring dangers upon yourself.
-
-But Christ calls us back to the word, and affirms that the principal cause of life is God, even if physical causes are not discerned by us. Just as Moses also had defense without physical causes.
-
-Concerning the second temptation.
-
-The second temptation is the image of heretics. For after the Church has in some way struggled out of bodily dangers, the devil now begins spiritual persecutions. He instigates some to stir up opinions, and to devise cults and laws, without the word of God, outside the order instituted by God, only obeying their own curiosity, and following their own judgments, admiring their own wisdom, and pleasing themselves.
-
-Thus the devil takes Christ to be agitated. He proposes this thought to him: It would be beautiful if you did something new, which others do not know, namely if you were to fly down from the temple here in the sight of all, and did not descend by the steps. All would admire this and preach it as a new, unheard-of, and divine work.
-
-Nor should you fear danger, because it is written: He has commanded his angels concerning you, etc. In this thought he detained Christ for a long time, and harshly vexed him.
-
-But finally Christ wins, and opposes a rule against the irregular work. And he has proposed a very useful example here for us, so that we may learn the common and necessary rules for all against irregular works.
-
-Gideon does an irregular work, he sacrifices and institutes a cult in his own house, but he ought to have remembered the rule. For the people of Israel had a manifest prohibition, not to sacrifice elsewhere, except at the tabernacle.
-
-The rule is: You shall not tempt the Lord your God. What does it mean, To tempt God? It is to want to make something better, more beautiful, than how God has ordained it, and to undertake such things, without the command and word of God,
-
-without a calling. Or. To tempt God is a sin not only of infirmity, like David's adultery: but it is a sin of wisdom, namely, when the sin arises from arrogance or trust in wisdom, namely when the mind, admiring its own wisdom, despises the wisdom of God, and wishes to do or ordain something, with this very imagination, that it is better than what is ordained divinely.
-
-It is not doing wrong out of weakness, but out of this special, excessive, supposed cleverness, that one thinks his order or undertaking is more beautiful and better than God's command or order, and is thus driven primarily by one's own cleverness.
-
-Example. It does not please the people of Israel, when they did not have a king, the state without a certain head, it seems to be a deformed species. There, by their own wisdom, they wish to change the form of the Republic. That truly was to tempt God.
-
-The sons of Ephraim in Egypt knew that the land of Canaan was promised, and they bore servitude with difficulty; it seemed therefore to them beautiful, worthy of brave men, to move to war, and to try to occupy the land of Canaan, but without a calling: therefore they were killed. Therefore this rule teaches that one must not depart from the common command of God, or from the common ordination of God, without a singular command and without a calling. Just as Abraham departed, offering his son, but he had a peculiar command.
-
-Application.
-
-This temptation is curiosity in many parts of life: in teaching, in worship, in government, in politics, and in economics.
-
-But here it is spoken especially of teachers, because they stand on the pinnacle of the temple.
-
-Arius stands in the highest place of the temple, that is, he is a most excellent teacher.
-
-To him comes the devil, the author of curiosity, and instigates him: "See, it would be beautiful if the unity of God were understood in such a way that we would say the Son is not God by nature."
-
-With this thought he greatly torments him, and drives him to collect scriptures for this imagination. Finally, he urges him strongly, just as curiosity is a vehement impulse.
-
-Here Arius is overcome, and flies from the temple, he scatters a false opinion, having abandoned the Word of God, which he corrupts, just as the devil corrupts, saying, "He will keep you," but he does not add, "in your ways," that is, in a legitimate calling.
-
-Thus the Pope brings in a law about celibacy. He thinks, "We see the wives and children of priests and bishops causing much trouble; it would be beautiful if priests were celibate."
-
-Thus the Pope follows his own imagination out of foolish wisdom and curiosity, and brings in a new law, against the commandment of God.
-
-So did others, instituting vows and monasticism.
-
-Conclusion. Let us learn, therefore, from this victory of Christ, to resist temptations against true doctrine. Likewise, let us learn to resist temptations against our calling. You are a schoolmaster, and you would gladly take upon yourself the reformation of the Church.
-
-Thus, in our whole life, let us accustom ourselves to do things according to rule. [German: That we remain by the rule, and do not undertake or stir up unnecessary things outside the rule out of self-willed cleverness.]
-
-Curiosity is to undertake irregularities out of an opinion of one's own wisdom, that is, works without a calling, or without the commandment of God.
-
-[German: The boys should not go into the Elbe, they can well go to the bath otherwise.]
-
-On the third Temptation.
-
-The first is more clear, namely, to be solicited to defection from the Gospel because of hunger and dangers.
-
-Against this is opposed the promise of God, who promises sustenance and defense; so let us now console ourselves with this very promise.
-
-The second temptation is to be solicited to corrupt doctrine, by an opinion of one's own wisdom or righteousness.
-
-Against this is opposed the rule: "You shall not tempt the Lord your God." It is, however, to tempt God, not to fall through infirmity, but through curiosity, that is, to depart from the commandment and ordination of God out of an opinion of one's own wisdom, as if you wished to do or ordain something better.
-
-In the first temptation, infirmity sins.
-
-In the second, it sins properly—not infirmity, but the opinion of one's own wisdom and one's own righteousness, intending to do something better.
-
-Now the third temptation follows, namely, to be solicited to manifest idolatry or blasphemy. Where not infirmity sins, nor does the opinion of wisdom or righteousness, but the devil, knowing and damning himself, seeks idolatry and blasphemy out of hatred for God, as Julian, obeying the devil, knowing and damning himself, embraces idols out of hatred and manifest contempt for God; he paints Jupiter offering him a scepter, and Pallas, who clothes him in imperial purple, and Mars, who hands him a sword.
-
-He knows these are fictitious and false deities.
-
-In this temptation, Christ does not dispute, but, being angry, repels the devil, because the matter is manifest.
-
-And only the zeal of faith is needed to repel the devil. This image does not need a long declaration; it signifies the last and most horrible idolatry in the Church. Just as this person, namely Christ, is tempted, so it is signified that in the body of Christ, the holy Church, there will be future idolatry, which impious men will defend with manifest contempt for God, knowing it to be idolatry. And they will defend it for the sake of power and wealth.
-
-This assembly defending the idol, and reigning, is the pontifical kingdom with all its adherents, and it defends manifest idols, just as the heathens did: Masses for the dead, the adoration of the bread carried about in a spectacle, the cult of the saints. These are openly idols, as they themselves know, and they defend them not for any appearance, but for the sake of the kingdom, wealth, and status.
-
-Against these, there is no need for disputation, after we know they are idols, but the zeal of faith is needed, We ought earnestly to pray that God may destroy idols, destroy the defenders of idols, and thrust the devil down into the lowest Tartarus, so that he may be in torments and unable to do harm.
-
-Let us now recognize that such a great war has been stirred up over this third temptation. The devil fights within his own assembly to preserve idols, and he holds the eyes of the Pope and Caesar captive through admiration for the papal establishment and the splendid empire.
-
-And we shall not be able to resist the devil unless the Son of God also fights among us and says to the devil: “Get back, Satana.”
-
-First, that when idols are manifest, there should be no further debate, but they must be simply fled and detested with the zeal of the Spirit and a certain indignation: and that even those vipers must be fled, which excuse idols, as there are now many such, who beautifully paint the Mass and the cult of the Saints, and other things. Let us flee such devils.
-
-Secondly, we should know that we cannot alone resist the cunning of the devil, but that we ought to seek the help of God.
-
-vehemently we must pray, that God may destroy the idols which have followed. And now we see an example in our own perils, that enemies threaten us on every side, etc.
-
-He left Nazareth and dwelt in Capernaum, perhaps for this reason, that he might be safer, because the Romans held Capernaum. There was a Centurion, of whom he says: I have not found such great faith in Israel.
-
-He cited a passage from Isaiah, and adapts it to this narrative, even if a part in that place speaks of other histories, but Isaiah himself soon adds a sermon about the Messiah: The people who sit in darkness have seen a great light.
-
-The beginning of the preaching of Christ.
-
-Repent. For the kingdom of heaven is at hand.
-
-Let this be the principal part of the sermon.
-
-On Repentance.
-
-Proposition. One and the same is the preaching of the Gospel from the very beginning after the fall of Adam, with the promise issued, just as Christ preaches here.
-
-Thus, precisely in Paradise, he first rebukes sin, afterwards he adds consolation. And thus he taught the Apostles to preach, in the last chapter of Luke.
-
-II. There are, however, two principal parts of repentance or conversion.
-
-Contrition; of this he says: Repent, because first it is necessary that sin be reproved, as he says: The Holy Spirit will reprove the world. Likewise: Where will the Lord dwell? In a contrite spirit.
-
-Security does not please God; nay, that he may shake off security from us, he has subjected the Church to the cross.
-
-III. The second part is consolation, as in Paradise; The seed of the woman shall crush the head of the serpent.
-
-And now let us often consider that promise. And in consolation let us rouse ourselves to pray.
-
-Finally, after victories the angels come and serve. And although they are present even in temptation, as fellow soldiers, nevertheless after victory their presence is more clearly seen. Then they rejoice with us, and together with us give thanks to God.
-
-Iesus, hearing that Iohannem had been arrested.
-
-Iohannes first preached in Iudaea, at Bethabaram, beginning about a year before the preaching of Christi. Later he left Iudaea for Galilaeam, where he baptized at Salem. There he was arrested by Herode and spent a long time in prison. He was put to death at the end of the second year of the preaching of Christi.
-
-We shall speak elsewhere, however, of the suffering of Iohannis, which is also a striking example testifying that the Church is subject to the cross, just as many examples followed from the very time of Abel onward: those of the children of Israël in Aegypto, and thereafter of persecutions,
-
-And Christ commands the Apostles: Whose sins you shall forgive, they are forgiven them.
-
-And here: The kingdom of heaven is at hand, that is, the remission of sins, the righteousness of the Holy Spirit, eternal life on account of Christ.
-
-Let us learn this consolation, and oppose it to all human miseries, and even if we are afflicted, and are killed by tyrants, yet let us know that we are received by God on account of Christ the Son of God, and have been made heirs of eternal life. And whenever there is talk of the remission of sins, it must be taught that this is necessary, so that there may be certain consolation: That remission is given freely on account of the Son, not on account of our merits. This is the article about which the struggle is now especially waged; because of this voice of the Gospel, the devil tries to kill us. And he tries to destroy this necessary consolation of the Church.
-
-The calling of the disciples.
-
-First, it is said concerning the perpetual preservation of the evangelical ministry, according to the saying in Eph. 4: He ascended, giving gifts to men, some Prophets, some Apostles, etc. Here, therefore, let us learn at the beginning that God, from the very beginning after the fall of Adam, instituted the ministry of teaching the Gospel. And God Himself was the first preacher in Paradise, when He promulgated the mysterious promise concerning the seed that would crush the head of the serpent. Afterward, Adam was priest and preacher, then Seth, then others in their order. And often, when the doctrine was obscured, God called new ministers, as He called Abraham and then the Prophets, Samuel, Elijah, Elisha, Isaiah, and others. Afterward, Christ Himself preached openly. And because He wished to institute a new ministry, having abolished the Mosaic polity and deleted the Levitical priesthood, He Himself now calls new ministers. And from then on, He preserves the ministry of the Gospel in the human race, and often raises up new ministers by a singular gift, just as He raised up Augustine against the Pelagians, and others against others, and recently Doctor Martin Luther. Let this perpetual preservation of the ministry be considered here first, and let us give thanks to God for this great benefit, that He gives the Gospel, through which He grants eternal life, and that He always preserves some ministers, as is said in Isaiah: I have put my word in your mouth, and I will protect you with my hand, that you may plant the heavens for me. Let us also venerate this ministry and defend it as much as we can.
-
-Let these things be known first in general concerning the ministry of the Gospel.
-
-Secondly. What is the principal office of the evangelical ministry? I say that always and at every time, from the beginning after the fall of Adam, the office of the evangelical ministry has been the same, which we see God doing in Paradise. It reproves sins, and preaches about the Messiah and the remission of sins.
-
-Thus we now preach the doctrine of repentance and the remission of sins, as is said in the last chapter of Luke.
-
-Thirdly. But why does Christ call from another tribe, when previously the Levitical tribe had been ordained to the priesthood? Because He wishes to destroy the polity of Moses, and wishes to gather the Church from the Gentiles and the Jews. And here let us learn an example of the wrath of God, that when priests manifestly reject the doctrine, then God calls other new ministers.
-
-Just as when the colleges of Canons have rejected the doctrine, there is no doubt that they will fall, even if we do not know by whom they are to be destroyed.
-
-Fourthly. The Apostles, having left all things, follow Christ. Thus, those called to the ministry should obey. Add here the text in Leviticus: Who said to his father and his mother, I do not know you.
-
-And he went about all Galilee. He narrates the beginnings of the preaching of the Gospel, and briefly recounts that the doctrine was confirmed by many miracles. Here it can be briefly added that miracles are recounted for three reasons. The first is that they may be testimonies of the doctrine, that it is from God, because those singular deeds, since they cannot be done except by God, testify that this teacher was sent by God, and that God is effective through him, and that the doctrine is truly the judgment of God, etc. The second reason is: Miracles are testimonies of the promises, such as this promise: Call upon me in the day of trouble, and I will deliver you. This poor man cried to the Lord, and the Lord heard him.
-
-The third reason: Miracles contain the doctrine concerning the application of the promises, that is, that benefits are received by faith on account of Christ, and indeed, that all receive them without respect of persons, just as Christ receives all who flee to him without discrimination—Jews, Samaritans, Canaanites, Gentiles, Centurions, Publicans.
-
-A general sermon follows concerning the interpretation of the Decalogue, because the Pharisees had corrupted the doctrine, and were pretending that only a childish discipline regarding external works was commanded in the Decalogue. Then they pretended further that men were righteous through that discipline, and earned the remission of sins, and they were destroying the entire doctrine concerning the Messiah. It is necessary, however, that these errors be censured in the Church, and that the doctrine concerning sin and the redemption granted through the Messiah be illustrated. For these reasons, the exposition of the Decalogue is recited.
-
-But before the exposition of the law, consolations concerning the cross are proposed, because the Pharisaic doctrine, just like the philosophical, is ignorant of the doctrine of the cross, and reasons thus: "It is well with the righteous; Abel is killed. Therefore, Abel is unrighteous and rejected by God." But this doctrine affirms in this place that a man is not rejected by God on account of the cross or calamities. And it is universally profitable for men in the Church to know that all calamities are either punishments calling one to repentance, like the exile of David; or they are exercises, like the prison of Joseph; or they are testimonies of doctrine, like the killing of John or Paul; or they are a price for others. Such a price is the death of Christ alone. And remember these four degrees diligently, and think on them often, so that you may know why the Church is subject to the cross, and that from these fountains consolations may be drawn, after we know the causes of afflictions.
-
-Now the text follows. Blessed are the poor in spirit, that is, those who are patient in poverty.
-
-He began with poverty, because this is the most common misery of the pious. And let no other exposition be sought; the text speaks of poverty, as we commonly call it, the lack of necessary things, when money and other things necessary for sustenance are wanting.
-
-He calls these "poor in spirit"—that is, those who tolerate poverty with true patience of heart—blessed, that is, not rejected by God, but having a state pleasing to God. For Blessed here does not signify those who are dead and possess eternal life, as we commonly speak, or those who earn eternal life, but it signifies a good work, or a state not rejected by God, as if he were to say: "It is well with the poor," that is, they are not rejected by God.
-
-And he speaks of the Church, which is first righteous by faith, and afterwards has many good works, each of which is called a beatitude. Lazarus lying before the house of the rich man is blessed, but in this way: first he is righteous by faith, afterwards his patience in poverty is a beatitude, that is, a good work pleasing to God; nor was Lazarus rejected by God. Furthermore, it must be known that poverty itself is not praised, as the monks pretended, who nevertheless did not lack any necessary things.
-
-But he speaks of obedience in poverty, that is, of obedience toward God. Both are ordained by God: riches and poverty. And a man is neither received nor rejected on account of riches or poverty, but to use riches rightly is a good work; to use poverty rightly is also a good work.
-
-Abraham is rich, and pleases God, because he is righteous by faith, and then he uses riches rightly; he does not value riches more than the confession of doctrine. Moses in the court of Pharaoh could have been rich and become a Prince, if he had defected to the Egyptian religion, but he prefers to be poor and to retain the true religion.
-
-We see many such examples in daily life. Someone among us could be a rich Canon, with impiety. But he prefers to be a poor Deacon, with piety. *
-
-For theirs is the kingdom of heaven.* I ask, do they merit the kingdom of heaven by poverty?
-
-No, but since they have already been made sons and heirs, the kingdom of heaven is at the same time a compensation for poverty.
-
-What does the kingdom of heaven signify? Not only future glory, but at the same time the entire divine defense in this life.
-
-Joseph in prison, a pauper, has the kingdom of heaven.
-
-He is rich on account of the defense of God. Blessed are those who mourn. By those who mourn in this place are generally understood all the pious who are tormented by true sorrows and anxieties, as first those who are unjustly afflicted on account of the profession of true doctrine, or who otherwise suffer as innocents, such as were Abraham, Jacob,
-
-Joseph, David, three men in the Babylonian furnace. Likewise those also, who, although they are not innocent, remain in punishments, and are chastised on account of their own sins, as when thieves, murderers, and other criminals are seized for punishment, if however they are converted to God, and conceive consolation, and are raised up by the trust of the mediator Christ, by the example of the thief on the cross, of King Manasseh, and of the Prophet David, etc.
-
-Concerning each of these lying in grief or sorrow, provided they are converted to God, and fleeing to Christ, find rest in faith, this rule is certain and remains true, promising salutary relief: Blessed are those who mourn, for they feel consolation. And let it be referred to the voice of the oath: I live, says the Lord, I do not desire the death of the sinner, but that he be converted and live.
-
-Also Isaiah 66: Where will the Lord dwell? In a contrite and troubled spirit, and one who trembles at my words. Also Psalm 51: A sacrifice to God is a troubled spirit; a contrite and humbled heart, O God, you will not despise. And let the declaration here be taken from the complete explanation of the whole doctrine concerning the cross.
-
 Latin:
-
-Caput II. Historia de Magis.
-
-Primum dicendum, quod Deus tradiderit testimonia de nato Filio, ut Ecclesia sit certa. Etsi enim ea quae geruntur in Ecclesia, non ita incurrunt in oculos, ut Alexandri aut Iulii praelia, tamen et his, quae in Ecclesia geruntur, Deus tribuit testimonium. Et haec testimonia colligamus ad nos confirmandos. Filium Dei Messiam natum esse testantur Angeli, Pastores, Simeon, Anna, Zacharias, Elizabeth, Magi.
-
-Secunda doctrina.
-
-Etiam gentes pertinent ad Ecclesiam, et haec est confessio gentium prima post natum Christum. Quando autem dicitur de collectione Ecclesiae ex gentibus, simul dicitur, quod remissio peccatorum gratis detur, non propter legem, sed propter Messiam, iuxta illud: In semine tuo benedicentur omnes gentes.
-
-3. Qui fuerunt illi Magi? Homines Persici, haud dubie ex schola Danielis reliqui. Nam Daniel in Persia praeses fuit. Sic semper Deus aliquam Ecclesiam ex gentibus collegit: ideoque dispersi sunt Israëlitae, ut alibi docerent, et consentaneum est in Germania quondam multos fuisse recte agnoscentes et invocantes Deum in agnitione promissionis de Messia.
-
-4. Miraculum de stella testimonium est praesentiae Dei apud hos Magos, quia haec fuit nova stella propior terrae, quam aliae, quia monstratrix fuit ipsius domunculae, in qua erat Maria. Et necesse est fuisse viros doctos, qui discrimina stellarum aliquo modo sciverunt.
-
-5. Doctrina, Expavescit Herodes et Principes: Ita praedicatione Evangelii exorta, semper Principes metuunt suae tranquillitati.
-
-6. Dictum Micheae: Et tu Bethlehem, docet generatione divina et humana, affirmat Messiam fuisse ante initium mundi. Et tamen nasciturum esse in Bethlehem. Ergo assumet naturam humanam. Dicit et de officio: Dux qui pascet populum meum Israël, Dux qui liberabit nos a summis malis, peccato, morte, regno diaboli.
-
-7. Doli Herodis. Evangelium vi et fraude oppugnatur.
-
-8. Magi veniunt ad puerum, et ibi ostendunt suam confessionem, adfirmant hunc esse Messiam, fuerunt autem haud dubie dulcia colloquia de promissionibus propheticis. Donaverunt aurum et alia, sic divites semper aliquid conferre debent ad ministerium tuendum.
-
-9. Est et haec allegoria donorum suavis, Aurum fides: Doctrina Thus, Invocatio, Sacrificium: Myrrha, Crux.
-
-10. Fuga Christi et Mariae, et solicitudo Dei pro Ecclesia: iubet fugere, et dat hospitium alibi.
-
-11. Persecutio, interfectio puerorum facta per Herodem. Hic primum dicatur de Infantibus. Haec historia testimonium est, quod infantes in Ecclesia placeant Deo, habeant Spiritum sanctum, et sint haeredes vitae aeternae, quia hi infantes sine ulla dubitatione fuerunt sancti, et laudantur tanquam sancti, per dictum, quod citat Apostolus de vere sanctis, quia filii Rachel sunt filii Ecclesiae et haeredes vitae aeternae.
-
-Et ubi est haereditas vitae aeternae, ibi est Spiritus sanctus. Ergo ut in his infantibus, ita in nostris Spiritus sanctus est efficax etc. Et damnandi sunt Anabaptistae contrarium docentes.
-
-Hic discendum est, varias esse causas afflictionum in Ecclesia, verum est, saepe nos puniri propter certa delicta.
-
-Ut David propter adulterium punitur. Sed praeter hanc causam etiam aliae sunt, videlicet, Immanitas odii in diabolo saepe grassantis etiam in eos, qui non habent propria delicta, ut Daniel, Ieremias et similes, non habuerunt delicta, propter quae ipsi, ut caeteri abducerentur in exilium, sed causae aliae fuerunt, cur communi calamitati impliciti sint.
-
-Ita nunc, quando venient calamitates, sciamus multos esse, quorum delicta meruerunt. Sed sciamus simul diabolum propter odii magnitudinem grassari in multos innocentes. Quare non desperemus, sed sciamus Deum exauditurum esse clamores Ecclesiae, et repressurum saevitiam diaboli, sicut in hac historia, in dicto Ieremiae Ecclesia plorat et clamat, et metuit universalem interitum, sicut dicit: Noluit consolationem admittere, quia non sint filii, quia prorsus omnes perituri videantur.
-
-Et Deus vult nos in talibus periculis non solum propter peccata nostra orare, sed etiam adversus diabolum, et scire, quod Deus velit nos audire petentes auxilium contra diabolum.
-
-Propter peccata nostra iuste patimur. Sed quod ad diabolum attinet, iniuste patimur, ideo Deus exaudit nos.
-
-Hic etiam consideremus, quanta haec persecutio fuerit. Non solum passi sunt pueri, sed multo magis parentes, quia nullus dolor humanus maior est, quam dolor ex liberorum calamitate, Quare?
-
-Quia Deus hunc affectum voluit esse signum sui amoris erga Filium et erga nos. Consolatio est consideranda, Ecclesia tunc non habuit defensionem, et tamen servata est.
-
-Herodes interfecit pueros, et antea interfecerat septuaginta Seniores, qui erant summum regimen.
-
-Pharisaei ipsi interfecerant Zachariam, et talia multa fiebant. Ideo non simus adeo tenelli, zertlich, ut nihil velimus pati, sed agnoscamus Ecclesiae usitatam crucem, et speremus Deum tamen reliquias servaturum esse.
-
-Nazaraeus.
-
-Nazaraei fuerunt votivi in populo, quibus Deus formam voti tradiderat, et non bibebant vinum, non radebant capillos etc.
-
-Hoc fuit institutum sicut alia multa externa exercitia in lege, ut esset insignior confessio, quia singulares ceremoniae faciunt hominem conspectiorem, sed significabat verum concionatorem dicatum Deo, non corrumpentem doctrinam sua temulentia etc. non ebrium cupiditate gloriae, humanis opinionibus.
-
-Christus autem non fuit talis Nazaraeus ceremoniis, quia bibit vinum, sed fuit Nazaraeus significatus, id est, purissimus, et Deo dicatus concionator, non ebrius humanis opinionibus, sed verbum pure praedicans.
-
-Item sine cupiditate gloriae etc. Caput III.
-
-Primum hic consideretur status Ecclesiae eius temporis.
-
-Sectae tres erant, et una prorsus impia Sadducaea.
-
-Et Pharisaei plurimi etiam erant impii, pauci fortasse, sicut aliqui Monachi apud nos, erant saniores. Hoc exemplum ostendit saepe maiorem partem Ecclesiae valde errare.
-
-Interea tamen Deus aliquos servat, ut tunc erant Zacharias, Simeon, Elizabeth, Anna, Maria, Ioseph et multi alii. Ita Deus servat sibi semen, etiamsi impii dominantur.
-
-Hanc imaginem nobis proponamus, ut nos consolemur nunc quoque, cum clamant adversarii, Ecclesiam non errare, et se esse Ecclesiam etc. In talibus tenebris Deus rursus accendit lucem, vocat Iohannem, et iubet eum instituere baptismum, et praedicare Evangelium in deserto.
-
-Ita Deus mirabili misericordia subinde instaurat Ecclesiam. Sed hic quaeritur, an liceat facere contra potestatem ordinariam, sicut Iohannes discessit a templo.
-
-Respondeo: Semper necesse est anteferri mandatum Dei potestati ordinariae, sicut Apostoli dixerunt: Oportet Deo magis obedire quam hominibus.
-
-Quid docuit Iohannes? 1.
-
-Doctrinam de poenitentia. 2.
-
-De remissione peccatorum. 3.
-
-De bonis operibus omnium statuum. 4.
-
-De vocatione gentium.
-
-5. De fine politiae Iudaicae, et praedi- catione Evangelii futura. 6. De futuro iudicio et vita aeterna.
 
 Facite fructus dignos poenitentia.
 
@@ -6891,234 +6672,6 @@ His dictis confirmemus nos, et sciamus Iohannem non esse doctorem futilem, sed a
 Item, qui obscurant doctrinam de fide. Teneamus potius hanc consolationem: Omnis qui credit in Filium, habet vitam aeternam. Hoc dictum congruit cum dictis Christi et Pauli: Haec est voluntas Dei, ut omnis qui credit in Filium, habeat vitam aeternam.
 
 Haec principalia de Iohanne cogitate diligenter, et Deo gratias agite, quod servet Ecclesiam, et orate, ut posthac quoque servet.
-
-Caput IIII. De tentationibus Christi. Praefatio.
-
-Quanquam illae tentationes magnae sunt, et obscurae, et non satis intelligi aut declarari a nobis possunt, tamen non sunt frustra scriptae, sed aliquid docere nos Spiritus sanctus voluit, cum voluit illa arcana scribi.
-
-Primum autem hoc monent, quod magnum sit bellum inter Filium Dei et diabolum, sicut statim in Genesi praedictum est: Ponam inimicias inter te et semen mulieris. Ideo semper diabolus Ecclesiam varie oppugnavit, caedibus, erroribus, et multis magnis confusionibus, ut multos a veritate a Deo abstrahat.
-
-II.
-
-Non satis est scire certamen, sed etiam sciendum est, quomodo possimus vincere. Praedictum est igitur, quod Filius Dei sit victor. Et sic inquit Genesis: Semen mulieris conculcabit caput serpentis. Idem prorsus in hoc dicto intelligitur: Filius Dei venit, ut destruat opera diaboli.
-
-III.
-
-Ideo narratur hic pugna Christi et diaboli, ut exemplum videamus, quod Christus fuerit victor, et discamus nos quoque oportere vincere. Vincemus autem non soli, sine duce Christo, sed fide et invocatione Filii Dei.
-
-IIII.
-
-Et mirabile est bellum. Diaboli sunt Spiritus potentissimi et astutissimi, et Ecclesia est coetus hominum infirmissimorum et stultorum, puerorum, mulierum, et aliorum miserorum hominum. In hos grassatur diabolus, ut si viri robusti irrumperent in coetum infantum, et alii alios arriperent et alliderent parietibus.
-
-In tali pugna tamen nos miseri vincimus, sed non vincimus nostris viribus, sed invocatione Filii Dei, quia illos robustos ab infantibus depellit quotidie.
-
-Haec de applicatione, quod debeamus concurrere ad Christum victorem in omni tentatione, primum discantur in hac historia, postea videatur historia.
-
-Tres sunt praecipuae persecutiones, quibus Ecclesiam diabolus oppugnavit. Harum persecutionum typi propositi sunt in persona Christi. 1. Persecutio corporalis, fames et gladius. 2. Persecutio per haereses. 3. Persecutio per manifestam idolatriam.
-
-Ita primum tentatur Christus de victu.
-
-Si es Filius Dei, si es Messias, ciba te. Ironia est in dicto: Dic ut isti lapides fiant panes, quasi dicat, scilicet, tu ex lapidibus victum habebis.
-
-Sicut nunc esuriunt Pastores et alii ministri, et multi deterrentur a ministerio propter inopiam.
-
-Christus opponit verbum Dei, et fide sustentat.
-
-Ita docet nos quoque praeliari, verbum Dei quaerere, et excitare fidem, et intueri ipsum victorem. Tunc non solum spiritualem consolationem habebimus, sed etiam temporalia mala mitigabuntur.
-
-Non in solo pane vivit homo, sed in omni verbo quod procedit de ore Dei.
-
-Magna consolatio est, quod primum quaerendum sit verbum Dei, et fide accipiendum. Haec est magis causa vitae, quam naturalia instrumenta.
-
-Exemplum. Primum quaeramus Evangelium, et fide accipiamus, tunc magis defensionem per Deum quam per exercitus, habebimus.
-
-Hanc consolationem semper deberemus mente circumferre. Multi valde anguntur de victu suo et liberorum, sed hinc deberent petere consolationem.
-
-Et universaliter in omni gubernatione tenenda est haec regula. Primum amplectere verbum Dei, et Deo obedias, postea eventus commenda Deo. Et non cogitet homo, omnes eventus posse prospici aut regi humano consilio. Ideo dicit Psalmus: Commenda Deo viam tuam, et ipse faciet. Item: Subditus esto Deo, et ora eum.
-
-Sed magnum malum est in hominibus, quod volunt omnia prospicere et regere suo consilio, interim negligentes verbum Dei. Ita diabolus deducit homines ad hanc sapientiam, omitte verbum, omitte ministerium, consule tibi, sis certus de victu, de praesidiis, non accersas tibi pericula.
-
-Sed Christus nos revocat ad verbum, et affirmat principalem vitae causam esse Deum, etiamsi physicae causae a nobis non cernantur. Sicut et Moises habuit defensionem sine physicis causis.
-
-De secunda tentatione.
-
-Secunda tentatio imago est haereticorum. Postquam enim Ecclesia aliquomodo eluctata est ex corporalibus periculis, diabolus iam spirituales persecutiones incipit. Instigat aliquos, ut moveant opiniones, et excogitent cultus et leges, sine verbo Dei extra ordinem a Deo institutum, tantum obtemperantes suae curiositati, et sua iudicia sequentes, admirantes suam sapientiam, et sibi ipsis placentes.
-
-Ita sumit sibi Christum exagitandum diabolus. Proponit ei hanc cogitationem. Pulcrum esset, si aliquid novi faceres, quod alii non sciunt, videlicet si hic in omnium conspectu volitares de templo, et non descenderes per gradus. Hoc omnes admiraturi essent et praedicaturi tanquam novum, inauditum, et divinum opus.
-
-Nec timeas periculum, quia scriptum est: Angelis suis mandavit de te, etc. In hac cogitatione diu detinuit Christum, et duriter eum vexavit.
-
-Sed tandem vincit Christus, et opponit regulam contra opus irregulare. Et nobis valde utile exemplum hic proposuit, ut discamus regulas communes et necessarias omnibus contra opera irregularia.
-
-Gedeon facit opus irregulare, sacrificat et instituit cultum in domo sua, sed debuisset meminisse regulae. Habebat enim populus Israël manifestam prohibitionem, ne alibi sacrificarent, nisi ad tabernaculum.
-
-Regula est: Non tentabis Dominum Deum tuum. Quid significat, Tentare Deum? Ist etwas bessers, schöners machen wollen, denn wie es Gott geordnet hat, und solchs fürnemen, sine mandato et verbo Dei, sine vocatione.
-
-Vel. Tentare Deum peccatum est non solius infirmitatis, ut Davidis adulterium: sed est peccatum sapientiae, scilicet, quando peccatum oritur ex arrogantia seu fiducia sapientiae, scilicet cum mens admiratrix suae sapientiae, contemnit sapientiam Dei, et vult aliquid facere vel ordinare, hac ipsa imaginatione, quod sit melius, quam ordinata divinitus.
-
-Es ist nicht aus schwacheit vnrecht thun, sondern aus dieser sonderlichen überigen vermeinten klugheit, das einer gedenckt, sein ordnung oder fürnemen, sey schöner vnd besser, denn Gottes beuelh oder ordnung, vnd wird also durch eigne klugheit fürnemlich getrieben.
-
-Exemplum. Non placet populo Israël, cum non haberent regem, status sine certo capite, videtur esse deformis species. Ibi sua sapientia volunt mutare formam Reipublicae. Id vere fuit tentare Deum.
-
-Filii Ephraim in Aegypto sciebant promissam esse terram Chanaan, et aegre ferebant servitutem, videbatur igitur eis pulcrum, dignum viris fortibus, movere bellum, et conari occupare terram Chanaan, sed sine vocatione: ideo interficiebantur. Docet ergo haec regula, Non esse discedendum a mandato Dei communi, seu ab ordinatione Dei communi, sine singulari mandato et sine vocatione. Sicut Abraham discessit, offerens filium, sed habuit peculiare mandatum.
-
-Applicatio.
-
-Haec tentatio est curiositas in multis vitae partibus, in docendo, in cultibus, in gubernatione, in politia, et in oeconomia.
-
-Sed hic praecipue dicitur de doctoribus, quia hi stant in fastigio templi.
-
-Arius stat in summo loco templi, id est, est praestantissimus doctor.
-
-Ad hunc venit diabolus, autor curiositatis, et instigat eum: Ecce pulcrum esset, si unitas Dei sic intelligeretur, quod diceremus Filium non esse natura Deum.
-
-Hac cogitatione valde excruciat eum, et impellit, ut colligat scripturas pro hac imaginatione. Denique valde urget eum, sicut curiositas est vehemens impetus.
-
-Hic Arius vincitur, et volitat de templo, spargit falsam opinionem relicto verbo Dei, quod depravat, sicut diabolus depravat, inquiens, Custodiet te, sed non addit, In viis tuis, id est, legitima vocatione.
-
-Sic Papa fert legem de coelibatu. Cogitat, videmus mulieres et filios Sacerdotum et Episcoporum multa turbare, pulcrum esset, si Sacerdotes essent coelibes.
-
-Ita sequitur Papa ex stulta sapientia et curiositate suam imaginationem, et fert novam legem, contra mandatum Dei.
-
-Sic fecerunt alii instituentes vota et monachatus.
-
-Conclusio. Discamus ergo ex hac victoria Christi, repugnare tentationibus contra veram doctrinam. Item discamus repugnare tentationibus contra vocationem. Tu es Ludimagister, et libenter tibi sumeres reformationem Ecclesiae.
-
-Sic in tota vita assuefaciamus nos, ut regularia faciamus. Das wir bey der Regel bleiben, vnd nicht ausser der Regel aus fürwig vnnötige ding fürnemen oder erregen.
-
-Curiositas est opinione sapientiae propriae suscipere irregularia, id est, opera sine vocatione, seu sine mandato Dei.
-
-Die Knaben sollen nicht in die Elb gehen, können wol sonst ins Bad gehen.
-
-De tertia Tentatione.
-
-Prima est magis perspicua, videlicet, solicitari ad defectionem ab Evangelio propter famem et pericula.
-
-Huic opponitur promissio Dei pollicentis victum et defensionem, ita nos nunc consolemur hac ipsa promissione.
-
-Secunda tentatio, est solicitari ad corrumpendam doctrinam, propriae sapientiae aut iusticiae opinione.
-
-Huic opponitur regula: Non tentabis Dominum Deum tuum. Est autem tentare Deum, non infirmitate labi, sed curiositate, hoc est, opinione propriae sapientiae discedere a mandato et ordinatione Dei, quasi velis aliquid melius facere aut ordinare.
-
-In prima tentatione peccat infirmitas.
-
-In secunda peccat proprie, non infirmitas, sed opinio propriae sapientiae, et propriae iusticiae, melius aliquid facturae.
-
-Nunc tertia tentatio sequitur, videlicet, solicitari ad manifestam idolatriam vel blasphemiam. Ubi non peccat infirmitas, nec peccat opinio sapientiae vel iusticiae, sed sciens et seipsum damnans diabolus, odio Dei quaerit idolatriam et blasphemiam, ut Iulianus obtemperans diabolo, sciens et seipsum damnans amplectitur idola odio et manifesto contemptu Dei, pingit Iovem sibi porrigentem sceptrum, et Palladem, quae induit eum purpura imperatoria, et Martem, qui tradit ei gladium.
-
-Haec scit commentitia et falsa numina esse.
-
-In hac tentatione Christus non disputat, sed iratus repellit diabolum, quia res manifesta est. Et tantum zelo fidei opus est ad repellendum diabolum.
-
-Nec indiget longa declaratione haec imago, significat postremam et maxime horrendam idolatriam in Ecclesia. Sicut tentatur haec persona, scilicet Christus, ita significatur, quod in corpore Christi sancta Ecclesia sit futura idolatria, quam defendent impii homines manifesto contemptu Dei, scientes esse idolatriam. Et defendent propter potentiam et opes.
-
-Hic coetus defendens idolum, et regnans, est regnum pontificium cum omnibus adhaerentibus, et defendit manifesta idola, sicut Ethnici, Missas pro mortuis, adorationem panis in spectaculo circumgestati, cultus sanctorum. Haec sunt palam idola, ut ipsi sciunt, et defendunt non propter ullam speciem, sed propter regnum, opes, et statum.
-
-Contra haec non opus est disputatione, Postquam scimus esse idola, sed zelo fidei opus est, hementer orare debemus, ut Deus destruat idola, perdat defensores idolorum, et detrudat diabolum in ima tartara, ut sit in poenis, et non possit nocere.
-
-De hac tertia tentatione iam sciamus tam magnum bellum motum esse. Diabolus pugnat in suo coetu, ut retineat idola, et oculos Papae et Caesaris tenet captivos admiratione status pontificii et pulcri imperii.
-
-Et non poterimus resistere diabolo, nisi etiam Filius Dei inter nos praelietur, et dicat diabolo: Vade retro Satana.
-
-Primum, quod quando idola manifesta sunt, postea non sit disputandum, sed zelo spiritus et quadam indignatione, simpliciter fugienda et detestanda sint: et quod fugiendae sint etiam illae viperae, quae excusant idola, sicut nunc multi tales sunt, qui pulcre pingunt Missam et cultum Sanctorum, et alia. Tales diabolos fugiamus.
-
-Secundo sciamus, quod non soli possimus astutiae diaboli resistere, sed quod oporteat nos petere auxilium Dei.
-
-vehementer orare debemus, ut Deus destruat idola, quae secutae sunt. Et nunc exemplum videmus in nostris periculis, undique nobis hostes minitantur etc.
-
-Reliquit Nazareth et habitavit in Capernaum, fortassis ideo, ut esset tutior, quia Romani tenuerunt Capernaum. Ibi fuit Centurio, de quo dicit: Non inveni tantam fidem in Israël.
-
-Locum ex Esaia citavit, et ad hanc narrationem accommodat, etiamsi pars in eo loco de aliis historiis loquitur, sed ipse Esaias mox addit concionem de Messia: Populus qui sedet in tenebris, vidit lucem magnam.
-
-Initium praedicationis Christi.
-
-Poenitentiam agite. Appropinquat enim regnum coelum.
-
-Haec sit praecipua pars concionis.
-
-De Poenitentia.
-
-Propositio. Una et eadem praedicatio est Evangelii inde usque ab initio post lapsum Adae edita promissione, sicut hic Christus praedicat.
-
-Ita prorsus in Paradiso primum obiurgat peccatum, postea addit consolationem. Et sic docuit Apostolos praedicare, Lucae ultimo.
-
-II. Sunt autem duae partes principales poenitentiae vel conversionis.
-
-Contritio, de hac dicit: Poenitentiam agite, quia primum oportet argui peccatum, ut dicit: Spiritus sanctus arguet mundum. Item: Ubi habitabit Dominus? In spiritu contrito.
-
-Non placet Deo securitas, imo ut securitatem nobis excutiat, subiecit Ecclesiam cruci.
-
-III. Secunda pars est consolatio, ut in Paradiso; Semen mulieris conculcabit caput serpentis.
-
-Et nunc saepe illam promissionem cogitemus. Et in consolatione nos ad precandum exuscitemus.
-
-Postremo post victorias veniunt angeli et serviunt. Et quanquam illi adsunt etiam in tentatione, ut commilitones, tamen post victoriam magis cernitur eorum praesentia. Tunc laetantur nobiscum, et agunt nobiscum gratias Deo.
-
-Audiens Iesus Iohannem esse captum.
-
-Iohannes initio praedicavit in Iudaea, ad Bethabaram, coepit ante praedicationem Christi fere unum annum, postea discessit ex Iudaea in Galilaeam, ubi baptizavit ad Salem. Ibi captus ab Herode, diu fuit in carcere. Et interfectus est completo secundo anno praedicationis Christi.
-
-Dicemus autem de passione Iohannis alias, quae etiam est insigne exemplum, quod testatur Ecclesiam subiectam esse cruci, sicut statim ab Abel deinde multa exempla secuta sunt, filiorum Israël in Aegypto, et deinceps persecutionum,
-
-Et Christus praecipit Apostolis: Quorum remiseritis peccata, remittuntur eis.
-
-Et hic: Appropinquat regnum coelorum, id est, remissio peccatorum, iustitia Spiritus sancti, vita aeterna propter Christum.
-
-Hanc consolationem discamus, et opponamus omnibus miseriis humanis, etiamsi sumus afflicti, et a tyrannis occidimur, tamen sciamus nos propter Christum Filium Dei recipi a Deo, et factos esse haeredes vitae aeternae. Et quandocunque dicitur de remissione peccatorum, doceri hoc necesse est, ut sit certa consolatio, Quod detur gratis remissio propter Filium, non propter nostra merita. Hic articulus est, de quo iam praecipue pugnatur, propter hanc vocem Evangelii diabolus conatur nos occidere. Et hanc necessariam Ecclesiae consolationem conatur delere.
-
-Vocatio discipulorum.
-
-Primum dicitur de perpetua conservatione ministerii evangelici, iuxta dictum Ephes. 4.: Ascendit dans dona hominibus, alios Prophetas, alios Apostolos, etc. Hic igitur initio discamus, Deum inde usque ab initio post lapsum Adae instituisse ministerium docendi Evangelii. Et ipse Deus in Paradiso fuit primus concionator, quando promissionem arcanam de semine contrituro caput serpentis promulgavit. Postea Adam fuit sacerdos et praedicator, deinde Seth, deinde alii suo ordine. Et saepe Deus obscurata doctrina, novos ministros vocavit, ut vocavit Abraham et deinde Prophetas, Samuelem, Eliam, Elisaeum, Esaiam et alios. Postea Christus ipse palam concionatus est. Et quia voluit novum ministerium instituere abolita politia Mosaica, et deleto sacerdotio Levitico, ipse novos ministros iam vocat. Et deinceps in genere humano servat ministerium Evangelii, et saepe novos ministros singulari dono excitat, sicut excitavit Augustinum contra Pelagianos, et alias alios, et recens Doctorem Martinum Lutherum. Haec conservatio ministerii perpetua primum hic consideretur, et agamus Deo gratias pro hoc tanto beneficio, quod dat Evangelium, per quod donat vitam aeternam, quod servat semper aliquos ministros, sicut in Esaia dicitur: Posui in ore tuo verbum meum, et manu mea protegam te, ut plantes mihi coelum. Veneremur etiam hoc ministerium et defendamus, quantum possumus.
-
-Haec primum in genere sciantur de ministerio Evangelii.
-
-Secundo. Quod est principale officium ministerii evangelici? Dico semper et omni tempore ab initio post lapsum Adae, idem fuisse officium ministerii evangelici, quod fecisse videmus Deum in Paradiso. Arguit peccata, et praedicat de Messia et remissione peccatorum.
-
-Ita nunc praedicamus doctrinam poenitentiae et remissionis peccatorum, sicut Lucae ultimo dicitur.
-
-Tertio. Sed cur vocat Christus ex alia tribu, cum antea Levitica tribus ordinata fuerit ad sacerdotium? Quia vult delere politiam Moisi, et vult colligere Ecclesiam ex gentibus et Iudaeis. Et hic discamus exemplum irae Dei, quod quando sacerdotes manifeste doctrinam abiiciunt, tunc Deus alios novos ministros vocat.
-
-Sicut cum collegia Canonicorum abiecerint doctrinam, non dubium est ea ruitura esse, etiam si non scimus per quos sint delenda.
-
-Quarto. Apostoli relictis omnibus sequuntur Christum. Sic vocati ad ministerium obediant. Hic adde textum in Levitico: Qui dixerit patri suo et matri suae, Nescio vos.
-
-Et circumibat totam Galilaeam. Narrat initia praedicationis Evangelii, et breviter recitat multis miraculis confirmatam esse doctrinam. Hic breviter addi potest, Miracula recitari propter tres causas. Prima est, ut sint testimonia doctrinae, quod sit a Deo, quia illa facta singularia cum non possint fieri, nisi a Deo, testantur hunc doctorem a Deo missum esse, et Deum efficacem esse per eum, et doctrinam vere esse sententiam Dei etc. Secunda causa est, Miracula sunt testimonia promissionum, ut huius promissionis: Invoca me in die tribulationis, et eripiam te. Iste pauper clamavit ad Dominum, et Dominus exaudivit eum.
-
-Tertia causa, Miracula continent doctrinam de applicatione promissionum, id est, quod fide propter Christum accipiantur beneficia, et quidem, quod ea accipiant Omnes sine acceptatione personarum, sicut Christus sine discrimine Omnes confugientes ad eum recipit, Iudaeos, Samaritanos, Cananaeos, Ethnicos, Centuriones, Publicanos.
-
-Generalis concio sequitur de interpretatione Decalogi, quia Pharisaei corruperant doctrinam, et fingebant in Decalogo tantum praecipi puerilem disciplinam de externis operibus. Deinde amplius fingebant, homines iustos esse illa disciplina, et mereri remissionem peccatorum, et delebant totam doctrinam de Messia. Necesse est autem hos errores in Ecclesia taxari, et illustrari doctrinam de peccato, et de redemtione per Messiam donata. Propter has causas recitatur enarratio Decalogi.
-
-Sed ante enarrationem legis consolationes de cruce proponuntur, quia pharisaica doctrina, sicut et philosophica, ignorat doctrinam de cruce, et sic ratiocinatur, Iustis bene sit, Abel interficitur. Ergo Abel est iniustus, et reiectus a Deo. Sed haec doctrina hoc loco affirmat, hominem non reiectum esse a Deo propter crucem vel calamitates. Et universaliter prodest scire homines in Ecclesia, quod omnes calamitates, aut sunt poenae revocantes ad poenitentiam, ut exilium Davidis. Aut sunt exercitia, ut carcer Ioseph. Aut sunt testimonia doctrinae, ut interfectio Iohannis, Pauli. Aut sunt precium pro aliis. Tale precium est sola mors Christi. Et diligenter mementote hos quatuor gradus, et saepe cogitate, ut sciatis cur Ecclesia sit subiecta cruci, et ex his fontibus sumantur consolationes, postquam scimus causas afflictionum.
-
-Iam sequitur textus. Beati pauperes spiritu, id est, Die in armut gedultig sind.
-
-Exorsus est autem a paupertate, quia haec est communissima miseria piorum. Et non quaeratur alia expositio, loquitur textus de paupertate, quam sic vocamus usitate, indigentiam rerum necessariarum, cum deest pecunia et alia ad victum necessaria.
-
-Hos pauperes spiritu, id est, vera patientia cordis tolerantes paupertatem, dicit beatos esse, id est, non reiectos a Deo, sed habentes statum Deo placentem. Nam Beati hic non significat mortuos habentes vitam aeternam, ut vulgo loquimur, aut promerentes vitam aeternam, sed significat bonum opus, seu statum non reiectum a Deo, ut si diceret, Bene est pauperibus, id est, non sunt reiecti a Deo.
-
-Et loquitur de Ecclesia, quae antea iusta est fide, postea habet multa bona opera, quorum singula dicuntur beatitudines. Lazarus iacens ante domum divitis est beatus, sed ita, primum est iustus fide, postea eius patientia in paupertate, est beatitudo, id est, bonum opus Deo placens: nec reiectus est Lazarus a Deo. Praeterea sciendum est, non laudari ipsam paupertatem, sicut monachi finxerunt, qui tamen non indigebant ullis rebus necessariis.
-
-Sed loquitur de obedientia in paupertate, id est, de obedientia erga Deum. Utrunque est ordinatum a Deo, divitiae et paupertas. Et nec propter divitias nec propter paupertatem homo recipitur aut reiicitur, sed recte uti divitiis, est bonum opus, recte uti paupertate etiam est bonum opus.
-
-Abraham est dives, et placet Deo, quia est iustus fide, et deinde recte utitur divitiis, non pluris facit divitias, quam confessionem doctrinae. Moises in aula Pharaonis posset esse dives, et fieri Princeps, si deficeret ad religionem Aegyptiacam, sed mavult esse pauper, ac retinere veram religionem.
-
-Talia exempla multa videmus in quotidiana vita. Aliquis ex nobis posset esse dives Canonicus, cum impietate. Sed mavult esse pauper Diaconus, cum pietate. *
-
-Quia eorum est regnum coelorum.* Quaero, An paupertate mereantur regnum coelorum?
-
-Non, sed cum iam antea facti sint filii et haeredes, regnum coelorum simul est compensatio pro paupertate.
-
-Quid significat regnum coelorum? Non solum futuram gloriam, sed simul universam defensionem divinam in hac vita.
-
-Ioseph in carcere, pauper, habet regnum coelorum.
-
-Est dives propter defensionem Dei. Beati lugentes. Lugentes hoc loco generaliter intelliguntur omnes pii, qui veris doloribus et angoribus excruciantur, ut primum qui iniuste affliguntur propter professionem verae doctrinae, aut alioqui patiuntur innocentes, quales fuerunt Abraham, Iacob,
-
-Joseph, David, tres viri in fornace Babylonica. Item illi etiam, qui cum non sint innocentes, haerent in poenis, et castigantur propter sua peccata, ut cum fures, homicidae et alii scelerati rapiuntur ad supplicia, si tamen convertantur ad Deum, et consolationem concipiant, ac erigantur fiducia mediatoris Christi exemplo emendati latronis in cruce, Regis Manassae, et Prophetae Davidis etc.
-
-De singulis his in luctu vel moerore iacentibus modo sint conversi ad Deum, et confugientes ad Christum acquiescant fide, certa est et manet vera haec regula, promittenslevationem salutarem: Beati qui lugent, quia consolationem sentiunt. Ac referatur ad vocem iuramenti: Vivo ego, dicit Dominus, nolo mortem peccatoris, sed ut convertatur et vivat.
-
-Item Esaiae 66.: Ubi habitabit Dominus? In spiritu contrito et tribulato, et tremente sermones meos. Item Psalmo 51.: Sacrificium Deo Spiritus contribulatus, cor contritum et humiliatum Deus non despicies. Et sumatur hic declaratio ex integra explicationatione totius doctrinae de cruce.
 
 ## 3:13-17 Concerning the Trinity
 Concerning the Trinity. Gospel of Matthew 3.
@@ -7880,6 +7433,465 @@ Prophetae ubicunque gratiam commendant, prius iram et iudicium dei indicant, ita
 Ipse vos baptizabit.
 
 Christum baptizare spiritu sancto et igni, significat Christum deum esse et authorem iusti-34
+
+## 4:1 Sermons on Matthew: Argument
+Chapter IV. Concerning the temptations of Christ. Preface.
+
+Although those temptations are great and obscure, and cannot be sufficiently understood or explained by us, yet they are not written in vain, but the Holy Spirit wished to teach us something when He willed those mysteries to be written.
+
+But first, they warn of this: that there is a great war between the Son of God and the devil, just as it was immediately foretold in Genesis: I will put enmity between you and the seed of the woman. Therefore, the devil has always attacked the Church in various ways—with slaughters, errors, and many great confusions—so that he might draw many away from the truth of God.
+
+II.
+
+It is not enough to know of the struggle, but it must also be known how we can conquer. It is therefore foretold that the Son of God is the victor. And thus Genesis says: The seed of the woman shall crush the head of the serpent. The exact same thing is understood in this saying: The Son of God came to destroy the works of the devil.
+
+III.
+
+Therefore, the battle of Christ and the devil is narrated here so that we may see an example that Christ was the victor, and that we may learn that we too must conquer. We shall conquer, however, not alone, without Christ as our leader, but by faith and the invocation of the Son of God.
+
+IIII.
+
+And the war is marvelous. The devils are most powerful and most cunning spirits, and the Church is a gathering of the most infirm and foolish men, children, women, and other miserable people. The devil rages against these, as if robust men were to break into a gathering of infants, and some were to seize others and dash them against the walls.
+
+In such a battle, however, we miserable ones conquer, but we do not conquer by our own strength, but by the invocation of the Son of God, because He drives those robust ones away from the infants daily.
+
+These things concerning the application—that we ought to run to Christ the victor in every temptation—should be learned first in this history; afterwards, the history may be viewed.
+
+There are three principal persecutions by which the devil has attacked the Church. Types of these persecutions are proposed in the person of Christ. 1. Corporal persecution, famine and the sword. 2. Persecution through heresies. 3. Persecution through manifest idolatry.
+
+Thus, Christ is first tempted concerning sustenance.
+
+If you are the Son of God, if you are the Messiah, feed yourself. There is irony in the saying: Command that these stones become bread, as if he were saying, "Forsooth, you will have your sustenance from stones."
+
+Just as now pastors and other ministers go hungry, and many are deterred from the ministry because of poverty.
+
+Christ opposes the word of God and sustains Himself by faith.
+
+Thus He teaches us also to do battle, to seek the word of God, to stir up faith, and to gaze upon the victor Himself. Then we shall not only have spiritual consolation, but temporal evils will also be mitigated.
+
+Man does not live by bread alone, but by every word that proceeds from the mouth of God.
+
+It is a great consolation that the word of God is to be sought first and received by faith. This is more the cause of life than natural instruments.
+
+Example. Let us first seek the Gospel, and receive it by faith, then we shall have defense through God more than through armies.
+
+We should always carry this consolation in our minds. Many are greatly anxious about their own sustenance and that of their children, but from this they ought to seek consolation.
+
+And universally in every government this rule must be held. First embrace the word of God, and obey God, afterwards commend the outcomes to God. And let not man think that all outcomes can be foreseen or governed by human counsel. Therefore the Psalm says: Commend your way to God, and he will act. Likewise: Be subject to God, and pray to him.
+
+But it is a great evil in men that they wish to foresee and govern all things by their own counsel, meanwhile neglecting the word of God. Thus the devil leads men to this wisdom: omit the word, omit the ministry, consult for yourself, be certain of sustenance, of protections, do not bring dangers upon yourself.
+
+But Christ calls us back to the word, and affirms that the principal cause of life is God, even if physical causes are not discerned by us. Just as Moses also had defense without physical causes.
+
+Concerning the second temptation.
+
+The second temptation is the image of heretics. For after the Church has in some way struggled out of bodily dangers, the devil now begins spiritual persecutions. He instigates some to stir up opinions, and to devise cults and laws, without the word of God, outside the order instituted by God, only obeying their own curiosity, and following their own judgments, admiring their own wisdom, and pleasing themselves.
+
+Thus the devil takes Christ to be agitated. He proposes this thought to him: It would be beautiful if you did something new, which others do not know, namely if you were to fly down from the temple here in the sight of all, and did not descend by the steps. All would admire this and preach it as a new, unheard-of, and divine work.
+
+Nor should you fear danger, because it is written: He has commanded his angels concerning you, etc. In this thought he detained Christ for a long time, and harshly vexed him.
+
+But finally Christ wins, and opposes a rule against the irregular work. And he has proposed a very useful example here for us, so that we may learn the common and necessary rules for all against irregular works.
+
+Gideon does an irregular work, he sacrifices and institutes a cult in his own house, but he ought to have remembered the rule. For the people of Israel had a manifest prohibition, not to sacrifice elsewhere, except at the tabernacle.
+
+The rule is: You shall not tempt the Lord your God. What does it mean, To tempt God? It is to want to make something better, more beautiful, than how God has ordained it, and to undertake such things, without the command and word of God,
+
+without a calling. Or. To tempt God is a sin not only of infirmity, like David's adultery: but it is a sin of wisdom, namely, when the sin arises from arrogance or trust in wisdom, namely when the mind, admiring its own wisdom, despises the wisdom of God, and wishes to do or ordain something, with this very imagination, that it is better than what is ordained divinely.
+
+It is not doing wrong out of weakness, but out of this special, excessive, supposed cleverness, that one thinks his order or undertaking is more beautiful and better than God's command or order, and is thus driven primarily by one's own cleverness.
+
+Example. It does not please the people of Israel, when they did not have a king, the state without a certain head, it seems to be a deformed species. There, by their own wisdom, they wish to change the form of the Republic. That truly was to tempt God.
+
+The sons of Ephraim in Egypt knew that the land of Canaan was promised, and they bore servitude with difficulty; it seemed therefore to them beautiful, worthy of brave men, to move to war, and to try to occupy the land of Canaan, but without a calling: therefore they were killed. Therefore this rule teaches that one must not depart from the common command of God, or from the common ordination of God, without a singular command and without a calling. Just as Abraham departed, offering his son, but he had a peculiar command.
+
+Application.
+
+This temptation is curiosity in many parts of life: in teaching, in worship, in government, in politics, and in economics.
+
+But here it is spoken especially of teachers, because they stand on the pinnacle of the temple.
+
+Arius stands in the highest place of the temple, that is, he is a most excellent teacher.
+
+To him comes the devil, the author of curiosity, and instigates him: "See, it would be beautiful if the unity of God were understood in such a way that we would say the Son is not God by nature."
+
+With this thought he greatly torments him, and drives him to collect scriptures for this imagination. Finally, he urges him strongly, just as curiosity is a vehement impulse.
+
+Here Arius is overcome, and flies from the temple, he scatters a false opinion, having abandoned the Word of God, which he corrupts, just as the devil corrupts, saying, "He will keep you," but he does not add, "in your ways," that is, in a legitimate calling.
+
+Thus the Pope brings in a law about celibacy. He thinks, "We see the wives and children of priests and bishops causing much trouble; it would be beautiful if priests were celibate."
+
+Thus the Pope follows his own imagination out of foolish wisdom and curiosity, and brings in a new law, against the commandment of God.
+
+So did others, instituting vows and monasticism.
+
+Conclusion. Let us learn, therefore, from this victory of Christ, to resist temptations against true doctrine. Likewise, let us learn to resist temptations against our calling. You are a schoolmaster, and you would gladly take upon yourself the reformation of the Church.
+
+Thus, in our whole life, let us accustom ourselves to do things according to rule. [German: That we remain by the rule, and do not undertake or stir up unnecessary things outside the rule out of self-willed cleverness.]
+
+Curiosity is to undertake irregularities out of an opinion of one's own wisdom, that is, works without a calling, or without the commandment of God.
+
+[German: The boys should not go into the Elbe, they can well go to the bath otherwise.]
+
+On the third Temptation.
+
+The first is more clear, namely, to be solicited to defection from the Gospel because of hunger and dangers.
+
+Against this is opposed the promise of God, who promises sustenance and defense; so let us now console ourselves with this very promise.
+
+The second temptation is to be solicited to corrupt doctrine, by an opinion of one's own wisdom or righteousness.
+
+Against this is opposed the rule: "You shall not tempt the Lord your God." It is, however, to tempt God, not to fall through infirmity, but through curiosity, that is, to depart from the commandment and ordination of God out of an opinion of one's own wisdom, as if you wished to do or ordain something better.
+
+In the first temptation, infirmity sins.
+
+In the second, it sins properly—not infirmity, but the opinion of one's own wisdom and one's own righteousness, intending to do something better.
+
+Now the third temptation follows, namely, to be solicited to manifest idolatry or blasphemy. Where not infirmity sins, nor does the opinion of wisdom or righteousness, but the devil, knowing and damning himself, seeks idolatry and blasphemy out of hatred for God, as Julian, obeying the devil, knowing and damning himself, embraces idols out of hatred and manifest contempt for God; he paints Jupiter offering him a scepter, and Pallas, who clothes him in imperial purple, and Mars, who hands him a sword.
+
+He knows these are fictitious and false deities.
+
+In this temptation, Christ does not dispute, but, being angry, repels the devil, because the matter is manifest.
+
+And only the zeal of faith is needed to repel the devil. This image does not need a long declaration; it signifies the last and most horrible idolatry in the Church. Just as this person, namely Christ, is tempted, so it is signified that in the body of Christ, the holy Church, there will be future idolatry, which impious men will defend with manifest contempt for God, knowing it to be idolatry. And they will defend it for the sake of power and wealth.
+
+This assembly defending the idol, and reigning, is the pontifical kingdom with all its adherents, and it defends manifest idols, just as the heathens did: Masses for the dead, the adoration of the bread carried about in a spectacle, the cult of the saints. These are openly idols, as they themselves know, and they defend them not for any appearance, but for the sake of the kingdom, wealth, and status.
+
+Against these, there is no need for disputation, after we know they are idols, but the zeal of faith is needed, We ought earnestly to pray that God may destroy idols, destroy the defenders of idols, and thrust the devil down into the lowest Tartarus, so that he may be in torments and unable to do harm.
+
+Let us now recognize that such a great war has been stirred up over this third temptation. The devil fights within his own assembly to preserve idols, and he holds the eyes of the Pope and Caesar captive through admiration for the papal establishment and the splendid empire.
+
+And we shall not be able to resist the devil unless the Son of God also fights among us and says to the devil: “Get back, Satana.”
+
+First, that when idols are manifest, there should be no further debate, but they must be simply fled and detested with the zeal of the Spirit and a certain indignation: and that even those vipers must be fled, which excuse idols, as there are now many such, who beautifully paint the Mass and the cult of the Saints, and other things. Let us flee such devils.
+
+Secondly, we should know that we cannot alone resist the cunning of the devil, but that we ought to seek the help of God.
+
+vehemently we must pray, that God may destroy the idols which have followed. And now we see an example in our own perils, that enemies threaten us on every side, etc.
+
+He left Nazareth and dwelt in Capernaum, perhaps for this reason, that he might be safer, because the Romans held Capernaum. There was a Centurion, of whom he says: I have not found such great faith in Israel.
+
+He cited a passage from Isaiah, and adapts it to this narrative, even if a part in that place speaks of other histories, but Isaiah himself soon adds a sermon about the Messiah: The people who sit in darkness have seen a great light.
+
+The beginning of the preaching of Christ.
+
+Repent. For the kingdom of heaven is at hand.
+
+Let this be the principal part of the sermon.
+
+On Repentance.
+
+Proposition. One and the same is the preaching of the Gospel from the very beginning after the fall of Adam, with the promise issued, just as Christ preaches here.
+
+Thus, precisely in Paradise, he first rebukes sin, afterwards he adds consolation. And thus he taught the Apostles to preach, in the last chapter of Luke.
+
+II. There are, however, two principal parts of repentance or conversion.
+
+Contrition; of this he says: Repent, because first it is necessary that sin be reproved, as he says: The Holy Spirit will reprove the world. Likewise: Where will the Lord dwell? In a contrite spirit.
+
+Security does not please God; nay, that he may shake off security from us, he has subjected the Church to the cross.
+
+III. The second part is consolation, as in Paradise; The seed of the woman shall crush the head of the serpent.
+
+And now let us often consider that promise. And in consolation let us rouse ourselves to pray.
+
+Finally, after victories the angels come and serve. And although they are present even in temptation, as fellow soldiers, nevertheless after victory their presence is more clearly seen. Then they rejoice with us, and together with us give thanks to God.
+
+Iesus, hearing that Iohannem had been arrested.
+
+Iohannes first preached in Iudaea, at Bethabaram, beginning about a year before the preaching of Christi. Later he left Iudaea for Galilaeam, where he baptized at Salem. There he was arrested by Herode and spent a long time in prison. He was put to death at the end of the second year of the preaching of Christi.
+
+We shall speak elsewhere, however, of the suffering of Iohannis, which is also a striking example testifying that the Church is subject to the cross, just as many examples followed from the very time of Abel onward: those of the children of Israël in Aegypto, and thereafter of persecutions,
+
+And Christ commands the Apostles: Whose sins you shall forgive, they are forgiven them.
+
+And here: The kingdom of heaven is at hand, that is, the remission of sins, the righteousness of the Holy Spirit, eternal life on account of Christ.
+
+Let us learn this consolation, and oppose it to all human miseries, and even if we are afflicted, and are killed by tyrants, yet let us know that we are received by God on account of Christ the Son of God, and have been made heirs of eternal life. And whenever there is talk of the remission of sins, it must be taught that this is necessary, so that there may be certain consolation: That remission is given freely on account of the Son, not on account of our merits. This is the article about which the struggle is now especially waged; because of this voice of the Gospel, the devil tries to kill us. And he tries to destroy this necessary consolation of the Church.
+
+The calling of the disciples.
+
+First, it is said concerning the perpetual preservation of the evangelical ministry, according to the saying in Eph. 4: He ascended, giving gifts to men, some Prophets, some Apostles, etc. Here, therefore, let us learn at the beginning that God, from the very beginning after the fall of Adam, instituted the ministry of teaching the Gospel. And God Himself was the first preacher in Paradise, when He promulgated the mysterious promise concerning the seed that would crush the head of the serpent. Afterward, Adam was priest and preacher, then Seth, then others in their order. And often, when the doctrine was obscured, God called new ministers, as He called Abraham and then the Prophets, Samuel, Elijah, Elisha, Isaiah, and others. Afterward, Christ Himself preached openly. And because He wished to institute a new ministry, having abolished the Mosaic polity and deleted the Levitical priesthood, He Himself now calls new ministers. And from then on, He preserves the ministry of the Gospel in the human race, and often raises up new ministers by a singular gift, just as He raised up Augustine against the Pelagians, and others against others, and recently Doctor Martin Luther. Let this perpetual preservation of the ministry be considered here first, and let us give thanks to God for this great benefit, that He gives the Gospel, through which He grants eternal life, and that He always preserves some ministers, as is said in Isaiah: I have put my word in your mouth, and I will protect you with my hand, that you may plant the heavens for me. Let us also venerate this ministry and defend it as much as we can.
+
+Let these things be known first in general concerning the ministry of the Gospel.
+
+Secondly. What is the principal office of the evangelical ministry? I say that always and at every time, from the beginning after the fall of Adam, the office of the evangelical ministry has been the same, which we see God doing in Paradise. It reproves sins, and preaches about the Messiah and the remission of sins.
+
+Thus we now preach the doctrine of repentance and the remission of sins, as is said in the last chapter of Luke.
+
+Thirdly. But why does Christ call from another tribe, when previously the Levitical tribe had been ordained to the priesthood? Because He wishes to destroy the polity of Moses, and wishes to gather the Church from the Gentiles and the Jews. And here let us learn an example of the wrath of God, that when priests manifestly reject the doctrine, then God calls other new ministers.
+
+Just as when the colleges of Canons have rejected the doctrine, there is no doubt that they will fall, even if we do not know by whom they are to be destroyed.
+
+Fourthly. The Apostles, having left all things, follow Christ. Thus, those called to the ministry should obey. Add here the text in Leviticus: Who said to his father and his mother, I do not know you.
+
+And he went about all Galilee. He narrates the beginnings of the preaching of the Gospel, and briefly recounts that the doctrine was confirmed by many miracles. Here it can be briefly added that miracles are recounted for three reasons. The first is that they may be testimonies of the doctrine, that it is from God, because those singular deeds, since they cannot be done except by God, testify that this teacher was sent by God, and that God is effective through him, and that the doctrine is truly the judgment of God, etc. The second reason is: Miracles are testimonies of the promises, such as this promise: Call upon me in the day of trouble, and I will deliver you. This poor man cried to the Lord, and the Lord heard him.
+
+The third reason: Miracles contain the doctrine concerning the application of the promises, that is, that benefits are received by faith on account of Christ, and indeed, that all receive them without respect of persons, just as Christ receives all who flee to him without discrimination—Jews, Samaritans, Canaanites, Gentiles, Centurions, Publicans.
+
+A general sermon follows concerning the interpretation of the Decalogue, because the Pharisees had corrupted the doctrine, and were pretending that only a childish discipline regarding external works was commanded in the Decalogue. Then they pretended further that men were righteous through that discipline, and earned the remission of sins, and they were destroying the entire doctrine concerning the Messiah. It is necessary, however, that these errors be censured in the Church, and that the doctrine concerning sin and the redemption granted through the Messiah be illustrated. For these reasons, the exposition of the Decalogue is recited.
+
+But before the exposition of the law, consolations concerning the cross are proposed, because the Pharisaic doctrine, just like the philosophical, is ignorant of the doctrine of the cross, and reasons thus: "It is well with the righteous; Abel is killed. Therefore, Abel is unrighteous and rejected by God." But this doctrine affirms in this place that a man is not rejected by God on account of the cross or calamities. And it is universally profitable for men in the Church to know that all calamities are either punishments calling one to repentance, like the exile of David; or they are exercises, like the prison of Joseph; or they are testimonies of doctrine, like the killing of John or Paul; or they are a price for others. Such a price is the death of Christ alone. And remember these four degrees diligently, and think on them often, so that you may know why the Church is subject to the cross, and that from these fountains consolations may be drawn, after we know the causes of afflictions.
+
+Now the text follows. Blessed are the poor in spirit, that is, those who are patient in poverty.
+
+He began with poverty, because this is the most common misery of the pious. And let no other exposition be sought; the text speaks of poverty, as we commonly call it, the lack of necessary things, when money and other things necessary for sustenance are wanting.
+
+He calls these "poor in spirit"—that is, those who tolerate poverty with true patience of heart—blessed, that is, not rejected by God, but having a state pleasing to God. For Blessed here does not signify those who are dead and possess eternal life, as we commonly speak, or those who earn eternal life, but it signifies a good work, or a state not rejected by God, as if he were to say: "It is well with the poor," that is, they are not rejected by God.
+
+And he speaks of the Church, which is first righteous by faith, and afterwards has many good works, each of which is called a beatitude. Lazarus lying before the house of the rich man is blessed, but in this way: first he is righteous by faith, afterwards his patience in poverty is a beatitude, that is, a good work pleasing to God; nor was Lazarus rejected by God. Furthermore, it must be known that poverty itself is not praised, as the monks pretended, who nevertheless did not lack any necessary things.
+
+But he speaks of obedience in poverty, that is, of obedience toward God. Both are ordained by God: riches and poverty. And a man is neither received nor rejected on account of riches or poverty, but to use riches rightly is a good work; to use poverty rightly is also a good work.
+
+Abraham is rich, and pleases God, because he is righteous by faith, and then he uses riches rightly; he does not value riches more than the confession of doctrine. Moses in the court of Pharaoh could have been rich and become a Prince, if he had defected to the Egyptian religion, but he prefers to be poor and to retain the true religion.
+
+We see many such examples in daily life. Someone among us could be a rich Canon, with impiety. But he prefers to be a poor Deacon, with piety. *
+
+For theirs is the kingdom of heaven.* I ask, do they merit the kingdom of heaven by poverty?
+
+No, but since they have already been made sons and heirs, the kingdom of heaven is at the same time a compensation for poverty.
+
+What does the kingdom of heaven signify? Not only future glory, but at the same time the entire divine defense in this life.
+
+Joseph in prison, a pauper, has the kingdom of heaven.
+
+He is rich on account of the defense of God. Blessed are those who mourn. By those who mourn in this place are generally understood all the pious who are tormented by true sorrows and anxieties, as first those who are unjustly afflicted on account of the profession of true doctrine, or who otherwise suffer as innocents, such as were Abraham, Jacob,
+
+Joseph, David, three men in the Babylonian furnace. Likewise those also, who, although they are not innocent, remain in punishments, and are chastised on account of their own sins, as when thieves, murderers, and other criminals are seized for punishment, if however they are converted to God, and conceive consolation, and are raised up by the trust of the mediator Christ, by the example of the thief on the cross, of King Manasseh, and of the Prophet David, etc.
+
+Concerning each of these lying in grief or sorrow, provided they are converted to God, and fleeing to Christ, find rest in faith, this rule is certain and remains true, promising salutary relief: Blessed are those who mourn, for they feel consolation. And let it be referred to the voice of the oath: I live, says the Lord, I do not desire the death of the sinner, but that he be converted and live.
+
+Also Isaiah 66: Where will the Lord dwell? In a contrite and troubled spirit, and one who trembles at my words. Also Psalm 51: A sacrifice to God is a troubled spirit; a contrite and humbled heart, O God, you will not despise. And let the declaration here be taken from the complete explanation of the whole doctrine concerning the cross.
+
+Latin:
+
+Caput IIII. De tentationibus Christi. Praefatio.
+
+Quanquam illae tentationes magnae sunt, et obscurae, et non satis intelligi aut declarari a nobis possunt, tamen non sunt frustra scriptae, sed aliquid docere nos Spiritus sanctus voluit, cum voluit illa arcana scribi.
+
+Primum autem hoc monent, quod magnum sit bellum inter Filium Dei et diabolum, sicut statim in Genesi praedictum est: Ponam inimicias inter te et semen mulieris. Ideo semper diabolus Ecclesiam varie oppugnavit, caedibus, erroribus, et multis magnis confusionibus, ut multos a veritate a Deo abstrahat.
+
+II.
+
+Non satis est scire certamen, sed etiam sciendum est, quomodo possimus vincere. Praedictum est igitur, quod Filius Dei sit victor. Et sic inquit Genesis: Semen mulieris conculcabit caput serpentis. Idem prorsus in hoc dicto intelligitur: Filius Dei venit, ut destruat opera diaboli.
+
+III.
+
+Ideo narratur hic pugna Christi et diaboli, ut exemplum videamus, quod Christus fuerit victor, et discamus nos quoque oportere vincere. Vincemus autem non soli, sine duce Christo, sed fide et invocatione Filii Dei.
+
+IIII.
+
+Et mirabile est bellum. Diaboli sunt Spiritus potentissimi et astutissimi, et Ecclesia est coetus hominum infirmissimorum et stultorum, puerorum, mulierum, et aliorum miserorum hominum. In hos grassatur diabolus, ut si viri robusti irrumperent in coetum infantum, et alii alios arriperent et alliderent parietibus.
+
+In tali pugna tamen nos miseri vincimus, sed non vincimus nostris viribus, sed invocatione Filii Dei, quia illos robustos ab infantibus depellit quotidie.
+
+Haec de applicatione, quod debeamus concurrere ad Christum victorem in omni tentatione, primum discantur in hac historia, postea videatur historia.
+
+Tres sunt praecipuae persecutiones, quibus Ecclesiam diabolus oppugnavit. Harum persecutionum typi propositi sunt in persona Christi. 1. Persecutio corporalis, fames et gladius. 2. Persecutio per haereses. 3. Persecutio per manifestam idolatriam.
+
+Ita primum tentatur Christus de victu.
+
+Si es Filius Dei, si es Messias, ciba te. Ironia est in dicto: Dic ut isti lapides fiant panes, quasi dicat, scilicet, tu ex lapidibus victum habebis.
+
+Sicut nunc esuriunt Pastores et alii ministri, et multi deterrentur a ministerio propter inopiam.
+
+Christus opponit verbum Dei, et fide sustentat.
+
+Ita docet nos quoque praeliari, verbum Dei quaerere, et excitare fidem, et intueri ipsum victorem. Tunc non solum spiritualem consolationem habebimus, sed etiam temporalia mala mitigabuntur.
+
+Non in solo pane vivit homo, sed in omni verbo quod procedit de ore Dei.
+
+Magna consolatio est, quod primum quaerendum sit verbum Dei, et fide accipiendum. Haec est magis causa vitae, quam naturalia instrumenta.
+
+Exemplum. Primum quaeramus Evangelium, et fide accipiamus, tunc magis defensionem per Deum quam per exercitus, habebimus.
+
+Hanc consolationem semper deberemus mente circumferre. Multi valde anguntur de victu suo et liberorum, sed hinc deberent petere consolationem.
+
+Et universaliter in omni gubernatione tenenda est haec regula. Primum amplectere verbum Dei, et Deo obedias, postea eventus commenda Deo. Et non cogitet homo, omnes eventus posse prospici aut regi humano consilio. Ideo dicit Psalmus: Commenda Deo viam tuam, et ipse faciet. Item: Subditus esto Deo, et ora eum.
+
+Sed magnum malum est in hominibus, quod volunt omnia prospicere et regere suo consilio, interim negligentes verbum Dei. Ita diabolus deducit homines ad hanc sapientiam, omitte verbum, omitte ministerium, consule tibi, sis certus de victu, de praesidiis, non accersas tibi pericula.
+
+Sed Christus nos revocat ad verbum, et affirmat principalem vitae causam esse Deum, etiamsi physicae causae a nobis non cernantur. Sicut et Moises habuit defensionem sine physicis causis.
+
+De secunda tentatione.
+
+Secunda tentatio imago est haereticorum. Postquam enim Ecclesia aliquomodo eluctata est ex corporalibus periculis, diabolus iam spirituales persecutiones incipit. Instigat aliquos, ut moveant opiniones, et excogitent cultus et leges, sine verbo Dei extra ordinem a Deo institutum, tantum obtemperantes suae curiositati, et sua iudicia sequentes, admirantes suam sapientiam, et sibi ipsis placentes.
+
+Ita sumit sibi Christum exagitandum diabolus. Proponit ei hanc cogitationem. Pulcrum esset, si aliquid novi faceres, quod alii non sciunt, videlicet si hic in omnium conspectu volitares de templo, et non descenderes per gradus. Hoc omnes admiraturi essent et praedicaturi tanquam novum, inauditum, et divinum opus.
+
+Nec timeas periculum, quia scriptum est: Angelis suis mandavit de te, etc. In hac cogitatione diu detinuit Christum, et duriter eum vexavit.
+
+Sed tandem vincit Christus, et opponit regulam contra opus irregulare. Et nobis valde utile exemplum hic proposuit, ut discamus regulas communes et necessarias omnibus contra opera irregularia.
+
+Gedeon facit opus irregulare, sacrificat et instituit cultum in domo sua, sed debuisset meminisse regulae. Habebat enim populus Israël manifestam prohibitionem, ne alibi sacrificarent, nisi ad tabernaculum.
+
+Regula est: Non tentabis Dominum Deum tuum. Quid significat, Tentare Deum? Ist etwas bessers, schöners machen wollen, denn wie es Gott geordnet hat, und solchs fürnemen, sine mandato et verbo Dei, sine vocatione.
+
+Vel. Tentare Deum peccatum est non solius infirmitatis, ut Davidis adulterium: sed est peccatum sapientiae, scilicet, quando peccatum oritur ex arrogantia seu fiducia sapientiae, scilicet cum mens admiratrix suae sapientiae, contemnit sapientiam Dei, et vult aliquid facere vel ordinare, hac ipsa imaginatione, quod sit melius, quam ordinata divinitus.
+
+Es ist nicht aus schwacheit vnrecht thun, sondern aus dieser sonderlichen überigen vermeinten klugheit, das einer gedenckt, sein ordnung oder fürnemen, sey schöner vnd besser, denn Gottes beuelh oder ordnung, vnd wird also durch eigne klugheit fürnemlich getrieben.
+
+Exemplum. Non placet populo Israël, cum non haberent regem, status sine certo capite, videtur esse deformis species. Ibi sua sapientia volunt mutare formam Reipublicae. Id vere fuit tentare Deum.
+
+Filii Ephraim in Aegypto sciebant promissam esse terram Chanaan, et aegre ferebant servitutem, videbatur igitur eis pulcrum, dignum viris fortibus, movere bellum, et conari occupare terram Chanaan, sed sine vocatione: ideo interficiebantur. Docet ergo haec regula, Non esse discedendum a mandato Dei communi, seu ab ordinatione Dei communi, sine singulari mandato et sine vocatione. Sicut Abraham discessit, offerens filium, sed habuit peculiare mandatum.
+
+Applicatio.
+
+Haec tentatio est curiositas in multis vitae partibus, in docendo, in cultibus, in gubernatione, in politia, et in oeconomia.
+
+Sed hic praecipue dicitur de doctoribus, quia hi stant in fastigio templi.
+
+Arius stat in summo loco templi, id est, est praestantissimus doctor.
+
+Ad hunc venit diabolus, autor curiositatis, et instigat eum: Ecce pulcrum esset, si unitas Dei sic intelligeretur, quod diceremus Filium non esse natura Deum.
+
+Hac cogitatione valde excruciat eum, et impellit, ut colligat scripturas pro hac imaginatione. Denique valde urget eum, sicut curiositas est vehemens impetus.
+
+Hic Arius vincitur, et volitat de templo, spargit falsam opinionem relicto verbo Dei, quod depravat, sicut diabolus depravat, inquiens, Custodiet te, sed non addit, In viis tuis, id est, legitima vocatione.
+
+Sic Papa fert legem de coelibatu. Cogitat, videmus mulieres et filios Sacerdotum et Episcoporum multa turbare, pulcrum esset, si Sacerdotes essent coelibes.
+
+Ita sequitur Papa ex stulta sapientia et curiositate suam imaginationem, et fert novam legem, contra mandatum Dei.
+
+Sic fecerunt alii instituentes vota et monachatus.
+
+Conclusio. Discamus ergo ex hac victoria Christi, repugnare tentationibus contra veram doctrinam. Item discamus repugnare tentationibus contra vocationem. Tu es Ludimagister, et libenter tibi sumeres reformationem Ecclesiae.
+
+Sic in tota vita assuefaciamus nos, ut regularia faciamus. Das wir bey der Regel bleiben, vnd nicht ausser der Regel aus fürwig vnnötige ding fürnemen oder erregen.
+
+Curiositas est opinione sapientiae propriae suscipere irregularia, id est, opera sine vocatione, seu sine mandato Dei.
+
+Die Knaben sollen nicht in die Elb gehen, können wol sonst ins Bad gehen.
+
+De tertia Tentatione.
+
+Prima est magis perspicua, videlicet, solicitari ad defectionem ab Evangelio propter famem et pericula.
+
+Huic opponitur promissio Dei pollicentis victum et defensionem, ita nos nunc consolemur hac ipsa promissione.
+
+Secunda tentatio, est solicitari ad corrumpendam doctrinam, propriae sapientiae aut iusticiae opinione.
+
+Huic opponitur regula: Non tentabis Dominum Deum tuum. Est autem tentare Deum, non infirmitate labi, sed curiositate, hoc est, opinione propriae sapientiae discedere a mandato et ordinatione Dei, quasi velis aliquid melius facere aut ordinare.
+
+In prima tentatione peccat infirmitas.
+
+In secunda peccat proprie, non infirmitas, sed opinio propriae sapientiae, et propriae iusticiae, melius aliquid facturae.
+
+Nunc tertia tentatio sequitur, videlicet, solicitari ad manifestam idolatriam vel blasphemiam. Ubi non peccat infirmitas, nec peccat opinio sapientiae vel iusticiae, sed sciens et seipsum damnans diabolus, odio Dei quaerit idolatriam et blasphemiam, ut Iulianus obtemperans diabolo, sciens et seipsum damnans amplectitur idola odio et manifesto contemptu Dei, pingit Iovem sibi porrigentem sceptrum, et Palladem, quae induit eum purpura imperatoria, et Martem, qui tradit ei gladium.
+
+Haec scit commentitia et falsa numina esse.
+
+In hac tentatione Christus non disputat, sed iratus repellit diabolum, quia res manifesta est. Et tantum zelo fidei opus est ad repellendum diabolum.
+
+Nec indiget longa declaratione haec imago, significat postremam et maxime horrendam idolatriam in Ecclesia. Sicut tentatur haec persona, scilicet Christus, ita significatur, quod in corpore Christi sancta Ecclesia sit futura idolatria, quam defendent impii homines manifesto contemptu Dei, scientes esse idolatriam. Et defendent propter potentiam et opes.
+
+Hic coetus defendens idolum, et regnans, est regnum pontificium cum omnibus adhaerentibus, et defendit manifesta idola, sicut Ethnici, Missas pro mortuis, adorationem panis in spectaculo circumgestati, cultus sanctorum. Haec sunt palam idola, ut ipsi sciunt, et defendunt non propter ullam speciem, sed propter regnum, opes, et statum.
+
+Contra haec non opus est disputatione, Postquam scimus esse idola, sed zelo fidei opus est, hementer orare debemus, ut Deus destruat idola, perdat defensores idolorum, et detrudat diabolum in ima tartara, ut sit in poenis, et non possit nocere.
+
+De hac tertia tentatione iam sciamus tam magnum bellum motum esse. Diabolus pugnat in suo coetu, ut retineat idola, et oculos Papae et Caesaris tenet captivos admiratione status pontificii et pulcri imperii.
+
+Et non poterimus resistere diabolo, nisi etiam Filius Dei inter nos praelietur, et dicat diabolo: Vade retro Satana.
+
+Primum, quod quando idola manifesta sunt, postea non sit disputandum, sed zelo spiritus et quadam indignatione, simpliciter fugienda et detestanda sint: et quod fugiendae sint etiam illae viperae, quae excusant idola, sicut nunc multi tales sunt, qui pulcre pingunt Missam et cultum Sanctorum, et alia. Tales diabolos fugiamus.
+
+Secundo sciamus, quod non soli possimus astutiae diaboli resistere, sed quod oporteat nos petere auxilium Dei.
+
+vehementer orare debemus, ut Deus destruat idola, quae secutae sunt. Et nunc exemplum videmus in nostris periculis, undique nobis hostes minitantur etc.
+
+Reliquit Nazareth et habitavit in Capernaum, fortassis ideo, ut esset tutior, quia Romani tenuerunt Capernaum. Ibi fuit Centurio, de quo dicit: Non inveni tantam fidem in Israël.
+
+Locum ex Esaia citavit, et ad hanc narrationem accommodat, etiamsi pars in eo loco de aliis historiis loquitur, sed ipse Esaias mox addit concionem de Messia: Populus qui sedet in tenebris, vidit lucem magnam.
+
+Initium praedicationis Christi.
+
+Poenitentiam agite. Appropinquat enim regnum coelum.
+
+Haec sit praecipua pars concionis.
+
+De Poenitentia.
+
+Propositio. Una et eadem praedicatio est Evangelii inde usque ab initio post lapsum Adae edita promissione, sicut hic Christus praedicat.
+
+Ita prorsus in Paradiso primum obiurgat peccatum, postea addit consolationem. Et sic docuit Apostolos praedicare, Lucae ultimo.
+
+II. Sunt autem duae partes principales poenitentiae vel conversionis.
+
+Contritio, de hac dicit: Poenitentiam agite, quia primum oportet argui peccatum, ut dicit: Spiritus sanctus arguet mundum. Item: Ubi habitabit Dominus? In spiritu contrito.
+
+Non placet Deo securitas, imo ut securitatem nobis excutiat, subiecit Ecclesiam cruci.
+
+III. Secunda pars est consolatio, ut in Paradiso; Semen mulieris conculcabit caput serpentis.
+
+Et nunc saepe illam promissionem cogitemus. Et in consolatione nos ad precandum exuscitemus.
+
+Postremo post victorias veniunt angeli et serviunt. Et quanquam illi adsunt etiam in tentatione, ut commilitones, tamen post victoriam magis cernitur eorum praesentia. Tunc laetantur nobiscum, et agunt nobiscum gratias Deo.
+
+Audiens Iesus Iohannem esse captum.
+
+Iohannes initio praedicavit in Iudaea, ad Bethabaram, coepit ante praedicationem Christi fere unum annum, postea discessit ex Iudaea in Galilaeam, ubi baptizavit ad Salem. Ibi captus ab Herode, diu fuit in carcere. Et interfectus est completo secundo anno praedicationis Christi.
+
+Dicemus autem de passione Iohannis alias, quae etiam est insigne exemplum, quod testatur Ecclesiam subiectam esse cruci, sicut statim ab Abel deinde multa exempla secuta sunt, filiorum Israël in Aegypto, et deinceps persecutionum,
+
+Et Christus praecipit Apostolis: Quorum remiseritis peccata, remittuntur eis.
+
+Et hic: Appropinquat regnum coelorum, id est, remissio peccatorum, iustitia Spiritus sancti, vita aeterna propter Christum.
+
+Hanc consolationem discamus, et opponamus omnibus miseriis humanis, etiamsi sumus afflicti, et a tyrannis occidimur, tamen sciamus nos propter Christum Filium Dei recipi a Deo, et factos esse haeredes vitae aeternae. Et quandocunque dicitur de remissione peccatorum, doceri hoc necesse est, ut sit certa consolatio, Quod detur gratis remissio propter Filium, non propter nostra merita. Hic articulus est, de quo iam praecipue pugnatur, propter hanc vocem Evangelii diabolus conatur nos occidere. Et hanc necessariam Ecclesiae consolationem conatur delere.
+
+Vocatio discipulorum.
+
+Primum dicitur de perpetua conservatione ministerii evangelici, iuxta dictum Ephes. 4.: Ascendit dans dona hominibus, alios Prophetas, alios Apostolos, etc. Hic igitur initio discamus, Deum inde usque ab initio post lapsum Adae instituisse ministerium docendi Evangelii. Et ipse Deus in Paradiso fuit primus concionator, quando promissionem arcanam de semine contrituro caput serpentis promulgavit. Postea Adam fuit sacerdos et praedicator, deinde Seth, deinde alii suo ordine. Et saepe Deus obscurata doctrina, novos ministros vocavit, ut vocavit Abraham et deinde Prophetas, Samuelem, Eliam, Elisaeum, Esaiam et alios. Postea Christus ipse palam concionatus est. Et quia voluit novum ministerium instituere abolita politia Mosaica, et deleto sacerdotio Levitico, ipse novos ministros iam vocat. Et deinceps in genere humano servat ministerium Evangelii, et saepe novos ministros singulari dono excitat, sicut excitavit Augustinum contra Pelagianos, et alias alios, et recens Doctorem Martinum Lutherum. Haec conservatio ministerii perpetua primum hic consideretur, et agamus Deo gratias pro hoc tanto beneficio, quod dat Evangelium, per quod donat vitam aeternam, quod servat semper aliquos ministros, sicut in Esaia dicitur: Posui in ore tuo verbum meum, et manu mea protegam te, ut plantes mihi coelum. Veneremur etiam hoc ministerium et defendamus, quantum possumus.
+
+Haec primum in genere sciantur de ministerio Evangelii.
+
+Secundo. Quod est principale officium ministerii evangelici? Dico semper et omni tempore ab initio post lapsum Adae, idem fuisse officium ministerii evangelici, quod fecisse videmus Deum in Paradiso. Arguit peccata, et praedicat de Messia et remissione peccatorum.
+
+Ita nunc praedicamus doctrinam poenitentiae et remissionis peccatorum, sicut Lucae ultimo dicitur.
+
+Tertio. Sed cur vocat Christus ex alia tribu, cum antea Levitica tribus ordinata fuerit ad sacerdotium? Quia vult delere politiam Moisi, et vult colligere Ecclesiam ex gentibus et Iudaeis. Et hic discamus exemplum irae Dei, quod quando sacerdotes manifeste doctrinam abiiciunt, tunc Deus alios novos ministros vocat.
+
+Sicut cum collegia Canonicorum abiecerint doctrinam, non dubium est ea ruitura esse, etiam si non scimus per quos sint delenda.
+
+Quarto. Apostoli relictis omnibus sequuntur Christum. Sic vocati ad ministerium obediant. Hic adde textum in Levitico: Qui dixerit patri suo et matri suae, Nescio vos.
+
+Et circumibat totam Galilaeam. Narrat initia praedicationis Evangelii, et breviter recitat multis miraculis confirmatam esse doctrinam. Hic breviter addi potest, Miracula recitari propter tres causas. Prima est, ut sint testimonia doctrinae, quod sit a Deo, quia illa facta singularia cum non possint fieri, nisi a Deo, testantur hunc doctorem a Deo missum esse, et Deum efficacem esse per eum, et doctrinam vere esse sententiam Dei etc. Secunda causa est, Miracula sunt testimonia promissionum, ut huius promissionis: Invoca me in die tribulationis, et eripiam te. Iste pauper clamavit ad Dominum, et Dominus exaudivit eum.
+
+Tertia causa, Miracula continent doctrinam de applicatione promissionum, id est, quod fide propter Christum accipiantur beneficia, et quidem, quod ea accipiant Omnes sine acceptatione personarum, sicut Christus sine discrimine Omnes confugientes ad eum recipit, Iudaeos, Samaritanos, Cananaeos, Ethnicos, Centuriones, Publicanos.
+
+Generalis concio sequitur de interpretatione Decalogi, quia Pharisaei corruperant doctrinam, et fingebant in Decalogo tantum praecipi puerilem disciplinam de externis operibus. Deinde amplius fingebant, homines iustos esse illa disciplina, et mereri remissionem peccatorum, et delebant totam doctrinam de Messia. Necesse est autem hos errores in Ecclesia taxari, et illustrari doctrinam de peccato, et de redemtione per Messiam donata. Propter has causas recitatur enarratio Decalogi.
+
+Sed ante enarrationem legis consolationes de cruce proponuntur, quia pharisaica doctrina, sicut et philosophica, ignorat doctrinam de cruce, et sic ratiocinatur, Iustis bene sit, Abel interficitur. Ergo Abel est iniustus, et reiectus a Deo. Sed haec doctrina hoc loco affirmat, hominem non reiectum esse a Deo propter crucem vel calamitates. Et universaliter prodest scire homines in Ecclesia, quod omnes calamitates, aut sunt poenae revocantes ad poenitentiam, ut exilium Davidis. Aut sunt exercitia, ut carcer Ioseph. Aut sunt testimonia doctrinae, ut interfectio Iohannis, Pauli. Aut sunt precium pro aliis. Tale precium est sola mors Christi. Et diligenter mementote hos quatuor gradus, et saepe cogitate, ut sciatis cur Ecclesia sit subiecta cruci, et ex his fontibus sumantur consolationes, postquam scimus causas afflictionum.
+
+Iam sequitur textus. Beati pauperes spiritu, id est, Die in armut gedultig sind.
+
+Exorsus est autem a paupertate, quia haec est communissima miseria piorum. Et non quaeratur alia expositio, loquitur textus de paupertate, quam sic vocamus usitate, indigentiam rerum necessariarum, cum deest pecunia et alia ad victum necessaria.
+
+Hos pauperes spiritu, id est, vera patientia cordis tolerantes paupertatem, dicit beatos esse, id est, non reiectos a Deo, sed habentes statum Deo placentem. Nam Beati hic non significat mortuos habentes vitam aeternam, ut vulgo loquimur, aut promerentes vitam aeternam, sed significat bonum opus, seu statum non reiectum a Deo, ut si diceret, Bene est pauperibus, id est, non sunt reiecti a Deo.
+
+Et loquitur de Ecclesia, quae antea iusta est fide, postea habet multa bona opera, quorum singula dicuntur beatitudines. Lazarus iacens ante domum divitis est beatus, sed ita, primum est iustus fide, postea eius patientia in paupertate, est beatitudo, id est, bonum opus Deo placens: nec reiectus est Lazarus a Deo. Praeterea sciendum est, non laudari ipsam paupertatem, sicut monachi finxerunt, qui tamen non indigebant ullis rebus necessariis.
+
+Sed loquitur de obedientia in paupertate, id est, de obedientia erga Deum. Utrunque est ordinatum a Deo, divitiae et paupertas. Et nec propter divitias nec propter paupertatem homo recipitur aut reiicitur, sed recte uti divitiis, est bonum opus, recte uti paupertate etiam est bonum opus.
+
+Abraham est dives, et placet Deo, quia est iustus fide, et deinde recte utitur divitiis, non pluris facit divitias, quam confessionem doctrinae. Moises in aula Pharaonis posset esse dives, et fieri Princeps, si deficeret ad religionem Aegyptiacam, sed mavult esse pauper, ac retinere veram religionem.
+
+Talia exempla multa videmus in quotidiana vita. Aliquis ex nobis posset esse dives Canonicus, cum impietate. Sed mavult esse pauper Diaconus, cum pietate. *
+
+Quia eorum est regnum coelorum.* Quaero, An paupertate mereantur regnum coelorum?
+
+Non, sed cum iam antea facti sint filii et haeredes, regnum coelorum simul est compensatio pro paupertate.
+
+Quid significat regnum coelorum? Non solum futuram gloriam, sed simul universam defensionem divinam in hac vita.
+
+Ioseph in carcere, pauper, habet regnum coelorum.
+
+Est dives propter defensionem Dei. Beati lugentes. Lugentes hoc loco generaliter intelliguntur omnes pii, qui veris doloribus et angoribus excruciantur, ut primum qui iniuste affliguntur propter professionem verae doctrinae, aut alioqui patiuntur innocentes, quales fuerunt Abraham, Iacob,
+
+Joseph, David, tres viri in fornace Babylonica. Item illi etiam, qui cum non sint innocentes, haerent in poenis, et castigantur propter sua peccata, ut cum fures, homicidae et alii scelerati rapiuntur ad supplicia, si tamen convertantur ad Deum, et consolationem concipiant, ac erigantur fiducia mediatoris Christi exemplo emendati latronis in cruce, Regis Manassae, et Prophetae Davidis etc.
+
+De singulis his in luctu vel moerore iacentibus modo sint conversi ad Deum, et confugientes ad Christum acquiescant fide, certa est et manet vera haec regula, promittenslevationem salutarem: Beati qui lugent, quia consolationem sentiunt. Ac referatur ad vocem iuramenti: Vivo ego, dicit Dominus, nolo mortem peccatoris, sed ut convertatur et vivat.
+
+Item Esaiae 66.: Ubi habitabit Dominus? In spiritu contrito et tribulato, et tremente sermones meos. Item Psalmo 51.: Sacrificium Deo Spiritus contribulatus, cor contritum et humiliatum Deus non despicies. Et sumatur hic declaratio ex integra explicationatione totius doctrinae de cruce.
 
 ## 5:1 All Saints’ Day, Matt. 5
 The Gospel on All Saints’ Day, Matt. 5.
@@ -12138,6 +12150,281 @@ Corinthians 15: Your labor will not be in vain in the Lord, as if to say: God wi
 
 Nor, indeed, will anyone be able in any way to understand this text who does not have the beginnings of true faith. For when one is ruled by one's own wisdom, one cannot help but trust in one's own power, wisdom, strength, and counsels; indeed, it is necessary for such a person to have their hope depend on the goods of fortune, the connections of men, friends, money, wealth, and similar external supports. But in those in whom a spark of faith has been kindled, they at last will be able to perceive, in some part, the sense and use of this salutary rule and consolation. Wherefore, we shall briefly conclude here the interpretation of the present text, since the magnitude of the matters surpasses all human eloquence.
 
+Latin:
+
+Non thesaurizate vobis thesauros in terra.
+
+Iam sequitur concio de avaritia et fiducia acquiescente in pecunia, opibus, et copia rei familiaris.
+
+Hic primum familiariter nota sint vobis verba Pauli Ephes. 4.: Unusquisque laboret manibus suis operans bonum, ut et ipse habeat, et indigenti communicare possit. Item Gen. 3. Deus inquit: In sudore vultus tui vesceris pane tuo. Item Psalm. 128.: Labores manuum tuarum quia manducabis, beatus es, et bene tibi erit. Et passim exstant plurimae sententiae divinae, quae praecipiunt labores iustos congruentes vocationi. Ac est ipsius naturae rationisque praescriptio, imo voluntas Dei, ut paterfamilias habeat necessaria victui, et laboribus vocationi convenientibus paret facultates, augeat et tueatur rem familiarem.
+
+Haec virtus nempe sedulitas recte et ordine quaerens victum, parans opes, partasque facultates conservans, Deo placet, ac nominari potest oeconomia diligens ac iusta, et ordinata divinitus. Extrema vero seu vitia contraria huius diligentiae sunt: alterum, prodigalitas, profusionibus exhauriens facultates, alterum avaritia, sordibus, furtis, et rapacitate quaerens divitias. Est autem avaritia, velle quoque modo corradere et accumulare opes, videlicet lucris iniustis variisque rapinis et furtis, tum occultis tum manifestis, ut cum vitiosae fucataeque merces extruduntur, cum panis et cerevisia corrumpuntur ac depravantur, cum adulterinumm mi pro bonis solvuntur, cum fraudulentis venditionibus et imposturis alieno struuntur insidiae, cum variis praetextibus sumitur mutuum, nec fideliter penditur quicquid aliis debetur. Item cum petuntur usurae, cum exercentur aucupia pecuniae quaerendae iniusta, cum denique violatur aequalitas et iustitia in defraudandis aliis.
+
+Haec omnia prohibentur in septimo praecepto: Non furtum facies. Nec indiget quicquam horum prolixa declaratione, sed singuli sese scrutentur, et animadvertant, ubi fideliter et candide, ubi fallaciter et insidiose agant, moresque suos emendent.
+
+Quia talis iniustitia non est leve peccatum, sed quod Deus et in hac vita punit atrocibus poenis, et puniet aeternis suppliciis, nisi fiat conversio ad Deum. Sic dicit Esaias 33.: Vae qui spolias, quia spoliaberis. Itaque manifeste videtis crescentes peculatu et variis fraudibus, excuti tandem fortunis. Et ab experientia dictum illud ortum est: Male parta male dilabuntur.
+
+Ita Paulus inquit 1. Cor. 6.: Adulteri, fures etc. non erunt haeredes Dei et vitae aeternae.
+
+Porro et haec est avaritiae species, ac ingens peccatum, cum pecuniae, opes et copiae anteferuntur piae doctrinae atque veritati divinae. Quantus est in plurimis regionibus horum numerus? qui agnita veritate tamen fugiunt pericula confusionis, imo et persecutionem seu oppressionem purioris doctrinae stabiliunt et adiuvant, ne dignitatem, bona, divitias ac tranquillitatem suam in discrimen afferant vel amittant. Est et haec avaritiae species, cum habes mediocres facultates, nec vis pro tuo modo et loco decerpere aliquid Deo, et conferre cum ad conservationem ministerii Ecclesiae, tum ad sublevandas difficultates vere egentium, sicut Nabal nolebat iuvare Davidem, quem tamen praesens occasio ipsi commendabat.
+
+Avaritiae speciebus annumerandum est et hoc triste peccatum, quando cor tuum magis acquiescit et nititur fiducia pecuniae, potentiae, opum, quam fide praesentiae et bonitatis divinae cum securus nec agnoscens tuam infirmitatem, sinis in corde tuo exstingui et timorem Dei et invocationem, et vana fiducia propriarum divitiarum quaeris voluptates, indulges cupiditati vindictae etc. Quae quidem sunt arcana, sed tristia et tetra peccata, de quibus iam copiosius disserendi locus haud fuerit. Omnia haec peccata prohibentur in hoc dicto Christi: Nolite vobis colligere thesauros, in quibus cor velut inhaerescit et acquiescit, quique pluris illi sunt quam Deus ipse.
+
+Propterea addit: Ubi cor tuum, ibi thesaurus tuus, quod omnino verum est de avaris, qui lucra, divitias et πλεονεκτήματα sua multo pluris faciunt et aestimant, quam Deum.
+
+De prodigalitate.
+
+De prodigalitate non dicam prolixe, loquitur enim res ipsa, ut cuivis perspicuum est, prodigos, qui facultates suas in res non necessarias per luxum aut per vanum studium ostentandi opes profuderunt, exutos patrimoniis tandem converti ad furta et rapinas, aut ignavam mendicitatem, quae et ipsa quaedam furti species est.
+
+Hinc rhythmi Germanici dicunt: Wer mehr wil verzeren, Denn seln pflug kan ereeren, Der wird zu lezt verderben, Und villeicht am Galgen sterben. Quorum haec est sententia: Si quis de partis vult plura absumere rebus, Quaerere quam vigili sedulitate potest: Is mendicando victum petet, ostia pulsans, Aut feret huic tristem crux, laqueusque necem.
+
+Ac exstat mandatum divinum profusiones et dissipationes haereditatum nominatim prohibens, Proverb. 5.: Ne des substantiam tuam crudeli, nec saturentur alieni facultatibus tuis. Vocat enim crudeles et alienos eos, qui abutuntur aliena facilitate et liberalitate, quique harpyiarum et hirudinum more sanguinem exorbent, ac postquam facultates aliorum devorarunt, iis, quibus fidelitatem et gratitudinem debebant, in calamitate illudunt et insultant.
+
+Praeterea conspici potest in aulis et administratione seu gubernatione politica, quantum impedimentorum, et detrimentorum perniciosorum pariant inanes profusiones. Cum domini seu potestates, non necessariis sumtibus apparatibus et pompis impendunt ordinaria tributa legitimasque pensiones, ac supra modum suarum facultatum inani aucupio gloriae profundunt plurima, ubi non est opus, postea nec ipsi sunt instructi pecunia ad res necessarias gerendas, nec parcunt civium facultatibus, sed immoderatis expilationibus deglubentes populum, ditionibus territoriisque suis onera intolerabilia cumulant.
+
+Haec omnia diligenter consideretis atque perpendatis et discatis cum gratiarum actione ad Deum, ordine ac prudenter tum collocare tum custodire facultates iuste partas, nec ullis praetextibus alios defraudetis. Quin et hoc sciatis, divinitus offerri, Deique beneficia esse facultates, victum ac rem familiarem, nec negligere Deum administrationes aut acquisitiones fortunarum, sed velle eas tueri, augere et provehere recte utentibus et in vocatione fideliter servientibus, velle etiam attenuare ac dissipare facultates, cum insignes abusus accersuntur contra conscientiam, sicut experientia comprobat, et oculi testantur haec divinitus hoc modo fieri.
+
+Hanc communem doctrinam, de proprietate, seu distinctione dominiorum, ac de legitimo usu facultatum, debetis hic attente cogitare et meditari. Non volui arduas et subtiles hoc loco quaestiones agitare, sed mentionem facere communium negotiorum, casuum et vitiorum, quorum in huius vitae miseriis et infirmitate exempla nimis crebra, et proh dolor quotidiana sunt in conspectu posita, de quorumlibet generum furtis, iniustis aucupiis et lucris, atque multiplici abusu facultatum.
+
+De his ipsis peccatis Christus quoque loquitur, nec dubium est, quin nos quoque, si vera pietate Deum coleremus, essemus futuri diligentiones in his oeconomicis, quantumvis levibus, ut videntur, officiis, videlicet, ut iusto ordine et acquireremus seu pararemus, et administraremus sive collocaremus haec externa atque corporalia bona, nec luporum, canum et felium, de pastu decertantium more, velut ex faucibus ereptum bolum seu cibum, unus alteri mordicus auferret. Deus certe vult ac flagitat, ut nos et hac qualicunque obedientia fidem atque timorem Dei declaremus, ac ipsi hunc honorem cultumque debitum praestemus, videlicet, ut benigne, fideliter, et iuste inter nos alii cum aliis res ac officia communicemus, iuxta dictum Prophetae: Misericordiam volo, non sacrificium, et agnitionem Dei magis quam holocausta etc.
+
+Nos quidem concionatores quid possumus aliud facere, quam sonare vocem Decalogi, et vobis auditoribus mandata divina proponere? Caeterum politici magistratus officium erat in multis huiusmodi negotiis tueri iustitiam exercendis iudiciis et executione poenarum, seu puniendis violatoribus iustitiae ac disciplinae.
+
+Sed regimina, proh dolor, languidiora sunt his ultimis temporibus, et in hac delira mundi senecta. Deus clementer det imperia iusta et salutaria Ecclesiae, flectat etiam vestros et nostros, id est, omnium animos ad pie, temperanter, ordine, circumspecte sobrieque vivendum, ut et ipsum honore adficiamus, et in gubernatione morum sollicitae mentes accendantur ad invocationem et caeteras virtutes congruentes voluntati divinae, Amen.
+
+Lucerna corporis est oculus. Hoc memorabile dictum est regula generalis, commonefaciens nos, ut in quolibet opere principaliter animi intentionem seu discrimina finium consideremus, nec tantum externi ...operis gestum seu simulationem spectemus.
+
+Exempli causa: Abraham, item vidua Sareptana, et alii sancti homines dederunt eleemosynas. Iam plurimi divites inter Ethnicos vel hypocritae non minus benigne largiuntur eleemosynas.
+
+Hic tur hypocritae praestare opera similia operibus piorum, nec differunt externi gestus, imo potest fieri, ut Ethnica liberalitas longe superet magni- ficentia pium opus viduae Sareptanae, quae in summa penuria pauxillum farinae praebet Eliae exulanti. Sed finis facit discrimen, quia motus interiores cordis plane sunt dissimiles. Impii, id est, Ethnici et hypocritae non benefaciunt aliis propter Deum, seu, ut Deo obediant, sed vel ostentatione quadam et aucupio gloriae popularis, vel quia fingunt se sua beneficentia mereri remis- sionem peccatorum, et iustos esse coram Deo, si- cut Mahomet et Papistae docent de satisfactioni- bus et compensatione delictorum.
+
+In hoc exemplo perspicuum est, opera simi- lia externa specie prudenter ac procul esse discer- nenda. Alia enim fiunt vero motu cordis agno- scentis Deum, et propter mandatum Dei, de qui- bus operibus hoc loco tradit Dominus generalem regulam: Quando cor est hypocriticum, tunc etiam externum opus est simulatus gestus, et fu- cosa hypocrisis plena peccati Deoque displicens.
+
+Haec regula complectitur plurima exempla, scilicet, omnes externas ceremonias. Cain et Abel, Saul et David offerunt sacrificia, et multis imponit similitudo quaedam externi operis, ut ni- hil differre iudicent, sed corda prorsus dissimilia sunt. Porro primum et summum praeceptum di- cit: Diliges Dominum Deum tuum ex toto corde tuo. Item, Rom. 10.: Corde creditur ad iusti- tiam etc. Et Esaiae 29. vituperat et reiicit Deus hypocrisin hac voce: Appropinquat iste populus ore suo, et labiis honorat me, cor autem eius longe est a me, ut Cain, Saul, Ethnici, et Mo- nachi arte simulant externos gestus, sed cor in ipsis est plenum sordibus ac immunditie, non re- gitur luce seu vera agnitione Dei, est sine timore Dei, sine fide, plenum invidentia et odiis, imo ruit in caedes et blasphemias. Huiusmodi sacri- ficia et externi gestus sunt tetra peccata, et cultus horribiliter damnati ac reiecti, sicut et Salomon affirmat Proverb. 28.: Oratio eius qui avertit au- res, ne audiant legem, erit exsecrabilis. Item Ecclesiast. 4.: Melior est obedientia quam victi- mae stultorum, qui nesciunt quantum faciant mali. Exemplum, Ethnici fuerunt sine vera agnitione Dei, pleni turpitudinum, adulteriorum, incesta- rumque libidinum, interim tamen cumularunt sacrificia, quibus deleri peccata putabant.
+
+Tantam coecitatem semper in mundo confir- mavit diabolus, sic impuri sacrificuli Papistici vi- xerunt in manifesta turpitudine, qui tamen Missas celebrantes impudenter somniarunt et iactitarunt se placare iram Dei ceremonia suae oblationis, et ipsam lectionem Missarum mereri ingentia bene- ficia universae Ecclesiae.
+
+De talibus insanis et coecis hypocritis loqui- tur Salomon inquiens: Hij stulti nesciunt, quan- tum mali faciant. Aberrant enim a vero Deo ignari voluntatis divinae, ac ne sua quidem opera intelligunt, sed ipsorum cultus et sacrificia sunt superstitiosae cacozeliae et horribilia peccata. Ita- que de hac coecitate Dominus hic dicit in genere et universaliter: Si oculus tuus malus fuerit, to- tum corpus erit tenebrae, hoc est, oportet tenere discrimen externorum operum. Ubicunque cor est pium et sincerum, ibi et externa opera sunt incorrupta et impolluta. Sed ubi cor est impu- rum et hypocriticum, ubi cacozelia externorum operum seu factorum quantumvis magnifica, plau- sibilis et speciosa, est commentitia superstitio et grave peccatum. Hic est simplex et proprius in- tellectus horum verborum Christi.
+
+Quaestio.
+
+At dicis: Quando igitur cor est sincerum? et quomodo sciri potest, utrum sint puri motus cordis?
+
+Responsio.
+
+Primum necesse est, ut cor norit et intelli- gat verbum Dei, iuxta versum Psalmi: Lucerna pedibus meis verbum tuum, et lux semitis meis. Hanc lucem prius oportet accendi in nobis, eam- que vera et firma fide cordis accipi et apprehendi, sed vere, dextre ac pie intellectam, ne pertraha- mur speculationibus monstrosis et aberrantibus in haereses, fanatica deliria, Monastica somnia, et sophisticas perplexitates, quemadmodum diabolus incitat omnibus temporibus et impellit quosdam petulantes ac insanos homines, ut deficientes a verbo Dei implicentur corruptelis doctrinae, et amplectantur perniciosos errores ac sophismatum praestigias.
+
+Quandocunque igitur homo regitur verbo Dei, nec deest sincerus ac verus intellectus vocis divinae sen recta sententia, quam fides firmiter amplexa retinet ac laetatur, tunc illucescit cordi, quid sit lex, quid aeterna promissio et reconcilia- seu gratia, quomodo Deus sit agnoscendus et invocandus, quare missus sit filius Dei, et quae sint eius beneficia, qui sint veri cultus Dei, et quis ordo omnium operum debeat institui. Accensa vero hac luce in mentibus humanis, necesse est existere veram atque seriam conversionem ad Deum seu poenitentiam, id est, veros pavores ortos ex agnitione irae divinae adversus peccata nostra, et veram fidem atque fiduciam acquiescentem in Deo propter filium mediatorem.
+
+Porro ubicunque lucet haec fides, ibi deinde omnes cultus, et caetera opera, divinitus instituta, praecepta et approbata, aut quaecunque observationes recte ordinari atque iudicari possunt.
+
+Hoc declaremus exemplo.
+
+Postquam Paulus norat se recipi et placere Deo, se iustum esse gratis propter obedientiam Domini nostri Iesu Christi, et exarserant in corde verus timor Dei, vera fides, et vera invocatio, perspicue intelligebat ieiunia, ceremonias, et quaecunque opera a nobis electa nequaquam esse merita remissionis peccatorum, aut iustitiam coram Deo, sed esse externae exercitia, quae pro circumstantiis observari vel omitti possunt.
+
+Hunc ordinem ut disceret Antonius Eremita, singulari revelatione commonefiebat, ne sua ieiunia et dulcissima solitudinis exercitia durissimae sutoris Alexandrini vitae anteferret.
+
+Recita historiam: Ferunt S. Antonio venisse aliquando in mentem, ut cuperet scire, an vitae genus, quod ipse susceperat in durioribus illis exercitiis solitudinis, praestantius esset, ac magis Deo placeret, quam vitae communis officia, quae praestare solent patresfamilias Christiani, in quibus non haeret manifeste turpitudo, ibi Deus per somnium vel revelationem quandam volens Eremitae ostendere, quantum in hoc vitae genere proficeret, monstravit ei domum sutoris Alexandrini vicinam portae, ac iussit, ut illius exercitia et dona exploraret.
+
+Veniens igitur in urbem Alexandrinam, Antonius ingreditur domum sutoris, alloquitur patremfamilias, ac primum interrogat de doctrina, sitne Christianus, et an vera fide amplectatur Symbolum et omnia scripta Prophetarum et Apostolorum?
+
+Hic modeste de doctrina respondet, fatetur se esse Christianum, affirmat se reiicere et condemnare Ethnicas idolomanias, et invocare verum Deum in agnitione Iesu Christi mediatoris, ac in summa dicit se credere omnes articulos fidei, cis et impiis opinionibus, pugnantibus cum quocunque articulo Symboli, ac veris gemitibus petere a Deo, ut haec initia verae fidei confirmentur in suo pectore, ne ruat in errores, haereses et fanaticos furores, sicut omnibus aetatibus contagia tristissimorum errorum late vagata sunt.
+
+At iis sane libenter auditis percontatur Antonius, quos igitur cultus praestare, quae pietatis exercitia usurpare, quibus operibus venerari Deum soleat?
+
+Tum sutor: Haec fides, inquit, qua vere credo Deo, et gratias ago pro tanta bonitate et ingentibus beneficiis, quod Deus immensa misericordia me propter filium suum Dominum Iesum Christum gratis recipit, quod iustum pronuntiat, quod vult mihi propitius esse, summus est et praecipuus cultus.
+
+Ideo quotidie cogitatione tantorum beneficiorum exsuscitor ad gratiarum actionem, atque utinam possim ardenti pectore et vera gratitudine divinam bonitatem benevolentiamque celebrare.
+
+Nec enim praeter hanc gratiarum actionem, et beneficiorum praedicationem, quicquam reliquum fuerit, quo Deum honore afficere, quoque voluntatem gratiae referendae testari queam.
+
+Praeterea singulis diebus, mane surgens e lecto brevi precatione Deo gratias ago, et peto remissionem peccatorum, vitam, consolationem, gubernationem, victum, defensionem, atque miseriarum mitigationem, mihi, coniugi, liberis et Ecclesiae.
+
+Eandem quoque gratiarum actionem, et petitionem, repeto assidens ad mensam, et iturus dormitum.
+
+Quae cum valde probarentur Antonio, pergit interrogare de ieiuniorum et corporalium exercitiorum ordine atque modo.
+
+Respondet iste: Postquam mane paucis verbis pro familia et universa civitate oravi, laetus facio domesticas operas.
+
+Premor enim et ipse vulgari onere paupertatis, ideo mihi necessitas incumbit, opitulante Deo, parvis liberis et familiolae victum quaerere.
+
+Proinde ad arti meae operam, et curo, ut filii recte doceantur, utque familia ad agnitionem et invocationem Dei invitetur ac instituatur.
+
+Praeterea quaecunque mandat legitima potestas in politicis negotiis, diligenter exsequor, et obedientiam praesto in solvendo tributo, atque communibus oneribus civium sustinendis.
+
+Non alia, inquit Antonius, habes exercitia duriora? ut certos dies ieiuniorum, et quasdam peculiares observationes? Parumne putas, ait alter, me laboris et ieiuniorum sustinere? cum in officina assiduis operibus exerceo artificium meum, domesticaeque familiae victum quaero, cum variis aerumnis conflictor, tolerandis cum in oeconomicis difficultatibus, tum oneribus a republica impositis, cum incidant subinde plurima, quae patremfamilias duriter excruciant. Deinde quem multiplices domesticae miseriae defatigant, quem curarum moles in civili gubernatione et politicis officiis exercet, illi non est integrum otiose circumspectare et cessare, nec unquam defuturae sunt causae, occasiones et pericula, quibus ad invocationem, ad exercendam fidem ac dilectionem exsuscitetur. Miror itaque, cur in his et publicis et privatis miseriis exercitia pii patris-familias non satis duram militiam, sed suave otium esse existimes, ac nescio, quae difficiliora et perfectiora requiras opera.
+
+Magna pietas et sanctimonia est in officiis vitae communis Deum recte agnoscere, vere invocare in agnitione et fiducia Christi, deinde in coniugio caste vivere, in laboribus oeconomicis et politicis fideliter servire, et in his miseriis atque periculis quotidie fidem ac invocationem, pietatem denique in retinenda possessione doctrinae de Deo, exercere. Hac tam gravi responsione movebatur Antonius, ut intelligeret suam monasticam vitam in solitudine non antecellere, nec anteferendam esse laboribus, officiis et exercitiis vitae politicae et oeconomicae, in quibus testimonio praesentiae Dei timor et fides confirmantur. Didicit ergo gradus, ordinem ac discrimina inter fidem et opera, inter pios motus cordis et externos gestus.
+
+Hic etiam conferamus Davidem et Alexandrum, ut de discriminibus utriusque gubernatoris admoneamur.
+
+Alexander fuit acerrimus bellator, donatus imperio orbis terrarum, adeo florens opibus ac potentia, ut ipsius imperii possessio quinquies aut sexies magnitudine fuerit amplior Israëlitico regno Davidis. Item multa praeclara praelia fecit, plurimas gloriosas victorias consecutus est, captivis clementer pepercit. Interim tanti principis divinitus instructi excellentia virtutum et felicitate cor plenum erat contemptu Dei, spurcitie, et aliis turpitudinibus. Ideoque donis, quibus a Deo ornatus erat, auctoritate, opibus, regnis atque victoriis abutebatur ad fastum, ad voluptates, ad magnificentiam pomparum. At in corde Davidis lucebat vera agnitio Dei, quem recte invocabat, victorias atque regna conferebat ad gloriam Dei, et propagationem salutaris doctrinae, cumque sciret se debere obedientiam Deo in hoc gradu politico, in quem collocatus erat, alacriter susciebat et sustinebat tantos labores, acerrime praeliabatur, ut defenderet coelestem doctrinam, nec sentiebat se mereri remissionem peccatorum his dimicationibus, et hac mole curarum atque dolorum, nec regni decus ac potentiam hoc fine tuebatur, ut ipse ingenti gloria frueretur, multo minus ut impune quidvis sibi liceret, et ut agens iniusta non posset a quopiam coërceri vel reprimi.
+
+Horum et similium exemplorum consideratione fiet illustris ac perspicua sententia dicti: Si oculus tuus fuerit malitiosus, totum corpus erit tenebrae, id est, quando cor intus non vero iudicio nec honesto proposito movetur ac regitur, tunc certum est externi operis gestus esse peccata, nec ulla ratione cultuum divinorum nomen accipere. Quae omnia sunt digna observatione, ut agnoscatis ordinem seu gradus verorum Dei cultuum, et ordine vos exerceatis in his gradibus. Nam sine exercitiis, veris animi doloribus, ardenti invocatione, et sensu divinae consolationis haec doctrina nequaquam potest intelligi. At hunc textum Papistae insulsis interpretationibus foede dilacerarunt, cum ne sua quidem intelligerent aut diiudicarent opera, iuxta Salomonis gnomen, Ecclesiast.
+
+4.: Nesciunt, quantum mali faciant. Et hypocritae ignorant, quid sint ipsorum superstitionis cultus, et nesciunt, quid agant, dum insignibus titulis suas ceremonias ostentant ac venditant. Itaque invexerunt tetros et perniciosos errores, horribiliter perverterunt ac conturbarunt ordinem operum, praetulerunt humanas traditiones mandatis divinis, atque dixerunt, homines propriis operibus mereri remissionem. Hi omnes et similes errores taxantur et reprehenduntur hoc brevi dicto Christi: Si oculus tuus malus fuerit, necesse erit totum corpus tenebras esse, qua regula constituitur discrimen inter hypocrisin, et legitima sive divinitus ordinata et approbata opera.
+
+Et hactenus de ista generali regula.
+
+Sequitur iam Concio.
+
+Nemo potest servire duobus Dominis etc.
+
+Regimina politica seu mundi imperia suum habent ordinem, distinctum certis gradibus, singuli cives et subditi multos habent dominos, nimirum consules civitatis, praefectum, principem, veruntamen hi gradus hoc ordine constituti sunt, ut unusquilibet civis principaliter serviat et obtemperet summo capiti seu gubernatori, postea suo loco caeteris dominis inferioribus. Neque vero servientes hoc ordine potestatibus, dicuntur duobus dominis servire, quamdiu superior dominus et magistratus inferiores coniuncti sunt voluntatibus et sententiis.
+
+Sed cum illi animis et voluntatibus distracti, inter se dissident, tunc certe nemo potest utrique discordantium adhaerere pariter ac servire, sicut eadem aqua non potest simul esse fervida et frigida, quia contraria seu pugnantia inter se non possunt simul poni, nec in eodem subiecto coniungi, ac ut maxime sint simul, mox tamen alterum pellitur ab altero.
+
+Similis ratio est in hoc casu, de quo concionatur Dominus: Nemo potest duobus dominis servire, scilicet, non consentientibus et congruentibus inter se, sed turbulentis atque discordibus.
+
+Item, quando non est imperio legitimo gradibus certo ordine distinctis, alter alteri subiectus, ut, nemo potest pariter Ferdinando regi et Turcico tyranno servire, quia hostilibus odiis inter se dissident.
+
+Rex enim Ferdinandus affirmat Hungariam esse suam, ideoque negat se passurum, ut eripiatur ea sibi. In hoc manifesto dissidio, et gravibus inimicitiis constat nullum militem posse stipendia merere apud utrumque, vel utrique servire. Huiusmodi exempla sunt illustria, plana et perspicua.
+
+Sic et Iudas non potest aequaliter atque pariter pecuniam et Deum venerari, colere ac magnificare.
+
+Nam vox divina dicit: Non adiuves oppressionem innocentis; at avaritia clamitat: Imo propter pecuniam confirmes et adiuves iniustam saevitiam. Hoc exemplum plurimi nunc imitantur.
+
+Quidam enim simul et amplecti doctrinam Evangelii et Episcopatus ac Sacerdotia sibi conferri volunt a Pontifice Romano, sed Evangelii vox est: Fugite idola, id est, nec este dediti idolatricis cultibus, nec eos approbate.
+
+Reclamat autem Episcopatus, praecipiens cultum et approbationem idolorum, ut eveharis ad fastigium tantae dignitatis, et obtineas pulcrum principatum. Praeterea quam usitatum est in aulis principum, ut viri nobiles videri velint Evangelici, et interim simul aucupentur gratiam, et alludant ad affectus potentum, qui doctrinae piae infesti persequuntur Evangelium.
+
+Ex his et similibus exemplis clare poterit intelligi sententia huius textus.
+
+Estque hoc loco discenda et servanda regula: quod Deo serviendum sit ante omnia, seu quod Dei cultus et honor praeferendus sit omnibus creaturis, iuxta primum Decalogi praeceptum: Diliges Dominum Deum tuum ex toto corde, ex quo verissime sequitur, nihil omnium rerum aeque colendum, pariterque diligendum esse ac Deum ipsum, nec tribuendum honorem divinum amoremve Deo debitum ulli creaturae, tantum abest, ut quicquam omnium rerum Deo sit anteferendum, magisve colendum, aut ardentius diligendum, ad contumeliam ipsius Dei, quodque repugnet et adversetur divinae bonitati.
+
+Haec est summa salutaris istius regulae, quam in textu sequuntur haec verba: Non potestis servire Deo pariter et Mammonae, seu divitiis, quod quidem intelligetis eodem plane modo, quo superiora, quasi dicat Dominus: Vos nequaquam debetis quacunque ratione quaerere divitias, omisso Deo, nec propter divitias facere contra Deum, non debetis accipere opulentos Episcopatus et opimas praebendas, quas nominant, ut confirmetis ac stabiliatis impiam doctrinam, seu falsa dogmata.
+
+Item: Non debetis propter pecuniam violare caetera mandata divina, quemadmodum foeneratores, praedones, fures, et alii impostores faciunt, cuius generis peccata certe plurima sunt in mundo.
+
+Quid enim tam usitatum est, quam pecuniae causa violare iustitiam? Iuxta tritum Teutonica lingua Proverbium, pecuniarum gratia fieri homines nequam et improbos.
+
+Viennae ante paucos annos quidam Pistor habuerat ministrum, cui nomen erat Paulus.
+
+Hic cum penitus perspectus ac exploratis aedibus cognovisset, quibus in arculis pecunia soleret asservari, nocte quadam se in eandem domum insinuans, ex ordine caedes quinque hominum crudelissime commisit, ac primum quidem servum dormientem in scamno trucidavit, exinde ancillam, postea patremfamilias et coniugem concubantes in eodem lecto iugulavit.
+
+Quibus interfectis cum accederet ad alium lectum, in quo erat filiola adhuc admodum parva, exclamavit illa eiulans: Ah Paule, obsecro parce, nec eripe mihi vitam, accipies omnes meas puppas, cum voles.
+
+Sed diabolus impulit hunc latronem, ut pergeret, et furorem in eo confirmavit, occidit igitur et miseram puellulam, compilataque domo et pecunia ablata fugiens Viennam, pervenit Ratisbonam, quae abest a Vienna ad quinquaginta milliaria Germanica.
+
+Verum Deus ipse est executor suae regulae: Quicunque gladium acceperint, gladio peribunt. Propterea latro iste, quanquam tot milliarium intervallo discesserat, divinitus tamen ad poenam retractus, et in iudicium capitis adductus, Viennam iniectis catenis remissus est, ubi et hasta seu veruto transfixus, innocentium sanguinem supplicio merito luit. Suspensus autem in veruto, seu affixus praeacuto palo, clamitabat miserabiliter, caeteros cruciatus corporis omnes, quos perferret, nequaquam, sibi tam acerbum dolorem inurere, quam acrem morsum sensumque doloris efficiat recordatio vocis puellae, quae dixerat ad sicarium: Ah Paule, sinas me vivere, dabo tibi omnes meas puppas. Ita mortuus est hic fur et latro in atrocissimi supplicii tormentis et horrendis conscientiae cruciatibus. Tantis peccatis implicat, tamque tristes ac tragicos exitus affert Mammona. Haec insignia et crassa exempla mementote, quae cogitantes videte, ne Mammona vos captos et comprehensos teneat.
+
+Quaestio.
+
+At hic existit quaestio, num sit quaerendus victus, et tenenda res familiaris? Respondeo. Omnino debes quaerere et retinere facultates, sed hoc ordine: Primum Deo obtemperes, ac discas ante omnia ipsum recte invocare et colere, nec contra conscientiam, seu sciens et volens violes divina mandata. Postea debes honestis laboribus, ordinate iuxta vocationem parare, collocare, tueri, et augere rem familiarem, seu facultates. Imo Deus ipse vult sua bonitate et benedictione adiuvare tuos labores, ut sint felices, vult provehere et augere tibi facultates, sicut postea circa finem capitis attexitur gnome: Primum quaerite regnum Dei, et caetera divinitus adiicientur vobis. Sic fuerunt divites Abraham, Isaac, Ioseph, David, Iob. Sed quia saepe audivistis explicationem veram et luculentam huius quaestionis, non disseram hoc loco de ea prolixius, sequitur in textu:
+
+Non sitis soliciti de crastino, quid comedatis, aut quid bibatis etc.
+
+Hic sapientes homines sine luce fidei cogitant, hos esse sermones otiosos et inanes, ac impossibilia praecipi. Oppono itaque brevem et perspicuam responsionem: verum est, sapientes ignaros exercitiorum fidei, iudicare hic Stoicas quasdam hyperbolas tradi, et hos esse sermones frivolos, inutiles ac similes fabulosarum narrationum. Vos vero, qui recte didicistis initia doctrinae Christianae, et in quibus est accensa scintilla fidei, scitis humanas mentes divina consolatione destitutas in paupertate, persecutionibus, et calamitatibus, in tantis periculis privatis et publicis, vehementer excruciari, et intimis animi sensibus angi, nunc hic nunc istic praesidia, coniunctiones et auxilia quaerere, communire se factionibus et variis practicis. De hac sollicitudine loquitur textus, quae est ingens cruciatus et angor trepidantis animi, ortus ex diffidentia, quia cor nec erigitur nec sustentatur divina consolatione.
+
+Quare discatis duplicem esse sollicitudinem.
+
+Una est sollicitudo diffidentiae seu trepidatio et cruciatus cordis, quod non regitur divina luce et consolatione, quod nec petit nec exspectat auxilium, defensionem, victum et gubernationem a Deo. Ideo saepe, proh dolor, accidit, ut aliqui homines propter detrimenta facultatum seu paupertatem adeo duriter exerceantur animi perturbationibus, angoribus et sollicitudinibus, ut contabescant moerore, vel etiam ipsi mortem sibi consciscant, quemadmodum exempla meminimus.
+
+Haec sollicitudo plena diffidentiae, trepidationis, coecitatis, et expers omnis verae consolationis hic severissime prohibetur. Nam Dei voluntas immutabilis est, ut in omnibus periculis et necessitatibus confugiamus ad ipsum, speremus et petamus ab ipso auxilium, nec frangamur desperatione. Id docet pulcherrimus Psalmi versiculus, quem singuli meminisse et saepe meditari debetis: Iacta curam tuam in Dominum, et ipse te sustentabit.
+
+Quin ob hanc ipsam causam Dominus quotidjanae precationi inservit et inclusit haec verba: ...Panem nostrum quotidianum da nobis hodie. Ergo cum iusserit ipse peti a se cibos et bona corporis, vult sine ulla dubitatione haec etiam bona corporalia, victum, defensionem, facultates suppeditare, vult nos non ab ipso deficere nec opprimi desperatione. Ex hac declaratione perspicuum et manifestum est, prohiberi hanc solicitudinem, quae est diffidentia, dubitatio et desperatio de auxilio divino. Altera solicitudo est in credente cura, sedulitas et diligentia, divinitus... ordinata faciendi labores sui loci et suae vocationis.
+
+Exempli causa. David est imperator seu dux exercitus. In hac vocatione obeunda necesse est ipsum adhibere iustam diligentiam, et solicitudinem copias militares ducendi, distribuendi, collocandi in insidiis. Item, dimicandi cum hoste, prospiciendi ex quibus locis exercitui commeatus commode supportari seu convehi, et res frumentaria expediri possit, explorandi denique ubi subsederint et commorentur hostes, in summa, oportet ipsum ut sedulum et acrem militem non esse ignavum, nec ebriosum aut temulentum in facienda vocatione. Sed ad hanc curam et diligentiam vocationis propriam accedit in corde consolatio, tranquillitas et laetitia, videlicet, quod retinens animi constantiam credit Deum sibi adesse, se respicere, curare, tegere, sibi opitulaturum esse, ideoque laetus invocat, imo suscipit ac sustinet eo promtius et alacrius omnes labores, quia scit se vocatum a Deo iuvari et defendi divinitus, et sperat bonos exitus. Haec solicitudo laboris et diligentiae coniuncta cum fide, est ordinata et mandata divinitus, et haec sedulitas seu cura faciendae vocationis non admiscet negotiis et ordinatis laboribus iniusta consilia, et malas practicas, sicut prior illa solicitudo diffidentiae metu futuri incommodi in praesentia saepe utitur pravis consiliis, et quaerit inconcessa praesidia. Sed coërcet se intra metas, recte suscipit et placide tolerat labores a Deo mandatos, nec a regula discedit propter futuras incertas spes aut metus.
+
+De qua diligentia Paulus praecipit Rom. 12.: Qui servit, serviat fideliter, qui praeest, sit diligens, etc. Item, Psalm. 128.: Labores manuum tuarum quia manducabis, beatus es, et bene tibi erit.
+
+Cognito igitur et dextre intellecto hoc discrimine solicitudinis, cruciantis animum diffidentia, et solicitudinis seu diligentiae in facienda vocatione, cui praelucet fides acquiescens in Deo, mediocriter potest intelligi hic textus, qui quidem plurimas salutares commonefactiones, doctrinas et consolationes dulcissimas proponit, quarum scilicet haec est summa. Necesse est singulos Christianos omnibus temporibus nosse doctrinam de distinctione promissionum, sunt enim duplices promissiones. Prima et summa promissio est, promissio gratiae seu reconciliationis et vitae aeternae gratis dandae propter mediatorem Christum. Alia est promissio de bonis necessariis in hac vita, seu de corporali auxilio in omni genere necessitatum et periculorum, ut de victu, defensione, bona valetudine, etc. 、“
+
+Hic ergo scias, utrumque genus promissionis fide accipi, et consolatione, quam proponit utraque promissio, mentes erigi atque in Deo acquiescere oportere, veruntamen semper inchoandum esse a promissione gratiae et salutis aeternae. Antequam petis praesentia seu corporalia beneficia, oportet initio te cogitare, utrum statuat cor tuum se habere Deum propitium, et se placere Deo. Hic necesse est te intueri Salvatorem filium Dei, et vera cordis fiducia statuere, quod certo Deus placatus propter filium te gratis immensa bonitate recipiat, quod remittat tibi peccata, quod reconciliatus velit agnosci suam misericordiam, quod vere te vivificet ac haeredem aeternae salutis efficiat. Haec prima promissio est praecipua vox Evangelii depromta ex sinu aeterni Patris, manetque perpetuo rata et firma, et immota credenti, sive habeat bona corporalia, sive non contingat ei liberatio corporalis in hac mortali vita.
+
+Nam fidem oportet niti hac aeterna promissione, et hoc summum bonum retinere, etiamsi amittenda sunt omnia bona temporalia, et ipsa vita corporalis profundenda, ut David excussus regno et in exilium pulsus, tamen amplectebatur et retinebat consolationem seu vocem absolutionis, qua dixerat ei Propheta Nathan: Dominus abstulit peccatum tuum. Itaque firmissime credebat se habere remissionem peccatorum, et reconciliationem, suasque preces recipi, et se esse haeredem vitae aeternae, etiamsi exutus universa sua gloria regnum amiserat, nec id poterat suis consiliis et viribus recuperare.
+
+Ideo et Iob inquit cap. 13.: Etiamsi me occiderit Deus, sperabo in eum.
+
+Hanc aeternam et immotam consolationem, quae nec ex conditione nostrae dignitatis, nec ex ullis commodis corporalibus pendet, nobis proponamus, eamque initio fide amplexi tanquam sigillum cordibus nostris imprimamus.
+
+Aliae sunt promissiones de bonis temporalibus, necessariis ad vitae corporalis conservationem. Quanquam igitur Deus bona corporis non largitur et distribuit omnibus aequaliter, imo sinit quosdam ex Sanctis et quidem praecipua lumina Ecclesiae, ut Abelum, Ionathan, Iohannem Baptistam, Paulum et multos alios crudeliter interfici, tamen nec hae promissiones bonorum corporalium sunt inanes aut irritae, sed habent hanc verissimam et certissimam interpretationem, quod Deus etiam in hac praesenti vita semper velit colligere et conservare Ecclesiam, ideoque suo consilio assidue velit ei dare bona corpora necessaria, sed cum conditione, ut aliqui puniantur seu castigentur.
+
+Sic David regno pulsus eiicitur in exilium. Item ne crux tollatur, sed ut Ecclesia exerceatur aerumnis et afflictionibus. Interim tamen vult mitigare nobis et poenas seu castigationes, et exercitia seu crucem, agentibus poenitentiam et invocantibus ipsum. Sic confirmat ipse Psalmo 50.: Invoca me in die tribulationis, et eripiam te, et glorificabis me. Item Esaiae 1.: Convertimini, si peccata vestra fuerint ut coccinum et ut vermiculus, eritis candidi sicut nix. Hoc est, reatus et magnitudo tristissimarum seu tragicarum poenarum tolletur et auferetur a vobis. Etsi igitur homines profani et Deum contemnentes iudicant has promissiones, de auxilio, in afflictionibus, periculis, et necessitatibus corporalibus esse inanes sonitus, tamen nos certo sciamus Deum non frustra tradidisse tam largas et dulces promissiones, quales etiam in hoc textu repetuntur: Primum quaerite regnum Dei, et Deus caetera bona cumulate vobis adiiciet.
+
+Ideo fide eas apprehendamus et amplectamur, singulique hac fiducia faciamus labores nostrae vocationi convenientes, exspectemus a Deo victum, auxilium et defensionem, petamus haec ipsa bona veris gemitibus, et agamus ei gratias, luceatque in moribus nostris gratitudo. Certissimum est enim, singulos qui hac fide exsuscitantur ad invocationem, et exspectationem divini auxilii, et gratiarum actionem, re ipsa experiri Dei beneficia, defensionem, opem et liberationem. Haec sine ulla dubitatione sunt verissima, sicut applicationem exemplorum proponit Psalm. 34.: Iste pauper clamavit et Dominus exaudivit eum, et ex omnibus tribulationibus eius salvavit eum, accurrite magna frequentia et confugite ad Deum, et facies vestrae non confundentur. Dei voluntas est, ut nos homines diligenter et iusto ordine praestemus ac urgeamus labores vocationis proprios, ordinate quaeramus victum, defensionem et vitae praesidia, veruntamen ut interim sciamus labores humanos nullo modo sufficere, sed oportere Dei auxilium et efficacem benedictionem accedere. Itaque semper fiat coniunctio invocationis et laboris. Nam propterea Deus addidit Evangelio promissiones uberrimas et amplissimas de rebus temporalibus, et pollicetur se nobis in corporalibus quoque necessitatibus et periculis opitulaturum esse. Quae quidem divina oracula nequaquam habeamus pro inanibus et anilibus fabellis, sed vere statuamus Deum esse veracem, et velle nobis opem ferre iuxta suas promissiones. Quin et ipsius experientiae ac eventorum testimonio convincimur, Deum (cui sit gratia, laus et gloria per secula sempiterna et infinita) toties nos ipsos clementer adiuvisse, texisse ac defendisse versantes in tantis periculis, ut iniecto terrore singuli pertimesceremus omnia funditus interitura esse, quin hanc ipsam ob causam Deus tradidit promissiones de corporali auxilio, quia vult nos exercere fidem ac invocationem etiam in quotidiana necessitate, et corporalis auxilii exspectatione, iuxta versum Psalmo 50.: Invoca me in die tribulationis tuae, et eripiam te, et glorificabis me.
+
+Etenim si quis non discit invocare Deum in necessitate corporali tanquam in tyrocinio, nec in his velut in cunabulis ac rudimentis fidei vult a Deo fragmen panis exspectare, quanto magis hic fugiet Deum, quando salus aeterna et immensus ac infinitus ille spiritualium bonorum thesaurus petendus et exspectandus erit? Quare discamus in utroque genere promissionum fidei et invocationis exercitia, et crescat agnitio bonitatis ac praesentiae divinae etiam in petendis, sperandis et exspectandis beneficiis corpori necessariis. Has commonefactiones iudico sufficere ad explicationem dicti: Non sitis soliciti quid comedatis aut bibatis, De quo tamen in sequenti concione plura dicemus Deo iuvante.
+
+Primum quaerite regnum Dei, et iustitiam eius, et haec omnia adiicientur vobis. Non sitis soliciti de crastino, nam crastinus dies erit solicitus pro sese, sufficit diei afflictio sua. Proxime audivistis, et assidue meminisse crebroque meditari debetis, quod duo sint genera promissionum, unum aeternarum, alterum corporalium, et quod coprius aeternam promissionem, de remissione peccatorum, et gratuita misericordia Dei propter Christum, firma fide debeat amplecti et retinere, nec unquam a promissa reconciliatione deficere aut trepidationibus et dubitationibus opprimi, sive maneant sive eripiantur commoda vitae corporali necessaria. Nam primus gradus est quaerere aeterna bona, imo ad hoc missus est filius Dei, ut placata ira aeterni Patris, restitueret liberatis a peccato et aeterna morte, iustitiam et salutem sempiternam.
+
+Cum ...autem Deus hunc admirandum ordinem inenarrabili bonitate sanxerit, ut in hac mortali vita collectio fiat Ecclesiae et salvandorum, ideoque serio velit in huius fugacis vitae consuetudine initia vitae et iustitiae aeternae inchoari, largitionum, unum aeternarum, alterum corporalium, et quod cor prius aeternam promissionem, de remissione peccatorum, et gratuita misericordia Dei propter Christum, firma fide debeat amplecti et retinere, nec unquam a promissa reconciliatione deficere aut trepidationibus et dubitationibus opprimi, sive maneant sive eripiantur commoda vitae corporali necessaria.
+
+Nam primus gradus est quaerere aeterna bona, imo ad hoc missus est filius Dei, ut placata ira aeterni Patris, restitueret liberatis a peccato et aeterna morte, iustitiam et salutem sempiternam. Cum autem Deus hunc admirandum ordinem inenarrabili bonitate sanxerit, ut in hac mortali vita collectio fiat Ecclesiae et salvandorum, ideoque serio velit in huius fugacis vitae consuetudine initia vitae et iustitiae aeternae inchoari, largitur etiam bona corporis, ut interim tamdiu cibos, potum, hospitia, vestes etc. habeat Ecclesia, quamdiu fruitur usura huius externae et desiturae vitae.
+
+Ac eadem proxime de distinctione promissionum audivistis declarari, sed tunc illa quoque adiungebatur commonefactio, quod constet hanc esse Dei voluntatem, ut fides et invocatio simul exerceantur in utroque genere promissionum. Quamobrem debetis et aeterna et corporalia bona petere, sed hoc ordine servato, quem Dominus in his verbis praescripsit: Primum quaerite regnum Dei et iustitiam eius, et caetera bona omnia adiicientur vobis.
+
+Quae quidem verba quemadmodum perspicua sunt et illustria, ita proponunt et regulam de praecipuo officio, quod requirit Deus, et uberrimam dulcissimamque consolationem. Regula est, exordiendum esse ab aeternis bonis, primumque gradum esse quaerere regnum Dei et iustitiam divinam, id est, recte discere serioque amplecti verbum Dei, sic ut omnibus corporis commodis ac vitae nostrae, id ipsum anteferamus, et in vera conversione ad Deum, inseri, adiungi ac fieri membrum electae Ecclesiae.
+
+Nec enim promissiones pertinent ad impios perseverantes in Dei contemptu, sed hi praesentibus ac aeternis poenis oppressi contabescent, iuxta toties repetitas in scriptura comminationes horribiles, ut Psalm. 12.: Disperdet Dominus superbos divinae irae ac doctrinae contemptores. Imo Christus-ipse Matth. 25. promulgat in extremo iudicio sententiam condemnatoriam tristissimis verbis: Discedite a me vos maledicti, in aeternum ignem, qui paratus est diabolo et angelis eius. De temporalibus vero poenis in hac vita dicit Salomon Ecclesiast. 8.: Certo cognovi et scio quod bene erit timentibus Deum, et quod nequaquam bene erit impio, nec diuturna eius vita erit, sed sicut umbra evanescet, ac ipse punietur. Ac plena est scriptura talium testimoniorum.
+
+Praeterea singuli commonefiunt mole poenarum, quas collo et cervicibus suis sustinent, etsi conversis ad Deum seu poenitentiam agentibus mitigantur aerumnae.
+
+Haec igitur praecipua sit et inprimis necessaria regula, rectrix omnium deliberationum et actionum universae vitae humanae, scilicet, primum discere verbum Dei, converti ad Deum, seu agere poenitentiam, et fide apprehendere redemptorem ac salvatorem Dominum nostrum Iesum Christum.
+
+Hac fide praelucente postea excitemur ad petendum, sperandum et exspectandum etiam corporale auxilium. Nam his ipsis verbis: Et haec omnia adiicientur vobis, promissa sunt omnia bona vitae necessaria in vocatione.
+
+De cruce.
+
+At obiiciunt humanae mentes: Audio inculcari promissiones bonorum corporis largissimas, quibus si responderent eventus, nequaquam durius premeretur ac quassaretur Ecclesia, quam reliqua pars generis humani, illa vero quantis persecutionum concutitur? Abel, Esaias, Ieremias, Iohannes Baptista, Christus, Apostoli, et multa millia Sanctorum interficiuntur omnibus temporibus, ac oppugnantur crudelissime.
+
+Responsio. Utraque propositio vera est: et vult Deus suppeditare bona corporis, auxiliumque corporalis exspectatione fidem exerceri: et simul vult Ecclesiam subiectam esse cruci, sed hac conditione, ut interea verissime servet omnibus temporibus coetum aliquem ac florem seu corpus Ecclesiae agnoscentis, invocantis atque celebrantis ipsum, nec sinat Ecclesiam penitus deleri ac devorari a diabolo, molientibus exitium generi humano, ut scriptum est de perpetuitate et repressione diabolorum, Matth. 16.: Portae inferorum non praevalebunt adversus eam, veruntamen hoc modo servat ac tegit Ecclesiam salvator filius Dei, ut simul oporteat eam exerceri afflictionibus et ingentibus miseriis subiici, imo oporteat excellentia membra et praecipuos duces in ministerio fieri similes ac conformes in cruce, miseriis et morte ipsi redemtori Domino nostro Iesu Christo. Ut quando Deus Davidi promittit victoriam et incolumitatem exercitus Israëlitici, absurdum fuerit sic interpretari promissionem, quod in acie nihil laborum suscepturi, periculorum subituri, vulnerum accepturi sint, nec fore ut praeliantes interficiantur ulli milites, sed omnino necesse est dimicantes aliquot acerrimos et fortissimos viros in acie vitam et sanguinem profundere, ut incolumis reliquus exercitus gloriosam victoriam consequatur: ita Deus munit, alit, defendit ac servat corpus Ecclesiae, etiam cum praecipua lumina foede lacerantur ac interficiuntur a tyrannis.
+
+Sunt enim causae plures gravissimae et maximae, propter quas Ecclesia mirabili consilio Dei tot et tantis aerumnis est subiecta. Cumque nos ipsi etiam plurima non exigua nec levia peccata habeamus, vult Deus exempla sui iudicii conspici, et per has poenas nos commonefactos ad conversionem revocari. Interea tamen eatenus immensa misericordia propter mediatorem lenit ac mitigat praesentes poenas, ne tota Ecclesia deleatur funditus, sicut prorsus deleta sunt Sodoma et Gomorra, propterea tantisper donec sumus in hac mortali vita, dat bonam valetudinem, victum et bona caetera necessaria ad conservationem vitae corporalis.
+
+Hanc consolationem de laboribus divinitus ordinatis ac aerumnis praesentibus proposuit Dominus in his verbis: Non sitis soliciti de crastino, nam crastinus dies curabit res suas, seu solicitus erit pro se, sufficit diei afflictio. Brevi voce afflictionis admonet et commonefacit nos Dominus, quod subiecti simus cruci et calamitatibus, et quod unaquaelibet dies afferat suas afflictiones, quibus Deus velit nos exerceri. Brevia quidem, ut dixi, sunt haec verba, sed universam vitae historiam complectuntur, et concionantur de miseriis ingentibus impositis humano generi, monent, ne securitati et superbiae indulgeamus, sed ut hoc totum vitae curriculum intueamur, et intelligamus in hac vita singulis quotidie propositas esse aerumnas omnis generis, et cogitemus denique, nisi haec ipsa moles difficultatum et afflictionum, quam indies cumulatam collo et cervicibus nostris sustinemus, immensa Dei misericordia mitigaretur ac levaretur, futurum fuisse, ut multo atrocioribus poenis, quas coecitate duritiaque nostra mereremur, oppressi succumberemus ac periremus.
+
+Videte quantum Moisi populus Israëliticus quotidie novorum certaminum, tumultuum, seditionum excitet. Adeo ut vix ullo temporis momento frui possit hac securitate, quod placata, placida et tranquilla gubernatio futura sit. Sic universa vita in tantis impedimentis, quae diabolus et organa diaboli obiiciunt, plena est aerumnarum humano consilio inextricabilium, et singuli certe versamur in quotidianis continuisque periculis, quod ad propria corpora, quod ad incolumitatem coniugum et liberorum, quod ad victum, quod ad regimen denique seu gubernationem attinet. Quapropter bene consideretis ac memineritis hoc breve dictum, ut excutiatis securitatem et superbiam: Sufficit diei afflictio sua.
+
+Hoc ipsum docent omnium aetatum historiae, et exempla quotidiana sunt in conspectu. Adiungit autem Dominus noster Iesus Christus praeceptum sapientissimum et utilissimum, tradita singulari regula de discernendis generibus afflictionum.
+
+Duplex est afflictio. Alia est crux necessaria, nec accersita nostra curiositate, sed per sese nos affligens certo Dei consilio, ut castigemur et exerceamur. Alia est afflictio accersita nostra curiositate, cum polypragmosyne seu praepostera et hallucinante sapientia, ultro nosmetipsos molestiis, angoribus et aerumnis implicamus, ut, quando quaerit et suscipit homo negotia non necessaria, quando principes movent aut attrahunt bella sine necessitate, quae vitare poterant, etc. De hoc discrimine concionatur hic Dominus: Sinite ut unaquaelibet dies solicita sit pro sese, curet res suas, afferat suas afflictiones et difficultates.
+
+Haec impedimenta vos in praesentia recte tolerate, nec quoquo modo vobis cumulate miserias, sed tantum facite necessaria et mandata, contenti diurno labore, quem affert vocatio, nec ex humana coecitate communibus calamitatibus addite securitatem et superbiam, verum scitote diligentiam divinitus ordinatam per sese satis laborum, impedimentorum et solicitudinum habituram esse, praeterquam quod accedunt poenae et afflictiones multiplices.
+
+Ad hanc igitur crucem praeparate vos fide, ac petite a Deo mitigationem aerumnarum. Cavete autem ne curiositate seu polypragmosyne et inquietudine animi, quaeratis negotia non necessaria, et aliena a vocatione, nec plus difficultatum, molestiarum et miseriarum vobis accersite, quam tempus et praesens occasio vobis offert, ut losias pius et sanctus rex, dum securitatem alens somniat se tam pium ac bene meritum principem nullas offensiones, sed successus perpetuos et placidos exitus habiturum esse, quaecunque tentet ac moliantur, movit bellum non necessarium adversus regem Aegyptium, in quo cum vulnus accepisset, aliquanto post mortuus est. Cogitet unusquisque vestrum, memoriaque repetat suae vitae curriculum, tunc deprehendet haud dubie, se ipsum quibusdam non necessariis occupationibus plurimum sibi poenarum, periculorum et tristissimorum casuum attraxisse et accersivisse, ubi si quievisset (ut loquitur in comoedia servulus) nihil evenisset mali.
+
+Quamobrem teneatur haec quoque regula: In magnis rebus facienda sunt sola necessaria, nec unquam tentari vel suscipi debet quicquam, quod non est necessarium.
+
+Sed hic occurritur vobis quaerentibus, quaenam sint necessaria, quaeve non necessaria.
+
+Respondeo autem clare, simpliciter et explicate. Opera et negotia sunt necessaria, quae Deus tibi praecepit, quaeque tui officii ratio postulat, seu officia propria tuae vocationis, in quam a Deo collocatus es. E regione, non necessariae actiones et occupationes sunt, quadam curiositate vel ambitione extra tuam vocationem erumpere, et suscipere aliena contra mandatum Dei, seu, ingerere te alienis vocationibus. Exempli causa.
+
+Quid quaeso pertinet ad vocationem seu ministerium Thomae Monetarii forma gubernatoris in regimine politico? Cur ille ingerens se administrationi alienae, extra metas suae functionis erumpit? Cur alterum pedem in curia, alterum in templo habet? Quamobrem vult regere negotia civilia, constituere novam formam imperii, ordinare novos principatus in Germania? etc.
+
+Sanctus et sapiens Apostolus Paulus eandem admonitionem verbis insignibus et significantibus repetit, ac praecipit eruditissime, 1. Thessal. 4.: Adhortamur ut in hac re excellere singulari diligentia conemini, ac in eo sitis ambitiosi, ut aga- Ad hanc igitur crucem praeparate vos fide, tis propria et quiescatis, nec extra metas curratis irruendo in alienas vocationes.
+
+Ac in summa, polypragmosyne seu temeritas molientium non necessaria vel curiositate, vel metu futuri periculi, vel stulta spe perniciosa, semper et infelicissima est, sive in summis sive in infimis ordinibus existat haec vocationum confusio et officiorum conturbatio.
+
+Haec itaque singularis sapientia vitans curiositatem, polypragmosynen et ambitionem, commendatur hoc Christi dicto: Crastinus dies pro sese solicitus erit, sufficit diei afflictio sua, quasi dicat: Facito necessaria in praesentia, quae per sese satis habebunt difficultatum, nec propria curiositate ingerens te alienis vocationibus cumulato tibi molestias, angores et aerumnas.
+
+Rex bonus et inprimis laudatus Osias, 2.
+
+Paralip. 26. volebat officio fungi Sacerdotis, et per sese sacrificare in templo contra divinam ordinationem, sed eundem Deus, poena subita declarans iram suam, percussit lepra, ita perpetuo multiplicia incommoda et exitiales poenae sequuntur polypragmosynen, seu consilia et conatus eorum, qui vel tentant actiones extra vocationem, vel irrumpunt in alienas functiones, aut curiositate, aut ambitione propria.
+
+Si quis igitur recte vult vivere, ut retinens bonam conscientiam possit in suis laboribus, actionibus et negotiis petere et exspectare divinum auxilium, is servet et sequatur hanc vitae regulam, quam tradit ac praescribit hoc loco Dominus.
+
+Initio quaere regnum Dei, hoc est, disce veram Dei agnitionem, et conversus ad Deum fide acquiescas in Deo propter mediatorem.
+
+Deinde fac opera tuae vocationis, et in laboribus tibi divinitus mandatis exerce invocationem Dei, atque perfer animo tranquillo difficultates, in quibus et statue iuvari te divinitus, et laetus exspecta bonos eventus, nec exstincta luce fidei vel curis ac doloribus conficiaris, vel frangaris desperatione et impatientia.
+
+Hanc artem vitae si didiceris ac exercueris, experieris re ipsa Deum tibi affuturum et opitulaturum esse, eventusque negotiorum ac consiliorum fore placidos, faustos et salutares, iuxta Psalmi dictum: Subditus esto Deo, et spera in eum.
+
+Eandem doctrinam repetit eiusdem Psalmi dulcissima gnome: Commenda Deo viam tuam, et spera in eum, et ipse faciet.
+
+Viam nominat uniuscuiusque legitimam seu iustam vocationem.
+
+Discedere a vocatione, aut curiositate, aut metu, aut ambitione, est aberrare tota via, ruere in tenebras, in laqueos diaboli, ac tristissimas poenas. Etsi igitur hae regulae concionantur de tot et tantis rebus, quarum magnitudo nullius eloquentia potest exhauriri, singulis tamen hominibus utilissimum est aliquid inde discere, ut suae quisque vocationis metas intelligens consideret, quomodo gradus officii proprii a Deo sit ordinatus, ac sciat, quae norma obedientiae sit; cum in tolerandis afflictionibus, tum in laboribus, negotiis atque certaminibus suscipiendis. Itaque primum sicut enarravimus, luceat in mente vera Dei agnitio, et serio fiat conversio ad Deum, de hoc initio docet etiam primum praeceptum.
+
+Secundo, debes nosse metas officii tui, quas Deus tibi circumdedit, nec curiositate, metu, superbia movere non necessaria, id est, aliena a vocatione suscipere. Tertio, oportet retineri hanc consolationem: Etsi quaelibet dies multiplices difficultates, aerumnas et afflictiones affert, ac constat Ecclesiam subiectam esse cruci, duriusque premi quam caeteros homines: tu tamen certo statuas vere Deum servientibus in vocatione velle adesse et opitulari, ideoque petas auxilium, et exspectes bonos exitus, labores quoque, quos in praesentia necessitas tuae vocationis et occasio iusta offert, alacriter hac fide et spe suscipias ac toleres. De hac consolatione dictum est in praesenti concione: Ne sitis soliciti, id est, ne crucietis animum diffidentia, nec opprimamini desperatione, sed confidatis Deum necessaria vocationis opera suscipientibus affuturum adiutorem et liberatorem, quantacunque moles tentationum, impedimentorum, periculorum et afflictionum vobis obiecta fuerit.
+
+Sic Psalmo 34. scriptum est: Prope est Dominus his qui tribulato sunt corde, et contritos spiritu salvabit. Item Esaiae 66.: Deus affirmat se habitare in afflictis, se respicere ad miserum et contritum spiritu ac trementem sermones suos. Item Paulus inquit 1.
+
+Corinth. 15.: Non erit labor vester inanis in Domino, quasi dicat: Deus provehet ac fortunabit sua benedictione necessarios labores, quos vocatio postulat, ac gubernabit eventus, et praebebit successus, ne conatus sint irriti. Ita traduntur in hoc textu regulae seu normae rectrices vitae, consiliorum, studiorum et actionum, monstrantur item fontes verarum et efficacium consolationum.
+
+Nec vero quisquam poterit ullo modo hunc textum intelligere, non habens initia verae fidei. Cum enim propria sapientia regatur, non potest non confidere sua potentia, sapientia, viribus et consiliis, imo necesse est illi spes pendere a fortunae bonis, hominum coniunctionibus, amicis, pecunia, opibus et similibus externis praesidiis. At in quibus est accensa scintilla fidei, hi demum aliqua ex parte sensum et usum salutaris regulae atque consolationis huius perspicere poterunt. Quamobrem breviter concludemus hic interpretationem praesentis textus, cum rerum magnitudo superet omnem humanam eloquentiam.
+
+## 7:1 Sermons on Matthew: Argument
 May our Lord Jesus Christ Himself grant us His grace, and may He rule and instruct us by His Holy Spirit, so that our minds may rightly understand this very sermon of His, and our entire life may be perpetually directed toward and conform to the order which He Himself has divinely prescribed for us in this chapter. Chapter VII. By the benefit of God, the doctrine concerning both degrees, concerning the distinction between the ministry of the Gospel and political power, is illustrated so copiously and piously and so often, that I do not doubt it is most well-known to you.
 
 You know that both the office and the degree are the principal and highest works of God in the human race. You know that to both governments, jurisdiction or judgments, and the execution or punishments, are attributed by divine authority, and that the duty of rebuking and punishing is divinely and expressly instituted, and is necessary, holy, and approved and pleasing to God in both regimes. The minister of the Gospel, or preacher, has the mandate to judge, rebuke, and condemn by the word of God, that is, by the voice of the Law and the Gospel, all sins, and while he sounds forth, or announces the word judging, at the same time the Holy Spirit is effective in converting and helping believers, just as the Lord most sweetly confirms, John
@@ -12880,567 +13167,7 @@ For the Catechism teaches that, even though it is most true that God dwells and 
 
 Thus we have proposed some examples, in which it clearly appears that the Catechesis, or the doctrine of the Catechism, is a compendious, immutable, and certain rule or norm, according to which dogmas can and ought to be judged. Wherefore it is first of all necessary to learn diligently, and to meditate assiduously, and to carry about in the mind the elements of piety, which are wont to be proposed in the Catechesis, as they are commonly called. And so much for the rule, according to which judgments ought to be made.
 
-By their fruits you shall know them.
-
-Our Lord Jesus Christ also adds a clear mark, or rule, by which teachers or dogmatists ought to be detected, discerned, and judged, commanding that false Prophets be recognized by their fruits. Which words are to be understood, as has just been said, of manifestly false dogmas; for fruits signify impious or false doctrine, whether concerning one or many articles, fighting against the foundation, that is, against the necessary articles, or places, or parts of Christian doctrine. If, therefore, any dogmatist, having been piously admonished, pertinaciously defends some notable errors that are in conflict, that teacher, as an enemy of God and fascinated by the Devil, is to be deserted and avoided, and his dogma is to be fled from and execrated as the most present poison. The Lord speaks of this kind of fruits. And if it happens, as often happens in practice, that some trickster proposes more subtly, and paints with deceptions an error in some article that is less conspicuous and difficult to detect: you, however, look around, and consider the whole body of doctrine which he professes, in which if you detect other manifestly impious errors, which the admonished dogmatist pertinaciously defends, then you will surely detect the signs and judgments, not fallacious, of a fanatical mind and one agitated by an evil spirit.
-
-For example. Anabaptists, attempting to undermine the article concerning the Baptism of infants, were exercising and disturbing the consciences of not a few by their hypocrisy and authority, when they reasoned thus: Infants do not yet understand the word, nor can they suspect what Baptism is, nor what Christian profession or doctrine is. Therefore Baptism does not profit them, but is an idle ceremony. If, therefore, anyone hesitates or doubts in this article, just as many are disturbed by these tricks of disputations, let him meanwhile look at the other more manifest and less obscure articles: then, having considered the foundations, or hypotheses of the whole Anabaptist body of doctrine, he will detect a great deal of the most foul poison, of prodigious superstitions, and of Diabolical ravings in the Anabaptist dogma, confused from the furies of many ancient sects, as if in a manifold and monstrous Chimera, mixed and contained. As, for the defense of this article, by which they deny that infants are to be baptized, the Anabaptists assume other hypotheses, or more notable and manifestly false and fanatical errors, namely, that they deny the whole doctrine of original sin in general. They imagine that all infants, whether they are born among the Turks, or the blasphemous Jews, or the Ethnics, or the Tartars, or the Mahometans, or wherever in the world outside the Church, neither bring nor have sin, but are simply, even without regeneration, heirs of eternal salvation. Furthermore, there are manifest furies, because the Anabaptists contend that it is not permitted for Christians to hold property, to have riches, to exercise judgments, to hold magistracies, etc. that is, they condemn all civil and political offices. They add also this horrible and most pernicious error, that in those once converted after baptism, no actions, however wicked and nefarious, are sins; that although they act against their conscience, they are nevertheless just, and retain the Holy Spirit; that it is permitted to any baptized person to indulge in any furies whatsoever, to seize the spouse, children, or property of another, etc. These prodigious and diabolical delusions the Anabaptists mix and add to their dogma concerning the baptism of infants. But since any sane person, and one who understands the doctrine of the Church moderately well, can, by the grace of God, clearly judge and detect these manifest furies of the Anabaptists: he will be able to conclude easily from this, nay, he will most certainly determine, that these very dogmatists are False Prophets, and do not belong to the Church, but are agitated by Devils, and that because of these manifest signs, the Anabaptistic contagion is to be fled and execrated: and therefore, concerning other more obscure or subtle articles, about which he still doubts, having deserted the fanatical Anabaptists, let him hear the explanations and judgments of other pious men who teach correctly.
-
-In this way the Apostle commands in 1 John 4: Beloved, do not believe every Spirit, but test the spirits, whether they are from God, etc. It is most certain, however, that those who, having been faithfully admonished by the pious and learned, stubbornly persist in the defense of one or more articles that fight against the foundation, or against the chief heads of Christian doctrine, that is, against the divine Law or the Decalogue, and the Symbol or articles of faith—those, I say, who are stubborn defenders of errors, are most truly enemies of God and blinded, are agitated by Devils, and are driven from other delusions into others.
-
-The misery of such fanatics is described by the text of John 8 in the saddest words, when it says to the enemies of Christ: You are of your father the Devil. For the true rule of Paul remains for all eternity in 1 Corinthians 3: No one can lay another foundation than that which is laid, which is Jesus Christ. Whatever, therefore, fights against this foundation, let it be considered a foul lie and a pernicious poison, which the raging and roaring Devils scatter and vomit into the world for this reason, both that they may heap contumely upon God, and that they may cast many men, torn away from God, at length into eternal destruction, and finally, in this fleeting and miserable life, stir up constant disturbances, continual parricides, and infinite miseries.
-
-Just as you can almost feel by touch that the impious lies of the Pope and the Anabaptists are directed and intended even toward the slaughter of bodies, and the tearing apart and overthrowing of republics, to be plotted and carried out. Thus far you have heard what the rule is, according to which the judgment concerning dogmas must be made universally, so that one may know how False Prophets or false teachers are to be recognized, namely by their fruits, by some manifest impious dogma, which it is impossible to fall into the Church. But the false doctrine of the False Prophets is subsequently accompanied by other fruits, in life and morals: when manifest sins or crimes are added to the errors, such as seditions and homicides, which are also clear and peculiar marks of a fanatical mind agitated by Devils. Because fanatics defend these crimes, however manifest they may be, and cloak them under the pretext of their doctrine, nay, they boast that they are armed by God, and are stimulated by a certain singular zeal and impetus to these nefarious attempts. So much for the saying: By their fruits you shall know them.
-
-Furthermore, in the text, False Prophets are depicted by the image of ravenous wolves, who nevertheless creep into the folds covered in sheep's clothing, that is, through hypocrisy and sophistry, as if they were singular commendations, they insinuate themselves into the minds of the people. For there is a double clothing here: namely, imposture and hypocrisy, in the simulation of notable probity, humility, and feigned holiness, and sophistry, deceiving the unskilled with poorly twisted scriptures, that is, with testimonies of the Prophets, Apostles, and learned fathers, or doctors of the Church, either mutilated and truncated, or cited calumniously and not in good faith, and awkwardly, translated from their native meaning to a foreign and alien one: likewise cited with the examples of others, either irrelevant and dissimilar, or not congruent with the rule, or vicious.
-
-And that hypocrisy indeed, by the simulation of humility, patience, and holiness, has captured and deceived the minds of very many men in all ages. As the Manichaeans boasted of singular illuminations, revelations, and inspirations, or peculiar conversations with God.
-
-And we ourselves have seen an impostor of this kind, Nicolaus Storch, or Pelargus, the author of the Anabaptist sect, falsely boasting that Angels had appeared to him in visible form, who had prophesied that he would be the restorer and reformer of the Churches.
-
-He added that the purgation of doctrine instituted by Luther had not yet penetrated to the living fountains, nor had it been built upon true foundations: just as at this time many contend clamorously and tumultuously. This Enthusiast, Nicolaus Storch, finally died miserably in Munich in a hospital, or infirmary. But the unhappy disciple of Nicolaus, Thomas Müntzer, stirred up a sedition of the peasants in Thuringia, for which crime he paid the penalty to the magistrate by having his head severed from his neck.
-
-Saint Paul to the Colossians, chapter 2, commands us to beware, lest we be deceived by these artifices and the impostures of hypocrites, who boast of singular revelations, peculiar illuminations, and divine inspirations in moving matters that are not necessary. But such is the curiosity and perversity of men that they look around with wandering minds and desire the tricks of Enthusiastic gestures, feigned on purpose, and easily believe them, and willingly suffer themselves to be deceived by such manifest lies.
-
-Another skin of the Pseudo-prophets, with which they are accustomed to be clothed as if with woven sheep's wool, is sophistry, citing calumniously and violently twisting either the sayings of scripture or the examples of the ancients. Just as the insane Monks cloak their superstitious observations with the examples of the divine Anthony, Hilarion, and other Hermits.
-
-Likewise, they allege the saying of Christ in Matthew 19, ineptly twisted: If you wish to be perfect, go, sell what you have, and give to the poor, and follow me. And it is established that it is most common in many affairs and controversies that impostors play variously by citing impertinent sayings and alien and inconvenient examples: by which pretext and artifice many men are deceived and led away from the truth, and are implicated in the greatest errors.
-
-Nevertheless, if anyone has learned correctly, understands, and remembers the doctrine of the Catechism, he will be able, if not fully, at least moderately, to confirm and fortify his mind against these two kinds of snares and impostures.
-
-How greatly do the Papists urge, inculcate, and show off the word 'sacrifice'?
-
-It is snatched from the writings of the ancients, who frequently used the name of 'sacrifice' regarding the Mass, that is, regarding the whole ceremony, or the whole interior and exterior action of those piously using the Lord's Supper: but they afterwards, inventing their own dreams, attempt under the pretext of a single word (just as if 'sacrifice' meant whatever they please) to confirm and stabilize all their most foul errors about the Mass.
-
-And so they argue thus: A sacrifice is a work to be done or offered by a priest for others, to whom, when applied, it merits reconciliation or grace, and likewise confers prosperous fortune and happy success in all things.
-
-And the ancient Church uses the name of 'sacrifice' regarding the Mass. Therefore, the Mass is a singular, proper, and peculiar cult of the sacrificers, meritorious, and applicable for others: and many Mass-priests are hired, who by the daily and innumerable sacrifices of private Masses merit and confer upon others the grace of God, prosperity of fortune, and good success, and likewise ward off evils and impending dangers, etc.
-
-With such fabricated tricks and painted ineptitudes, the Papists sell themselves and magnify themselves.
-
-But if you have faithfully cast into your mind the foundations of the doctrine of the Catechism, you hold this firm and clear foundation: that it is necessary for you to receive, obtain, and have applied to you the grace, or reconciliation, or the merit of the oblation and sacrifice of Christ, by your own faith, looking to and apprehending the Son of God, the only intercessor and propitiator, who by all his obedience and humiliation even unto the resurrection satisfied the justice of God, and appeased the wrath of the divine majesty, the penalty having been paid for us in his whole passion and death: of which unique propitiatory sacrifice it is said in Hebrews 10: By one sacrifice Christ has perfected forever those who are sanctified.
-
-Therefore it is most manifest that you are by no means reconciled and sanctified by and on account of an external sacrifice or the work of a Monk or a Mass-priest.
-
-Examples of this kind, or even six hundred, could be brought forward from the disputations and controversies that have arisen in our age concerning religion, and are being agitated and incited more vehemently at this very time: from which it can be evidently seen and demonstrated that those sycophants and sophistic Rhetoricians, and writers of the Roman Pontiff, in the excuse or defense of the abuses and errors of the Papists, only to use worn-out, vile, rancid, and torn sheepskins, or rather, as the proverb says, goat's wool poorly woven and stitched together: the joining or sewing of which rags is no firmer, nor does it hold together any better, than if they were to tie ropes out of sand, or attempt to mend and patch together broken eggshells with glue.
-
-Let these things, briefly stated, suffice in this place for the exposition of the present text. To which, however, two admonitions must necessarily be added. The first, concerning the care of learning, or the study of doctrine; the second, concerning the separation and desertion of the ordinary congregation, or authority, which they call Schism.
-
-I said the first admonition is about knowing doctrine, or the care of learning. For you have heard the Lord commanding that we beware of false prophets. He therefore wills and commands that the doctrine divinely handed down be known, read, learned, and attentively considered in the Prophetic and Apostolic writings, that judgment be made concerning dogmas, and that false doctrine and impious teachers be disapproved, rejected, and avoided. For as these things are necessarily connected, so let it be understood that all of them are comprehended here. For concerning him who is to be avoided, fled from, disapproved, and deserted, a judgment must certainly be made. It is evident, however, that one cannot judge in an orderly, legitimate, or correct manner, much less piously, or by divine authority, if one is among those who neither know, nor understand, nor have learned the heavenly doctrine. Therefore, all laws, both divine and human, most severely command that the appointed judges of controversies maintain a legitimate order in the cognition of a cause, or the investigation of truth, so that they may first listen attentively, investigate diligently, know accurately, and properly learn the foundations of the cause, or the points of the controversies.
-
-Thus it is expressly commanded in Deuteronomy 1: Hear them, and judge what is just. And chapter 17: If this has been reported to you, and you have inquired diligently, and have found it to be true, then you shall punish the one convicted of such a crime, etc. Thus, in these most grave, most difficult, most dangerous, and most important controversies of religion, and in judgments concerning doctrine, which pertain to the glory of God, to the salvation of individual men, to the safety, propagation, and growth of the universal Church, and to the tranquility of the public state, who does not see how necessary it is, and how much it matters, that a legitimate cognition be instituted, that the sources of controversies be learned in order, heard calmly, inquired into diligently, and correctly understood, as well as the foundations of the matters about which individuals must judge or decide?
-
-Therefore, just as the judgment concerning doctrine pertains to the universal Church and to individual pious persons, so for each of you, and particularly for your own cause, a true knowledge and diligent inquiry is clearly necessary, in which individuals may learn the chapters, or the sum of heavenly doctrine, in an orderly, pious, and upright manner. Let there also be added the assiduous and ardent invocation of God, by which true groans are mingled with reading and study, and let it be asked that God may guide the judgment, kindle true light, the understanding of His word, and pious affections in our minds: just as the Prophet cries out with a serious movement of the soul in Psalm 119: Ah Lord, deal with thy servant according to thy mercy, and teach me thy justifications.
-
-Now you know, alas, it is most common that many sciolists take upon themselves the judgment of dogmas, controversies, and most difficult matters, whether they understand or are ignorant of what is being done, whether they are skilled and fit for judging, or are as rude and asinine as an ass at the lyre: whose vanity, impudence, and arrogance is reproved by such proverbial sayings: Let each one practice the art he knows. Item: Let him who has learned it steer the rudder. Item: One thing is the scepter, another the plectrum. Item: Let the cobbler not go beyond his shoe. And in the common German rhythm: If we cannot all write poetry, we still want to judge everything. Thus, at this time, many Pontiffs, Bishops, Monks, and Mass-priests have gathered at the Council of Trent, each of whom professes that they will be judges and censors of the doctrine of the Church, when they have never learned or known the foundations or the sources of true piety and the Christian religion.
-
-Such blindness, precipitation, and perversity of judgments in the world is, as I said, most common. But we must be both diligent in study and certain in doctrine, just as Paul commands in Romans 14: Let each one be certain of his own opinion, let him have πληροφορίαν [full assurance], that is, certainty, or, if I may say so, full and firm assent. And indeed, it is clear that these very words of Paul are taken from Moses in Deuteronomy 17: Let the truth be certain, firm, and explored, concerning which it is pronounced. But enough for now on the first admonition. Now we add another [point] concerning separation, dissensions, and schism.
-
-You remember that divine commands are often repeated, concerning fostering and protecting the concord of the Church, concerning avoiding dissensions, discessions, and disjunctions from the rest of the body, concerning not causing divisions and distractions, according to the precept of Paul, 1 Corinthians 1: Let there be no schisms among you, that is, do not be the authors and instigators of dissensions and discords in the Church.
-
-Now, since it cannot be denied that the Roman Pontiffs themselves, and the other Bishops joined to the Roman see, have for so many centuries retained the succession in the ordinary government of the Churches (concerning which ordinary succession of Bishops, and the perpetual election of certain colleges, as well as customs confirmed by long usage, they boast so greatly with puffed-up cheeks), certainly we, who have embraced a different kind of doctrine, seem to many to be rashly departing from the common consensus, and to have disturbed and undermined the union and concord of so many Churches of Europe by unnecessary disputes. Indeed, it is manifest that we not only dissent from the Pontificians, but also reprehend, tax, and violate their doctrine, traditions, rites, and statutes.
-
-Hence arose schism, dissension, and discordant conflict, which, as to how many public calamities it has attracted, is indeed in plain sight and before our eyes. Here, therefore, the question is agitated: Whether we, who were private men, and once subject to the Pontifical realm, moved by pious counsel and by just and necessary causes, have departed from the ordinary authority, have changed the doctrine and rites in the Church, have torn apart the consensus and the Pontifical regime: whence such a great distraction of people and princes, such a great [number] of dissensions, tumults, and schisms everywhere seems to have arisen?
-
-By this very scandal, many wise men, and especially political men, are so moved and offended that they hate our Churches most bitterly, most pertinaciously oppose the change of doctrine and rites, call us Schismatics and Heretics, and accuse us of petulantly kindling most atrocious dissensions and of plotting infinite distractions and disjunctions, etc.
-
-By such clamors and calumnies we are indeed atrociously and most invidiously burdened, deformed, traduced, and called into hatred and crime before the highest governors and men outstanding in authority and wisdom.
-
-Against these most grave complaints and most atrocious accusations of hypocrites, it is necessary that a true, clear, and firm response exist.
-
-Wherefore you ought to know that it is entirely most true that petulance, which excites discords, causes distractions, and kindles dissensions, is a horrible and sad sin, just as the text of Proverbs 6 expressly says: The quarreler, who sows discord among brothers, God abominates and detests.
-
-Meditate diligently on this gnome of Solomon, and commit it to memory.
-
-And do not think it a game or a joke, or a matter of small moment, nor that it is not worthy of great reprehension, to disturb, distract, and lacerate the Churches with unnecessary and petulant quarrels, dissensions, tumults, and discords, arisen either from curiosity or meddlesomeness (πολυπραγμοσύνῃ), or from pride and ambition, or from malevolence, emulation, hatreds, and envy, or from a desire for vengeance: as our age, alas, has seen and sees many examples.
-
-For how often does it happen that huge struggles are moved, without necessary causes, in which some contentious (φιλονίκος) person, inflamed by emulation, solely out of hatred for his antagonist, or so that he may make things difficult and troublesome for another, defends and adorns some new or strange opinion with the deceits of sophisms, which he himself does not ignore is alien to the truth, nor founded, nor resting on any evident and certain testimonies of scripture, or on clear and firm reasonings!
-
-How often does it happen that the Devil, from the very body of the Church which is beautifully in agreement, excites some who, because of private desires or similar causes, having been moved from alienation of minds and wills to dissensions concerning doctrine, seize upon some plausible dogma, or one pleasing to the common people, which they therefore defend pertinaciously with all kinds of arts and machines, not because they judge it to be true, but because it is a pleasure to traduce, harass, and accuse those who dissent in the most hateful way!
-
-Therefore they run to parties and factions, protected by which, as they wander most widely, they finally vomit whatever poison they can upon their antagonists, and avenge certain private hatreds with the public calamity of the Churches.
-
-History of all ages is full of examples, but there is no need to repeat examples from afar, since they are present before our eyes.
-
-For how many seeds of pestilent discord and implacable dissensions have certain quarrelsome clamorers and sycophantic writers scattered in recent years, while concerning the linen vestment, and similar things and rites (in their own kind not vicious, and still used for the most part in our Churches) so much than about the shadow of an ass, as the proverb says, or about goat's wool, contending and fighting tumultuously and more than tragically, and cruelly attempting to mix everything up, they have given occasion for their bitter accusations and calumnies by these so savage distractions of opinions and wills, and by the most turbulent storms by which we are almost overwhelmed.
-
-And although, as I said, it is no light crime to desert the ordinary authority petulantly and to be the author of an unnecessary schism: yet, let those whose fault it is—namely, tyrants, hypocrites, and other authors of such horrible dissensions and separations—see to it, and prepare themselves to render an account to God; you, indeed, are not on that account separated from the Catholic Church, nor are you to be condemned for the crime of disturbed concord or the tearing apart of public consensus, because you do not hesitate to prefer the light of heavenly truth to all the comforts of life and to public and private tranquility, but because of this you are most alien to this fault, and rather deserve praise, and ought to be judged as having performed your duty correctly.
-
-Just as the example of the Prophet Elijah testifies, to whom, when the impious King Ahab objected the crime of disturbed concord and of a convulsed public state (3 Kings 18), saying: "Art thou he that troubleth Israel?" he himself gravely answers the tyrant: "I have not troubled Israel, but thou and thy father's house have, who have forsaken the commandments of the Lord, and have followed Baalim."
-
-These and similar general mandates pertain to all without any discrimination. Therefore, there is no doubt that such sayings command all men, individual Kings, Princes, Bishops, and private citizens, that they should learn, embrace, and confess the true doctrine at whatever time, and flee with their whole heart, reject by public profession, and disapprove of all idolatrous cults and any impious doctrine, or any false dogmas whatsoever.
-
-But that admonition, which I inculcated above, repeated in this place, should be joined to the present rule, namely, that it behooves those who dissent from the ordinary authority to be certain of the truth of the doctrine which they profess and embrace, just as we cited before the words of Deut. 17: "Let the truth be certain, etc." that is, you should first strive to learn the doctrine correctly and in order from true sources and foundations, and to understand it piously, rightly, and clearly, so that after you, having been convinced and confirmed by the testimonies of scripture, recognize and understand it to be the truth divinely handed down, then, I say, the truth having been recognized and understood, you owe this obedience to God (in whatever station of life you live, whether you hold a magistracy, or govern the counsels of others, or are a common citizen) so that you may embrace, celebrate, and confess the pious doctrine and true sentiments for the glory of God, for the sake of your own salvation, and for the propagation and increase of the Catholic Church of Christ.
-
-If because of this pursuit of truth and pious confession, the Pope, Bishops, Kings, and Princes expel you from their assemblies, and will hostilely attack you, and thus distractions, dissensions, schisms, and huge discords arise: let those whose fault it is—namely, tyrants, hypocrites, and other authors of such horrible dissensions and separations—see to it, and prepare themselves to render an account to God; you, indeed, for whatever cause, should oppose the most true, clear, and immovable rule, which teaches that it is the most severe will of God and an immutable mandate that we should flee, disapprove, and execrate all idolatry, all impious cults, and all doctrine dissenting from the Gospel.
-
-This rule is taken from the first commandment of the Decalogue, and other most firm divine testimonies. For the Decalogue commands: "Thou shalt not have strange Gods."
-
-And concerning the corruptions of doctrine, Paul says in Gal. 1: "If any one shall preach another Gospel, let him be anathema."
-
-Likewise, the Apostles in Acts chapter 4 respond: "We ought to obey God, rather than men." Furthermore, the matter itself speaks, and you know that the Pope, the Bishops, and the Pontifical or Papistic doctrine are taxed, disapproved, and refuted by us in controversies that are clearly plain, illustrious, necessary, and indeed of the greatest moment.
-
-In which necessary reprehension, we have striven to remain within just bounds, having faithfully explained the entire doctrine of the Church, having searched out the sources, and having propagated it only by teaching, not by seditions and arms. Therefore, by the benefit of God, a certain and clear truth shines in our Churches against the Pope, the Bishops, the Monks, and all the manipulators and satellites of the Pontifical faction: whose many foul errors and many abuses are so manifest that they can most easily be recognized and judged by all endowed with common sense.
-
-For example. It is a certain and immovable truth: that manifest lies and contumelious things against the Son of God are taught by those who say that men merit the remission of sins by their own works, by the cult of Masses, by the exercises of Monastic life, by pilgrimages to places of Saints, and by running to certain statues, etc. Item, it is a manifest lie, and horrible idolatry, that holy men, who have departed from this life, are to be invoked. Item, what fury is this! what manifest impiety! what foul idolatry or idolomania! that in theatrical processions the host, or that consecrated bread, is carried about, shown, adored, and invoked in place of Christ, whom the Papists bind there, contrary to the reason of the Sacrament, or outside and beyond the word of God, which speaks expressly of the receiving, not of any spectacles of the thing outside the use divinely instituted. Item, what manifest filthiness and notable lies are contained in the Pontifical law of celibacy! by which it is commanded to priests and others fit for marriage, that they should not live chastely in legitimate marriage. Item, it is a manifest lie and horrible error, that the Papists command men to doubt perpetually whether they have remission of sins, and whether they please God. Item, it is a gross and manifest lie, that they demand in confession, before those administering the Sacraments, an enumeration of individual sins, as if it were necessary, or commanded by divine law. Finally, it is superstition and a manifest lie, that the Papists affirm that the distinctions of foods, and similar rites, instituted by human authority in the Church, are observations that are peculiar worships of God, and necessary works, and cannot be omitted without sin, even outside the case of scandal, etc.
-
-I have enumerated these things more prolixly for this reason: first, that in public dissensions concerning doctrine, you may consider attentively from which articles controversies arise, and how struggles are moved and maintained; then, that by this consolation you may confirm and fortify your minds, because it is an immovable and most severe command of God, that we each know, embrace, and confess the truth or heavenly doctrine, and that it is necessary that idols, and impious or false dogmas be censured, disapproved, refuted, and avoided, according to the voice of the first commandment: Thou shalt have no other gods. This first and highest command is absolutely immutable and indispensable, and far to be preferred to the power, authority, wisdom, laws, and traditions of all men.
-
-May the Son of God, our Lord and Savior Jesus Christ, be perpetually with us, imparting His grace poured into our hearts by the Holy Spirit, so that we may preserve and retain the light and truth of incorrupt doctrine with firm faith, and worship Him with true piety and gratitude, with true duties and honors in all eternity: just as He Himself prayed to the eternal Father a little before His agony, John 17: Father, sanctify them in thy truth, thy word is truth, Amen.
-
-Not everyone who says to me: Lord, Lord, shall enter into the kingdom of heaven, but he who does the will of my Father, who is in heaven, he shall enter into the kingdom of heaven, etc.
-
-Dearest auditors: To this sufficiently prolix sermon, clearly described here by the Evangelist Matthew, and without doubt frequently repeated by the Lord, near the end, in place of a peroration, is attached, as a kind of epiphonema, a notable admonition or doctrine concerning the difference between hypocrisy and true repentance or conversion to God. And concerning both, namely, hypocrites and the truly converted, or reborn, the Lord pronounces and decides in this manner and to this effect: That hypocrites by no means please God, but that those who are truly pious are accepted, that is, those who call upon God with incorrupt faith, such as are all who reverently hear the word of God, and embrace it with true motions of the heart, and strive to obey God according to that norm.
-
-This admonition is comprehended both in the first commandment of the Decalogue, and in the holy scriptures repeated from time to time, and is here and there joined to or interposed in Prophetic and Apostolic sermons, as Deuteronomy 6: Thou shalt love the Lord thy God with all thy heart: etc. Item Job 13: No hypocrite shall enter before God.
-
-But this rule having been established, that hypocrites are rejected, and that God requires and demands the interior motions of the will and heart, and that He wishes to be worshipped and invoked, not by external simulation of gestures and ceremonies, but by ardent and true faith, by which the heart in repentance believes itself to be received and heard on account of the Mediator: now it behooves us to explain this question necessarily. Who are the hypocrites, and on the other hand, who are truly pious, believing, and holy.
-
-Moreover, so that each of you may judge this question more easily and plainly, it will be worth the effort to fix these things, which follow, in your mind by assiduous meditation, as if in the innermost senses of the soul. Therefore, first remember that individual men carry about no small part of hypocritical simulation and security; and if at any time you wish to seek, or to look upon a hypocrite, contemplate yourself, as if in a Socratic mirror, and, as we commonly say, you descend into yourself, or spit into your own bosom: hence you will recognize both what hypocrisy is, and that this is your own particular virtue.
-
-For it is written in Psalm 116: Every man is a liar, that is, a hypocrite, namely, not truly fearing God, or not sufficiently fearing the wrath of God nor burning with faith, or not sufficiently trusting in mercy, as he ought. But in this place, the inquiry is properly about the contumacious and stubborn hypocrites, who wish neither to be led to the acknowledgment of themselves, nor to be converted to God, that is, neither to experience nor to taste the rudiments of repentance, nor the beginnings of true faith. Of this kind of hypocrite, something must necessarily be said here.
-
-For such are without any doubt rejected: and therefore they are to be distinguished from the other kind of hypocrite, that one indeed miserable, and deformed by manifold infirmity and uncleanness, yet teachable and curable, namely, those who begin in the acknowledgment of their own weakness to submit themselves to God, and to be converted to Him. For stubborn and contumacious hypocrites are to be understood as great and wise men, who invent for themselves religions, holiness, and worships, because they are puffed up by the persuasion of their own wisdom and righteousness, both of which they attribute to themselves profusely; indeed, they display a manifold beauty of virtues and honest actions in their outward life: but meanwhile, the heart is either Epicurean, full of carnal security and contempt of God, such as were the hypocrites Cain and Judas, and such as in this time are the Roman Pope and most of the College of Cardinals: or it is oppressed by the waves of doubts about God, as in Saul, who fell into impatience and despair: finally, the hypocritical heart is universally carried away by self-confidence, and does not tremble before God, until punishment or penalty is deferred, and before it is oppressed by calamities, as the examples of Achitophel and Absalom testify.
-
-From these and similar examples and descriptions, therefore, you can in some way understand, or at least conceive in your imagination, who are called the headstrong and stubborn hypocrites: of whom, alas, there is always a huge and horrible multitude in the human race, even among those who are named the Church and the people of God, where the true doctrine sounds, as the parable of the seed in Matthew 18 signifies.
-
-On the other hand, there are men who are truly pious, truly believing, and truly reborn, in whom there are also the beginnings of true and serious repentance or conversion to God, joined with true fears and terrors of the soul (which minds truly feel and experience when, considering the wrath of God, they are truly cast down, thrown away, and humbled, having shaken off security) and the beginnings of true consolation, by which, through the voice of the Gospel, trembling hearts oppressed by sorrows are sustained, raised up, and quickened, so that they may again find rest in God through the Mediator, and by this faith begin obedience and the hope of eternal life.
-
-That those individuals who experience these true motions of repentance and faith are truly pleasing, and are truly children of God, these testimonies prove and convince. In the last chapter of Isaiah: To whom shall I look, except to the miserable and contrite in spirit, and him who trembles at my words? Also Psalm 34: The Lord is near to those who are of a broken heart, and will save those who are contrite in spirit. Also Psalm 51: A sacrifice to God is an afflicted spirit; a contrite and humbled heart God will not despise. Isaiah 42: He will not break a bruised reed, he will not extinguish a smoking flax.
-
-These sayings, being altogether clear and explained, show the distinction between the children of God and hypocrites. Wherever there is a heart that is grieving and trembling at the thought of the wrath of God, which nevertheless, fleeing to God, is again raised up by the consolation of the Gospel, and finds rest in the acknowledgment of Christ: there are the beginnings of true repentance or conversion to God, and in such there is no impious hypocrisy divinely rejected or condemned.
-
-Furthermore, in the second place, let the cause be considered why the Lord here, by antithesis, makes mention of both groups, namely, of hypocrites and of those who truly believe. And the first cause of this sermon is that this very distinction may be known to us in sight and familiarly, and that we may not persevere in hypocrisy, and be held as if entangled and constrained. For God requires worshippers and ministers who perform spiritual duties by the true and spontaneous motion of the heart, not painted hypocrites, like Cain, Saul, Achitophel, and that kind of viper, which outwardly seems smooth and shining, but inwardly is full of the most terrible poison, full of distrust and doubts about God, full of contempt of God, or at least full of horrible indignation and trembling against God. Therefore, the first commandment commands thus: You shall love the Lord your God with all your heart. Likewise, Saint Paul says in Rom. 10: With the heart one believes unto righteousness, and with the mouth confession is made unto salvation, etc. And in Joel 2 it is written: Turn to me with all your heart, and rend your hearts, and not your garments.
-
-Finally, this most grave doctrine concerning the true and ardent motions of the heart, disapproving and condemning hypocrisy, is set forth everywhere in the word of God, and is assiduously repeated.
-
-But someone may say: Ah, how shall I be able to change or refashion my heart? How shall I be able to put off and cast away attempted hypocrisy? I would indeed wish and desire with the greatest effort that my heart might burn thoroughly with the most shining light of faith, and with a certain fire of love toward God.
-
-For since no man in this mortal life is free from hypocrisy, and we are all individually weak and unclean, and we do not feel sufficiently sharp terrors, nor sufficiently excited and ardent motions of fear, faith, love, hope, and joy in God, as we ought to feel and should wish: it certainly matters a great deal, nay, it is necessary, that we be taught by what reason, in what order, by what steps and increments we ought to progress, having corrected and amended, as much as can be done, our interior depravity.
-
-It is necessary, however, for those seeking salutary amendment, or wishing to progress, first to acknowledge that hypocrisy is a sad sin, and truly displeasing to God, and that God is seriously angry at the blindness and slothful coldness of our hearts, which, as if in darkness, are rushing and turning away from Him.
-
-And although this very acknowledgment, from which the exercises of repentance ought to arise, is not illustrious, especially at the beginning, but is obscure and very languid, yet it is a beginning and a kind of apprenticeship toward salutary amendment. Because it is necessary for each one to hear, to ponder, and to embrace the word of God with firm assent, so that at the same time invocation may be kindled, fleeing to God and seeking help, strength, and increase, on account of the Son, the Mediator, our Lord Jesus Christ.
-
-Thus the Lord says in Matt. 7: Ask and it shall be given to you; everyone who asks, receives. Likewise in Luke 11: How much more will the heavenly Father give the Holy Spirit to those who ask.
-
-All these things in us at the beginning are very weak and languid—our self-acknowledgment, true sorrow and terror looking upon the wrath of God against sin, invocation, faith, and conversion to God, or repentance beginning spiritual newness: but it is necessary that they grow more and more, be confirmed, increased, and strengthened, just as in Mark 9 the trembling Father prays with true groans and tears to be confirmed, crying out: I believe, Lord, but help my unbelief. Likewise, St. Paul in Philipp. 3 confesses that he has not yet fully comprehended, nor is he perfect, but that he pursues and strives, so that he may attain and comprehend those great or heavenly goods, just as he himself has been comprehended and thoroughly known by Christ. Nor does God wish to reject these languid and tenuous beginnings, as He affirms in Psalm 8: Out of the mouth of infants and nursing babes He will perfect His praises. Likewise, Paul says expressly, Roman. 14: Him who is weak in faith, accept or receive, for God has received him. Likewise, Philipp. 2: It is God who works in you, both to will and to do, so that they may be pleasing to Him. Remember this sweetest consolation perpetually, and carry it fixed in your minds: whenever your heart brings these salutary beginnings of piety, or of a good purpose, only that it wills and desires to obey, and to offer true honors and worship to God, and to embrace the heavenly doctrine reverently, and to assent to the divine promises, and not as an enemy of God to resist God drawing you, then most truly God is present with you, and He Himself wishes efficaciously to confirm you, govern you, advance you, so that the salvation begun in you may be perfected, so that you may do what is pleasing to Him, so that His acknowledgment and spiritual light may be kindled more and more in your mind, and grow and increase. Nor is the invocation of one asking to be confirmed vain, nor the increase of the beginnings of divine light, and of the little sparks of languid faith.
-
-Thus far you have heard concerning the former cause, on account of which the Lord here makes mention of the distinction between hypocrites and the truly pious or truly believing, namely, that we should not persevere in carnal security, in hypocrisy, in Cyclopean contempt of God, and in the merely simulated gestures of external works, but that we should begin true and interior worship: and even if manifold weakness and much imperfection remains, we should not, however, be puffed up, proud, headstrong, stubborn, and contumacious hypocrites.
-
-The latter cause of this sermon, added by the Lord toward the end of the chapter, is that we may be reminded And let us be instructed, that always in that assembly or people, which is named the Church, there are two kinds of men: the one, a great multitude of hypocrites: the other, a small band of those who truly believe, and who piously perform true worship to God.
-
-Furthermore, this dissimilarity, and this scandal of the small number of those who truly believe, wonderfully exercises, disturbs, and offends the minds of individuals, as it is manifest that in the Church at this time there is a great deal of most sad confusion, a great deal of lacerations, dissensions, factions, and schisms, since some wish to appear Papistic, others pretend to embrace the Augustan Sphinx, whose title is the Interim, others are numbered among the Evangelicals, others approve the ravings of the fanatical Anabaptists: in short (not to enumerate more kinds of sects and distracted parties) these, whom I have just mentioned, all however gravely they may dissent among themselves in doctrine, nevertheless arrogate to themselves the title of the Church and the people of God.
-
-When men look upon this deplorable dissimilarity, and the savage laceration of this body, which is named the Church, very many are certainly horribly offended, and so much perturbed, that, oppressed by the waves of doubt, they cannot judge or determine to which of these parties or sects they ought to join themselves, or what kind of doctrine they ought to embrace.
-
-Many fall away entirely from God, because they think that all controversies about religion are equally uncertain, ambiguous, perplexed, and inextricable; consequently, they become remarkably profane, savage, Cyclopean contemners of God, and openly Epicurean, or Atheists.
-
-What? That the Pontificians or Papists accommodate to themselves plausible and glorious titles and pretexts? They boast that they hold the ordinary power in a continuous or perpetual succession of many centuries, they show off the elegance of ceremonies, the distinction of ranks and sacred orders, and finally the beautiful appearance of spectacles, supplications, or religious processions, and other ecclesiastical constitutions.
-
-But the Anabaptists preach enthusiasms and divine inspirations much more pompously, and they capture the minds of men with a prodigious simulation of sanctity, humility, and patience.
-
-Here it is necessary for the minds of the pious, or Christians, leaning, supported, and sustained by true foundations, to hold this firm consolation, and with the firmest assent to determine: that, although many lacerations have been made, and even now the people are distracted into diverse factions by the dissensions of teachers, nevertheless God, in such great confusion of opinions and disturbance of pious consensus, perpetually gathers and preserves for Himself in the human race some true and eternal Church.
-
-Therefore it is necessary for Christians to look around and know which, what kind, and where the Church is, in what assembly, in what society, the eternal inheritance is gathered for the Son of God, in which body are the true and living members of Christ and the Church, namely, in that assembly or body (however squalid and torn) in which the voice of true doctrine sounds incorrupt, and idols are not defended pertinaciously, and errors fighting against the voice of the Son of God, just as the Lord affirms, John 10: My sheep hear my voice, etc.
-
-And without any doubt, the persecutors of true doctrine and the defenders of Idols, however much they may sell themselves with a plausible and beautiful appearance of ordinary succession, of elegant ceremonies, of distinction of ranks and exercises, however much they may also simulate piety with external gestures, crying out: Ah Lord God, O Lord Lord, etc., nevertheless they are by no means members of the people of God and citizens of the Church of Christ.
-
-Wherefore, let neither the elegance of ceremonies, nor the authority of the ordinary place, nor the splendor of processions, spectacles, or supplications, disturb or move anyone, so that he either assents to or applauds the adversaries of pious doctrine who pertinaciously defend idols.
-
-But let each one embrace the true doctrine without corruptions, and faithfully and constantly guard, confess, and with both hands, or rather with the whole heart, retain it.
-
-Furthermore, the number of hypocrites is not small even in our Churches, in which, however, by the benefit of God, the voice of the Gospel sounds incorrupt: but let the distinction be known.
-
-For those individuals whose hearts feel true terrors and sorrows, having acknowledged the wrath of God against sin, and are again raised up, and, having received consolation, are liberated from the sorrows of the underworld, acquiescing in the trust of Christ the Mediator, and thus have the beginnings of repentance or conversion to God, all these (I say) are certainly the children of God, heirs of eternal salvation, and living members of the true Church of Christ, who, although they have their own infirmities, and not small or few, nevertheless are in no way in the society or number of the unregenerate or rejected hypocrites. Let everyone know and remember this, however, that he must progress little by little so that the fear of God, faith, humility, chastity, and the other virtues pleasing to God may grow, increase, and be confirmed in his soul.
-
-Indeed, know for certain, however languid the beginnings of conversion may be, that God Himself (provided some sparks of faith shine in your heart) wishes to be present with you, to advance you happily, to govern you healthfully, and to help you effectively: as the maxim of Paul, which we cited earlier from the 2nd chapter to the Philippians, expressly affirms, God works so that you may both will and perform, etc.
-
-Therefore, such a heart, which has the beginnings of spiritual exercises, is most truly founded, constructed, and built upon the most firm rock or stone, Christ: He supplies it with vigor, strength, and power, so that it may be able to stand firmly even against the attacks and insults of raging Devils, and against the most insidious temptations of every kind, and not allow itself to be cast down from its position (as they say) or moved from its place.
-
-But in order that we may apprehend this rock, and remain unmoved while standing upon it, we shall achieve this only in this way: if the heart, in true repentance, apprehends the Lord Jesus Christ by faith, and asks with constant groans that He Himself may be willing to help our weakness, that He may be willing to guide us with His light and His counsels, and that He may not allow our minds to rush into errors, crimes, scandals, blasphemies, etc.
-
-And in this very text, both admonitions are comprehended: the one concerning the great danger and the weakness of men; the other concerning the consolation, which opposes the most firm rock and the omnipotent helper, our Lord Jesus Christ, to our weakness and the magnitude of the dangers.
-
-Concerning the dangers and the horrible tyranny of the insiduous Devil, it is said in 1 Peter, last chapter: Your adversary the Devil walks about like a roaring lion, seeking whom he may devour.
-
-For how many does the Devil entangle and fascinate with the furies of sects and impious opinions!
-
-How great a multitude of men, moreover, does he drive here and there to other most sad crimes, adulteries, thefts, homicides, etc.!
-
-What?
-
-That those rushing into these flagrant sins and such great turpitudes are usually at last overwhelmed by despair?
-
-This, therefore, is that most miserable class of men, about whom Christ preaches in this parable, when He says that hypocrites are like foolish men building houses upon sand.
-
-For once such foundations are laid, how easily can it happen that, with storms having arisen and with impetuous rains, the sand is driven away, and with the foundations disturbed and shaken in this way, the entire building collapses?
-
-Just as we see at this time many falling away from God, as if overturned, either by the abundance and force of rushing waters, or by violent blasts and whirlwinds of winds: indeed, in every age (alas) various examples of defections and notable levities are seen.
-
-Considering these horrendous dangers and our own great weakness, let us know that we must build upon an immovable foundation and the most firm rock, the Son of God, our Lord Jesus Christ.
-
-If anyone insists upon and leans upon this rock, or foundation, in the exercises of true repentance, true faith, and ardent invocation, the Devil will by no means be able to overturn him or cast him down headlong, however much he may attack hostiley from all sides, and however much he may try in vain to shake or weaken the rock by stirring up huge storms: just as he attacked David, most fiercely indeed, but in vain.
-
-And so that the whole matter may become clearer, propose to your minds the example of both, namely, Saul and David: from which antithesis, or comparison of dissimilar examples, I hope it will come to pass that the interpretation of this text will be much easier to understand and more perspicuous.
-
-Saul, a wise king, and in difficult government, well-deserving of his country, having performed great and useful deeds at the beginning, was thinking about transferring the kingdom to his descendants by right of hereditary succession: he was thinking about establishing a form of polity, or empire, at his own discretion.
-
-The same man, moved by ambition and envy, was persecuting David, and as if he had success in his own hands, he hoped that his counsels would not fall unhappily, that his efforts would not be in vain, but that he would accomplish according to his own mind what he had thought, desired, and determined.
-
-But his entire holiness, and the careful weighing of all his counsels, which were seemingly prudently undertaken, was built upon unstable and fluctuating sand.
-
-Therefore, at last, overturned by the Devil, he perished utterly, oppressed by horrible despair and eternal punishments.
-
-For he knowingly and willingly resisted the divine will, and yet in the meantime he trusted that he could, by his own counsels, machinations, and strength, even against the will of God, carry out those things which he had proposed to himself, which he was meditating upon, and which he had undertaken, to bring to an end and to be able to obtain. What are these other than most vain dreams, deceitful impostures, and mere lies? David, indeed, although he had fallen into a horrible crime, having snatched away another man's wife after killing her husband, yet he was not a stubborn hypocrite: for he did not persevere in contempt of God, or in an evil purpose, but when he was rebuked by the Prophet Nathan, having acknowledged the wrath of God, he truly grieved that he had offended God, and apprehending the heard absolution by faith, he was again converted to God: afterwards, although the Devil, having instituted a long tragedy, and, as he hoped, an inextricable one for David, did not cease to attack him while he was enduring great calamities for many years, so that he might drive him to despair (for he impelled his son Absalom to take up arms against his father, forced him to flee, expelled from the kingdom by a huge sedition that had been stirred up, and finally, by many sad and more than tragic scandals and crimes which the sedition brought forth, the Devil so exercised and tormented David, that he hoped that he too would perish utterly, just as Saul had perished), yet, when David firmly insisted and leaned upon the arduous and immovable rock, that is, the Mediator, the Son of God, Christ truly was present with him, and sustained, raised up, saved, and protected him, having been confirmed by the Holy Spirit: because then, converted to God and looking by faith at the mercy promised on account of the Mediator, he was receiving the remission of sins, and was resting in this true, vivifying, and eternal consolation, which he himself left written in Psalm 2 in these words: Kiss the Son, blessed are all who trust in Him. Furthermore, in the consideration of these distinguished, illustrious, and most beautiful examples, let us learn first and before all things how one must build upon this rock: namely, in this way, that in true repentance, or conversion, we propose to our mind the word, or voice of the Gospel, and resting in true faith in the Son of God, the Mediator, our Lord Jesus Christ, and resisting doubt and diffidence, we implore the mercy and help of God through and on account of Christ with true groans. In this our struggle and divine consolation, we experience in the thing itself that neither faith nor this invocation is empty or vain: and then indeed our true holiness and piety is not empty and painted hypocrisy, nor does it lean upon sand that never holds together, is unstable, and fluctuating, but it insists upon the arduous, firm, immovable, and never-to-be-ruined rock, the Son of God himself, our Lord Jesus Christ, who is most truly the cornerstone (according to the verse of Psalm 118: The stone which the builders rejected has become the head of the corner) upon which we are built: just as Saint Paul to the Ephesians, explaining this sweetest metaphor, declares and interprets the gnome of Psalm 118 (just cited).
-
-We are, however, built and constructed upon our Lord Jesus Christ, the rock and cornerstone, so that He may carry, support, and sustain us who are placed upon Him: first by His word and the voice of doctrine; then by His merit, or His sacrifice and assiduous intercession, or the assiduous application of His merit for us (for the merit of Christ is joined, that is, the obedience by which, having been made a victim for us, with our sins derived into Himself, He satisfied the justice of God to appease His wrath: and the perpetual intercession by which He intercedes before the eternal Father and prays for us, offering His merits, carrying our groans to the Father, asking that we be received, and covering us with the application of His merit, lest the huge divine wrath be poured out upon us); finally by His power and efficacy, by which He is present with us, by which He is at the same time efficacious in us, by which He Himself immediately vivifies us by the voice of the Gospel and the Holy Spirit poured into our hearts, by which He protects us, with the Devils repressed and driven away, by which He perpetually gathers and saves for Himself an eternal Church, as John 10 says: No one shall snatch my sheep from my hands: by which He Himself, powerfully and effectively reigning, takes away, abolishes, and destroys sin and death, and restores to the region complete newness or conformity with Himself, restores justice and eternal life, in which God will be all in all to the blessed. In this way let us learn to recognize this immovable, living, and everlasting rock, so that we may discern this Lord from all other teachers and Prophets, whose ministries, good deeds, virtues, and gifts do not merit for others, nor (even if they were meritorious for themselves) could they be applied for others, whose persons, finally, are not efficacious in us, nor do they vivify. And therefore, let faith lean not on the person of a Prophet or a Minister of an external voice, but on the person of Christ the Redeemer and Mediator, which is vivifying, etc. Let all these things be thought upon much, diligently, and attentively in daily prayer, so that true repentance, faith, hope, true invocation, and the remaining necessary virtues may grow in us, be increased, confirmed, and perfected: that this may happen, may the Son of God Himself, the propitiator, vivifier, cornerstone, and rock of salvation, our Lord Jesus Christ, govern, teach, sanctify, and help us, Amen. Chapter VIII. If thou wilt, thou canst make me clean. After the sermon delivered on the mount, there follows a recitation of some miracles. For Christ wishes to show the testimonies of his doctrine, so that we may know for certain that this doctrine of his is the immutable will and decree of the divinity, and that he is truthful and sent by God: in short, that this voice of his is not something fabricated or devised by men, just as the Gentiles fashioned for themselves their cults and deities. And there are many miracles of this three-year period, which were performed at short intervals. At the beginning of the first year, two were raised from the dead: the son of the widow in Nain, and the daughter of Jairus.
-
-After the third year, Lazarus was raised. These and many other miracles are recounted in the Evangelical writings. And there is no doubt that many wise men wonder why so many miracles were recounted, when sermons are commemorated less frequently. But those who are rightly instructed understand that both are contained in the Apostolic writings: that miracles are recounted, and sermons. And since the doctrine was copiously explained and illustrated beforehand by the Prophets, and afterwards by John and Paul, the other books propose the testimonies of the miracles to the whole human race. Therefore, so that you may hold a perpetual reminder concerning the miracles, to be thought upon in all examples, first let these three causes be in sight, for which the miracles were performed and recounted. The first cause is that they may be testimonies about God to all men, and show that this voice of Christ is truly divine, and that this teacher, Christ, is truthful and sent by God. For thus in all times God has revealed himself, so that he might add miraculous testimonies to his word, lest the human race remain in these doubts as to who God is, and what the word of God is; and God wishes to be acknowledged and invoked in such a way that the mind, looking upon and invoking God in faith, may acknowledge and invoke this God who revealed himself by issuing certain and admirable testimonies, such as have been issued in all times, just as in the beginning he speaks to Adam and Eve face to face, and by issuing a promise, he himself immediately speaks consolation to them in their hearts, by which they felt themselves to be liberated from death and vivified anew.
-
-Afterwards, other testimonies were added to the fathers: fire from heaven kindles and consumes the sacrifice of Abel, and this was a testimony used up to the times of Noah. Afterwards others followed: the safety of a few in the flood, the leading of the people out of Egypt, etc. All these were proposed for this reason, because God wished testimonies about himself and his word to exist, so that it might be known that this true God, who had revealed himself with such immense goodness, was to be acknowledged and invoked, and that the word handed down with these testimonies was truly a divine and truthful voice.
-
-God wishes our minds now also to look upon these testimonies of revelation in every invocation, so that we may address this God who issued these testimonies about himself. Thus, as often as you begin an invocation, you compel and address this God, who revealed himself by sending his Son, our Lord Jesus Christ. And you should simultaneously acknowledge and invoke this same Son, and distinguish him from other fabricated deities by this very testimony, that he restored life to Lazarus, and he himself, a little later, rose from death by divine power. The second cause, for which the miracles were performed and recounted, is this: That they may be examples and testimonies of the promises. The Prophets testify that the Messiah is to come, and that he will give the remission of sins to those who flee to him in faith, and that he will help them in all counsels and dangers, as it is said in Isaiah 61: The Spirit of the Lord is upon me, because he hath anointed me, he hath sent me to preach to the afflicted, that I might heal the brokenhearted, and preach liberty to the captives.
-
-And the Lord himself says: Come unto me, all ye that labour and are heavy laden, and I will refresh you. In order, therefore, that these promises may be in sight for all, not as fabricated or void, the examples of these promises are proposed in the miracles, in which he gives the remission of sins and other benefits, as he says concerning the sinful woman in Luke 7: Her many sins are forgiven her, etc. And to the paralytic: Son, thy sins are forgiven thee, etc. He adds also bodily benefits by restoring health, he gives life to the dead, so that we may know that he is both the Messiah and the giver of life, and the victor and Lord of death, in short, so that we may know that he is able and to wish to help us.
-
-Who among us would seek these goods, or who would call upon Him, if examples had not been set forth? Even when we read and hear these examples, and behold the testimonies placed before our eyes, such is our infirmity that we tremble and doubt whether we ought to call upon God and seek help from Him. How much greater and sadder would the doubt be, if God Himself did not demand our invocation by setting forth such illustrious examples? The miracles are therefore recounted, and indeed illustrious ones, so that, strengthened and aroused by these examples, we may confidently approach this Lord through faith in Him, and seek and expect help from Him in all counsels and dangers, spiritual and bodily. And all these goods are to be sought, comprised in this one rule of the Son of God: Come to me all you who labor and are burdened, and I will refresh you.
-
-Objection. In this very consolation, the languid mind interrupts the invocation, saying: There is no worthiness in me, no merits. This leper and the others, whom Christ helps, obtained such great kindness by their own piety. I, unworthy, can neither call upon nor approach God. This sight of our sins and filth is the chief impediment to true invocation.
-
-And the wisdom of the Gospel alone teaches with what confidence and consolation the Son of God, our Lord Jesus Christ, is to be addressed. And there were at that time also many thousands of sick people, whom the same thoughts hindered from approaching Christ that obstruct us miserable humans, namely: Why do I approach this teacher? Why do I seek help? Since my filth is so great, and my sins so atrocious, He will dismiss the one calling upon Him with ignominy, or drive him away rebuked, just as He sometimes rebukes the disciples, who tried in vain to imitate the miracles for which they were unequal, etc. To such impediments of faith and invocation, let us oppose the voice of the Gospel, and these very testimonies, which show true and undoubted consolation. There follows, therefore, the third cause of the miracles, namely, that they are examples of the application of the promises, which teach how the promise is to be apprehended, and how the mind is to be aroused and strengthened, approaching this Lord and seeking help.
-
-Our unworthiness cries out against us all. On the contrary, these examples teach that you should not approach God relying on the confidence of your own worthiness, purity, and holiness, nor flee from God out of fear of your sins: but that in true conversion you should acknowledge your filth and sins, and believe and firmly conclude that this Messiah came for this very reason, that He might call sinners to repentance, receive them, and help them, just as He testifies with His own voice: I came not to call the righteous, but sinners, that they may be converted. This struggle of faith and victory in such a dangerous contest is set forth in these testimonies.
-
-Christ does not make a distinction among the miserable who seek help from Him, but receives all equally, as many as flee to Him, Jews, Samaritans, Gentiles, honest men, and harlot women. They all bring to Him sins either publicly known or manifest to their own conscience. Nor does He demand from such people anything other than conversion and faith, by which they conclude that this teacher is sent by God, and is the Messiah, who receives and saves the human race, and who can and will help in all dangers. These beginnings must be brought by all who seek the help of the Messiah. And these are most expressly signified in the image of the Syrophoenician woman in Matthew.
-
-15.: The Canaanite woman came wailing and crying: Have mercy on me, O Lord, Son of David, my daughter is badly vexed by a demon.
-
-But consider what merits she brings? She is a Gentile and accustomed to idolatrous worship, but there are in her the beginnings of faith, by which she acknowledges and calls upon this Christ. The Lord at first answers nothing, and afterwards, having been harshly rebuked, she seems to be entirely repelled by Him, when He compares her to a little dog. Here, without any doubt, the beginnings of faith which she brings began to be shaken by a new trembling: but the Holy Spirit, who first kindled those beginnings of faith, now also helps her in this new struggle, as Paul says: The Spirit helps our infirmity. Likewise: He intercedes for us with inexpressible groanings. Thus, in this Syrophoenician woman, there is the acknowledgment and confession of her own unworthiness, and faith constantly seeking and expecting help.
-
-She confesses herself to be a little dog, and asks that the crumbs, which are owed to the puppies, be given to her as well. Because she perseveres in this faith, she is finally received, and receives the joyful voice of the Gospel from Christ: O woman, great is your faith, let it be done to you as you wish. May this illustrious example of faith be most well-known to all, so that with this Canaanite woman, the Son of God, our Lord
-
-let us call upon Jesus Christ, and with faith and unwavering hope let us ask for and expect help from Him. Thus you see that in these three causes is comprehended the common doctrine of miracles, to be considered in all examples. First, that they are testimonies concerning God and the doctrine handed down divinely. Second, that they are examples of promises, which teach us both to ask for and to expect help and consolation from Christ. Third, they teach what is to be brought to the Son of God, such as the recognition of sin or conversion to God, and faith asking for and expecting help.
-
-Now let us look at the leper bringing to Christ no small light of faith. For he recognizes and firmly decides with himself that this teacher can heal and take away the leprosy. Wherefore he rightly understands and recognizes the Messiah, and knows Him to be omnipotent, and the Son of God. In the same way, let us know that it is necessary for us also to approach Christ, and to bring the light of faith, rightly recognizing Him, and firmly deciding that He forgives sins, and receives and hears those who call upon Him. Thus follows the healing of this leper.
-
-Objection. It is asked here again concerning the faith of this leper. The leper confesses that this man, whom he addresses, can take away that disease, and he attributes this highest honor to Him, that He brings true and salutary doctrine, not false or fabricated, therefore he asks for and expects help. For without this faith he would never have approached Him, but yet he inserts these words into his petition: If You will, You can make me clean. He seems, therefore, to doubt the will of the Lord, even if he does not deny that He can help. Thus we all know that God is omnipotent, and can help even in a moment in all counsels and dangers, but we doubt concerning Him, whether He receives our vows or groans, whether He is willing to help us. Let us consider what consolation is to be opposed to this, for it is a doctrine necessary for all.
-
-Wherefore know that there are two kinds of promises, eternal or spiritual, and corporal. An eternal or spiritual promise is that which promises the remission of sins, justification through and because of the Son of God, the Holy Spirit, and eternal life, repeated in these and other testimonies of Scripture: As I live, says the Lord, I do not desire the death of the sinner, but that he be converted and live. John 3: God so loved the world, that He gave His only-begotten Son, that everyone who believes in Him should not perish, but have eternal life. These sayings and others like them are sermons concerning eternal goods, for which principally the Son of God was sent: and they are equally necessary for all. Wherefore in every invocation the mind should first of all look upon this highest and primary promise and apprehend it by faith. And let it not add in the petition for these eternal goods any condition, or doubt: If You will, Lord. For thus God has expressed His will concerning these goods, that He is willing to forgive sins, and certainly to give righteousness and eternal life to all who ask in faith. God does not want us, oppressed by sins, to rush into eternal destruction, therefore you shall not add any condition to this promise, but firmly and without any doubt decide that God certainly forgives you your sins, receives you through and because of His Son the Lord Jesus Christ, and through Him delivers you from the abyss of the infernal regions and eternal destruction, and gives you righteousness and eternal life. It is necessary for you to receive these things by faith in this way, and to decide it certainly.
-
-You must receive these things by faith in this way, and decide them certainly.
-
-But the promises of corporal goods, such as those concerning good health, strength, life, food, peace, and the defense of bodies, are also proposed by the immense goodness of God. For since God is willing to gather an eternal Church for Himself in this life, He is also willing to give corporal goods necessary for life, such as food, etc. And let us not be so boorish as to despise these goods, but let us understand that for this miserable and languid life of bodies, many goods are needed. Let us consider what aids, and how many things the education of children requires. As little birds need their nests, so little infants need some kind of little huts. Food of grain, drink, and meat suitable for infants and others is necessary. Empires are necessary, and the defense of peace and public tranquility. Let us consider, if there were perpetual wars and robberies, what would the education of children be? What would be the preaching or propagation of the divine word or voice? What would be the future public assemblies? Let us consider all these goods necessary for all, and let us know that God also gives these very goods, and wills that we ask for these goods from Him, just as He Himself prescribed for us in the form of prayer: Give us this day our daily bread. Let us know that in this very petition for corporal goods, faith and invocation must be exercised. Utterly to be execrated is this foolish persuasion of hypocrites, who spurn these promises and think it unworthy of a Christian man to seek bodily goods.
-
-Nay, by this very petition you render to God the honor due, when in bodily dangers you seek and expect help from Him, and acknowledge that this life is defended and preserved by Him for the sake of the Church. At the same time, however, you should also establish this: although God wills to gather and preserve the Church, yet He wills that it be subjected to the cross by His wondrous counsel.
-
-In it, He wills that individuals receive and understand the promises with the exception of chastisement and the cross; He wills that everyone offer themselves to obedience in the cross, according to the will of God, just as Christ Himself submits to the divine will, saying: Father, if it be possible, let this cup pass from me, but let Thy will be done.
-
-Thus also David seeks and expects a return with this exception, that the will of the Lord be done. In the same way, let us also by faith seek bodily goods necessary for us and for others, so that in this very petition each one may offer himself to obedience according to the will of God, just as the leper in this sermon says: Lord, if Thou wilt, Thou canst make me clean.
-
-He adds a condition pertaining to the petition for a bodily good, and yet the true light of faith shines in him, by which he certainly establishes: This doctor sent by God from Abraham, who brings to us the blessing promised to Abraham, who will remit my sins, who will appease God for me, will receive and save me; I know that the Messiah is the Son of God, who will take away and abolish sin and death; I establish therefore that even this my leprosy can be cured by Him, and by this faith I know that I must approach this doctor, and that help in the health of the body must be sought and asked for; I do not doubt that this Lord understands my miseries in so savage a disease, wherefore I also expect mitigation from Him.
-
-I offer myself, however, to obedience, because I also establish this: to understand this doctor according to His wondrous counsel, whether it behooves me to be exercised in this disease for a longer time.
-
-Thus we see that these two do not conflict: to seek help, and to offer oneself to obedience. Nor is such an invocation in vain, but it always obtains either mitigation or liberation according to the counsel of God.
-
-Let the doctrine concerning the distinction of promises, concerning the exercises of faith and invocation in seeking bodily goods, be therefore most known to all: and in daily invocation let these exercises be pondered.
-
-For those who do not exercise or learn these things in invocation, they neither understand the power of this consolation, and they remain in perpetual darkness and doubt, nor do they feel any consolation in the struggles of conscience. It is necessary also that this be known in these very promises, that even if liberation in the dangers of bodies does not follow, yet the promise of eternal goods is not to be cast away or repudiated, because it is necessary to offer oneself to obedience.
-
-For when the spiritual promise is cast away, there remains in the heart a horrible roaring, raging against God, and offering Him insult, and the heart rushes into despair and eternal wrath.
-
-Therefore, let faith, looking upon and receiving eternal goods, thus raise and sustain itself: That if by most wise counsel God wills me to be subjected to the cross, yet I know and certainly establish that I am certainly righteous through and because of the Son of God, that my soul is certainly received and saved; I know that I owe this honor to God, that I believe in the Son, and I establish that through Him righteousness and eternal life are given to me; I will not spurn or cast away the merit of this Son, even if I am harshly exercised by diseases, poverty, and similar miseries.
-
-Thus Job raises and sustains himself, saying: Even if He slays me, yet will I hope in Him.
-
-I know that another life remains, which I shall not lose, even if this miserable life of the body must be lost and abandoned. Let the saying of Job in chapter 13 therefore be fixed in your minds: Even if He slays me, yet will I hope in Him.
-
-For immediately after these words the doctrine concerning sin is added, when he says: Before Him I will argue my ways: as if he were saying: I confess that I am horribly guilty and polluted before Him, but He Himself will be my Savior.
-
-He receives me with immense kindness because of the Mediator; with this consolation I raise and sustain myself, which I know to be certain and immovable; God is and will be in all eternity my Savior.
-
-Wherefore, as I have said, in every invocation these things must be pondered: Let us consider both spiritual and bodily dangers, and let us learn what and how it must be sought.
-
-In such exercises the light of faith grows in the hearts, and all things will be able to be understood more rightly. Let us know also this, that modesty is required in our conduct, so that invocation may be made and the thought of such great things may be kindled.
-
-There are many causes which ought to kindle invocation in all: sin clings to all, and the punishments of sins are seen in the manifold miseries of life, in sight are wars horrible things, ruins and lacerations of Churches and empires. Likewise burdens in empires, and the difficulty of provisions, your diseases, and those of your children. May you sometimes be affected by these such great evils, which are much sadder than the disease of this leper, and cry out to the son of God, just as the Syrophoenician woman cries out: Lord Jesus Christ, son of David, have mercy on us, forgive us our sins, and be present with us, pour into us your holy Spirit, rule and preserve your Church, protect us and our little children, lest we fall into Ethnic, Epicurean, or fanatic furies, preserve and defend the hospices of the Church, lest everything be laid waste and disturbed by barbaric furies, may you be our protector and helper.
-
-These vows and these groans of yours will not be in vain or empty. Wherefore at the same time know that in such an invocation it must be established by you that, on account of the son of God our Lord Jesus Christ, these vows of yours are truly received and heard. And although the beginnings of faith are languid and weak, yet with this very voice stir up faith: I believe Lord, but help my unbelief. May the Son of God our Lord Jesus Christ with immense goodness kindle and confirm his light in us, so that we may rightly learn, understand, and cultivate the salutary doctrine in the exercises of true piety, Amen.
-
 Latin:
-
-Non thesaurizate vobis thesauros in terra.
-
-Iam sequitur concio de avaritia et fiducia acquiescente in pecunia, opibus, et copia rei familiaris.
-
-Hic primum familiariter nota sint vobis verba Pauli Ephes. 4.: Unusquisque laboret manibus suis operans bonum, ut et ipse habeat, et indigenti communicare possit. Item Gen. 3. Deus inquit: In sudore vultus tui vesceris pane tuo. Item Psalm. 128.: Labores manuum tuarum quia manducabis, beatus es, et bene tibi erit. Et passim exstant plurimae sententiae divinae, quae praecipiunt labores iustos congruentes vocationi. Ac est ipsius naturae rationisque praescriptio, imo voluntas Dei, ut paterfamilias habeat necessaria victui, et laboribus vocationi convenientibus paret facultates, augeat et tueatur rem familiarem.
-
-Haec virtus nempe sedulitas recte et ordine quaerens victum, parans opes, partasque facultates conservans, Deo placet, ac nominari potest oeconomia diligens ac iusta, et ordinata divinitus. Extrema vero seu vitia contraria huius diligentiae sunt: alterum, prodigalitas, profusionibus exhauriens facultates, alterum avaritia, sordibus, furtis, et rapacitate quaerens divitias. Est autem avaritia, velle quoque modo corradere et accumulare opes, videlicet lucris iniustis variisque rapinis et furtis, tum occultis tum manifestis, ut cum vitiosae fucataeque merces extruduntur, cum panis et cerevisia corrumpuntur ac depravantur, cum adulterinumm mi pro bonis solvuntur, cum fraudulentis venditionibus et imposturis alieno struuntur insidiae, cum variis praetextibus sumitur mutuum, nec fideliter penditur quicquid aliis debetur. Item cum petuntur usurae, cum exercentur aucupia pecuniae quaerendae iniusta, cum denique violatur aequalitas et iustitia in defraudandis aliis.
-
-Haec omnia prohibentur in septimo praecepto: Non furtum facies. Nec indiget quicquam horum prolixa declaratione, sed singuli sese scrutentur, et animadvertant, ubi fideliter et candide, ubi fallaciter et insidiose agant, moresque suos emendent.
-
-Quia talis iniustitia non est leve peccatum, sed quod Deus et in hac vita punit atrocibus poenis, et puniet aeternis suppliciis, nisi fiat conversio ad Deum. Sic dicit Esaias 33.: Vae qui spolias, quia spoliaberis. Itaque manifeste videtis crescentes peculatu et variis fraudibus, excuti tandem fortunis. Et ab experientia dictum illud ortum est: Male parta male dilabuntur.
-
-Ita Paulus inquit 1. Cor. 6.: Adulteri, fures etc. non erunt haeredes Dei et vitae aeternae.
-
-Porro et haec est avaritiae species, ac ingens peccatum, cum pecuniae, opes et copiae anteferuntur piae doctrinae atque veritati divinae. Quantus est in plurimis regionibus horum numerus? qui agnita veritate tamen fugiunt pericula confusionis, imo et persecutionem seu oppressionem purioris doctrinae stabiliunt et adiuvant, ne dignitatem, bona, divitias ac tranquillitatem suam in discrimen afferant vel amittant. Est et haec avaritiae species, cum habes mediocres facultates, nec vis pro tuo modo et loco decerpere aliquid Deo, et conferre cum ad conservationem ministerii Ecclesiae, tum ad sublevandas difficultates vere egentium, sicut Nabal nolebat iuvare Davidem, quem tamen praesens occasio ipsi commendabat.
-
-Avaritiae speciebus annumerandum est et hoc triste peccatum, quando cor tuum magis acquiescit et nititur fiducia pecuniae, potentiae, opum, quam fide praesentiae et bonitatis divinae cum securus nec agnoscens tuam infirmitatem, sinis in corde tuo exstingui et timorem Dei et invocationem, et vana fiducia propriarum divitiarum quaeris voluptates, indulges cupiditati vindictae etc. Quae quidem sunt arcana, sed tristia et tetra peccata, de quibus iam copiosius disserendi locus haud fuerit. Omnia haec peccata prohibentur in hoc dicto Christi: Nolite vobis colligere thesauros, in quibus cor velut inhaerescit et acquiescit, quique pluris illi sunt quam Deus ipse.
-
-Propterea addit: Ubi cor tuum, ibi thesaurus tuus, quod omnino verum est de avaris, qui lucra, divitias et πλεονεκτήματα sua multo pluris faciunt et aestimant, quam Deum.
-
-De prodigalitate.
-
-De prodigalitate non dicam prolixe, loquitur enim res ipsa, ut cuivis perspicuum est, prodigos, qui facultates suas in res non necessarias per luxum aut per vanum studium ostentandi opes profuderunt, exutos patrimoniis tandem converti ad furta et rapinas, aut ignavam mendicitatem, quae et ipsa quaedam furti species est.
-
-Hinc rhythmi Germanici dicunt: Wer mehr wil verzeren, Denn seln pflug kan ereeren, Der wird zu lezt verderben, Und villeicht am Galgen sterben. Quorum haec est sententia: Si quis de partis vult plura absumere rebus, Quaerere quam vigili sedulitate potest: Is mendicando victum petet, ostia pulsans, Aut feret huic tristem crux, laqueusque necem.
-
-Ac exstat mandatum divinum profusiones et dissipationes haereditatum nominatim prohibens, Proverb. 5.: Ne des substantiam tuam crudeli, nec saturentur alieni facultatibus tuis. Vocat enim crudeles et alienos eos, qui abutuntur aliena facilitate et liberalitate, quique harpyiarum et hirudinum more sanguinem exorbent, ac postquam facultates aliorum devorarunt, iis, quibus fidelitatem et gratitudinem debebant, in calamitate illudunt et insultant.
-
-Praeterea conspici potest in aulis et administratione seu gubernatione politica, quantum impedimentorum, et detrimentorum perniciosorum pariant inanes profusiones. Cum domini seu potestates, non necessariis sumtibus apparatibus et pompis impendunt ordinaria tributa legitimasque pensiones, ac supra modum suarum facultatum inani aucupio gloriae profundunt plurima, ubi non est opus, postea nec ipsi sunt instructi pecunia ad res necessarias gerendas, nec parcunt civium facultatibus, sed immoderatis expilationibus deglubentes populum, ditionibus territoriisque suis onera intolerabilia cumulant.
-
-Haec omnia diligenter consideretis atque perpendatis et discatis cum gratiarum actione ad Deum, ordine ac prudenter tum collocare tum custodire facultates iuste partas, nec ullis praetextibus alios defraudetis. Quin et hoc sciatis, divinitus offerri, Deique beneficia esse facultates, victum ac rem familiarem, nec negligere Deum administrationes aut acquisitiones fortunarum, sed velle eas tueri, augere et provehere recte utentibus et in vocatione fideliter servientibus, velle etiam attenuare ac dissipare facultates, cum insignes abusus accersuntur contra conscientiam, sicut experientia comprobat, et oculi testantur haec divinitus hoc modo fieri.
-
-Hanc communem doctrinam, de proprietate, seu distinctione dominiorum, ac de legitimo usu facultatum, debetis hic attente cogitare et meditari. Non volui arduas et subtiles hoc loco quaestiones agitare, sed mentionem facere communium negotiorum, casuum et vitiorum, quorum in huius vitae miseriis et infirmitate exempla nimis crebra, et proh dolor quotidiana sunt in conspectu posita, de quorumlibet generum furtis, iniustis aucupiis et lucris, atque multiplici abusu facultatum.
-
-De his ipsis peccatis Christus quoque loquitur, nec dubium est, quin nos quoque, si vera pietate Deum coleremus, essemus futuri diligentiones in his oeconomicis, quantumvis levibus, ut videntur, officiis, videlicet, ut iusto ordine et acquireremus seu pararemus, et administraremus sive collocaremus haec externa atque corporalia bona, nec luporum, canum et felium, de pastu decertantium more, velut ex faucibus ereptum bolum seu cibum, unus alteri mordicus auferret. Deus certe vult ac flagitat, ut nos et hac qualicunque obedientia fidem atque timorem Dei declaremus, ac ipsi hunc honorem cultumque debitum praestemus, videlicet, ut benigne, fideliter, et iuste inter nos alii cum aliis res ac officia communicemus, iuxta dictum Prophetae: Misericordiam volo, non sacrificium, et agnitionem Dei magis quam holocausta etc.
-
-Nos quidem concionatores quid possumus aliud facere, quam sonare vocem Decalogi, et vobis auditoribus mandata divina proponere? Caeterum politici magistratus officium erat in multis huiusmodi negotiis tueri iustitiam exercendis iudiciis et executione poenarum, seu puniendis violatoribus iustitiae ac disciplinae.
-
-Sed regimina, proh dolor, languidiora sunt his ultimis temporibus, et in hac delira mundi senecta. Deus clementer det imperia iusta et salutaria Ecclesiae, flectat etiam vestros et nostros, id est, omnium animos ad pie, temperanter, ordine, circumspecte sobrieque vivendum, ut et ipsum honore adficiamus, et in gubernatione morum sollicitae mentes accendantur ad invocationem et caeteras virtutes congruentes voluntati divinae, Amen.
-
-Lucerna corporis est oculus. Hoc memorabile dictum est regula generalis, commonefaciens nos, ut in quolibet opere principaliter animi intentionem seu discrimina finium consideremus, nec tantum externi ...operis gestum seu simulationem spectemus.
-
-Exempli causa: Abraham, item vidua Sareptana, et alii sancti homines dederunt eleemosynas. Iam plurimi divites inter Ethnicos vel hypocritae non minus benigne largiuntur eleemosynas.
-
-Hic tur hypocritae praestare opera similia operibus piorum, nec differunt externi gestus, imo potest fieri, ut Ethnica liberalitas longe superet magni- ficentia pium opus viduae Sareptanae, quae in summa penuria pauxillum farinae praebet Eliae exulanti. Sed finis facit discrimen, quia motus interiores cordis plane sunt dissimiles. Impii, id est, Ethnici et hypocritae non benefaciunt aliis propter Deum, seu, ut Deo obediant, sed vel ostentatione quadam et aucupio gloriae popularis, vel quia fingunt se sua beneficentia mereri remis- sionem peccatorum, et iustos esse coram Deo, si- cut Mahomet et Papistae docent de satisfactioni- bus et compensatione delictorum.
-
-In hoc exemplo perspicuum est, opera simi- lia externa specie prudenter ac procul esse discer- nenda. Alia enim fiunt vero motu cordis agno- scentis Deum, et propter mandatum Dei, de qui- bus operibus hoc loco tradit Dominus generalem regulam: Quando cor est hypocriticum, tunc etiam externum opus est simulatus gestus, et fu- cosa hypocrisis plena peccati Deoque displicens.
-
-Haec regula complectitur plurima exempla, scilicet, omnes externas ceremonias. Cain et Abel, Saul et David offerunt sacrificia, et multis imponit similitudo quaedam externi operis, ut ni- hil differre iudicent, sed corda prorsus dissimilia sunt. Porro primum et summum praeceptum di- cit: Diliges Dominum Deum tuum ex toto corde tuo. Item, Rom. 10.: Corde creditur ad iusti- tiam etc. Et Esaiae 29. vituperat et reiicit Deus hypocrisin hac voce: Appropinquat iste populus ore suo, et labiis honorat me, cor autem eius longe est a me, ut Cain, Saul, Ethnici, et Mo- nachi arte simulant externos gestus, sed cor in ipsis est plenum sordibus ac immunditie, non re- gitur luce seu vera agnitione Dei, est sine timore Dei, sine fide, plenum invidentia et odiis, imo ruit in caedes et blasphemias. Huiusmodi sacri- ficia et externi gestus sunt tetra peccata, et cultus horribiliter damnati ac reiecti, sicut et Salomon affirmat Proverb. 28.: Oratio eius qui avertit au- res, ne audiant legem, erit exsecrabilis. Item Ecclesiast. 4.: Melior est obedientia quam victi- mae stultorum, qui nesciunt quantum faciant mali. Exemplum, Ethnici fuerunt sine vera agnitione Dei, pleni turpitudinum, adulteriorum, incesta- rumque libidinum, interim tamen cumularunt sacrificia, quibus deleri peccata putabant.
-
-Tantam coecitatem semper in mundo confir- mavit diabolus, sic impuri sacrificuli Papistici vi- xerunt in manifesta turpitudine, qui tamen Missas celebrantes impudenter somniarunt et iactitarunt se placare iram Dei ceremonia suae oblationis, et ipsam lectionem Missarum mereri ingentia bene- ficia universae Ecclesiae.
-
-De talibus insanis et coecis hypocritis loqui- tur Salomon inquiens: Hij stulti nesciunt, quan- tum mali faciant. Aberrant enim a vero Deo ignari voluntatis divinae, ac ne sua quidem opera intelligunt, sed ipsorum cultus et sacrificia sunt superstitiosae cacozeliae et horribilia peccata. Ita- que de hac coecitate Dominus hic dicit in genere et universaliter: Si oculus tuus malus fuerit, to- tum corpus erit tenebrae, hoc est, oportet tenere discrimen externorum operum. Ubicunque cor est pium et sincerum, ibi et externa opera sunt incorrupta et impolluta. Sed ubi cor est impu- rum et hypocriticum, ubi cacozelia externorum operum seu factorum quantumvis magnifica, plau- sibilis et speciosa, est commentitia superstitio et grave peccatum. Hic est simplex et proprius in- tellectus horum verborum Christi.
-
-Quaestio.
-
-At dicis: Quando igitur cor est sincerum? et quomodo sciri potest, utrum sint puri motus cordis?
-
-Responsio.
-
-Primum necesse est, ut cor norit et intelli- gat verbum Dei, iuxta versum Psalmi: Lucerna pedibus meis verbum tuum, et lux semitis meis. Hanc lucem prius oportet accendi in nobis, eam- que vera et firma fide cordis accipi et apprehendi, sed vere, dextre ac pie intellectam, ne pertraha- mur speculationibus monstrosis et aberrantibus in haereses, fanatica deliria, Monastica somnia, et sophisticas perplexitates, quemadmodum diabolus incitat omnibus temporibus et impellit quosdam petulantes ac insanos homines, ut deficientes a verbo Dei implicentur corruptelis doctrinae, et amplectantur perniciosos errores ac sophismatum praestigias.
-
-Quandocunque igitur homo regitur verbo Dei, nec deest sincerus ac verus intellectus vocis divinae sen recta sententia, quam fides firmiter amplexa retinet ac laetatur, tunc illucescit cordi, quid sit lex, quid aeterna promissio et reconcilia- seu gratia, quomodo Deus sit agnoscendus et invocandus, quare missus sit filius Dei, et quae sint eius beneficia, qui sint veri cultus Dei, et quis ordo omnium operum debeat institui. Accensa vero hac luce in mentibus humanis, necesse est existere veram atque seriam conversionem ad Deum seu poenitentiam, id est, veros pavores ortos ex agnitione irae divinae adversus peccata nostra, et veram fidem atque fiduciam acquiescentem in Deo propter filium mediatorem.
-
-Porro ubicunque lucet haec fides, ibi deinde omnes cultus, et caetera opera, divinitus instituta, praecepta et approbata, aut quaecunque observationes recte ordinari atque iudicari possunt.
-
-Hoc declaremus exemplo.
-
-Postquam Paulus norat se recipi et placere Deo, se iustum esse gratis propter obedientiam Domini nostri Iesu Christi, et exarserant in corde verus timor Dei, vera fides, et vera invocatio, perspicue intelligebat ieiunia, ceremonias, et quaecunque opera a nobis electa nequaquam esse merita remissionis peccatorum, aut iustitiam coram Deo, sed esse externae exercitia, quae pro circumstantiis observari vel omitti possunt.
-
-Hunc ordinem ut disceret Antonius Eremita, singulari revelatione commonefiebat, ne sua ieiunia et dulcissima solitudinis exercitia durissimae sutoris Alexandrini vitae anteferret.
-
-Recita historiam: Ferunt S. Antonio venisse aliquando in mentem, ut cuperet scire, an vitae genus, quod ipse susceperat in durioribus illis exercitiis solitudinis, praestantius esset, ac magis Deo placeret, quam vitae communis officia, quae praestare solent patresfamilias Christiani, in quibus non haeret manifeste turpitudo, ibi Deus per somnium vel revelationem quandam volens Eremitae ostendere, quantum in hoc vitae genere proficeret, monstravit ei domum sutoris Alexandrini vicinam portae, ac iussit, ut illius exercitia et dona exploraret.
-
-Veniens igitur in urbem Alexandrinam, Antonius ingreditur domum sutoris, alloquitur patremfamilias, ac primum interrogat de doctrina, sitne Christianus, et an vera fide amplectatur Symbolum et omnia scripta Prophetarum et Apostolorum?
-
-Hic modeste de doctrina respondet, fatetur se esse Christianum, affirmat se reiicere et condemnare Ethnicas idolomanias, et invocare verum Deum in agnitione Iesu Christi mediatoris, ac in summa dicit se credere omnes articulos fidei, cis et impiis opinionibus, pugnantibus cum quocunque articulo Symboli, ac veris gemitibus petere a Deo, ut haec initia verae fidei confirmentur in suo pectore, ne ruat in errores, haereses et fanaticos furores, sicut omnibus aetatibus contagia tristissimorum errorum late vagata sunt.
-
-At iis sane libenter auditis percontatur Antonius, quos igitur cultus praestare, quae pietatis exercitia usurpare, quibus operibus venerari Deum soleat?
-
-Tum sutor: Haec fides, inquit, qua vere credo Deo, et gratias ago pro tanta bonitate et ingentibus beneficiis, quod Deus immensa misericordia me propter filium suum Dominum Iesum Christum gratis recipit, quod iustum pronuntiat, quod vult mihi propitius esse, summus est et praecipuus cultus.
-
-Ideo quotidie cogitatione tantorum beneficiorum exsuscitor ad gratiarum actionem, atque utinam possim ardenti pectore et vera gratitudine divinam bonitatem benevolentiamque celebrare.
-
-Nec enim praeter hanc gratiarum actionem, et beneficiorum praedicationem, quicquam reliquum fuerit, quo Deum honore afficere, quoque voluntatem gratiae referendae testari queam.
-
-Praeterea singulis diebus, mane surgens e lecto brevi precatione Deo gratias ago, et peto remissionem peccatorum, vitam, consolationem, gubernationem, victum, defensionem, atque miseriarum mitigationem, mihi, coniugi, liberis et Ecclesiae.
-
-Eandem quoque gratiarum actionem, et petitionem, repeto assidens ad mensam, et iturus dormitum.
-
-Quae cum valde probarentur Antonio, pergit interrogare de ieiuniorum et corporalium exercitiorum ordine atque modo.
-
-Respondet iste: Postquam mane paucis verbis pro familia et universa civitate oravi, laetus facio domesticas operas.
-
-Premor enim et ipse vulgari onere paupertatis, ideo mihi necessitas incumbit, opitulante Deo, parvis liberis et familiolae victum quaerere.
-
-Proinde ad arti meae operam, et curo, ut filii recte doceantur, utque familia ad agnitionem et invocationem Dei invitetur ac instituatur.
-
-Praeterea quaecunque mandat legitima potestas in politicis negotiis, diligenter exsequor, et obedientiam praesto in solvendo tributo, atque communibus oneribus civium sustinendis.
-
-Non alia, inquit Antonius, habes exercitia duriora? ut certos dies ieiuniorum, et quasdam peculiares observationes? Parumne putas, ait alter, me laboris et ieiuniorum sustinere? cum in officina assiduis operibus exerceo artificium meum, domesticaeque familiae victum quaero, cum variis aerumnis conflictor, tolerandis cum in oeconomicis difficultatibus, tum oneribus a republica impositis, cum incidant subinde plurima, quae patremfamilias duriter excruciant. Deinde quem multiplices domesticae miseriae defatigant, quem curarum moles in civili gubernatione et politicis officiis exercet, illi non est integrum otiose circumspectare et cessare, nec unquam defuturae sunt causae, occasiones et pericula, quibus ad invocationem, ad exercendam fidem ac dilectionem exsuscitetur. Miror itaque, cur in his et publicis et privatis miseriis exercitia pii patris-familias non satis duram militiam, sed suave otium esse existimes, ac nescio, quae difficiliora et perfectiora requiras opera.
-
-Magna pietas et sanctimonia est in officiis vitae communis Deum recte agnoscere, vere invocare in agnitione et fiducia Christi, deinde in coniugio caste vivere, in laboribus oeconomicis et politicis fideliter servire, et in his miseriis atque periculis quotidie fidem ac invocationem, pietatem denique in retinenda possessione doctrinae de Deo, exercere. Hac tam gravi responsione movebatur Antonius, ut intelligeret suam monasticam vitam in solitudine non antecellere, nec anteferendam esse laboribus, officiis et exercitiis vitae politicae et oeconomicae, in quibus testimonio praesentiae Dei timor et fides confirmantur. Didicit ergo gradus, ordinem ac discrimina inter fidem et opera, inter pios motus cordis et externos gestus.
-
-Hic etiam conferamus Davidem et Alexandrum, ut de discriminibus utriusque gubernatoris admoneamur.
-
-Alexander fuit acerrimus bellator, donatus imperio orbis terrarum, adeo florens opibus ac potentia, ut ipsius imperii possessio quinquies aut sexies magnitudine fuerit amplior Israëlitico regno Davidis. Item multa praeclara praelia fecit, plurimas gloriosas victorias consecutus est, captivis clementer pepercit. Interim tanti principis divinitus instructi excellentia virtutum et felicitate cor plenum erat contemptu Dei, spurcitie, et aliis turpitudinibus. Ideoque donis, quibus a Deo ornatus erat, auctoritate, opibus, regnis atque victoriis abutebatur ad fastum, ad voluptates, ad magnificentiam pomparum. At in corde Davidis lucebat vera agnitio Dei, quem recte invocabat, victorias atque regna conferebat ad gloriam Dei, et propagationem salutaris doctrinae, cumque sciret se debere obedientiam Deo in hoc gradu politico, in quem collocatus erat, alacriter susciebat et sustinebat tantos labores, acerrime praeliabatur, ut defenderet coelestem doctrinam, nec sentiebat se mereri remissionem peccatorum his dimicationibus, et hac mole curarum atque dolorum, nec regni decus ac potentiam hoc fine tuebatur, ut ipse ingenti gloria frueretur, multo minus ut impune quidvis sibi liceret, et ut agens iniusta non posset a quopiam coërceri vel reprimi.
-
-Horum et similium exemplorum consideratione fiet illustris ac perspicua sententia dicti: Si oculus tuus fuerit malitiosus, totum corpus erit tenebrae, id est, quando cor intus non vero iudicio nec honesto proposito movetur ac regitur, tunc certum est externi operis gestus esse peccata, nec ulla ratione cultuum divinorum nomen accipere. Quae omnia sunt digna observatione, ut agnoscatis ordinem seu gradus verorum Dei cultuum, et ordine vos exerceatis in his gradibus. Nam sine exercitiis, veris animi doloribus, ardenti invocatione, et sensu divinae consolationis haec doctrina nequaquam potest intelligi. At hunc textum Papistae insulsis interpretationibus foede dilacerarunt, cum ne sua quidem intelligerent aut diiudicarent opera, iuxta Salomonis gnomen, Ecclesiast.
-
-4.: Nesciunt, quantum mali faciant. Et hypocritae ignorant, quid sint ipsorum superstitionis cultus, et nesciunt, quid agant, dum insignibus titulis suas ceremonias ostentant ac venditant. Itaque invexerunt tetros et perniciosos errores, horribiliter perverterunt ac conturbarunt ordinem operum, praetulerunt humanas traditiones mandatis divinis, atque dixerunt, homines propriis operibus mereri remissionem. Hi omnes et similes errores taxantur et reprehenduntur hoc brevi dicto Christi: Si oculus tuus malus fuerit, necesse erit totum corpus tenebras esse, qua regula constituitur discrimen inter hypocrisin, et legitima sive divinitus ordinata et approbata opera.
-
-Et hactenus de ista generali regula.
-
-Sequitur iam Concio.
-
-Nemo potest servire duobus Dominis etc.
-
-Regimina politica seu mundi imperia suum habent ordinem, distinctum certis gradibus, singuli cives et subditi multos habent dominos, nimirum consules civitatis, praefectum, principem, veruntamen hi gradus hoc ordine constituti sunt, ut unusquilibet civis principaliter serviat et obtemperet summo capiti seu gubernatori, postea suo loco caeteris dominis inferioribus. Neque vero servientes hoc ordine potestatibus, dicuntur duobus dominis servire, quamdiu superior dominus et magistratus inferiores coniuncti sunt voluntatibus et sententiis.
-
-Sed cum illi animis et voluntatibus distracti, inter se dissident, tunc certe nemo potest utrique discordantium adhaerere pariter ac servire, sicut eadem aqua non potest simul esse fervida et frigida, quia contraria seu pugnantia inter se non possunt simul poni, nec in eodem subiecto coniungi, ac ut maxime sint simul, mox tamen alterum pellitur ab altero.
-
-Similis ratio est in hoc casu, de quo concionatur Dominus: Nemo potest duobus dominis servire, scilicet, non consentientibus et congruentibus inter se, sed turbulentis atque discordibus.
-
-Item, quando non est imperio legitimo gradibus certo ordine distinctis, alter alteri subiectus, ut, nemo potest pariter Ferdinando regi et Turcico tyranno servire, quia hostilibus odiis inter se dissident.
-
-Rex enim Ferdinandus affirmat Hungariam esse suam, ideoque negat se passurum, ut eripiatur ea sibi. In hoc manifesto dissidio, et gravibus inimicitiis constat nullum militem posse stipendia merere apud utrumque, vel utrique servire. Huiusmodi exempla sunt illustria, plana et perspicua.
-
-Sic et Iudas non potest aequaliter atque pariter pecuniam et Deum venerari, colere ac magnificare.
-
-Nam vox divina dicit: Non adiuves oppressionem innocentis; at avaritia clamitat: Imo propter pecuniam confirmes et adiuves iniustam saevitiam. Hoc exemplum plurimi nunc imitantur.
-
-Quidam enim simul et amplecti doctrinam Evangelii et Episcopatus ac Sacerdotia sibi conferri volunt a Pontifice Romano, sed Evangelii vox est: Fugite idola, id est, nec este dediti idolatricis cultibus, nec eos approbate.
-
-Reclamat autem Episcopatus, praecipiens cultum et approbationem idolorum, ut eveharis ad fastigium tantae dignitatis, et obtineas pulcrum principatum. Praeterea quam usitatum est in aulis principum, ut viri nobiles videri velint Evangelici, et interim simul aucupentur gratiam, et alludant ad affectus potentum, qui doctrinae piae infesti persequuntur Evangelium.
-
-Ex his et similibus exemplis clare poterit intelligi sententia huius textus.
-
-Estque hoc loco discenda et servanda regula: quod Deo serviendum sit ante omnia, seu quod Dei cultus et honor praeferendus sit omnibus creaturis, iuxta primum Decalogi praeceptum: Diliges Dominum Deum tuum ex toto corde, ex quo verissime sequitur, nihil omnium rerum aeque colendum, pariterque diligendum esse ac Deum ipsum, nec tribuendum honorem divinum amoremve Deo debitum ulli creaturae, tantum abest, ut quicquam omnium rerum Deo sit anteferendum, magisve colendum, aut ardentius diligendum, ad contumeliam ipsius Dei, quodque repugnet et adversetur divinae bonitati.
-
-Haec est summa salutaris istius regulae, quam in textu sequuntur haec verba: Non potestis servire Deo pariter et Mammonae, seu divitiis, quod quidem intelligetis eodem plane modo, quo superiora, quasi dicat Dominus: Vos nequaquam debetis quacunque ratione quaerere divitias, omisso Deo, nec propter divitias facere contra Deum, non debetis accipere opulentos Episcopatus et opimas praebendas, quas nominant, ut confirmetis ac stabiliatis impiam doctrinam, seu falsa dogmata.
-
-Item: Non debetis propter pecuniam violare caetera mandata divina, quemadmodum foeneratores, praedones, fures, et alii impostores faciunt, cuius generis peccata certe plurima sunt in mundo.
-
-Quid enim tam usitatum est, quam pecuniae causa violare iustitiam? Iuxta tritum Teutonica lingua Proverbium, pecuniarum gratia fieri homines nequam et improbos.
-
-Viennae ante paucos annos quidam Pistor habuerat ministrum, cui nomen erat Paulus.
-
-Hic cum penitus perspectus ac exploratis aedibus cognovisset, quibus in arculis pecunia soleret asservari, nocte quadam se in eandem domum insinuans, ex ordine caedes quinque hominum crudelissime commisit, ac primum quidem servum dormientem in scamno trucidavit, exinde ancillam, postea patremfamilias et coniugem concubantes in eodem lecto iugulavit.
-
-Quibus interfectis cum accederet ad alium lectum, in quo erat filiola adhuc admodum parva, exclamavit illa eiulans: Ah Paule, obsecro parce, nec eripe mihi vitam, accipies omnes meas puppas, cum voles.
-
-Sed diabolus impulit hunc latronem, ut pergeret, et furorem in eo confirmavit, occidit igitur et miseram puellulam, compilataque domo et pecunia ablata fugiens Viennam, pervenit Ratisbonam, quae abest a Vienna ad quinquaginta milliaria Germanica.
-
-Verum Deus ipse est executor suae regulae: Quicunque gladium acceperint, gladio peribunt. Propterea latro iste, quanquam tot milliarium intervallo discesserat, divinitus tamen ad poenam retractus, et in iudicium capitis adductus, Viennam iniectis catenis remissus est, ubi et hasta seu veruto transfixus, innocentium sanguinem supplicio merito luit. Suspensus autem in veruto, seu affixus praeacuto palo, clamitabat miserabiliter, caeteros cruciatus corporis omnes, quos perferret, nequaquam, sibi tam acerbum dolorem inurere, quam acrem morsum sensumque doloris efficiat recordatio vocis puellae, quae dixerat ad sicarium: Ah Paule, sinas me vivere, dabo tibi omnes meas puppas. Ita mortuus est hic fur et latro in atrocissimi supplicii tormentis et horrendis conscientiae cruciatibus. Tantis peccatis implicat, tamque tristes ac tragicos exitus affert Mammona. Haec insignia et crassa exempla mementote, quae cogitantes videte, ne Mammona vos captos et comprehensos teneat.
-
-Quaestio.
-
-At hic existit quaestio, num sit quaerendus victus, et tenenda res familiaris? Respondeo. Omnino debes quaerere et retinere facultates, sed hoc ordine: Primum Deo obtemperes, ac discas ante omnia ipsum recte invocare et colere, nec contra conscientiam, seu sciens et volens violes divina mandata. Postea debes honestis laboribus, ordinate iuxta vocationem parare, collocare, tueri, et augere rem familiarem, seu facultates. Imo Deus ipse vult sua bonitate et benedictione adiuvare tuos labores, ut sint felices, vult provehere et augere tibi facultates, sicut postea circa finem capitis attexitur gnome: Primum quaerite regnum Dei, et caetera divinitus adiicientur vobis. Sic fuerunt divites Abraham, Isaac, Ioseph, David, Iob. Sed quia saepe audivistis explicationem veram et luculentam huius quaestionis, non disseram hoc loco de ea prolixius, sequitur in textu:
-
-Non sitis soliciti de crastino, quid comedatis, aut quid bibatis etc.
-
-Hic sapientes homines sine luce fidei cogitant, hos esse sermones otiosos et inanes, ac impossibilia praecipi. Oppono itaque brevem et perspicuam responsionem: verum est, sapientes ignaros exercitiorum fidei, iudicare hic Stoicas quasdam hyperbolas tradi, et hos esse sermones frivolos, inutiles ac similes fabulosarum narrationum. Vos vero, qui recte didicistis initia doctrinae Christianae, et in quibus est accensa scintilla fidei, scitis humanas mentes divina consolatione destitutas in paupertate, persecutionibus, et calamitatibus, in tantis periculis privatis et publicis, vehementer excruciari, et intimis animi sensibus angi, nunc hic nunc istic praesidia, coniunctiones et auxilia quaerere, communire se factionibus et variis practicis. De hac sollicitudine loquitur textus, quae est ingens cruciatus et angor trepidantis animi, ortus ex diffidentia, quia cor nec erigitur nec sustentatur divina consolatione.
-
-Quare discatis duplicem esse sollicitudinem.
-
-Una est sollicitudo diffidentiae seu trepidatio et cruciatus cordis, quod non regitur divina luce et consolatione, quod nec petit nec exspectat auxilium, defensionem, victum et gubernationem a Deo. Ideo saepe, proh dolor, accidit, ut aliqui homines propter detrimenta facultatum seu paupertatem adeo duriter exerceantur animi perturbationibus, angoribus et sollicitudinibus, ut contabescant moerore, vel etiam ipsi mortem sibi consciscant, quemadmodum exempla meminimus.
-
-Haec sollicitudo plena diffidentiae, trepidationis, coecitatis, et expers omnis verae consolationis hic severissime prohibetur. Nam Dei voluntas immutabilis est, ut in omnibus periculis et necessitatibus confugiamus ad ipsum, speremus et petamus ab ipso auxilium, nec frangamur desperatione. Id docet pulcherrimus Psalmi versiculus, quem singuli meminisse et saepe meditari debetis: Iacta curam tuam in Dominum, et ipse te sustentabit.
-
-Quin ob hanc ipsam causam Dominus quotidjanae precationi inservit et inclusit haec verba: ...Panem nostrum quotidianum da nobis hodie. Ergo cum iusserit ipse peti a se cibos et bona corporis, vult sine ulla dubitatione haec etiam bona corporalia, victum, defensionem, facultates suppeditare, vult nos non ab ipso deficere nec opprimi desperatione. Ex hac declaratione perspicuum et manifestum est, prohiberi hanc solicitudinem, quae est diffidentia, dubitatio et desperatio de auxilio divino. Altera solicitudo est in credente cura, sedulitas et diligentia, divinitus... ordinata faciendi labores sui loci et suae vocationis.
-
-Exempli causa. David est imperator seu dux exercitus. In hac vocatione obeunda necesse est ipsum adhibere iustam diligentiam, et solicitudinem copias militares ducendi, distribuendi, collocandi in insidiis. Item, dimicandi cum hoste, prospiciendi ex quibus locis exercitui commeatus commode supportari seu convehi, et res frumentaria expediri possit, explorandi denique ubi subsederint et commorentur hostes, in summa, oportet ipsum ut sedulum et acrem militem non esse ignavum, nec ebriosum aut temulentum in facienda vocatione. Sed ad hanc curam et diligentiam vocationis propriam accedit in corde consolatio, tranquillitas et laetitia, videlicet, quod retinens animi constantiam credit Deum sibi adesse, se respicere, curare, tegere, sibi opitulaturum esse, ideoque laetus invocat, imo suscipit ac sustinet eo promtius et alacrius omnes labores, quia scit se vocatum a Deo iuvari et defendi divinitus, et sperat bonos exitus. Haec solicitudo laboris et diligentiae coniuncta cum fide, est ordinata et mandata divinitus, et haec sedulitas seu cura faciendae vocationis non admiscet negotiis et ordinatis laboribus iniusta consilia, et malas practicas, sicut prior illa solicitudo diffidentiae metu futuri incommodi in praesentia saepe utitur pravis consiliis, et quaerit inconcessa praesidia. Sed coërcet se intra metas, recte suscipit et placide tolerat labores a Deo mandatos, nec a regula discedit propter futuras incertas spes aut metus.
-
-De qua diligentia Paulus praecipit Rom. 12.: Qui servit, serviat fideliter, qui praeest, sit diligens, etc. Item, Psalm. 128.: Labores manuum tuarum quia manducabis, beatus es, et bene tibi erit.
-
-Cognito igitur et dextre intellecto hoc discrimine solicitudinis, cruciantis animum diffidentia, et solicitudinis seu diligentiae in facienda vocatione, cui praelucet fides acquiescens in Deo, mediocriter potest intelligi hic textus, qui quidem plurimas salutares commonefactiones, doctrinas et consolationes dulcissimas proponit, quarum scilicet haec est summa. Necesse est singulos Christianos omnibus temporibus nosse doctrinam de distinctione promissionum, sunt enim duplices promissiones. Prima et summa promissio est, promissio gratiae seu reconciliationis et vitae aeternae gratis dandae propter mediatorem Christum. Alia est promissio de bonis necessariis in hac vita, seu de corporali auxilio in omni genere necessitatum et periculorum, ut de victu, defensione, bona valetudine, etc. 、“
-
-Hic ergo scias, utrumque genus promissionis fide accipi, et consolatione, quam proponit utraque promissio, mentes erigi atque in Deo acquiescere oportere, veruntamen semper inchoandum esse a promissione gratiae et salutis aeternae. Antequam petis praesentia seu corporalia beneficia, oportet initio te cogitare, utrum statuat cor tuum se habere Deum propitium, et se placere Deo. Hic necesse est te intueri Salvatorem filium Dei, et vera cordis fiducia statuere, quod certo Deus placatus propter filium te gratis immensa bonitate recipiat, quod remittat tibi peccata, quod reconciliatus velit agnosci suam misericordiam, quod vere te vivificet ac haeredem aeternae salutis efficiat. Haec prima promissio est praecipua vox Evangelii depromta ex sinu aeterni Patris, manetque perpetuo rata et firma, et immota credenti, sive habeat bona corporalia, sive non contingat ei liberatio corporalis in hac mortali vita.
-
-Nam fidem oportet niti hac aeterna promissione, et hoc summum bonum retinere, etiamsi amittenda sunt omnia bona temporalia, et ipsa vita corporalis profundenda, ut David excussus regno et in exilium pulsus, tamen amplectebatur et retinebat consolationem seu vocem absolutionis, qua dixerat ei Propheta Nathan: Dominus abstulit peccatum tuum. Itaque firmissime credebat se habere remissionem peccatorum, et reconciliationem, suasque preces recipi, et se esse haeredem vitae aeternae, etiamsi exutus universa sua gloria regnum amiserat, nec id poterat suis consiliis et viribus recuperare.
-
-Ideo et Iob inquit cap. 13.: Etiamsi me occiderit Deus, sperabo in eum.
-
-Hanc aeternam et immotam consolationem, quae nec ex conditione nostrae dignitatis, nec ex ullis commodis corporalibus pendet, nobis proponamus, eamque initio fide amplexi tanquam sigillum cordibus nostris imprimamus.
-
-Aliae sunt promissiones de bonis temporalibus, necessariis ad vitae corporalis conservationem. Quanquam igitur Deus bona corporis non largitur et distribuit omnibus aequaliter, imo sinit quosdam ex Sanctis et quidem praecipua lumina Ecclesiae, ut Abelum, Ionathan, Iohannem Baptistam, Paulum et multos alios crudeliter interfici, tamen nec hae promissiones bonorum corporalium sunt inanes aut irritae, sed habent hanc verissimam et certissimam interpretationem, quod Deus etiam in hac praesenti vita semper velit colligere et conservare Ecclesiam, ideoque suo consilio assidue velit ei dare bona corpora necessaria, sed cum conditione, ut aliqui puniantur seu castigentur.
-
-Sic David regno pulsus eiicitur in exilium. Item ne crux tollatur, sed ut Ecclesia exerceatur aerumnis et afflictionibus. Interim tamen vult mitigare nobis et poenas seu castigationes, et exercitia seu crucem, agentibus poenitentiam et invocantibus ipsum. Sic confirmat ipse Psalmo 50.: Invoca me in die tribulationis, et eripiam te, et glorificabis me. Item Esaiae 1.: Convertimini, si peccata vestra fuerint ut coccinum et ut vermiculus, eritis candidi sicut nix. Hoc est, reatus et magnitudo tristissimarum seu tragicarum poenarum tolletur et auferetur a vobis. Etsi igitur homines profani et Deum contemnentes iudicant has promissiones, de auxilio, in afflictionibus, periculis, et necessitatibus corporalibus esse inanes sonitus, tamen nos certo sciamus Deum non frustra tradidisse tam largas et dulces promissiones, quales etiam in hoc textu repetuntur: Primum quaerite regnum Dei, et Deus caetera bona cumulate vobis adiiciet.
-
-Ideo fide eas apprehendamus et amplectamur, singulique hac fiducia faciamus labores nostrae vocationi convenientes, exspectemus a Deo victum, auxilium et defensionem, petamus haec ipsa bona veris gemitibus, et agamus ei gratias, luceatque in moribus nostris gratitudo. Certissimum est enim, singulos qui hac fide exsuscitantur ad invocationem, et exspectationem divini auxilii, et gratiarum actionem, re ipsa experiri Dei beneficia, defensionem, opem et liberationem. Haec sine ulla dubitatione sunt verissima, sicut applicationem exemplorum proponit Psalm. 34.: Iste pauper clamavit et Dominus exaudivit eum, et ex omnibus tribulationibus eius salvavit eum, accurrite magna frequentia et confugite ad Deum, et facies vestrae non confundentur. Dei voluntas est, ut nos homines diligenter et iusto ordine praestemus ac urgeamus labores vocationis proprios, ordinate quaeramus victum, defensionem et vitae praesidia, veruntamen ut interim sciamus labores humanos nullo modo sufficere, sed oportere Dei auxilium et efficacem benedictionem accedere. Itaque semper fiat coniunctio invocationis et laboris. Nam propterea Deus addidit Evangelio promissiones uberrimas et amplissimas de rebus temporalibus, et pollicetur se nobis in corporalibus quoque necessitatibus et periculis opitulaturum esse. Quae quidem divina oracula nequaquam habeamus pro inanibus et anilibus fabellis, sed vere statuamus Deum esse veracem, et velle nobis opem ferre iuxta suas promissiones. Quin et ipsius experientiae ac eventorum testimonio convincimur, Deum (cui sit gratia, laus et gloria per secula sempiterna et infinita) toties nos ipsos clementer adiuvisse, texisse ac defendisse versantes in tantis periculis, ut iniecto terrore singuli pertimesceremus omnia funditus interitura esse, quin hanc ipsam ob causam Deus tradidit promissiones de corporali auxilio, quia vult nos exercere fidem ac invocationem etiam in quotidiana necessitate, et corporalis auxilii exspectatione, iuxta versum Psalmo 50.: Invoca me in die tribulationis tuae, et eripiam te, et glorificabis me.
-
-Etenim si quis non discit invocare Deum in necessitate corporali tanquam in tyrocinio, nec in his velut in cunabulis ac rudimentis fidei vult a Deo fragmen panis exspectare, quanto magis hic fugiet Deum, quando salus aeterna et immensus ac infinitus ille spiritualium bonorum thesaurus petendus et exspectandus erit? Quare discamus in utroque genere promissionum fidei et invocationis exercitia, et crescat agnitio bonitatis ac praesentiae divinae etiam in petendis, sperandis et exspectandis beneficiis corpori necessariis. Has commonefactiones iudico sufficere ad explicationem dicti: Non sitis soliciti quid comedatis aut bibatis, De quo tamen in sequenti concione plura dicemus Deo iuvante.
-
-Primum quaerite regnum Dei, et iustitiam eius, et haec omnia adiicientur vobis. Non sitis soliciti de crastino, nam crastinus dies erit solicitus pro sese, sufficit diei afflictio sua. Proxime audivistis, et assidue meminisse crebroque meditari debetis, quod duo sint genera promissionum, unum aeternarum, alterum corporalium, et quod coprius aeternam promissionem, de remissione peccatorum, et gratuita misericordia Dei propter Christum, firma fide debeat amplecti et retinere, nec unquam a promissa reconciliatione deficere aut trepidationibus et dubitationibus opprimi, sive maneant sive eripiantur commoda vitae corporali necessaria. Nam primus gradus est quaerere aeterna bona, imo ad hoc missus est filius Dei, ut placata ira aeterni Patris, restitueret liberatis a peccato et aeterna morte, iustitiam et salutem sempiternam.
-
-Cum ...autem Deus hunc admirandum ordinem inenarrabili bonitate sanxerit, ut in hac mortali vita collectio fiat Ecclesiae et salvandorum, ideoque serio velit in huius fugacis vitae consuetudine initia vitae et iustitiae aeternae inchoari, largitionum, unum aeternarum, alterum corporalium, et quod cor prius aeternam promissionem, de remissione peccatorum, et gratuita misericordia Dei propter Christum, firma fide debeat amplecti et retinere, nec unquam a promissa reconciliatione deficere aut trepidationibus et dubitationibus opprimi, sive maneant sive eripiantur commoda vitae corporali necessaria.
-
-Nam primus gradus est quaerere aeterna bona, imo ad hoc missus est filius Dei, ut placata ira aeterni Patris, restitueret liberatis a peccato et aeterna morte, iustitiam et salutem sempiternam. Cum autem Deus hunc admirandum ordinem inenarrabili bonitate sanxerit, ut in hac mortali vita collectio fiat Ecclesiae et salvandorum, ideoque serio velit in huius fugacis vitae consuetudine initia vitae et iustitiae aeternae inchoari, largitur etiam bona corporis, ut interim tamdiu cibos, potum, hospitia, vestes etc. habeat Ecclesia, quamdiu fruitur usura huius externae et desiturae vitae.
-
-Ac eadem proxime de distinctione promissionum audivistis declarari, sed tunc illa quoque adiungebatur commonefactio, quod constet hanc esse Dei voluntatem, ut fides et invocatio simul exerceantur in utroque genere promissionum. Quamobrem debetis et aeterna et corporalia bona petere, sed hoc ordine servato, quem Dominus in his verbis praescripsit: Primum quaerite regnum Dei et iustitiam eius, et caetera bona omnia adiicientur vobis.
-
-Quae quidem verba quemadmodum perspicua sunt et illustria, ita proponunt et regulam de praecipuo officio, quod requirit Deus, et uberrimam dulcissimamque consolationem. Regula est, exordiendum esse ab aeternis bonis, primumque gradum esse quaerere regnum Dei et iustitiam divinam, id est, recte discere serioque amplecti verbum Dei, sic ut omnibus corporis commodis ac vitae nostrae, id ipsum anteferamus, et in vera conversione ad Deum, inseri, adiungi ac fieri membrum electae Ecclesiae.
-
-Nec enim promissiones pertinent ad impios perseverantes in Dei contemptu, sed hi praesentibus ac aeternis poenis oppressi contabescent, iuxta toties repetitas in scriptura comminationes horribiles, ut Psalm. 12.: Disperdet Dominus superbos divinae irae ac doctrinae contemptores. Imo Christus-ipse Matth. 25. promulgat in extremo iudicio sententiam condemnatoriam tristissimis verbis: Discedite a me vos maledicti, in aeternum ignem, qui paratus est diabolo et angelis eius. De temporalibus vero poenis in hac vita dicit Salomon Ecclesiast. 8.: Certo cognovi et scio quod bene erit timentibus Deum, et quod nequaquam bene erit impio, nec diuturna eius vita erit, sed sicut umbra evanescet, ac ipse punietur. Ac plena est scriptura talium testimoniorum.
-
-Praeterea singuli commonefiunt mole poenarum, quas collo et cervicibus suis sustinent, etsi conversis ad Deum seu poenitentiam agentibus mitigantur aerumnae.
-
-Haec igitur praecipua sit et inprimis necessaria regula, rectrix omnium deliberationum et actionum universae vitae humanae, scilicet, primum discere verbum Dei, converti ad Deum, seu agere poenitentiam, et fide apprehendere redemptorem ac salvatorem Dominum nostrum Iesum Christum.
-
-Hac fide praelucente postea excitemur ad petendum, sperandum et exspectandum etiam corporale auxilium. Nam his ipsis verbis: Et haec omnia adiicientur vobis, promissa sunt omnia bona vitae necessaria in vocatione.
-
-De cruce.
-
-At obiiciunt humanae mentes: Audio inculcari promissiones bonorum corporis largissimas, quibus si responderent eventus, nequaquam durius premeretur ac quassaretur Ecclesia, quam reliqua pars generis humani, illa vero quantis persecutionum concutitur? Abel, Esaias, Ieremias, Iohannes Baptista, Christus, Apostoli, et multa millia Sanctorum interficiuntur omnibus temporibus, ac oppugnantur crudelissime.
-
-Responsio. Utraque propositio vera est: et vult Deus suppeditare bona corporis, auxiliumque corporalis exspectatione fidem exerceri: et simul vult Ecclesiam subiectam esse cruci, sed hac conditione, ut interea verissime servet omnibus temporibus coetum aliquem ac florem seu corpus Ecclesiae agnoscentis, invocantis atque celebrantis ipsum, nec sinat Ecclesiam penitus deleri ac devorari a diabolo, molientibus exitium generi humano, ut scriptum est de perpetuitate et repressione diabolorum, Matth. 16.: Portae inferorum non praevalebunt adversus eam, veruntamen hoc modo servat ac tegit Ecclesiam salvator filius Dei, ut simul oporteat eam exerceri afflictionibus et ingentibus miseriis subiici, imo oporteat excellentia membra et praecipuos duces in ministerio fieri similes ac conformes in cruce, miseriis et morte ipsi redemtori Domino nostro Iesu Christo. Ut quando Deus Davidi promittit victoriam et incolumitatem exercitus Israëlitici, absurdum fuerit sic interpretari promissionem, quod in acie nihil laborum suscepturi, periculorum subituri, vulnerum accepturi sint, nec fore ut praeliantes interficiantur ulli milites, sed omnino necesse est dimicantes aliquot acerrimos et fortissimos viros in acie vitam et sanguinem profundere, ut incolumis reliquus exercitus gloriosam victoriam consequatur: ita Deus munit, alit, defendit ac servat corpus Ecclesiae, etiam cum praecipua lumina foede lacerantur ac interficiuntur a tyrannis.
-
-Sunt enim causae plures gravissimae et maximae, propter quas Ecclesia mirabili consilio Dei tot et tantis aerumnis est subiecta. Cumque nos ipsi etiam plurima non exigua nec levia peccata habeamus, vult Deus exempla sui iudicii conspici, et per has poenas nos commonefactos ad conversionem revocari. Interea tamen eatenus immensa misericordia propter mediatorem lenit ac mitigat praesentes poenas, ne tota Ecclesia deleatur funditus, sicut prorsus deleta sunt Sodoma et Gomorra, propterea tantisper donec sumus in hac mortali vita, dat bonam valetudinem, victum et bona caetera necessaria ad conservationem vitae corporalis.
-
-Hanc consolationem de laboribus divinitus ordinatis ac aerumnis praesentibus proposuit Dominus in his verbis: Non sitis soliciti de crastino, nam crastinus dies curabit res suas, seu solicitus erit pro se, sufficit diei afflictio. Brevi voce afflictionis admonet et commonefacit nos Dominus, quod subiecti simus cruci et calamitatibus, et quod unaquaelibet dies afferat suas afflictiones, quibus Deus velit nos exerceri. Brevia quidem, ut dixi, sunt haec verba, sed universam vitae historiam complectuntur, et concionantur de miseriis ingentibus impositis humano generi, monent, ne securitati et superbiae indulgeamus, sed ut hoc totum vitae curriculum intueamur, et intelligamus in hac vita singulis quotidie propositas esse aerumnas omnis generis, et cogitemus denique, nisi haec ipsa moles difficultatum et afflictionum, quam indies cumulatam collo et cervicibus nostris sustinemus, immensa Dei misericordia mitigaretur ac levaretur, futurum fuisse, ut multo atrocioribus poenis, quas coecitate duritiaque nostra mereremur, oppressi succumberemus ac periremus.
-
-Videte quantum Moisi populus Israëliticus quotidie novorum certaminum, tumultuum, seditionum excitet. Adeo ut vix ullo temporis momento frui possit hac securitate, quod placata, placida et tranquilla gubernatio futura sit. Sic universa vita in tantis impedimentis, quae diabolus et organa diaboli obiiciunt, plena est aerumnarum humano consilio inextricabilium, et singuli certe versamur in quotidianis continuisque periculis, quod ad propria corpora, quod ad incolumitatem coniugum et liberorum, quod ad victum, quod ad regimen denique seu gubernationem attinet. Quapropter bene consideretis ac memineritis hoc breve dictum, ut excutiatis securitatem et superbiam: Sufficit diei afflictio sua.
-
-Hoc ipsum docent omnium aetatum historiae, et exempla quotidiana sunt in conspectu. Adiungit autem Dominus noster Iesus Christus praeceptum sapientissimum et utilissimum, tradita singulari regula de discernendis generibus afflictionum.
-
-Duplex est afflictio. Alia est crux necessaria, nec accersita nostra curiositate, sed per sese nos affligens certo Dei consilio, ut castigemur et exerceamur. Alia est afflictio accersita nostra curiositate, cum polypragmosyne seu praepostera et hallucinante sapientia, ultro nosmetipsos molestiis, angoribus et aerumnis implicamus, ut, quando quaerit et suscipit homo negotia non necessaria, quando principes movent aut attrahunt bella sine necessitate, quae vitare poterant, etc. De hoc discrimine concionatur hic Dominus: Sinite ut unaquaelibet dies solicita sit pro sese, curet res suas, afferat suas afflictiones et difficultates.
-
-Haec impedimenta vos in praesentia recte tolerate, nec quoquo modo vobis cumulate miserias, sed tantum facite necessaria et mandata, contenti diurno labore, quem affert vocatio, nec ex humana coecitate communibus calamitatibus addite securitatem et superbiam, verum scitote diligentiam divinitus ordinatam per sese satis laborum, impedimentorum et solicitudinum habituram esse, praeterquam quod accedunt poenae et afflictiones multiplices.
-
-Ad hanc igitur crucem praeparate vos fide, ac petite a Deo mitigationem aerumnarum. Cavete autem ne curiositate seu polypragmosyne et inquietudine animi, quaeratis negotia non necessaria, et aliena a vocatione, nec plus difficultatum, molestiarum et miseriarum vobis accersite, quam tempus et praesens occasio vobis offert, ut losias pius et sanctus rex, dum securitatem alens somniat se tam pium ac bene meritum principem nullas offensiones, sed successus perpetuos et placidos exitus habiturum esse, quaecunque tentet ac moliantur, movit bellum non necessarium adversus regem Aegyptium, in quo cum vulnus accepisset, aliquanto post mortuus est. Cogitet unusquisque vestrum, memoriaque repetat suae vitae curriculum, tunc deprehendet haud dubie, se ipsum quibusdam non necessariis occupationibus plurimum sibi poenarum, periculorum et tristissimorum casuum attraxisse et accersivisse, ubi si quievisset (ut loquitur in comoedia servulus) nihil evenisset mali.
-
-Quamobrem teneatur haec quoque regula: In magnis rebus facienda sunt sola necessaria, nec unquam tentari vel suscipi debet quicquam, quod non est necessarium.
-
-Sed hic occurritur vobis quaerentibus, quaenam sint necessaria, quaeve non necessaria.
-
-Respondeo autem clare, simpliciter et explicate. Opera et negotia sunt necessaria, quae Deus tibi praecepit, quaeque tui officii ratio postulat, seu officia propria tuae vocationis, in quam a Deo collocatus es. E regione, non necessariae actiones et occupationes sunt, quadam curiositate vel ambitione extra tuam vocationem erumpere, et suscipere aliena contra mandatum Dei, seu, ingerere te alienis vocationibus. Exempli causa.
-
-Quid quaeso pertinet ad vocationem seu ministerium Thomae Monetarii forma gubernatoris in regimine politico? Cur ille ingerens se administrationi alienae, extra metas suae functionis erumpit? Cur alterum pedem in curia, alterum in templo habet? Quamobrem vult regere negotia civilia, constituere novam formam imperii, ordinare novos principatus in Germania? etc.
-
-Sanctus et sapiens Apostolus Paulus eandem admonitionem verbis insignibus et significantibus repetit, ac praecipit eruditissime, 1. Thessal. 4.: Adhortamur ut in hac re excellere singulari diligentia conemini, ac in eo sitis ambitiosi, ut aga- Ad hanc igitur crucem praeparate vos fide, tis propria et quiescatis, nec extra metas curratis irruendo in alienas vocationes.
-
-Ac in summa, polypragmosyne seu temeritas molientium non necessaria vel curiositate, vel metu futuri periculi, vel stulta spe perniciosa, semper et infelicissima est, sive in summis sive in infimis ordinibus existat haec vocationum confusio et officiorum conturbatio.
-
-Haec itaque singularis sapientia vitans curiositatem, polypragmosynen et ambitionem, commendatur hoc Christi dicto: Crastinus dies pro sese solicitus erit, sufficit diei afflictio sua, quasi dicat: Facito necessaria in praesentia, quae per sese satis habebunt difficultatum, nec propria curiositate ingerens te alienis vocationibus cumulato tibi molestias, angores et aerumnas.
-
-Rex bonus et inprimis laudatus Osias, 2.
-
-Paralip. 26. volebat officio fungi Sacerdotis, et per sese sacrificare in templo contra divinam ordinationem, sed eundem Deus, poena subita declarans iram suam, percussit lepra, ita perpetuo multiplicia incommoda et exitiales poenae sequuntur polypragmosynen, seu consilia et conatus eorum, qui vel tentant actiones extra vocationem, vel irrumpunt in alienas functiones, aut curiositate, aut ambitione propria.
-
-Si quis igitur recte vult vivere, ut retinens bonam conscientiam possit in suis laboribus, actionibus et negotiis petere et exspectare divinum auxilium, is servet et sequatur hanc vitae regulam, quam tradit ac praescribit hoc loco Dominus.
-
-Initio quaere regnum Dei, hoc est, disce veram Dei agnitionem, et conversus ad Deum fide acquiescas in Deo propter mediatorem.
-
-Deinde fac opera tuae vocationis, et in laboribus tibi divinitus mandatis exerce invocationem Dei, atque perfer animo tranquillo difficultates, in quibus et statue iuvari te divinitus, et laetus exspecta bonos eventus, nec exstincta luce fidei vel curis ac doloribus conficiaris, vel frangaris desperatione et impatientia.
-
-Hanc artem vitae si didiceris ac exercueris, experieris re ipsa Deum tibi affuturum et opitulaturum esse, eventusque negotiorum ac consiliorum fore placidos, faustos et salutares, iuxta Psalmi dictum: Subditus esto Deo, et spera in eum.
-
-Eandem doctrinam repetit eiusdem Psalmi dulcissima gnome: Commenda Deo viam tuam, et spera in eum, et ipse faciet.
-
-Viam nominat uniuscuiusque legitimam seu iustam vocationem.
-
-Discedere a vocatione, aut curiositate, aut metu, aut ambitione, est aberrare tota via, ruere in tenebras, in laqueos diaboli, ac tristissimas poenas. Etsi igitur hae regulae concionantur de tot et tantis rebus, quarum magnitudo nullius eloquentia potest exhauriri, singulis tamen hominibus utilissimum est aliquid inde discere, ut suae quisque vocationis metas intelligens consideret, quomodo gradus officii proprii a Deo sit ordinatus, ac sciat, quae norma obedientiae sit; cum in tolerandis afflictionibus, tum in laboribus, negotiis atque certaminibus suscipiendis. Itaque primum sicut enarravimus, luceat in mente vera Dei agnitio, et serio fiat conversio ad Deum, de hoc initio docet etiam primum praeceptum.
-
-Secundo, debes nosse metas officii tui, quas Deus tibi circumdedit, nec curiositate, metu, superbia movere non necessaria, id est, aliena a vocatione suscipere. Tertio, oportet retineri hanc consolationem: Etsi quaelibet dies multiplices difficultates, aerumnas et afflictiones affert, ac constat Ecclesiam subiectam esse cruci, duriusque premi quam caeteros homines: tu tamen certo statuas vere Deum servientibus in vocatione velle adesse et opitulari, ideoque petas auxilium, et exspectes bonos exitus, labores quoque, quos in praesentia necessitas tuae vocationis et occasio iusta offert, alacriter hac fide et spe suscipias ac toleres. De hac consolatione dictum est in praesenti concione: Ne sitis soliciti, id est, ne crucietis animum diffidentia, nec opprimamini desperatione, sed confidatis Deum necessaria vocationis opera suscipientibus affuturum adiutorem et liberatorem, quantacunque moles tentationum, impedimentorum, periculorum et afflictionum vobis obiecta fuerit.
-
-Sic Psalmo 34. scriptum est: Prope est Dominus his qui tribulato sunt corde, et contritos spiritu salvabit. Item Esaiae 66.: Deus affirmat se habitare in afflictis, se respicere ad miserum et contritum spiritu ac trementem sermones suos. Item Paulus inquit 1.
-
-Corinth. 15.: Non erit labor vester inanis in Domino, quasi dicat: Deus provehet ac fortunabit sua benedictione necessarios labores, quos vocatio postulat, ac gubernabit eventus, et praebebit successus, ne conatus sint irriti. Ita traduntur in hoc textu regulae seu normae rectrices vitae, consiliorum, studiorum et actionum, monstrantur item fontes verarum et efficacium consolationum.
-
-Nec vero quisquam poterit ullo modo hunc textum intelligere, non habens initia verae fidei. Cum enim propria sapientia regatur, non potest non confidere sua potentia, sapientia, viribus et consiliis, imo necesse est illi spes pendere a fortunae bonis, hominum coniunctionibus, amicis, pecunia, opibus et similibus externis praesidiis. At in quibus est accensa scintilla fidei, hi demum aliqua ex parte sensum et usum salutaris regulae atque consolationis huius perspicere poterunt. Quamobrem breviter concludemus hic interpretationem praesentis textus, cum rerum magnitudo superet omnem humanam eloquentiam.
 
 Dominus noster Iesus Christus ipse donet nobis suam gratiam, nosque Spiritu suo sancto regat ac erudiat, ut et nostrae mentes hanc ipsam eius concionem recte intelligant, et universa vita nostra ad ordinem, quem nobis in hoc capite divinitus praescripsit ipse, perpetuo directa sit et congruat. Caput VII. Dei beneficio doctrina de utroque gradu, de discrimine ministerii Evangelii, et potestatis politicae tam copiose ac pie toties illustratur, ut non dubitem vobis notissimam esse.
 
@@ -14184,6 +13911,412 @@ Docet enim Catechesis, quod etiamsi verissimum sit, Deum habitare ac efficacem e
 
 Ita proposuimus aliquot exempla, in quibus liquido apparet, Catechesin, seu doctrinam Catechismi, esse compendiariam, immotam, et certam regulam seu normam, secundum quam et possunt et debent diiudicari dogmata. Quare cum primis necessarium est diligenter discere, et assidue meditari, ac circumferre animo elementa pietatis, quae proponi solent in Catechesi, ut vulgo vocant. Et quidem de regula, iuxta quam iudicia fieri debent, hactenus.
 
+## 7:15 Eighth Sunday After Trinity
+Eighth Sunday after Trinity.
+
+The Gospel of Matthew 7.
+
+Beware of false prophets, who come to you in sheep's clothing, but inwardly they are ravenous wolves. By their fruits you will know them.
+
+Do men gather grapes from thornbushes or figs from thistles? Even so, every good tree bears good fruit, but a bad tree bears bad fruit. A bad tree cannot bear good fruit, nor can a good tree bear bad fruit. Every tree that does not bear good fruit is cut down and thrown into the fire. Therefore by their fruits you will know them.
+
+Not everyone who says to Me, 'Lord, Lord,' shall enter the kingdom of heaven, but he who does the will of My Father in heaven. Many will say to Me in that day, 'Lord, Lord, have we not prophesied in Your name, cast out demons in Your name, and done many wonders in Your name?' And then I will declare to them, 'I never knew you; depart from Me, you who practice lawlessness.'
+
+This text contains a very grave doctrine, and one necessary for the Church.
+
+There are, however, two main points.
+
+I. That the judgment concerning doctrine is universal, and pertains to all the pious. II. How false teachers are to be recognized, and by their fruits.
+
+On the first.
+
+Christ's command, when He bids us beware of false prophets, excludes no one; therefore, the judgment concerning doctrine pertains to the universal Church and to its individual members.
+
+Hence it is easy to answer the common argument of the adversaries.
+
+He who departs from the ordinary authorities in the Church sins. Lutherans, as they call them, depart from the ordinary ecclesiastical authority, therefore, etc.
+
+I answer first to the major premise: He who departs from ordinary ecclesiastical authority, does so without God's command. Then to the major premise: Lutherans do depart, but they do this compelled by Christ's command, by which they are ordered to beware of false prophets.
+
+But here it must be diligently observed, lest under the pretext of this command a democracy (δημοκρατία) be granted in the Church, than which state nothing more harmful can be imagined.
+
+It must therefore be held that Christ's command is universal, and unless this is established, tyranny must immediately follow.
+
+But a circumstance must be added, so that that judgment does not stray from the true and proper meaning of Scripture.
+
+So that it may be understood without sophistry, from which all heresies arise.
+
+Wherefore, that one may judge rightly, it is necessary that a rule be held, that is, the certain and true meaning of Scripture concerning individual articles of doctrine, which can be clearly and perspicuously shown from the writings of the Prophets and Apostles to be the proper and perpetual meaning, with the entire and unmutilated scriptures compared.
+
+Let the testimonies of the Church after the Apostles also be sought, especially in those writers who are known to be purer, so that there may be certainty regarding the perpetual consensus of the catholic Church of Christ, and that no new dogma be introduced into the Church without testimonies.
+
+To this let pious communication be added; let the pious confer among themselves concerning doctrine, and let the opinions of other more learned men also be heard, and let these kindly and candidly explain their opinion, and in turn let them also listen to others courteously.
+
+Let such be the consensus of the pious, who, seeking the truth with pious zeal and with the fear of God, pronounce according to Scripture.
+
+Let this council be heard; let not those be heard who wish to decide things only as in political deliberations, or by the opinion of some who are in charge, or by the authority of ordinary power, or by the votes of the multitude or the greater part.
+
+Indeed, in this place an express command is handed down, that we should not assent to any dogma not congruent with the doctrine clearly and certainly handed down in Scripture by the Prophets, Christ, and the Apostles: Beware of false prophets, and at Galatians 1: If anyone teaches another Gospel, let him be anathema.
+
+Just as in the people of Israel, it was necessary for Jeremiah, Simeon, Zechariah, and other pious men to dissent from the high priests, Pharisees, and Sadducees, who defended errors under the pretext and authority of ordinary power.
+
+Then, if ever passages or sentences occur which seem to be in conflict, prudence must be applied from the same rule, that the certain and perpetual meaning of Scripture be held.
+
+Then a collation of texts must be made, and those things must be retained which agree with the universal Scripture, as when it is written: Vengeance is Mine, and I will repay.
+
+Likewise: You shall not take vengeance. From other manifest places of Scripture, public vengeance is to be excepted, which is the very vengeance of God. Thus it is written: What God has joined, let no man separate. And yet Christ in another place excepts the case of fornication. Finally, when Christ commands to beware of false prophets, by this very thing He also wishes a diligent inquiry to be applied, and forbids rashness in judging. Therefore, there ought to be a communication of doctrine with other pious people, and an inquiry into the truth, which once found, he who hears things more consistent with Scripture offered by another ought to believe, according to that of Paul: If it has been revealed to one sitting by, let the first be silent. But that contention, by which each one defends his own opinion pertinaciously out of envy or ambition, is not done for the sake of the inquiry of truth. Therefore, it is not proper to the pious.
+
+On the second. Christ commands false Prophets to be known by their fruits: but the fruits are twofold, evil dogma, and evil morals. For heretics always have some manifest impious dogma, which it is impossible to fall into the Church. For although individuals who are in the Church can err and slip, yet it is impossible for the universal assembly of the Church to defend a manifestly impious dogma. Therefore, such a manifest impious dogma having been detected, from this a judgment is to be made about the rest, just as among the Papists manifestly impious errors are found, concerning the invocation of Saints, concerning the Mass to be applied for the living and the dead, and indeed ex opere operato, and many others. Among the Anabaptists, there are manifestly impious and fanatical things, because they abolish all civil and political offices. Since it is impossible for such things to be defended in the true Church, it can easily be gathered from this that the Anabaptists are false prophets, and do not belong to the Church, and by this very thing they manifest themselves, and can be openly convicted. Thus, when they deny that infants are to be baptized, it is necessary for them to posit this hypothesis, that infants do not have sin, when yet it is necessary to confess that Christ also suffered for infants. Thus, one impious dogma having been detected, it is necessary afterwards for more errors to follow. For just as in Music, with one chord dissonant, the whole harmony is disturbed, so in doctrine, one error discrepant from the foundation disturbs everything. For as truth always agrees with truth, so falsehood drags many errors with it, so that he who has once turned from the straight path, it is necessary that, the further he progresses, the more and more he errs. These things have been briefly said about the fruits which are in the very doctrine of false prophets, namely, when some manifestly impious dogma is defended. Afterwards, there are also other fruits in life and morals, when manifest sins are added to errors, as when the Anabaptists invade the property and goods of others under the pretext of doctrine, just as the Muensterites and others said they had a mandate to destroy all impious magistrates. Likewise, that they cast aside the law and faith of marriages, and take back whatever wives they want. Thus the Pope, under the pretext of doctrine, seized empires for himself. Such sins which are committed under the pretext of doctrine are also peculiar marks of an evil spirit.
+
+Latin:
+
+Dominica VIII. post Trinitatis.
+
+Evangelium Matthaei 7.
+
+Attendite autem a falsis Prophetis, qui veniunt ad vos in vestimentis ovium, intrinsecus autem sunt lupi rapaces, A fructibus eorum cognoscetis eos.
+
+Nunquid colligunt de spinis uvas, aut de tribulis ficus? Sic omnis arbor bona fructus bonos facit, mala autem arbor malos fructus facit, Non potest arbor mala bonos fructus facere, neque arbor bona malos fructus facere. Omnis arbor, quae non facit fructum bonum, exciditur et in ignem mittitur. Igitur ex fructibus eorum cognoscetis eos.
+
+Non omnis qui dicit mihi, Domine, Domine, intrabit in regnum coelorum, sed qui facit voluntatem patris mei, qui in coelis est. Multi dicent mihi in illa die: Domine, Domine, Nonne in nomine tuo prophetavimus, et in nomine tuo daemonia ejecimus, et in nomine tuo virtutes multas fecimus? Et tunc confitebor illis: Quia nunquam novi vos. Discedite a me qui operamini iniquitatem.
+
+Continet hic textus admodum gravem doctrinam, et necessariam Ecclesiae.
+
+Sunt autem duo praecipui loci.
+
+I. Quod iudicium de doctrina sit universale, et ad omnes pios pertineat. II. Quomodo agnoscendi sint falsi doctores et fructibus.
+
+De primo.
+
+Mandatum Christi, cum iubet cavere pseudoprophetas, neminem excludit, Ergo iudicium de doctrina ad universam Ecclesiam, et singula eius membra pertinet.
+
+Hinc facile est respondere ad usitatum argumentum adversariorum.
+
+Discedens ab ordinariis in Ecclesia potestatibus, peccat. Lutherani, quos illi sic vocant, discedunt ab ordinaria potestate ecclesiastica, Ergo etc.
+
+Respondeo primum ad maiorem: Discedens ab ordinaria potestate ecclesiastica, scilicet sine mandato Dei. Deinde ad maiorem: Lutherani discedunt, sed faciunt hoc mandato Christi coacti, quo iubentur sibi cavere a pseudoprophetis.
+
+Sed hic diligenter videndum est, ne praetextu huius mandati concedatur δημοκρατία in Ecclesia, quo statu nihil nocentius excogitari potest.
+
+Tenendum igitur illud est, Christi mandatum esse universale, et nisi hoc statuatur, illico sequi tyrannidem necesse est.
+
+Sed addenda est circumstantia, ut illud iudicium non deerret a vera et propria sententia Scripturae.
+
+Ita ut sine sophistica intelligatur, ex qua omnes haereses oriuntur.
+
+Quare et recte iudicetur, necesse est teneri regulam, hoc est, certam et veram sententiam scripturae de singulis articulis doctrinae, quae clare et perspicue ex scriptis Prophetarum et Apostolorum ostendi potest, esse propria et perpetua sententia, collatis integris et non mutilatis scriptis.
+
+Quaerantur etiam testimonia Ecclesiae post Apostolos, praesertim in iis scriptoribus, quos constat esse puriores, ut constet de perpetuo consensu catholicae Ecclesiae Christi, nec aliquod novum dogma sine testimoniis in Ecclesiam invehatur.
+
+Huc accedat et pia communicatio, conferant inter se pii de doctrina, et audiantur etiam aliorum peritiorum sententiae, et hi benigne et candide suam sententiam exponant, et vicissim etiam alios comiter audiant.
+
+Talis sit consensus piorum, qui pio studio quaerentes veritatem, et cum timore Dei, secundum scripturam, pronuncient.
+
+Hoc concilium audiatur, non audiantur illi, qui tantum, ut in deliberationibus politicis, vel de sententia aliquorum qui praesunt, seu autoritate ordinariae potestatis, vel ex suffragiis multitudinis aut maioris partis, decerni volunt.
+
+Imo hoc loco traditur expressum mandatum, ne assentiamur ulli dogmati, non congruenti cum doctrina clare et certo in scriptura tradita a Prophetis, Christo et Apostolis: Cavete a Pseudoprophetis, et ad Gal. 1.: Si quis aliud Evangelium docet, anathema sit.
+
+Sicut in populo Israël, necesse fuit Ieremiam, Simeonem, Zachariam, et alios pios dissentire a pontificibus, Pharisaeis et Saducaeis, qui praetextu et autoritate ordinariae potestatis errores defendebant.
+
+Deinde si quando occurrunt loca seu sententiae quae videntur esse pugnantes, adhibenda est prudentia ex eadem regula, teneatur certa et perpetua sententia scripturae.
+
+Deinde facienda est collatio textuum, et retinenda sunt ea, quae cum universa scriptura conveniunt, ut cum scriptum sit: Mihi vindictam, et ego retribuam.
+
+Item: Non vindicabis. Ex aliis locis manifestis scripturae excipienda est vindicta publica, quae est ipsa vindicta divina. Sic scriptum est: Quos Deus coniunxit, homo non separet. Et tamen Christus in alio loco excipit casum fornicationis. Postremo, cum iubet Christus cavere a pseudoprophetis, hoc ipso etiam adhiberi vult diligentem inquisitionem, et prohibet temeritatem in iudicando. Debet igitur fieri communicatio doctrinae cum aliis piis, et inquisitio veritatis, qua inventa, ille credere debet, qui audit magis consentanea scripturae ab alio offerri, iuxta illud Pauli: Si fuerit revelatum sedenti, taceat prior. Illa vero concertatio, qua suam quisque sententiam ex invidia, aut ambitione defendit pertinaciter, non fit propter inquisitionem veritatis. Ergo non est propria piorum.
+
+De secundc. Christus iubet falsos Prophetas ex ipsorum fructibus agnosci: sunt autem fructus duplices, malum dogma, et mali mores. Semper enim habent haeretici manifestum aliquod impium dogma, quod impossibile est cadere in Ecclesiam. Etsi enim singuli errare et labi possunt, qui sunt in Ecclesia, tamen ab universo coetu Ecclesiae impossibile est manifeste impium dogma defendi. Tali igitur manifesto aliquo impio dogmate deprehenso, hinc faciendum est iudicium de caeteris, ut apud Papistas manifeste impii errores inveniuntur, de invocatione Sanctorum, de Missa applicanda pro vivis et mortuis, et quidem ex opere operato, et alii quam plurimi. Apud Anabaptistas manifeste impia et fanatica sunt, quod tollunt omnia civilia et politica officia. Talia cum impossibile sit in vera Ecclesia defendi, facile hinc colligi potest Anabaptistas esse pseudoprophetas, et non pertinere ad Ecclesiam, et hoc ipso manifeste se produnt, et palam convinci possunt. Sic cum negant infantes baptizandos esse, necesse est eos ponere hanc hypothesin, quod infantes non habeant peccatum, cum tamen necesse sit fateri, quod Christus etiam pro infantibus sit passus. Ita uno impio dogmate deprehenso, necesse est postea plures errores sequi. Sicut enim in Musica una aliqua chorda dissonante, tota harmonia turbatur, ita in doctrina unus aliquis error discrepans a fundamento, perturbat omnia. Nam ut semper verum vero consonant, ita falsum plurima errata secum trahit, ut qui semel a recta via deflexit, eum necesse est, quo longius progreditur, eo magis ac magis errare. Haec breviter dicta sunt de fructibus, qui sunt in ipsa doctrina pseudoprophetarum, videlicet, cum defenditur aliquod manifeste impium dogma. Postea sunt et alii fructus in vita et moribus, cum adduntur erroribus manifesta peccata, ut cum Anabaptistae invadunt in aliorum res et bona, praetextu doctrinae, sicut Monasterienses et alii dicebant se habere mandatum, ut delerent omnes impios magistratus. Item, quod contra ius et fidem coniugiorum, abiiciunt, reducunt uxores quas volunt. Sic Papa praetextu doctrinae ad se rapuit imperia. Talia peccata quae fiunt praetextu doctrinae etiam sunt peculiares notae mali spiritus.
+
+## 7:16 Sermons on Matthew
+By their fruits you shall know them.
+
+Our Lord Jesus Christ also adds a clear mark, or rule, by which teachers or dogmatists ought to be detected, discerned, and judged, commanding that false Prophets be recognized by their fruits. Which words are to be understood, as has just been said, of manifestly false dogmas; for fruits signify impious or false doctrine, whether concerning one or many articles, fighting against the foundation, that is, against the necessary articles, or places, or parts of Christian doctrine. If, therefore, any dogmatist, having been piously admonished, pertinaciously defends some notable errors that are in conflict, that teacher, as an enemy of God and fascinated by the Devil, is to be deserted and avoided, and his dogma is to be fled from and execrated as the most present poison. The Lord speaks of this kind of fruits. And if it happens, as often happens in practice, that some trickster proposes more subtly, and paints with deceptions an error in some article that is less conspicuous and difficult to detect: you, however, look around, and consider the whole body of doctrine which he professes, in which if you detect other manifestly impious errors, which the admonished dogmatist pertinaciously defends, then you will surely detect the signs and judgments, not fallacious, of a fanatical mind and one agitated by an evil spirit.
+
+For example. Anabaptists, attempting to undermine the article concerning the Baptism of infants, were exercising and disturbing the consciences of not a few by their hypocrisy and authority, when they reasoned thus: Infants do not yet understand the word, nor can they suspect what Baptism is, nor what Christian profession or doctrine is. Therefore Baptism does not profit them, but is an idle ceremony. If, therefore, anyone hesitates or doubts in this article, just as many are disturbed by these tricks of disputations, let him meanwhile look at the other more manifest and less obscure articles: then, having considered the foundations, or hypotheses of the whole Anabaptist body of doctrine, he will detect a great deal of the most foul poison, of prodigious superstitions, and of Diabolical ravings in the Anabaptist dogma, confused from the furies of many ancient sects, as if in a manifold and monstrous Chimera, mixed and contained. As, for the defense of this article, by which they deny that infants are to be baptized, the Anabaptists assume other hypotheses, or more notable and manifestly false and fanatical errors, namely, that they deny the whole doctrine of original sin in general. They imagine that all infants, whether they are born among the Turks, or the blasphemous Jews, or the Ethnics, or the Tartars, or the Mahometans, or wherever in the world outside the Church, neither bring nor have sin, but are simply, even without regeneration, heirs of eternal salvation. Furthermore, there are manifest furies, because the Anabaptists contend that it is not permitted for Christians to hold property, to have riches, to exercise judgments, to hold magistracies, etc. that is, they condemn all civil and political offices. They add also this horrible and most pernicious error, that in those once converted after baptism, no actions, however wicked and nefarious, are sins; that although they act against their conscience, they are nevertheless just, and retain the Holy Spirit; that it is permitted to any baptized person to indulge in any furies whatsoever, to seize the spouse, children, or property of another, etc. These prodigious and diabolical delusions the Anabaptists mix and add to their dogma concerning the baptism of infants. But since any sane person, and one who understands the doctrine of the Church moderately well, can, by the grace of God, clearly judge and detect these manifest furies of the Anabaptists: he will be able to conclude easily from this, nay, he will most certainly determine, that these very dogmatists are False Prophets, and do not belong to the Church, but are agitated by Devils, and that because of these manifest signs, the Anabaptistic contagion is to be fled and execrated: and therefore, concerning other more obscure or subtle articles, about which he still doubts, having deserted the fanatical Anabaptists, let him hear the explanations and judgments of other pious men who teach correctly.
+
+In this way the Apostle commands in 1 John 4: Beloved, do not believe every Spirit, but test the spirits, whether they are from God, etc. It is most certain, however, that those who, having been faithfully admonished by the pious and learned, stubbornly persist in the defense of one or more articles that fight against the foundation, or against the chief heads of Christian doctrine, that is, against the divine Law or the Decalogue, and the Symbol or articles of faith—those, I say, who are stubborn defenders of errors, are most truly enemies of God and blinded, are agitated by Devils, and are driven from other delusions into others.
+
+The misery of such fanatics is described by the text of John 8 in the saddest words, when it says to the enemies of Christ: You are of your father the Devil. For the true rule of Paul remains for all eternity in 1 Corinthians 3: No one can lay another foundation than that which is laid, which is Jesus Christ. Whatever, therefore, fights against this foundation, let it be considered a foul lie and a pernicious poison, which the raging and roaring Devils scatter and vomit into the world for this reason, both that they may heap contumely upon God, and that they may cast many men, torn away from God, at length into eternal destruction, and finally, in this fleeting and miserable life, stir up constant disturbances, continual parricides, and infinite miseries.
+
+Just as you can almost feel by touch that the impious lies of the Pope and the Anabaptists are directed and intended even toward the slaughter of bodies, and the tearing apart and overthrowing of republics, to be plotted and carried out. Thus far you have heard what the rule is, according to which the judgment concerning dogmas must be made universally, so that one may know how False Prophets or false teachers are to be recognized, namely by their fruits, by some manifest impious dogma, which it is impossible to fall into the Church. But the false doctrine of the False Prophets is subsequently accompanied by other fruits, in life and morals: when manifest sins or crimes are added to the errors, such as seditions and homicides, which are also clear and peculiar marks of a fanatical mind agitated by Devils. Because fanatics defend these crimes, however manifest they may be, and cloak them under the pretext of their doctrine, nay, they boast that they are armed by God, and are stimulated by a certain singular zeal and impetus to these nefarious attempts. So much for the saying: By their fruits you shall know them.
+
+Furthermore, in the text, False Prophets are depicted by the image of ravenous wolves, who nevertheless creep into the folds covered in sheep's clothing, that is, through hypocrisy and sophistry, as if they were singular commendations, they insinuate themselves into the minds of the people. For there is a double clothing here: namely, imposture and hypocrisy, in the simulation of notable probity, humility, and feigned holiness, and sophistry, deceiving the unskilled with poorly twisted scriptures, that is, with testimonies of the Prophets, Apostles, and learned fathers, or doctors of the Church, either mutilated and truncated, or cited calumniously and not in good faith, and awkwardly, translated from their native meaning to a foreign and alien one: likewise cited with the examples of others, either irrelevant and dissimilar, or not congruent with the rule, or vicious.
+
+And that hypocrisy indeed, by the simulation of humility, patience, and holiness, has captured and deceived the minds of very many men in all ages. As the Manichaeans boasted of singular illuminations, revelations, and inspirations, or peculiar conversations with God.
+
+And we ourselves have seen an impostor of this kind, Nicolaus Storch, or Pelargus, the author of the Anabaptist sect, falsely boasting that Angels had appeared to him in visible form, who had prophesied that he would be the restorer and reformer of the Churches.
+
+He added that the purgation of doctrine instituted by Luther had not yet penetrated to the living fountains, nor had it been built upon true foundations: just as at this time many contend clamorously and tumultuously. This Enthusiast, Nicolaus Storch, finally died miserably in Munich in a hospital, or infirmary. But the unhappy disciple of Nicolaus, Thomas Müntzer, stirred up a sedition of the peasants in Thuringia, for which crime he paid the penalty to the magistrate by having his head severed from his neck.
+
+Saint Paul to the Colossians, chapter 2, commands us to beware, lest we be deceived by these artifices and the impostures of hypocrites, who boast of singular revelations, peculiar illuminations, and divine inspirations in moving matters that are not necessary. But such is the curiosity and perversity of men that they look around with wandering minds and desire the tricks of Enthusiastic gestures, feigned on purpose, and easily believe them, and willingly suffer themselves to be deceived by such manifest lies.
+
+Another skin of the Pseudo-prophets, with which they are accustomed to be clothed as if with woven sheep's wool, is sophistry, citing calumniously and violently twisting either the sayings of scripture or the examples of the ancients. Just as the insane Monks cloak their superstitious observations with the examples of the divine Anthony, Hilarion, and other Hermits.
+
+Likewise, they allege the saying of Christ in Matthew 19, ineptly twisted: If you wish to be perfect, go, sell what you have, and give to the poor, and follow me. And it is established that it is most common in many affairs and controversies that impostors play variously by citing impertinent sayings and alien and inconvenient examples: by which pretext and artifice many men are deceived and led away from the truth, and are implicated in the greatest errors.
+
+Nevertheless, if anyone has learned correctly, understands, and remembers the doctrine of the Catechism, he will be able, if not fully, at least moderately, to confirm and fortify his mind against these two kinds of snares and impostures.
+
+How greatly do the Papists urge, inculcate, and show off the word 'sacrifice'?
+
+It is snatched from the writings of the ancients, who frequently used the name of 'sacrifice' regarding the Mass, that is, regarding the whole ceremony, or the whole interior and exterior action of those piously using the Lord's Supper: but they afterwards, inventing their own dreams, attempt under the pretext of a single word (just as if 'sacrifice' meant whatever they please) to confirm and stabilize all their most foul errors about the Mass.
+
+And so they argue thus: A sacrifice is a work to be done or offered by a priest for others, to whom, when applied, it merits reconciliation or grace, and likewise confers prosperous fortune and happy success in all things.
+
+And the ancient Church uses the name of 'sacrifice' regarding the Mass. Therefore, the Mass is a singular, proper, and peculiar cult of the sacrificers, meritorious, and applicable for others: and many Mass-priests are hired, who by the daily and innumerable sacrifices of private Masses merit and confer upon others the grace of God, prosperity of fortune, and good success, and likewise ward off evils and impending dangers, etc.
+
+With such fabricated tricks and painted ineptitudes, the Papists sell themselves and magnify themselves.
+
+But if you have faithfully cast into your mind the foundations of the doctrine of the Catechism, you hold this firm and clear foundation: that it is necessary for you to receive, obtain, and have applied to you the grace, or reconciliation, or the merit of the oblation and sacrifice of Christ, by your own faith, looking to and apprehending the Son of God, the only intercessor and propitiator, who by all his obedience and humiliation even unto the resurrection satisfied the justice of God, and appeased the wrath of the divine majesty, the penalty having been paid for us in his whole passion and death: of which unique propitiatory sacrifice it is said in Hebrews 10: By one sacrifice Christ has perfected forever those who are sanctified.
+
+Therefore it is most manifest that you are by no means reconciled and sanctified by and on account of an external sacrifice or the work of a Monk or a Mass-priest.
+
+Examples of this kind, or even six hundred, could be brought forward from the disputations and controversies that have arisen in our age concerning religion, and are being agitated and incited more vehemently at this very time: from which it can be evidently seen and demonstrated that those sycophants and sophistic Rhetoricians, and writers of the Roman Pontiff, in the excuse or defense of the abuses and errors of the Papists, only to use worn-out, vile, rancid, and torn sheepskins, or rather, as the proverb says, goat's wool poorly woven and stitched together: the joining or sewing of which rags is no firmer, nor does it hold together any better, than if they were to tie ropes out of sand, or attempt to mend and patch together broken eggshells with glue.
+
+Let these things, briefly stated, suffice in this place for the exposition of the present text. To which, however, two admonitions must necessarily be added. The first, concerning the care of learning, or the study of doctrine; the second, concerning the separation and desertion of the ordinary congregation, or authority, which they call Schism.
+
+I said the first admonition is about knowing doctrine, or the care of learning. For you have heard the Lord commanding that we beware of false prophets. He therefore wills and commands that the doctrine divinely handed down be known, read, learned, and attentively considered in the Prophetic and Apostolic writings, that judgment be made concerning dogmas, and that false doctrine and impious teachers be disapproved, rejected, and avoided. For as these things are necessarily connected, so let it be understood that all of them are comprehended here. For concerning him who is to be avoided, fled from, disapproved, and deserted, a judgment must certainly be made. It is evident, however, that one cannot judge in an orderly, legitimate, or correct manner, much less piously, or by divine authority, if one is among those who neither know, nor understand, nor have learned the heavenly doctrine. Therefore, all laws, both divine and human, most severely command that the appointed judges of controversies maintain a legitimate order in the cognition of a cause, or the investigation of truth, so that they may first listen attentively, investigate diligently, know accurately, and properly learn the foundations of the cause, or the points of the controversies.
+
+Thus it is expressly commanded in Deuteronomy 1: Hear them, and judge what is just. And chapter 17: If this has been reported to you, and you have inquired diligently, and have found it to be true, then you shall punish the one convicted of such a crime, etc. Thus, in these most grave, most difficult, most dangerous, and most important controversies of religion, and in judgments concerning doctrine, which pertain to the glory of God, to the salvation of individual men, to the safety, propagation, and growth of the universal Church, and to the tranquility of the public state, who does not see how necessary it is, and how much it matters, that a legitimate cognition be instituted, that the sources of controversies be learned in order, heard calmly, inquired into diligently, and correctly understood, as well as the foundations of the matters about which individuals must judge or decide?
+
+Therefore, just as the judgment concerning doctrine pertains to the universal Church and to individual pious persons, so for each of you, and particularly for your own cause, a true knowledge and diligent inquiry is clearly necessary, in which individuals may learn the chapters, or the sum of heavenly doctrine, in an orderly, pious, and upright manner. Let there also be added the assiduous and ardent invocation of God, by which true groans are mingled with reading and study, and let it be asked that God may guide the judgment, kindle true light, the understanding of His word, and pious affections in our minds: just as the Prophet cries out with a serious movement of the soul in Psalm 119: Ah Lord, deal with thy servant according to thy mercy, and teach me thy justifications.
+
+Now you know, alas, it is most common that many sciolists take upon themselves the judgment of dogmas, controversies, and most difficult matters, whether they understand or are ignorant of what is being done, whether they are skilled and fit for judging, or are as rude and asinine as an ass at the lyre: whose vanity, impudence, and arrogance is reproved by such proverbial sayings: Let each one practice the art he knows. Item: Let him who has learned it steer the rudder. Item: One thing is the scepter, another the plectrum. Item: Let the cobbler not go beyond his shoe. And in the common German rhythm: If we cannot all write poetry, we still want to judge everything. Thus, at this time, many Pontiffs, Bishops, Monks, and Mass-priests have gathered at the Council of Trent, each of whom professes that they will be judges and censors of the doctrine of the Church, when they have never learned or known the foundations or the sources of true piety and the Christian religion.
+
+Such blindness, precipitation, and perversity of judgments in the world is, as I said, most common. But we must be both diligent in study and certain in doctrine, just as Paul commands in Romans 14: Let each one be certain of his own opinion, let him have πληροφορίαν [full assurance], that is, certainty, or, if I may say so, full and firm assent. And indeed, it is clear that these very words of Paul are taken from Moses in Deuteronomy 17: Let the truth be certain, firm, and explored, concerning which it is pronounced. But enough for now on the first admonition. Now we add another [point] concerning separation, dissensions, and schism.
+
+You remember that divine commands are often repeated, concerning fostering and protecting the concord of the Church, concerning avoiding dissensions, discessions, and disjunctions from the rest of the body, concerning not causing divisions and distractions, according to the precept of Paul, 1 Corinthians 1: Let there be no schisms among you, that is, do not be the authors and instigators of dissensions and discords in the Church.
+
+Now, since it cannot be denied that the Roman Pontiffs themselves, and the other Bishops joined to the Roman see, have for so many centuries retained the succession in the ordinary government of the Churches (concerning which ordinary succession of Bishops, and the perpetual election of certain colleges, as well as customs confirmed by long usage, they boast so greatly with puffed-up cheeks), certainly we, who have embraced a different kind of doctrine, seem to many to be rashly departing from the common consensus, and to have disturbed and undermined the union and concord of so many Churches of Europe by unnecessary disputes. Indeed, it is manifest that we not only dissent from the Pontificians, but also reprehend, tax, and violate their doctrine, traditions, rites, and statutes.
+
+Hence arose schism, dissension, and discordant conflict, which, as to how many public calamities it has attracted, is indeed in plain sight and before our eyes. Here, therefore, the question is agitated: Whether we, who were private men, and once subject to the Pontifical realm, moved by pious counsel and by just and necessary causes, have departed from the ordinary authority, have changed the doctrine and rites in the Church, have torn apart the consensus and the Pontifical regime: whence such a great distraction of people and princes, such a great [number] of dissensions, tumults, and schisms everywhere seems to have arisen?
+
+By this very scandal, many wise men, and especially political men, are so moved and offended that they hate our Churches most bitterly, most pertinaciously oppose the change of doctrine and rites, call us Schismatics and Heretics, and accuse us of petulantly kindling most atrocious dissensions and of plotting infinite distractions and disjunctions, etc.
+
+By such clamors and calumnies we are indeed atrociously and most invidiously burdened, deformed, traduced, and called into hatred and crime before the highest governors and men outstanding in authority and wisdom.
+
+Against these most grave complaints and most atrocious accusations of hypocrites, it is necessary that a true, clear, and firm response exist.
+
+Wherefore you ought to know that it is entirely most true that petulance, which excites discords, causes distractions, and kindles dissensions, is a horrible and sad sin, just as the text of Proverbs 6 expressly says: The quarreler, who sows discord among brothers, God abominates and detests.
+
+Meditate diligently on this gnome of Solomon, and commit it to memory.
+
+And do not think it a game or a joke, or a matter of small moment, nor that it is not worthy of great reprehension, to disturb, distract, and lacerate the Churches with unnecessary and petulant quarrels, dissensions, tumults, and discords, arisen either from curiosity or meddlesomeness (πολυπραγμοσύνῃ), or from pride and ambition, or from malevolence, emulation, hatreds, and envy, or from a desire for vengeance: as our age, alas, has seen and sees many examples.
+
+For how often does it happen that huge struggles are moved, without necessary causes, in which some contentious (φιλονίκος) person, inflamed by emulation, solely out of hatred for his antagonist, or so that he may make things difficult and troublesome for another, defends and adorns some new or strange opinion with the deceits of sophisms, which he himself does not ignore is alien to the truth, nor founded, nor resting on any evident and certain testimonies of scripture, or on clear and firm reasonings!
+
+How often does it happen that the Devil, from the very body of the Church which is beautifully in agreement, excites some who, because of private desires or similar causes, having been moved from alienation of minds and wills to dissensions concerning doctrine, seize upon some plausible dogma, or one pleasing to the common people, which they therefore defend pertinaciously with all kinds of arts and machines, not because they judge it to be true, but because it is a pleasure to traduce, harass, and accuse those who dissent in the most hateful way!
+
+Therefore they run to parties and factions, protected by which, as they wander most widely, they finally vomit whatever poison they can upon their antagonists, and avenge certain private hatreds with the public calamity of the Churches.
+
+History of all ages is full of examples, but there is no need to repeat examples from afar, since they are present before our eyes.
+
+For how many seeds of pestilent discord and implacable dissensions have certain quarrelsome clamorers and sycophantic writers scattered in recent years, while concerning the linen vestment, and similar things and rites (in their own kind not vicious, and still used for the most part in our Churches) so much than about the shadow of an ass, as the proverb says, or about goat's wool, contending and fighting tumultuously and more than tragically, and cruelly attempting to mix everything up, they have given occasion for their bitter accusations and calumnies by these so savage distractions of opinions and wills, and by the most turbulent storms by which we are almost overwhelmed.
+
+And although, as I said, it is no light crime to desert the ordinary authority petulantly and to be the author of an unnecessary schism: yet, let those whose fault it is—namely, tyrants, hypocrites, and other authors of such horrible dissensions and separations—see to it, and prepare themselves to render an account to God; you, indeed, are not on that account separated from the Catholic Church, nor are you to be condemned for the crime of disturbed concord or the tearing apart of public consensus, because you do not hesitate to prefer the light of heavenly truth to all the comforts of life and to public and private tranquility, but because of this you are most alien to this fault, and rather deserve praise, and ought to be judged as having performed your duty correctly.
+
+Just as the example of the Prophet Elijah testifies, to whom, when the impious King Ahab objected the crime of disturbed concord and of a convulsed public state (3 Kings 18), saying: "Art thou he that troubleth Israel?" he himself gravely answers the tyrant: "I have not troubled Israel, but thou and thy father's house have, who have forsaken the commandments of the Lord, and have followed Baalim."
+
+These and similar general mandates pertain to all without any discrimination. Therefore, there is no doubt that such sayings command all men, individual Kings, Princes, Bishops, and private citizens, that they should learn, embrace, and confess the true doctrine at whatever time, and flee with their whole heart, reject by public profession, and disapprove of all idolatrous cults and any impious doctrine, or any false dogmas whatsoever.
+
+But that admonition, which I inculcated above, repeated in this place, should be joined to the present rule, namely, that it behooves those who dissent from the ordinary authority to be certain of the truth of the doctrine which they profess and embrace, just as we cited before the words of Deut. 17: "Let the truth be certain, etc." that is, you should first strive to learn the doctrine correctly and in order from true sources and foundations, and to understand it piously, rightly, and clearly, so that after you, having been convinced and confirmed by the testimonies of scripture, recognize and understand it to be the truth divinely handed down, then, I say, the truth having been recognized and understood, you owe this obedience to God (in whatever station of life you live, whether you hold a magistracy, or govern the counsels of others, or are a common citizen) so that you may embrace, celebrate, and confess the pious doctrine and true sentiments for the glory of God, for the sake of your own salvation, and for the propagation and increase of the Catholic Church of Christ.
+
+If because of this pursuit of truth and pious confession, the Pope, Bishops, Kings, and Princes expel you from their assemblies, and will hostilely attack you, and thus distractions, dissensions, schisms, and huge discords arise: let those whose fault it is—namely, tyrants, hypocrites, and other authors of such horrible dissensions and separations—see to it, and prepare themselves to render an account to God; you, indeed, for whatever cause, should oppose the most true, clear, and immovable rule, which teaches that it is the most severe will of God and an immutable mandate that we should flee, disapprove, and execrate all idolatry, all impious cults, and all doctrine dissenting from the Gospel.
+
+This rule is taken from the first commandment of the Decalogue, and other most firm divine testimonies. For the Decalogue commands: "Thou shalt not have strange Gods."
+
+And concerning the corruptions of doctrine, Paul says in Gal. 1: "If any one shall preach another Gospel, let him be anathema."
+
+Likewise, the Apostles in Acts chapter 4 respond: "We ought to obey God, rather than men." Furthermore, the matter itself speaks, and you know that the Pope, the Bishops, and the Pontifical or Papistic doctrine are taxed, disapproved, and refuted by us in controversies that are clearly plain, illustrious, necessary, and indeed of the greatest moment.
+
+In which necessary reprehension, we have striven to remain within just bounds, having faithfully explained the entire doctrine of the Church, having searched out the sources, and having propagated it only by teaching, not by seditions and arms. Therefore, by the benefit of God, a certain and clear truth shines in our Churches against the Pope, the Bishops, the Monks, and all the manipulators and satellites of the Pontifical faction: whose many foul errors and many abuses are so manifest that they can most easily be recognized and judged by all endowed with common sense.
+
+For example. It is a certain and immovable truth: that manifest lies and contumelious things against the Son of God are taught by those who say that men merit the remission of sins by their own works, by the cult of Masses, by the exercises of Monastic life, by pilgrimages to places of Saints, and by running to certain statues, etc. Item, it is a manifest lie, and horrible idolatry, that holy men, who have departed from this life, are to be invoked. Item, what fury is this! what manifest impiety! what foul idolatry or idolomania! that in theatrical processions the host, or that consecrated bread, is carried about, shown, adored, and invoked in place of Christ, whom the Papists bind there, contrary to the reason of the Sacrament, or outside and beyond the word of God, which speaks expressly of the receiving, not of any spectacles of the thing outside the use divinely instituted. Item, what manifest filthiness and notable lies are contained in the Pontifical law of celibacy! by which it is commanded to priests and others fit for marriage, that they should not live chastely in legitimate marriage. Item, it is a manifest lie and horrible error, that the Papists command men to doubt perpetually whether they have remission of sins, and whether they please God. Item, it is a gross and manifest lie, that they demand in confession, before those administering the Sacraments, an enumeration of individual sins, as if it were necessary, or commanded by divine law. Finally, it is superstition and a manifest lie, that the Papists affirm that the distinctions of foods, and similar rites, instituted by human authority in the Church, are observations that are peculiar worships of God, and necessary works, and cannot be omitted without sin, even outside the case of scandal, etc.
+
+I have enumerated these things more prolixly for this reason: first, that in public dissensions concerning doctrine, you may consider attentively from which articles controversies arise, and how struggles are moved and maintained; then, that by this consolation you may confirm and fortify your minds, because it is an immovable and most severe command of God, that we each know, embrace, and confess the truth or heavenly doctrine, and that it is necessary that idols, and impious or false dogmas be censured, disapproved, refuted, and avoided, according to the voice of the first commandment: Thou shalt have no other gods. This first and highest command is absolutely immutable and indispensable, and far to be preferred to the power, authority, wisdom, laws, and traditions of all men.
+
+May the Son of God, our Lord and Savior Jesus Christ, be perpetually with us, imparting His grace poured into our hearts by the Holy Spirit, so that we may preserve and retain the light and truth of incorrupt doctrine with firm faith, and worship Him with true piety and gratitude, with true duties and honors in all eternity: just as He Himself prayed to the eternal Father a little before His agony, John 17: Father, sanctify them in thy truth, thy word is truth, Amen.
+
+Not everyone who says to me: Lord, Lord, shall enter into the kingdom of heaven, but he who does the will of my Father, who is in heaven, he shall enter into the kingdom of heaven, etc.
+
+Dearest auditors: To this sufficiently prolix sermon, clearly described here by the Evangelist Matthew, and without doubt frequently repeated by the Lord, near the end, in place of a peroration, is attached, as a kind of epiphonema, a notable admonition or doctrine concerning the difference between hypocrisy and true repentance or conversion to God. And concerning both, namely, hypocrites and the truly converted, or reborn, the Lord pronounces and decides in this manner and to this effect: That hypocrites by no means please God, but that those who are truly pious are accepted, that is, those who call upon God with incorrupt faith, such as are all who reverently hear the word of God, and embrace it with true motions of the heart, and strive to obey God according to that norm.
+
+This admonition is comprehended both in the first commandment of the Decalogue, and in the holy scriptures repeated from time to time, and is here and there joined to or interposed in Prophetic and Apostolic sermons, as Deuteronomy 6: Thou shalt love the Lord thy God with all thy heart: etc. Item Job 13: No hypocrite shall enter before God.
+
+But this rule having been established, that hypocrites are rejected, and that God requires and demands the interior motions of the will and heart, and that He wishes to be worshipped and invoked, not by external simulation of gestures and ceremonies, but by ardent and true faith, by which the heart in repentance believes itself to be received and heard on account of the Mediator: now it behooves us to explain this question necessarily. Who are the hypocrites, and on the other hand, who are truly pious, believing, and holy.
+
+Moreover, so that each of you may judge this question more easily and plainly, it will be worth the effort to fix these things, which follow, in your mind by assiduous meditation, as if in the innermost senses of the soul. Therefore, first remember that individual men carry about no small part of hypocritical simulation and security; and if at any time you wish to seek, or to look upon a hypocrite, contemplate yourself, as if in a Socratic mirror, and, as we commonly say, you descend into yourself, or spit into your own bosom: hence you will recognize both what hypocrisy is, and that this is your own particular virtue.
+
+For it is written in Psalm 116: Every man is a liar, that is, a hypocrite, namely, not truly fearing God, or not sufficiently fearing the wrath of God nor burning with faith, or not sufficiently trusting in mercy, as he ought. But in this place, the inquiry is properly about the contumacious and stubborn hypocrites, who wish neither to be led to the acknowledgment of themselves, nor to be converted to God, that is, neither to experience nor to taste the rudiments of repentance, nor the beginnings of true faith. Of this kind of hypocrite, something must necessarily be said here.
+
+For such are without any doubt rejected: and therefore they are to be distinguished from the other kind of hypocrite, that one indeed miserable, and deformed by manifold infirmity and uncleanness, yet teachable and curable, namely, those who begin in the acknowledgment of their own weakness to submit themselves to God, and to be converted to Him. For stubborn and contumacious hypocrites are to be understood as great and wise men, who invent for themselves religions, holiness, and worships, because they are puffed up by the persuasion of their own wisdom and righteousness, both of which they attribute to themselves profusely; indeed, they display a manifold beauty of virtues and honest actions in their outward life: but meanwhile, the heart is either Epicurean, full of carnal security and contempt of God, such as were the hypocrites Cain and Judas, and such as in this time are the Roman Pope and most of the College of Cardinals: or it is oppressed by the waves of doubts about God, as in Saul, who fell into impatience and despair: finally, the hypocritical heart is universally carried away by self-confidence, and does not tremble before God, until punishment or penalty is deferred, and before it is oppressed by calamities, as the examples of Achitophel and Absalom testify.
+
+From these and similar examples and descriptions, therefore, you can in some way understand, or at least conceive in your imagination, who are called the headstrong and stubborn hypocrites: of whom, alas, there is always a huge and horrible multitude in the human race, even among those who are named the Church and the people of God, where the true doctrine sounds, as the parable of the seed in Matthew 18 signifies.
+
+On the other hand, there are men who are truly pious, truly believing, and truly reborn, in whom there are also the beginnings of true and serious repentance or conversion to God, joined with true fears and terrors of the soul (which minds truly feel and experience when, considering the wrath of God, they are truly cast down, thrown away, and humbled, having shaken off security) and the beginnings of true consolation, by which, through the voice of the Gospel, trembling hearts oppressed by sorrows are sustained, raised up, and quickened, so that they may again find rest in God through the Mediator, and by this faith begin obedience and the hope of eternal life.
+
+That those individuals who experience these true motions of repentance and faith are truly pleasing, and are truly children of God, these testimonies prove and convince. In the last chapter of Isaiah: To whom shall I look, except to the miserable and contrite in spirit, and him who trembles at my words? Also Psalm 34: The Lord is near to those who are of a broken heart, and will save those who are contrite in spirit. Also Psalm 51: A sacrifice to God is an afflicted spirit; a contrite and humbled heart God will not despise. Isaiah 42: He will not break a bruised reed, he will not extinguish a smoking flax.
+
+These sayings, being altogether clear and explained, show the distinction between the children of God and hypocrites. Wherever there is a heart that is grieving and trembling at the thought of the wrath of God, which nevertheless, fleeing to God, is again raised up by the consolation of the Gospel, and finds rest in the acknowledgment of Christ: there are the beginnings of true repentance or conversion to God, and in such there is no impious hypocrisy divinely rejected or condemned.
+
+Furthermore, in the second place, let the cause be considered why the Lord here, by antithesis, makes mention of both groups, namely, of hypocrites and of those who truly believe. And the first cause of this sermon is that this very distinction may be known to us in sight and familiarly, and that we may not persevere in hypocrisy, and be held as if entangled and constrained. For God requires worshippers and ministers who perform spiritual duties by the true and spontaneous motion of the heart, not painted hypocrites, like Cain, Saul, Achitophel, and that kind of viper, which outwardly seems smooth and shining, but inwardly is full of the most terrible poison, full of distrust and doubts about God, full of contempt of God, or at least full of horrible indignation and trembling against God. Therefore, the first commandment commands thus: You shall love the Lord your God with all your heart. Likewise, Saint Paul says in Rom. 10: With the heart one believes unto righteousness, and with the mouth confession is made unto salvation, etc. And in Joel 2 it is written: Turn to me with all your heart, and rend your hearts, and not your garments.
+
+Finally, this most grave doctrine concerning the true and ardent motions of the heart, disapproving and condemning hypocrisy, is set forth everywhere in the word of God, and is assiduously repeated.
+
+But someone may say: Ah, how shall I be able to change or refashion my heart? How shall I be able to put off and cast away attempted hypocrisy? I would indeed wish and desire with the greatest effort that my heart might burn thoroughly with the most shining light of faith, and with a certain fire of love toward God.
+
+For since no man in this mortal life is free from hypocrisy, and we are all individually weak and unclean, and we do not feel sufficiently sharp terrors, nor sufficiently excited and ardent motions of fear, faith, love, hope, and joy in God, as we ought to feel and should wish: it certainly matters a great deal, nay, it is necessary, that we be taught by what reason, in what order, by what steps and increments we ought to progress, having corrected and amended, as much as can be done, our interior depravity.
+
+It is necessary, however, for those seeking salutary amendment, or wishing to progress, first to acknowledge that hypocrisy is a sad sin, and truly displeasing to God, and that God is seriously angry at the blindness and slothful coldness of our hearts, which, as if in darkness, are rushing and turning away from Him.
+
+And although this very acknowledgment, from which the exercises of repentance ought to arise, is not illustrious, especially at the beginning, but is obscure and very languid, yet it is a beginning and a kind of apprenticeship toward salutary amendment. Because it is necessary for each one to hear, to ponder, and to embrace the word of God with firm assent, so that at the same time invocation may be kindled, fleeing to God and seeking help, strength, and increase, on account of the Son, the Mediator, our Lord Jesus Christ.
+
+Thus the Lord says in Matt. 7: Ask and it shall be given to you; everyone who asks, receives. Likewise in Luke 11: How much more will the heavenly Father give the Holy Spirit to those who ask.
+
+All these things in us at the beginning are very weak and languid—our self-acknowledgment, true sorrow and terror looking upon the wrath of God against sin, invocation, faith, and conversion to God, or repentance beginning spiritual newness: but it is necessary that they grow more and more, be confirmed, increased, and strengthened, just as in Mark 9 the trembling Father prays with true groans and tears to be confirmed, crying out: I believe, Lord, but help my unbelief. Likewise, St. Paul in Philipp. 3 confesses that he has not yet fully comprehended, nor is he perfect, but that he pursues and strives, so that he may attain and comprehend those great or heavenly goods, just as he himself has been comprehended and thoroughly known by Christ. Nor does God wish to reject these languid and tenuous beginnings, as He affirms in Psalm 8: Out of the mouth of infants and nursing babes He will perfect His praises. Likewise, Paul says expressly, Roman. 14: Him who is weak in faith, accept or receive, for God has received him. Likewise, Philipp. 2: It is God who works in you, both to will and to do, so that they may be pleasing to Him. Remember this sweetest consolation perpetually, and carry it fixed in your minds: whenever your heart brings these salutary beginnings of piety, or of a good purpose, only that it wills and desires to obey, and to offer true honors and worship to God, and to embrace the heavenly doctrine reverently, and to assent to the divine promises, and not as an enemy of God to resist God drawing you, then most truly God is present with you, and He Himself wishes efficaciously to confirm you, govern you, advance you, so that the salvation begun in you may be perfected, so that you may do what is pleasing to Him, so that His acknowledgment and spiritual light may be kindled more and more in your mind, and grow and increase. Nor is the invocation of one asking to be confirmed vain, nor the increase of the beginnings of divine light, and of the little sparks of languid faith.
+
+Thus far you have heard concerning the former cause, on account of which the Lord here makes mention of the distinction between hypocrites and the truly pious or truly believing, namely, that we should not persevere in carnal security, in hypocrisy, in Cyclopean contempt of God, and in the merely simulated gestures of external works, but that we should begin true and interior worship: and even if manifold weakness and much imperfection remains, we should not, however, be puffed up, proud, headstrong, stubborn, and contumacious hypocrites.
+
+The latter cause of this sermon, added by the Lord toward the end of the chapter, is that we may be reminded And let us be instructed, that always in that assembly or people, which is named the Church, there are two kinds of men: the one, a great multitude of hypocrites: the other, a small band of those who truly believe, and who piously perform true worship to God.
+
+Furthermore, this dissimilarity, and this scandal of the small number of those who truly believe, wonderfully exercises, disturbs, and offends the minds of individuals, as it is manifest that in the Church at this time there is a great deal of most sad confusion, a great deal of lacerations, dissensions, factions, and schisms, since some wish to appear Papistic, others pretend to embrace the Augustan Sphinx, whose title is the Interim, others are numbered among the Evangelicals, others approve the ravings of the fanatical Anabaptists: in short (not to enumerate more kinds of sects and distracted parties) these, whom I have just mentioned, all however gravely they may dissent among themselves in doctrine, nevertheless arrogate to themselves the title of the Church and the people of God.
+
+When men look upon this deplorable dissimilarity, and the savage laceration of this body, which is named the Church, very many are certainly horribly offended, and so much perturbed, that, oppressed by the waves of doubt, they cannot judge or determine to which of these parties or sects they ought to join themselves, or what kind of doctrine they ought to embrace.
+
+Many fall away entirely from God, because they think that all controversies about religion are equally uncertain, ambiguous, perplexed, and inextricable; consequently, they become remarkably profane, savage, Cyclopean contemners of God, and openly Epicurean, or Atheists.
+
+What? That the Pontificians or Papists accommodate to themselves plausible and glorious titles and pretexts? They boast that they hold the ordinary power in a continuous or perpetual succession of many centuries, they show off the elegance of ceremonies, the distinction of ranks and sacred orders, and finally the beautiful appearance of spectacles, supplications, or religious processions, and other ecclesiastical constitutions.
+
+But the Anabaptists preach enthusiasms and divine inspirations much more pompously, and they capture the minds of men with a prodigious simulation of sanctity, humility, and patience.
+
+Here it is necessary for the minds of the pious, or Christians, leaning, supported, and sustained by true foundations, to hold this firm consolation, and with the firmest assent to determine: that, although many lacerations have been made, and even now the people are distracted into diverse factions by the dissensions of teachers, nevertheless God, in such great confusion of opinions and disturbance of pious consensus, perpetually gathers and preserves for Himself in the human race some true and eternal Church.
+
+Therefore it is necessary for Christians to look around and know which, what kind, and where the Church is, in what assembly, in what society, the eternal inheritance is gathered for the Son of God, in which body are the true and living members of Christ and the Church, namely, in that assembly or body (however squalid and torn) in which the voice of true doctrine sounds incorrupt, and idols are not defended pertinaciously, and errors fighting against the voice of the Son of God, just as the Lord affirms, John 10: My sheep hear my voice, etc.
+
+And without any doubt, the persecutors of true doctrine and the defenders of Idols, however much they may sell themselves with a plausible and beautiful appearance of ordinary succession, of elegant ceremonies, of distinction of ranks and exercises, however much they may also simulate piety with external gestures, crying out: Ah Lord God, O Lord Lord, etc., nevertheless they are by no means members of the people of God and citizens of the Church of Christ.
+
+Wherefore, let neither the elegance of ceremonies, nor the authority of the ordinary place, nor the splendor of processions, spectacles, or supplications, disturb or move anyone, so that he either assents to or applauds the adversaries of pious doctrine who pertinaciously defend idols.
+
+But let each one embrace the true doctrine without corruptions, and faithfully and constantly guard, confess, and with both hands, or rather with the whole heart, retain it.
+
+Furthermore, the number of hypocrites is not small even in our Churches, in which, however, by the benefit of God, the voice of the Gospel sounds incorrupt: but let the distinction be known.
+
+For those individuals whose hearts feel true terrors and sorrows, having acknowledged the wrath of God against sin, and are again raised up, and, having received consolation, are liberated from the sorrows of the underworld, acquiescing in the trust of Christ the Mediator, and thus have the beginnings of repentance or conversion to God, all these (I say) are certainly the children of God, heirs of eternal salvation, and living members of the true Church of Christ, who, although they have their own infirmities, and not small or few, nevertheless are in no way in the society or number of the unregenerate or rejected hypocrites. Let everyone know and remember this, however, that he must progress little by little so that the fear of God, faith, humility, chastity, and the other virtues pleasing to God may grow, increase, and be confirmed in his soul.
+
+Indeed, know for certain, however languid the beginnings of conversion may be, that God Himself (provided some sparks of faith shine in your heart) wishes to be present with you, to advance you happily, to govern you healthfully, and to help you effectively: as the maxim of Paul, which we cited earlier from the 2nd chapter to the Philippians, expressly affirms, God works so that you may both will and perform, etc.
+
+Therefore, such a heart, which has the beginnings of spiritual exercises, is most truly founded, constructed, and built upon the most firm rock or stone, Christ: He supplies it with vigor, strength, and power, so that it may be able to stand firmly even against the attacks and insults of raging Devils, and against the most insidious temptations of every kind, and not allow itself to be cast down from its position (as they say) or moved from its place.
+
+But in order that we may apprehend this rock, and remain unmoved while standing upon it, we shall achieve this only in this way: if the heart, in true repentance, apprehends the Lord Jesus Christ by faith, and asks with constant groans that He Himself may be willing to help our weakness, that He may be willing to guide us with His light and His counsels, and that He may not allow our minds to rush into errors, crimes, scandals, blasphemies, etc.
+
+And in this very text, both admonitions are comprehended: the one concerning the great danger and the weakness of men; the other concerning the consolation, which opposes the most firm rock and the omnipotent helper, our Lord Jesus Christ, to our weakness and the magnitude of the dangers.
+
+Concerning the dangers and the horrible tyranny of the insiduous Devil, it is said in 1 Peter, last chapter: Your adversary the Devil walks about like a roaring lion, seeking whom he may devour.
+
+For how many does the Devil entangle and fascinate with the furies of sects and impious opinions!
+
+How great a multitude of men, moreover, does he drive here and there to other most sad crimes, adulteries, thefts, homicides, etc.!
+
+What?
+
+That those rushing into these flagrant sins and such great turpitudes are usually at last overwhelmed by despair?
+
+This, therefore, is that most miserable class of men, about whom Christ preaches in this parable, when He says that hypocrites are like foolish men building houses upon sand.
+
+For once such foundations are laid, how easily can it happen that, with storms having arisen and with impetuous rains, the sand is driven away, and with the foundations disturbed and shaken in this way, the entire building collapses?
+
+Just as we see at this time many falling away from God, as if overturned, either by the abundance and force of rushing waters, or by violent blasts and whirlwinds of winds: indeed, in every age (alas) various examples of defections and notable levities are seen.
+
+Considering these horrendous dangers and our own great weakness, let us know that we must build upon an immovable foundation and the most firm rock, the Son of God, our Lord Jesus Christ.
+
+If anyone insists upon and leans upon this rock, or foundation, in the exercises of true repentance, true faith, and ardent invocation, the Devil will by no means be able to overturn him or cast him down headlong, however much he may attack hostiley from all sides, and however much he may try in vain to shake or weaken the rock by stirring up huge storms: just as he attacked David, most fiercely indeed, but in vain.
+
+And so that the whole matter may become clearer, propose to your minds the example of both, namely, Saul and David: from which antithesis, or comparison of dissimilar examples, I hope it will come to pass that the interpretation of this text will be much easier to understand and more perspicuous.
+
+Saul, a wise king, and in difficult government, well-deserving of his country, having performed great and useful deeds at the beginning, was thinking about transferring the kingdom to his descendants by right of hereditary succession: he was thinking about establishing a form of polity, or empire, at his own discretion.
+
+The same man, moved by ambition and envy, was persecuting David, and as if he had success in his own hands, he hoped that his counsels would not fall unhappily, that his efforts would not be in vain, but that he would accomplish according to his own mind what he had thought, desired, and determined.
+
+But his entire holiness, and the careful weighing of all his counsels, which were seemingly prudently undertaken, was built upon unstable and fluctuating sand.
+
+Therefore, at last, overturned by the Devil, he perished utterly, oppressed by horrible despair and eternal punishments.
+
+For he knowingly and willingly resisted the divine will, and yet in the meantime he trusted that he could, by his own counsels, machinations, and strength, even against the will of God, carry out those things which he had proposed to himself, which he was meditating upon, and which he had undertaken, to bring to an end and to be able to obtain. What are these other than most vain dreams, deceitful impostures, and mere lies? David, indeed, although he had fallen into a horrible crime, having snatched away another man's wife after killing her husband, yet he was not a stubborn hypocrite: for he did not persevere in contempt of God, or in an evil purpose, but when he was rebuked by the Prophet Nathan, having acknowledged the wrath of God, he truly grieved that he had offended God, and apprehending the heard absolution by faith, he was again converted to God: afterwards, although the Devil, having instituted a long tragedy, and, as he hoped, an inextricable one for David, did not cease to attack him while he was enduring great calamities for many years, so that he might drive him to despair (for he impelled his son Absalom to take up arms against his father, forced him to flee, expelled from the kingdom by a huge sedition that had been stirred up, and finally, by many sad and more than tragic scandals and crimes which the sedition brought forth, the Devil so exercised and tormented David, that he hoped that he too would perish utterly, just as Saul had perished), yet, when David firmly insisted and leaned upon the arduous and immovable rock, that is, the Mediator, the Son of God, Christ truly was present with him, and sustained, raised up, saved, and protected him, having been confirmed by the Holy Spirit: because then, converted to God and looking by faith at the mercy promised on account of the Mediator, he was receiving the remission of sins, and was resting in this true, vivifying, and eternal consolation, which he himself left written in Psalm 2 in these words: Kiss the Son, blessed are all who trust in Him. Furthermore, in the consideration of these distinguished, illustrious, and most beautiful examples, let us learn first and before all things how one must build upon this rock: namely, in this way, that in true repentance, or conversion, we propose to our mind the word, or voice of the Gospel, and resting in true faith in the Son of God, the Mediator, our Lord Jesus Christ, and resisting doubt and diffidence, we implore the mercy and help of God through and on account of Christ with true groans. In this our struggle and divine consolation, we experience in the thing itself that neither faith nor this invocation is empty or vain: and then indeed our true holiness and piety is not empty and painted hypocrisy, nor does it lean upon sand that never holds together, is unstable, and fluctuating, but it insists upon the arduous, firm, immovable, and never-to-be-ruined rock, the Son of God himself, our Lord Jesus Christ, who is most truly the cornerstone (according to the verse of Psalm 118: The stone which the builders rejected has become the head of the corner) upon which we are built: just as Saint Paul to the Ephesians, explaining this sweetest metaphor, declares and interprets the gnome of Psalm 118 (just cited).
+
+We are, however, built and constructed upon our Lord Jesus Christ, the rock and cornerstone, so that He may carry, support, and sustain us who are placed upon Him: first by His word and the voice of doctrine; then by His merit, or His sacrifice and assiduous intercession, or the assiduous application of His merit for us (for the merit of Christ is joined, that is, the obedience by which, having been made a victim for us, with our sins derived into Himself, He satisfied the justice of God to appease His wrath: and the perpetual intercession by which He intercedes before the eternal Father and prays for us, offering His merits, carrying our groans to the Father, asking that we be received, and covering us with the application of His merit, lest the huge divine wrath be poured out upon us); finally by His power and efficacy, by which He is present with us, by which He is at the same time efficacious in us, by which He Himself immediately vivifies us by the voice of the Gospel and the Holy Spirit poured into our hearts, by which He protects us, with the Devils repressed and driven away, by which He perpetually gathers and saves for Himself an eternal Church, as John 10 says: No one shall snatch my sheep from my hands: by which He Himself, powerfully and effectively reigning, takes away, abolishes, and destroys sin and death, and restores to the region complete newness or conformity with Himself, restores justice and eternal life, in which God will be all in all to the blessed. In this way let us learn to recognize this immovable, living, and everlasting rock, so that we may discern this Lord from all other teachers and Prophets, whose ministries, good deeds, virtues, and gifts do not merit for others, nor (even if they were meritorious for themselves) could they be applied for others, whose persons, finally, are not efficacious in us, nor do they vivify. And therefore, let faith lean not on the person of a Prophet or a Minister of an external voice, but on the person of Christ the Redeemer and Mediator, which is vivifying, etc. Let all these things be thought upon much, diligently, and attentively in daily prayer, so that true repentance, faith, hope, true invocation, and the remaining necessary virtues may grow in us, be increased, confirmed, and perfected: that this may happen, may the Son of God Himself, the propitiator, vivifier, cornerstone, and rock of salvation, our Lord Jesus Christ, govern, teach, sanctify, and help us, Amen. Chapter VIII. If thou wilt, thou canst make me clean. After the sermon delivered on the mount, there follows a recitation of some miracles. For Christ wishes to show the testimonies of his doctrine, so that we may know for certain that this doctrine of his is the immutable will and decree of the divinity, and that he is truthful and sent by God: in short, that this voice of his is not something fabricated or devised by men, just as the Gentiles fashioned for themselves their cults and deities. And there are many miracles of this three-year period, which were performed at short intervals. At the beginning of the first year, two were raised from the dead: the son of the widow in Nain, and the daughter of Jairus.
+
+After the third year, Lazarus was raised. These and many other miracles are recounted in the Evangelical writings. And there is no doubt that many wise men wonder why so many miracles were recounted, when sermons are commemorated less frequently. But those who are rightly instructed understand that both are contained in the Apostolic writings: that miracles are recounted, and sermons. And since the doctrine was copiously explained and illustrated beforehand by the Prophets, and afterwards by John and Paul, the other books propose the testimonies of the miracles to the whole human race. Therefore, so that you may hold a perpetual reminder concerning the miracles, to be thought upon in all examples, first let these three causes be in sight, for which the miracles were performed and recounted. The first cause is that they may be testimonies about God to all men, and show that this voice of Christ is truly divine, and that this teacher, Christ, is truthful and sent by God. For thus in all times God has revealed himself, so that he might add miraculous testimonies to his word, lest the human race remain in these doubts as to who God is, and what the word of God is; and God wishes to be acknowledged and invoked in such a way that the mind, looking upon and invoking God in faith, may acknowledge and invoke this God who revealed himself by issuing certain and admirable testimonies, such as have been issued in all times, just as in the beginning he speaks to Adam and Eve face to face, and by issuing a promise, he himself immediately speaks consolation to them in their hearts, by which they felt themselves to be liberated from death and vivified anew.
+
+Afterwards, other testimonies were added to the fathers: fire from heaven kindles and consumes the sacrifice of Abel, and this was a testimony used up to the times of Noah. Afterwards others followed: the safety of a few in the flood, the leading of the people out of Egypt, etc. All these were proposed for this reason, because God wished testimonies about himself and his word to exist, so that it might be known that this true God, who had revealed himself with such immense goodness, was to be acknowledged and invoked, and that the word handed down with these testimonies was truly a divine and truthful voice.
+
+God wishes our minds now also to look upon these testimonies of revelation in every invocation, so that we may address this God who issued these testimonies about himself. Thus, as often as you begin an invocation, you compel and address this God, who revealed himself by sending his Son, our Lord Jesus Christ. And you should simultaneously acknowledge and invoke this same Son, and distinguish him from other fabricated deities by this very testimony, that he restored life to Lazarus, and he himself, a little later, rose from death by divine power. The second cause, for which the miracles were performed and recounted, is this: That they may be examples and testimonies of the promises. The Prophets testify that the Messiah is to come, and that he will give the remission of sins to those who flee to him in faith, and that he will help them in all counsels and dangers, as it is said in Isaiah 61: The Spirit of the Lord is upon me, because he hath anointed me, he hath sent me to preach to the afflicted, that I might heal the brokenhearted, and preach liberty to the captives.
+
+And the Lord himself says: Come unto me, all ye that labour and are heavy laden, and I will refresh you. In order, therefore, that these promises may be in sight for all, not as fabricated or void, the examples of these promises are proposed in the miracles, in which he gives the remission of sins and other benefits, as he says concerning the sinful woman in Luke 7: Her many sins are forgiven her, etc. And to the paralytic: Son, thy sins are forgiven thee, etc. He adds also bodily benefits by restoring health, he gives life to the dead, so that we may know that he is both the Messiah and the giver of life, and the victor and Lord of death, in short, so that we may know that he is able and to wish to help us.
+
+Who among us would seek these goods, or who would call upon Him, if examples had not been set forth? Even when we read and hear these examples, and behold the testimonies placed before our eyes, such is our infirmity that we tremble and doubt whether we ought to call upon God and seek help from Him. How much greater and sadder would the doubt be, if God Himself did not demand our invocation by setting forth such illustrious examples? The miracles are therefore recounted, and indeed illustrious ones, so that, strengthened and aroused by these examples, we may confidently approach this Lord through faith in Him, and seek and expect help from Him in all counsels and dangers, spiritual and bodily. And all these goods are to be sought, comprised in this one rule of the Son of God: Come to me all you who labor and are burdened, and I will refresh you.
+
+Objection. In this very consolation, the languid mind interrupts the invocation, saying: There is no worthiness in me, no merits. This leper and the others, whom Christ helps, obtained such great kindness by their own piety. I, unworthy, can neither call upon nor approach God. This sight of our sins and filth is the chief impediment to true invocation.
+
+And the wisdom of the Gospel alone teaches with what confidence and consolation the Son of God, our Lord Jesus Christ, is to be addressed. And there were at that time also many thousands of sick people, whom the same thoughts hindered from approaching Christ that obstruct us miserable humans, namely: Why do I approach this teacher? Why do I seek help? Since my filth is so great, and my sins so atrocious, He will dismiss the one calling upon Him with ignominy, or drive him away rebuked, just as He sometimes rebukes the disciples, who tried in vain to imitate the miracles for which they were unequal, etc. To such impediments of faith and invocation, let us oppose the voice of the Gospel, and these very testimonies, which show true and undoubted consolation. There follows, therefore, the third cause of the miracles, namely, that they are examples of the application of the promises, which teach how the promise is to be apprehended, and how the mind is to be aroused and strengthened, approaching this Lord and seeking help.
+
+Our unworthiness cries out against us all. On the contrary, these examples teach that you should not approach God relying on the confidence of your own worthiness, purity, and holiness, nor flee from God out of fear of your sins: but that in true conversion you should acknowledge your filth and sins, and believe and firmly conclude that this Messiah came for this very reason, that He might call sinners to repentance, receive them, and help them, just as He testifies with His own voice: I came not to call the righteous, but sinners, that they may be converted. This struggle of faith and victory in such a dangerous contest is set forth in these testimonies.
+
+Christ does not make a distinction among the miserable who seek help from Him, but receives all equally, as many as flee to Him, Jews, Samaritans, Gentiles, honest men, and harlot women. They all bring to Him sins either publicly known or manifest to their own conscience. Nor does He demand from such people anything other than conversion and faith, by which they conclude that this teacher is sent by God, and is the Messiah, who receives and saves the human race, and who can and will help in all dangers. These beginnings must be brought by all who seek the help of the Messiah. And these are most expressly signified in the image of the Syrophoenician woman in Matthew.
+
+15.: The Canaanite woman came wailing and crying: Have mercy on me, O Lord, Son of David, my daughter is badly vexed by a demon.
+
+But consider what merits she brings? She is a Gentile and accustomed to idolatrous worship, but there are in her the beginnings of faith, by which she acknowledges and calls upon this Christ. The Lord at first answers nothing, and afterwards, having been harshly rebuked, she seems to be entirely repelled by Him, when He compares her to a little dog. Here, without any doubt, the beginnings of faith which she brings began to be shaken by a new trembling: but the Holy Spirit, who first kindled those beginnings of faith, now also helps her in this new struggle, as Paul says: The Spirit helps our infirmity. Likewise: He intercedes for us with inexpressible groanings. Thus, in this Syrophoenician woman, there is the acknowledgment and confession of her own unworthiness, and faith constantly seeking and expecting help.
+
+She confesses herself to be a little dog, and asks that the crumbs, which are owed to the puppies, be given to her as well. Because she perseveres in this faith, she is finally received, and receives the joyful voice of the Gospel from Christ: O woman, great is your faith, let it be done to you as you wish. May this illustrious example of faith be most well-known to all, so that with this Canaanite woman, the Son of God, our Lord
+
+let us call upon Jesus Christ, and with faith and unwavering hope let us ask for and expect help from Him. Thus you see that in these three causes is comprehended the common doctrine of miracles, to be considered in all examples. First, that they are testimonies concerning God and the doctrine handed down divinely. Second, that they are examples of promises, which teach us both to ask for and to expect help and consolation from Christ. Third, they teach what is to be brought to the Son of God, such as the recognition of sin or conversion to God, and faith asking for and expecting help.
+
+Now let us look at the leper bringing to Christ no small light of faith. For he recognizes and firmly decides with himself that this teacher can heal and take away the leprosy. Wherefore he rightly understands and recognizes the Messiah, and knows Him to be omnipotent, and the Son of God. In the same way, let us know that it is necessary for us also to approach Christ, and to bring the light of faith, rightly recognizing Him, and firmly deciding that He forgives sins, and receives and hears those who call upon Him. Thus follows the healing of this leper.
+
+Objection. It is asked here again concerning the faith of this leper. The leper confesses that this man, whom he addresses, can take away that disease, and he attributes this highest honor to Him, that He brings true and salutary doctrine, not false or fabricated, therefore he asks for and expects help. For without this faith he would never have approached Him, but yet he inserts these words into his petition: If You will, You can make me clean. He seems, therefore, to doubt the will of the Lord, even if he does not deny that He can help. Thus we all know that God is omnipotent, and can help even in a moment in all counsels and dangers, but we doubt concerning Him, whether He receives our vows or groans, whether He is willing to help us. Let us consider what consolation is to be opposed to this, for it is a doctrine necessary for all.
+
+Wherefore know that there are two kinds of promises, eternal or spiritual, and corporal. An eternal or spiritual promise is that which promises the remission of sins, justification through and because of the Son of God, the Holy Spirit, and eternal life, repeated in these and other testimonies of Scripture: As I live, says the Lord, I do not desire the death of the sinner, but that he be converted and live. John 3: God so loved the world, that He gave His only-begotten Son, that everyone who believes in Him should not perish, but have eternal life. These sayings and others like them are sermons concerning eternal goods, for which principally the Son of God was sent: and they are equally necessary for all. Wherefore in every invocation the mind should first of all look upon this highest and primary promise and apprehend it by faith. And let it not add in the petition for these eternal goods any condition, or doubt: If You will, Lord. For thus God has expressed His will concerning these goods, that He is willing to forgive sins, and certainly to give righteousness and eternal life to all who ask in faith. God does not want us, oppressed by sins, to rush into eternal destruction, therefore you shall not add any condition to this promise, but firmly and without any doubt decide that God certainly forgives you your sins, receives you through and because of His Son the Lord Jesus Christ, and through Him delivers you from the abyss of the infernal regions and eternal destruction, and gives you righteousness and eternal life. It is necessary for you to receive these things by faith in this way, and to decide it certainly.
+
+You must receive these things by faith in this way, and decide them certainly.
+
+But the promises of corporal goods, such as those concerning good health, strength, life, food, peace, and the defense of bodies, are also proposed by the immense goodness of God. For since God is willing to gather an eternal Church for Himself in this life, He is also willing to give corporal goods necessary for life, such as food, etc. And let us not be so boorish as to despise these goods, but let us understand that for this miserable and languid life of bodies, many goods are needed. Let us consider what aids, and how many things the education of children requires. As little birds need their nests, so little infants need some kind of little huts. Food of grain, drink, and meat suitable for infants and others is necessary. Empires are necessary, and the defense of peace and public tranquility. Let us consider, if there were perpetual wars and robberies, what would the education of children be? What would be the preaching or propagation of the divine word or voice? What would be the future public assemblies? Let us consider all these goods necessary for all, and let us know that God also gives these very goods, and wills that we ask for these goods from Him, just as He Himself prescribed for us in the form of prayer: Give us this day our daily bread. Let us know that in this very petition for corporal goods, faith and invocation must be exercised. Utterly to be execrated is this foolish persuasion of hypocrites, who spurn these promises and think it unworthy of a Christian man to seek bodily goods.
+
+Nay, by this very petition you render to God the honor due, when in bodily dangers you seek and expect help from Him, and acknowledge that this life is defended and preserved by Him for the sake of the Church. At the same time, however, you should also establish this: although God wills to gather and preserve the Church, yet He wills that it be subjected to the cross by His wondrous counsel.
+
+In it, He wills that individuals receive and understand the promises with the exception of chastisement and the cross; He wills that everyone offer themselves to obedience in the cross, according to the will of God, just as Christ Himself submits to the divine will, saying: Father, if it be possible, let this cup pass from me, but let Thy will be done.
+
+Thus also David seeks and expects a return with this exception, that the will of the Lord be done. In the same way, let us also by faith seek bodily goods necessary for us and for others, so that in this very petition each one may offer himself to obedience according to the will of God, just as the leper in this sermon says: Lord, if Thou wilt, Thou canst make me clean.
+
+He adds a condition pertaining to the petition for a bodily good, and yet the true light of faith shines in him, by which he certainly establishes: This doctor sent by God from Abraham, who brings to us the blessing promised to Abraham, who will remit my sins, who will appease God for me, will receive and save me; I know that the Messiah is the Son of God, who will take away and abolish sin and death; I establish therefore that even this my leprosy can be cured by Him, and by this faith I know that I must approach this doctor, and that help in the health of the body must be sought and asked for; I do not doubt that this Lord understands my miseries in so savage a disease, wherefore I also expect mitigation from Him.
+
+I offer myself, however, to obedience, because I also establish this: to understand this doctor according to His wondrous counsel, whether it behooves me to be exercised in this disease for a longer time.
+
+Thus we see that these two do not conflict: to seek help, and to offer oneself to obedience. Nor is such an invocation in vain, but it always obtains either mitigation or liberation according to the counsel of God.
+
+Let the doctrine concerning the distinction of promises, concerning the exercises of faith and invocation in seeking bodily goods, be therefore most known to all: and in daily invocation let these exercises be pondered.
+
+For those who do not exercise or learn these things in invocation, they neither understand the power of this consolation, and they remain in perpetual darkness and doubt, nor do they feel any consolation in the struggles of conscience. It is necessary also that this be known in these very promises, that even if liberation in the dangers of bodies does not follow, yet the promise of eternal goods is not to be cast away or repudiated, because it is necessary to offer oneself to obedience.
+
+For when the spiritual promise is cast away, there remains in the heart a horrible roaring, raging against God, and offering Him insult, and the heart rushes into despair and eternal wrath.
+
+Therefore, let faith, looking upon and receiving eternal goods, thus raise and sustain itself: That if by most wise counsel God wills me to be subjected to the cross, yet I know and certainly establish that I am certainly righteous through and because of the Son of God, that my soul is certainly received and saved; I know that I owe this honor to God, that I believe in the Son, and I establish that through Him righteousness and eternal life are given to me; I will not spurn or cast away the merit of this Son, even if I am harshly exercised by diseases, poverty, and similar miseries.
+
+Thus Job raises and sustains himself, saying: Even if He slays me, yet will I hope in Him.
+
+I know that another life remains, which I shall not lose, even if this miserable life of the body must be lost and abandoned. Let the saying of Job in chapter 13 therefore be fixed in your minds: Even if He slays me, yet will I hope in Him.
+
+For immediately after these words the doctrine concerning sin is added, when he says: Before Him I will argue my ways: as if he were saying: I confess that I am horribly guilty and polluted before Him, but He Himself will be my Savior.
+
+He receives me with immense kindness because of the Mediator; with this consolation I raise and sustain myself, which I know to be certain and immovable; God is and will be in all eternity my Savior.
+
+Wherefore, as I have said, in every invocation these things must be pondered: Let us consider both spiritual and bodily dangers, and let us learn what and how it must be sought.
+
+In such exercises the light of faith grows in the hearts, and all things will be able to be understood more rightly. Let us know also this, that modesty is required in our conduct, so that invocation may be made and the thought of such great things may be kindled.
+
+There are many causes which ought to kindle invocation in all: sin clings to all, and the punishments of sins are seen in the manifold miseries of life, in sight are wars horrible things, ruins and lacerations of Churches and empires. Likewise burdens in empires, and the difficulty of provisions, your diseases, and those of your children. May you sometimes be affected by these such great evils, which are much sadder than the disease of this leper, and cry out to the son of God, just as the Syrophoenician woman cries out: Lord Jesus Christ, son of David, have mercy on us, forgive us our sins, and be present with us, pour into us your holy Spirit, rule and preserve your Church, protect us and our little children, lest we fall into Ethnic, Epicurean, or fanatic furies, preserve and defend the hospices of the Church, lest everything be laid waste and disturbed by barbaric furies, may you be our protector and helper.
+
+These vows and these groans of yours will not be in vain or empty. Wherefore at the same time know that in such an invocation it must be established by you that, on account of the son of God our Lord Jesus Christ, these vows of yours are truly received and heard. And although the beginnings of faith are languid and weak, yet with this very voice stir up faith: I believe Lord, but help my unbelief. May the Son of God our Lord Jesus Christ with immense goodness kindle and confirm his light in us, so that we may rightly learn, understand, and cultivate the salutary doctrine in the exercises of true piety, Amen.
+
+Latin:
+
 Ex fructibus eorum cognoscetis eos.
 
 Adiungit etiam Dominus noster Iesus Christus perspicuam notam, seu regulam, qua doctores seu dogmatistae debent deprehendi, discerni, iudicari, iubens falsos Prophetas ex ipsorum fructibus agnosci. Quae verba intelligantur, ut modo dictum est, de manifeste falsis dogmatibus; fructus enim significant impiam seu falsam doctrinam, sive de uno, sive de pluribus articulis, pugnantem cum fundamento, id est, cum necessariis articulis, seu locis, seu partibus Christianae doctrinae. Si quis igitur dogmatista pie admonitus, pertinaciter defendit insignes aliquos errores, pugnantes, is doctor ut hostis Dei et fascinatus a Diabolo, deserendus atque cavendus, eiusque dogma ceu praesentissimum venenum fugiendum ac exsecrandum est. De hoc fructuum genere loquitur Dominus. Ac si quando accidit, quod saepe solet usu venire, ut aliquis praestigiator subtilius proponat, et fucis pingat errorem in articulo quopiam minus conspicuum ac difficilem deprehensu: tu tamen circumspice, et considera universum corpus doctrinae, quod profitetur, in quo si alios manifeste impios errores deprehenderis, quos admonitus dogmatista pertinaciter defendit, tunc sane deprehendes signa et iudicia non fallacia fanaticae mentis et agitatae malo spiritu.
@@ -14471,121 +14604,6 @@ In talibus exercitiis crescit lux fidei in cordibus, et rectius intelligi omnia 
 Multae sunt causae, quae accendere invocationem in omnibus debeant: haeret peccatum in omnibus, et poenae peccatorum cernuntur in miseriis vitae multiplicibus, sunt in conspectu bella horribilia, ruinae et lacerationes Ecclesiarum et imperiorum. Item onera in imperiis, et difficultas annonae, morbi vestri, et liberorum vestrorum. His tantis malis aliquando afficiamini, quae multo sunt tristiora, quam huius leprosi morbus, et clamate ad filium Dei, sicuti clamat Syrophoenissa: Domine Iesu Christe fili David miserere nostri, remitte nobis peccata, et adsis nobis, effunde in nos Spiritum tuum sanctum, rege et serva Ecclesiam tuam, protege nos et infantulos nostros, ne in furores Ethnicos, Epicureos aut fanaticos ruamus, serva et defende hospitia Ecclesiae, ne barbaricis furoribus vastentur et turbentur omnia, tu sis protector et adiutor noster.
 
 Haec vota et hi gemitus vestri non erunt irriti aut inanes. Quare simul scitote in tali invocatione statuendum vobis esse, propter filium Dei Dominum nostrum Iesum Christum haec vota vestra vere recipi et exaudiri. Et quanquam initia fidei languida et imbecilla sunt, tamen hac ipsa voce fidem exsuscitate: Credo Domine, sed opem fer diffidentiae meae. Filius Dei Dominus noster Iesus Christus immensa bonitate suam in nobis lucem accendat ac confirmet, ut doctrinam salutarem recte discamus, intelligamus, et in exercitiis verae pietatis colamus, Amen.
-
-## 7:15 Eighth Sunday After Trinity
-Eighth Sunday after Trinity.
-
-The Gospel of Matthew 7.
-
-Beware of false prophets, who come to you in sheep's clothing, but inwardly they are ravenous wolves. By their fruits you will know them.
-
-Do men gather grapes from thornbushes or figs from thistles? Even so, every good tree bears good fruit, but a bad tree bears bad fruit. A bad tree cannot bear good fruit, nor can a good tree bear bad fruit. Every tree that does not bear good fruit is cut down and thrown into the fire. Therefore by their fruits you will know them.
-
-Not everyone who says to Me, 'Lord, Lord,' shall enter the kingdom of heaven, but he who does the will of My Father in heaven. Many will say to Me in that day, 'Lord, Lord, have we not prophesied in Your name, cast out demons in Your name, and done many wonders in Your name?' And then I will declare to them, 'I never knew you; depart from Me, you who practice lawlessness.'
-
-This text contains a very grave doctrine, and one necessary for the Church.
-
-There are, however, two main points.
-
-I. That the judgment concerning doctrine is universal, and pertains to all the pious. II. How false teachers are to be recognized, and by their fruits.
-
-On the first.
-
-Christ's command, when He bids us beware of false prophets, excludes no one; therefore, the judgment concerning doctrine pertains to the universal Church and to its individual members.
-
-Hence it is easy to answer the common argument of the adversaries.
-
-He who departs from the ordinary authorities in the Church sins. Lutherans, as they call them, depart from the ordinary ecclesiastical authority, therefore, etc.
-
-I answer first to the major premise: He who departs from ordinary ecclesiastical authority, does so without God's command. Then to the major premise: Lutherans do depart, but they do this compelled by Christ's command, by which they are ordered to beware of false prophets.
-
-But here it must be diligently observed, lest under the pretext of this command a democracy (δημοκρατία) be granted in the Church, than which state nothing more harmful can be imagined.
-
-It must therefore be held that Christ's command is universal, and unless this is established, tyranny must immediately follow.
-
-But a circumstance must be added, so that that judgment does not stray from the true and proper meaning of Scripture.
-
-So that it may be understood without sophistry, from which all heresies arise.
-
-Wherefore, that one may judge rightly, it is necessary that a rule be held, that is, the certain and true meaning of Scripture concerning individual articles of doctrine, which can be clearly and perspicuously shown from the writings of the Prophets and Apostles to be the proper and perpetual meaning, with the entire and unmutilated scriptures compared.
-
-Let the testimonies of the Church after the Apostles also be sought, especially in those writers who are known to be purer, so that there may be certainty regarding the perpetual consensus of the catholic Church of Christ, and that no new dogma be introduced into the Church without testimonies.
-
-To this let pious communication be added; let the pious confer among themselves concerning doctrine, and let the opinions of other more learned men also be heard, and let these kindly and candidly explain their opinion, and in turn let them also listen to others courteously.
-
-Let such be the consensus of the pious, who, seeking the truth with pious zeal and with the fear of God, pronounce according to Scripture.
-
-Let this council be heard; let not those be heard who wish to decide things only as in political deliberations, or by the opinion of some who are in charge, or by the authority of ordinary power, or by the votes of the multitude or the greater part.
-
-Indeed, in this place an express command is handed down, that we should not assent to any dogma not congruent with the doctrine clearly and certainly handed down in Scripture by the Prophets, Christ, and the Apostles: Beware of false prophets, and at Galatians 1: If anyone teaches another Gospel, let him be anathema.
-
-Just as in the people of Israel, it was necessary for Jeremiah, Simeon, Zechariah, and other pious men to dissent from the high priests, Pharisees, and Sadducees, who defended errors under the pretext and authority of ordinary power.
-
-Then, if ever passages or sentences occur which seem to be in conflict, prudence must be applied from the same rule, that the certain and perpetual meaning of Scripture be held.
-
-Then a collation of texts must be made, and those things must be retained which agree with the universal Scripture, as when it is written: Vengeance is Mine, and I will repay.
-
-Likewise: You shall not take vengeance. From other manifest places of Scripture, public vengeance is to be excepted, which is the very vengeance of God. Thus it is written: What God has joined, let no man separate. And yet Christ in another place excepts the case of fornication. Finally, when Christ commands to beware of false prophets, by this very thing He also wishes a diligent inquiry to be applied, and forbids rashness in judging. Therefore, there ought to be a communication of doctrine with other pious people, and an inquiry into the truth, which once found, he who hears things more consistent with Scripture offered by another ought to believe, according to that of Paul: If it has been revealed to one sitting by, let the first be silent. But that contention, by which each one defends his own opinion pertinaciously out of envy or ambition, is not done for the sake of the inquiry of truth. Therefore, it is not proper to the pious.
-
-On the second. Christ commands false Prophets to be known by their fruits: but the fruits are twofold, evil dogma, and evil morals. For heretics always have some manifest impious dogma, which it is impossible to fall into the Church. For although individuals who are in the Church can err and slip, yet it is impossible for the universal assembly of the Church to defend a manifestly impious dogma. Therefore, such a manifest impious dogma having been detected, from this a judgment is to be made about the rest, just as among the Papists manifestly impious errors are found, concerning the invocation of Saints, concerning the Mass to be applied for the living and the dead, and indeed ex opere operato, and many others. Among the Anabaptists, there are manifestly impious and fanatical things, because they abolish all civil and political offices. Since it is impossible for such things to be defended in the true Church, it can easily be gathered from this that the Anabaptists are false prophets, and do not belong to the Church, and by this very thing they manifest themselves, and can be openly convicted. Thus, when they deny that infants are to be baptized, it is necessary for them to posit this hypothesis, that infants do not have sin, when yet it is necessary to confess that Christ also suffered for infants. Thus, one impious dogma having been detected, it is necessary afterwards for more errors to follow. For just as in Music, with one chord dissonant, the whole harmony is disturbed, so in doctrine, one error discrepant from the foundation disturbs everything. For as truth always agrees with truth, so falsehood drags many errors with it, so that he who has once turned from the straight path, it is necessary that, the further he progresses, the more and more he errs. These things have been briefly said about the fruits which are in the very doctrine of false prophets, namely, when some manifestly impious dogma is defended. Afterwards, there are also other fruits in life and morals, when manifest sins are added to errors, as when the Anabaptists invade the property and goods of others under the pretext of doctrine, just as the Muensterites and others said they had a mandate to destroy all impious magistrates. Likewise, that they cast aside the law and faith of marriages, and take back whatever wives they want. Thus the Pope, under the pretext of doctrine, seized empires for himself. Such sins which are committed under the pretext of doctrine are also peculiar marks of an evil spirit.
-
-Latin:
-
-Dominica VIII. post Trinitatis.
-
-Evangelium Matthaei 7.
-
-Attendite autem a falsis Prophetis, qui veniunt ad vos in vestimentis ovium, intrinsecus autem sunt lupi rapaces, A fructibus eorum cognoscetis eos.
-
-Nunquid colligunt de spinis uvas, aut de tribulis ficus? Sic omnis arbor bona fructus bonos facit, mala autem arbor malos fructus facit, Non potest arbor mala bonos fructus facere, neque arbor bona malos fructus facere. Omnis arbor, quae non facit fructum bonum, exciditur et in ignem mittitur. Igitur ex fructibus eorum cognoscetis eos.
-
-Non omnis qui dicit mihi, Domine, Domine, intrabit in regnum coelorum, sed qui facit voluntatem patris mei, qui in coelis est. Multi dicent mihi in illa die: Domine, Domine, Nonne in nomine tuo prophetavimus, et in nomine tuo daemonia ejecimus, et in nomine tuo virtutes multas fecimus? Et tunc confitebor illis: Quia nunquam novi vos. Discedite a me qui operamini iniquitatem.
-
-Continet hic textus admodum gravem doctrinam, et necessariam Ecclesiae.
-
-Sunt autem duo praecipui loci.
-
-I. Quod iudicium de doctrina sit universale, et ad omnes pios pertineat. II. Quomodo agnoscendi sint falsi doctores et fructibus.
-
-De primo.
-
-Mandatum Christi, cum iubet cavere pseudoprophetas, neminem excludit, Ergo iudicium de doctrina ad universam Ecclesiam, et singula eius membra pertinet.
-
-Hinc facile est respondere ad usitatum argumentum adversariorum.
-
-Discedens ab ordinariis in Ecclesia potestatibus, peccat. Lutherani, quos illi sic vocant, discedunt ab ordinaria potestate ecclesiastica, Ergo etc.
-
-Respondeo primum ad maiorem: Discedens ab ordinaria potestate ecclesiastica, scilicet sine mandato Dei. Deinde ad maiorem: Lutherani discedunt, sed faciunt hoc mandato Christi coacti, quo iubentur sibi cavere a pseudoprophetis.
-
-Sed hic diligenter videndum est, ne praetextu huius mandati concedatur δημοκρατία in Ecclesia, quo statu nihil nocentius excogitari potest.
-
-Tenendum igitur illud est, Christi mandatum esse universale, et nisi hoc statuatur, illico sequi tyrannidem necesse est.
-
-Sed addenda est circumstantia, ut illud iudicium non deerret a vera et propria sententia Scripturae.
-
-Ita ut sine sophistica intelligatur, ex qua omnes haereses oriuntur.
-
-Quare et recte iudicetur, necesse est teneri regulam, hoc est, certam et veram sententiam scripturae de singulis articulis doctrinae, quae clare et perspicue ex scriptis Prophetarum et Apostolorum ostendi potest, esse propria et perpetua sententia, collatis integris et non mutilatis scriptis.
-
-Quaerantur etiam testimonia Ecclesiae post Apostolos, praesertim in iis scriptoribus, quos constat esse puriores, ut constet de perpetuo consensu catholicae Ecclesiae Christi, nec aliquod novum dogma sine testimoniis in Ecclesiam invehatur.
-
-Huc accedat et pia communicatio, conferant inter se pii de doctrina, et audiantur etiam aliorum peritiorum sententiae, et hi benigne et candide suam sententiam exponant, et vicissim etiam alios comiter audiant.
-
-Talis sit consensus piorum, qui pio studio quaerentes veritatem, et cum timore Dei, secundum scripturam, pronuncient.
-
-Hoc concilium audiatur, non audiantur illi, qui tantum, ut in deliberationibus politicis, vel de sententia aliquorum qui praesunt, seu autoritate ordinariae potestatis, vel ex suffragiis multitudinis aut maioris partis, decerni volunt.
-
-Imo hoc loco traditur expressum mandatum, ne assentiamur ulli dogmati, non congruenti cum doctrina clare et certo in scriptura tradita a Prophetis, Christo et Apostolis: Cavete a Pseudoprophetis, et ad Gal. 1.: Si quis aliud Evangelium docet, anathema sit.
-
-Sicut in populo Israël, necesse fuit Ieremiam, Simeonem, Zachariam, et alios pios dissentire a pontificibus, Pharisaeis et Saducaeis, qui praetextu et autoritate ordinariae potestatis errores defendebant.
-
-Deinde si quando occurrunt loca seu sententiae quae videntur esse pugnantes, adhibenda est prudentia ex eadem regula, teneatur certa et perpetua sententia scripturae.
-
-Deinde facienda est collatio textuum, et retinenda sunt ea, quae cum universa scriptura conveniunt, ut cum scriptum sit: Mihi vindictam, et ego retribuam.
-
-Item: Non vindicabis. Ex aliis locis manifestis scripturae excipienda est vindicta publica, quae est ipsa vindicta divina. Sic scriptum est: Quos Deus coniunxit, homo non separet. Et tamen Christus in alio loco excipit casum fornicationis. Postremo, cum iubet Christus cavere a pseudoprophetis, hoc ipso etiam adhiberi vult diligentem inquisitionem, et prohibet temeritatem in iudicando. Debet igitur fieri communicatio doctrinae cum aliis piis, et inquisitio veritatis, qua inventa, ille credere debet, qui audit magis consentanea scripturae ab alio offerri, iuxta illud Pauli: Si fuerit revelatum sedenti, taceat prior. Illa vero concertatio, qua suam quisque sententiam ex invidia, aut ambitione defendit pertinaciter, non fit propter inquisitionem veritatis. Ergo non est propria piorum.
-
-De secundc. Christus iubet falsos Prophetas ex ipsorum fructibus agnosci: sunt autem fructus duplices, malum dogma, et mali mores. Semper enim habent haeretici manifestum aliquod impium dogma, quod impossibile est cadere in Ecclesiam. Etsi enim singuli errare et labi possunt, qui sunt in Ecclesia, tamen ab universo coetu Ecclesiae impossibile est manifeste impium dogma defendi. Tali igitur manifesto aliquo impio dogmate deprehenso, hinc faciendum est iudicium de caeteris, ut apud Papistas manifeste impii errores inveniuntur, de invocatione Sanctorum, de Missa applicanda pro vivis et mortuis, et quidem ex opere operato, et alii quam plurimi. Apud Anabaptistas manifeste impia et fanatica sunt, quod tollunt omnia civilia et politica officia. Talia cum impossibile sit in vera Ecclesia defendi, facile hinc colligi potest Anabaptistas esse pseudoprophetas, et non pertinere ad Ecclesiam, et hoc ipso manifeste se produnt, et palam convinci possunt. Sic cum negant infantes baptizandos esse, necesse est eos ponere hanc hypothesin, quod infantes non habeant peccatum, cum tamen necesse sit fateri, quod Christus etiam pro infantibus sit passus. Ita uno impio dogmate deprehenso, necesse est postea plures errores sequi. Sicut enim in Musica una aliqua chorda dissonante, tota harmonia turbatur, ita in doctrina unus aliquis error discrepans a fundamento, perturbat omnia. Nam ut semper verum vero consonant, ita falsum plurima errata secum trahit, ut qui semel a recta via deflexit, eum necesse est, quo longius progreditur, eo magis ac magis errare. Haec breviter dicta sunt de fructibus, qui sunt in ipsa doctrina pseudoprophetarum, videlicet, cum defenditur aliquod manifeste impium dogma. Postea sunt et alii fructus in vita et moribus, cum adduntur erroribus manifesta peccata, ut cum Anabaptistae invadunt in aliorum res et bona, praetextu doctrinae, sicut Monasterienses et alii dicebant se habere mandatum, ut delerent omnes impios magistratus. Item, quod contra ius et fidem coniugiorum, abiiciunt, reducunt uxores quas volunt. Sic Papa praetextu doctrinae ad se rapuit imperia. Talia peccata quae fiunt praetextu doctrinae etiam sunt peculiares notae mali spiritus.
 
 ## 8:2 The 3rd Sunday After Epiphany
 The 3rd Sunday after Epiphany.
@@ -19066,6 +19084,222 @@ With this faith let us follow Christ, let us be faithful in the study and propag
 
 He also covertly signifies doctrine, that teachers should propose this, and gather the remnants, and take care that true narrations are propagated, lest the light of doctrine be extinguished for posterity, and by this study the teachers themselves become more learned.
 
+Latin:
+
+Caput XV.
+
+Insignis doctrina hoc loco continetur, de discrimine verorum et falsorum cultuum, seu de discrimine mandatorum divinorum, et humanarum traditionum, quae doctrina valde necessaria est. Quia usitatissima superstitio est generis humani, relictis mandatis Dei, collocare religionem in traditionibus humanis, ut omnes senes meminerunt, fuisse hanc opinionem: Maius peccatum esse, si Sacerdos duceret uxorem, quam si occideret hominem. Item maius peccatum ducebatur, comedere carnes die sexta, quam adulterium. Haec stulta et impia opinio saepe in Ecclesia vagatur. Et Deus eam subinde per Prophetas, Christum, Apostolos, et alios pios doctores refutavit.
+
+Ut autem haec doctrina recte intelligatur, volumus ordine procedere, et primum dicere, qui sint veri cultus Dei, quos Deus postulat et approbat, et qui sunt prorsus necessarii. Et volumus nobis proponere dictum Pauli, quod semper debetis meminisse: Milita bonam militiam, retinens fidem et bonam conscientiam.
+
+Sunt igitur cultus necessarii, primum fides, quae est vera agnitio Dei iuxta totum Symbolum, et est fiducia misericordiae, qua accipimus remissionem peccatorum, et reputamur iusti, et exaudimur propter filium Dei. Hoc lumen in corde est primus et principalis et summus cultus, quia oportet per filium accedere ad Patrem iuxta illud: Nemo venit ad Patrem, nisi per Filium. Item, Qui non honorificat Filium, non honorificat Patrem. Et hoc lumen semper debet lucere, in omni invocatione, et in omnibus aliis operibus. Non debet homo vivere in hac opinione: Ego displiceo Deo, ego dubito an placeam, dubito an me recipiat, dubito an recipiat preces meas. Hae dubitationes naturaliter sunt in mentibus, sed homo debet agere poenitentiam, et postea statuere, certo se recipi, et Deo placere obedientiam, propter Dominum nostrum Iesum Christum, et in hac fiducia debet accedere ad Deum, et eum invocare.
+
+Secundo, cultus sunt necessarii, bona conscientia, secundum mandata Dei, id est, ut homo iuxta omnia mandata habeat bonam conscientiam. Non sit adulter, non scortator, non fur, non mendax, non homicida, non gerat in corde sciens et volens iniustum odium contra proximum, etc. Talia opera a Deo mandata, sunt veri cultus Dei cum fide.
+
+Ezechielis 20.: In praeceptis patrum vestrorum ne ambuletis, sed in praeceptis meis ambulate. Hic expresse retrahit nos ad mandata Dei, et iubet, ut faciamus ea, quae ipse praecepit.
+
+Et haec doctrina saepe repetita est, et magna consolatio est piis, scire, quod cultus Dei sint haec ipsa opera communi vitae necessaria, honesta vita coniugalis, honesta opera alia vocationis. Item, nostra patientia in cruce, sicut dicit Psalmus: Sacrificium Deo Spiritus contribulatus. Et in his omnibus semper debent lucere fides et invocatio, in omnibus operibus et periculis. Invoca et pete et exspecta auxilium Dei, ut Psalmus dicit: Commenda Deo viam tuam, et ipse faciet.
+
+Secunda pars.
+
+Postquam dixi, qui sint necessarii cultus, iam dicam de traditionibus.
+
+Et scitote duplices esse traditiones, aliae sunt contra Deum, ut omnes quae praecipiunt impossibilia, vel impia, ut prohibitio coniugii. Item ordinationes Monachorum, et missae, quas servaverunt tanquam cultus, et merita remissionis peccatorum. Haec impia simpliciter abolenda sunt.
+
+De talibus traditionibus hic Christus dicit: Quare propter vestram traditionem violatis mandatum Dei? His verbis significat, mandatum Dei anteferendum esse mandatis humanis, et quando mandata hominum praecipiunt aliquid facere contra mandata Dei, tunc debeamus servare regulam: Oportet Deo magis obedire, quam hominibus. Haec regula est immota, et semper in Ecclesia hanc regulam notissimam esse oportet.
+
+Et de his traditionibus manifestum est, quod non sint cultus Dei, sed ut Paulus dicit, sunt doctrina Daemoniorum. Et econtra cultus Dei est, resistere talibus cultibus et doctrinis.
+
+Secundo, aliae sunt traditiones de mediis rebus, quae non sunt contra Deum, et sunt factae boni ordinis causa, ut quod servatur certo tempore dies paschalis, certo tempore dies natalis Christi, quod haec hora constituta est ad concionem, quia oportet in vita humana esse ordinem. Et hic ordo sic servandus est, sicut servatis honestum ordinem in domo, mane pueri dicunt precationem, postea comedunt, deinde vadunt ad scholam. Sic serventur et bonae ordinationes in Ecclesia, non quod sint iustitiae vel res necessariae ad iustitiam, sed propter bonum ordinem et tranquillitatem.
+
+Hanc doctrinam necesse est sciri, et nunquam recipiatur opinio, qualis olim fuit, ubi cogitabant, abstinentiam a carne esse sanctum opus, quo Deus velit honore affici, et cogitabant rem necessariam esse.
+
+Haec opinio simpliciter falsa et reiicienda est, et interea quaerendi sunt veri cultus, fides et bona conscientia in operibus a Deo praeceptis.
+
+Applicatio.
+
+Haec est summa doctrinae in hoc textu, Christus docet, cultus esse opera a Deo praecepta, et non opera traditionum humanarum, sicut infra dicit: Frustra colunt me mandatis hominum.
+
+Et taxat Pharisaicam traditionem. Dicebant, melius esse, offerre templo, quam alere parentes, sicut nunc dicunt: Melius est fundare missam, vel alere multos Monachos propter missam, quam de bonis Ecclesiae iuvare pauperes scholasticos vel alios miseros. Omnino similis intellectus fuit traditionis Pharisaicae.
+
+Reiicit igitur Christus hanc traditionem, quia pugnat cum mandato divino.
+
+Excusat et suos discipulos, quod non lavent manus, et reiicit stultas opiniones, quod putabant talia opera necessaria esse, et sanctitatem esse.
+
+Sed quando haec dicuntur, tunc offenduntur Pharisaei, hic est opus doctrina de scandalo.
+
+Non quod ingreditur in os.
+
+Iterum initio admoneo de infirmitate Apostolorum. Est et in Apostolis error, qui adhuc putant discrimina ciborum, esse cultus Dei magnos et singulares, et hunc populum Israël ideo antecellere gentibus, quod tam sancta opera faciant, videlicet quod a carnibus suillis et a leporibus etc. abstineant. Imo habent hanc persuasionem Apostoli, non solum de ceremoniis, sed etiam de humanis traditionibus.
+
+Discamus igitur ex hoc exemplo, quod non sit mirum, in Augustino, Ambrosio, et similibus fuisse etiam aliquos errores. Semper in omnibus hominibus aliqua sunt peccata, et aliqua ignorantia, in aliis plus, in aliis minus.
+
+Sed hic duo praecepta teneamus.
+
+Primum, quod necesse sit tenere fundamentum, id est, articulos fidei, ut 1. Corinth. 3. dicitur: Fundamentum aliud poni non potest, praeter id, quod positum est, quod est Iesus Christus.
+
+Id necesse est ita teneri, ne penitus ignoretur ullus articulus fidei, aut ne contrarium asseveretur. Qui vero contrarium asseverant pertinaciter, haud dubie damnati sunt, iuxta illud: Omnis qui non credit, iam damnatus est.
+
+II. Secunda doctrina: Quando autem fundamentum tenetur, et deinde aliquid erroris accedit, etsi hoc obscuratur articulum aliquem fidei, tamen homo potest salvari, ut ibi dicitur 1. Corinth. 8.: Alius superaedificat stipulas, salvabitur, sic tamen quasi per ignem.
+
+Sed talis homo debet esse docilis, et quando Deus patefacit errores, sicut Deus subinde instaurat Ecclesiam et repurgat doctrinam, non debet pertinaciter adversari. Quia isti errores etiamsi videntur esse de rebus parvis, tamen sunt magni, et obscurant semper aliquos articulos fidei, et impediunt fidem et veros cultus Dei. Et Deus est hostis mendacii, non vult nos defendere mendacia, sicut scriptum est: Abominatio coram Deo mendacium, Proverb. 12.: Imo quando accedit pertinacia tanta, ut corrigi nolit, tunc fit blasphemia et peccatum in Spiritum sanctum, quia tales scientes resistunt veritati etc.
+
+Haec dixi, ut sciatis veram doctrinam etiam de his traditionibus, ut de cibis, vestitu, et similibus retinendam esse. Uti potes carne vel piscibus, sed tamen hoc scias, tale opus non esse cultum Dei. Item non mereri remissionem peccatorum. Item, non esse res necessarias, et posse omitti extra casum scandali.
+
+Nunc venio ad alteram partem concionis.
+
+Primum dicit: Cibis non coinquinari hominem, id est, non esse peccata coram Deo, vesci rebus a Deo ordinatis.
+
+I. Hanc doctrinam sciamus, ne conscientiae illaqueentur.
+
+II. Item, ut sciamus cultus Dei esse, non discrimina ciborum aut vestium, aut ullas tradi- tiones humanas, sed tantum opera a Deo manda- ta, iuxta regulam hic traditam: Frustra colunt me mandatis hominum. Item Psalm. 119.: Lu- cerna pedibus meis etc.
+
+Secundo dicit: Ex corde exeunt pravae co- gitationes.
+
+Hic docet, quis sit fons peccatorum, scili- cet, inobedientia in corde contra Deum.
+
+Et primo nominat cogitationes malas, quod intelligatur de omnibus praeceptis, praecipue de primo, scilicet de Epicureis opinionibus, con- temtu Dei, et securitate carnali, dubitationibus, et multis falsis opinionibus, quae subinde turbant fidem et timorem et spem. Item, intelligatur de omnibus vitiosis adfectibus. Et testatur hic lo- cus, peccata esse non tantum externa facta, sed etiam morbos interiores.
+
+Tenenda est doctrina de his morbis, quod operteat resistere pravis adfectibus, ne opere compleantur, et simul petere, ut propter Media- torem haec mala nobis condonentur, sicut docet doctrina ad Rom. 7. 8.:
+
+Et egressus inde Iesus secessit in partes Tyri etc.
+
+De Cananaea.
+
+In hac historia tres continentur doctrinae. I. De miraculis. II. De tentationibus, quae obstrepunt precanti. III. De fide et praecipuo cultu.
+
+I. De miraculis.
+
+Primum hic generalis doctrina repetenda est, quod miracula sint testimonia, hunc doctorem vere missum esse a Deo. Item, quod hic doctor sit Dominus et promissus salvator, qualem se praedicat, destruens opera Diaboli, peccatum, tyrannidem Diaboli et mortem.
+
+Peculiaris imago hic proponitur. Nusquam adeo duriter praeterit, aut reiicit preces, ortas ex vero et magno dolore, ut hic. Et duo obii- ciuntur, primum, quod non sit ex Israël; se- cundo, quod sit indigna, ut canis. Ex his ten- tationibus ipsa tamen eluctatur, et tandem fide impetrat, quod petit. Hic igitur discamus, sin- gulorum animos oppugnari similibus tentationi- bus, nec propterea fidem abiiciendam esse, sed potius erigendam inter hos fluctus.
+
+Sunt autem duae praecipuae tentationes, altera de indignitate, altera de electione. Prior ex lege oritur. Semper enim clamat lex in con- scientiis nostris, Deum respicere, exaudire, sal- vare dignos, iustos, nos vero iniustos, indignos, pollutos et abiectos esse, sicut canes. Huic ten- tationi debet opponi Evangelium de gratuita iu- stificatione, et de exclusiva, gratis, et colligi te- stimonia, quae ostendunt, indignos et iniustos recipi. Gratis iustificamur fide. Item: Beati quorum remissae sunt iniquitates. Item: Tibi sum tantum peccator. Item, hoc loco conferri debent peccatum et gratia, sicut Paulus confert: Gratia exuberat supra peccatum. Pluris fiat filius Dei et sacrificium filii Dei, quam nostrum pecca- tum, ut statuamus nobis ignosci, remitti pecca- tum, et incipiamus obedire Deo. Hae sunt fir- mae et verae consolationes contra tentationem de indignitate.
+
+Altera concurrit de electione. Quia homi- nes, cum vident reiici multos benemeritos, ut Saulem, Augustum, Ciceronem, et recipi longe deteriores, ut Magdalenam, latronem in cruce, disputant de particularitate, videlicet, Deum habere quendam catalogum eorum, quos velit salvos facere, caeteros vero negligi, sicut canes. Ita tribuunt Deo inaequalitatem, quod re ipsa est accusare eum tyrannidis. Haec est durissima tentatio.
+
+Sed huic tentationi opponenda est doctrina, quod promissiones sunt universales. Et diligen- ter universales colligendae sunt, ut: Omnis qui credit in filium non pereat. Item: Venite ad me omnes. Item, Rom. 10.: Deus est idem omni- bus, dives in omnes invocantes se. Huc adiun- gatur mandatum immutabile, et quod longe posi- tum est, supra omnes leges, videlicet, quod prae- cipit, ut omnes credant filio Dei, et huic man- dato necesse est omnes obtemperare. Nec nos quaerere, aut scrutari voluntatem Dei debemus, seposito hoc mandato, et reiectis promissionibus. Et cum Christus dicat: Ego sum via, veritas et vita. Item: Qui videt me, videt et patrem: vo- luntas Dei necessario quaerenda est in filio nobis donato, et Evangelio, quod filius Dei ex sinu Patris protulit.
+
+Has consolationes meminerimus, ut habea- mus firmas refutationes illarum tentationum, quae plurimorum animos exercent, et quotidie in in- vocatione proferamus has consolationes. Nam si inspexeris animum tuum, videbis te his duabus tentationibus impediri, ne invokes, quia cogitas te indignum esse. Item cogitas Deum suos quosdam elegisse, te vero negligi. Et accedunt huc humana argumenta, quia non sumus pares Abrahae, Eliae, Elisaeo, Danieli, et similibus, sumus imbecilles, sine magnis donis, sine autoritate, ideo negligi nos iudicamus, et desperatione quadam omittimus invocationem.
+
+Sed hic debemus intueri animis doctrinam Evangelii, quae praecipit de fide, sicut iam dictum est. Debemus etiam intueri hanc Cananaeam magistram, quae refutata indignitate, et particularitate, ratiocinatur, promissiones non tantum ad Israël pertinere, sed etiam ad gentes, Canes, inquit, edunt de micis.
+
+Ita excitata fide invocare Deum in agnitione filii eius debemus. Et haec fides ac invocatio in his qui agunt poenitentiam, est summus cultus Dei, et praecipuus Ecclesiae, sicut hic dicitur: O mulier magna est fides tua.
+
+Et hanc non esse irritam, sed impetrare bona, haec ipsa vox testatur: Fiat tibi sicut vis. Iuxta illud: Petite et accipietis.
+
+Proponitur ergo nobis in hoc Evangelio exemplum fidei, eluctantis ex gravissimis tentationibus, et bona impetrantis, ut nos quoque discamus vincere diffidentiam, excitare fidem et invocationem. Nec habemus minores causas, quam haec Cananaea, quae laborat de filia sua, sic et nos de nostris necessitatibus et de publicis.
+
+Sequitur in textu historia de quatuor millibus auditorum Christi, saturatorum septem panibus.
+
+In hac historia haec consideranda et discenda sunt.
+
+I. Discrimen inter promissiones de rebus aeternis, et de rebus praesentibus seu corporalibus.
+
+II. Quod semper promissioni corporali addenda sit doctrina de cruce, cui subiecta est Ecclesia propter causas, quae alibi recitatae sunt.
+
+III. Cur sint traditae promissiones de rebus praesentibus, nempe: I. Ut statuamus haec bona non obiici casu, nec parari tantum industria humana, sed credamus Dei beneficia esse.
+
+II. Causa, cum Deus velit in hac vita semper aliquam esse suam Ecclesiam, opus est corpori victu, hospitio, defensione, politiis, pace aliqua, ut educari soboles, et coli studia possint.
+
+Ideo et addidit has promissiones, et haec beneficia praestat Deus, sed mirabiliter. Etsi enim grassatur semper Diabolus adversus Ecclesiam, et sunt assidui tumultus in mundo, quibus humani generis peccata assidua horribiliter puniuntur: tamen inter hos tumultus servat Deus Ecclesiam suam, ut stantem populum Israël in mari rubro servabat. Et manet corpus, etiamsi aliqua membra trucidentur, ut manet Davidis exercitus, etiamsi aliqui milites praeliantes interficiuntur.
+
+III. Tertia causa est, cur hae promissiones traditae sunt, ut sint exercitia fidei et invocationis. Vult Deus se agnosci per invocationem. Ideo multa proposuit, quae nos de invocatione admoneant. Vult nos ad se confugere, etiam cum a tota rerum natura deserti et proiecti videmur, sicut David inquit: Pater et mater dereliquit me, Dominus autem suscepit me.
+
+IIII. Quo ordine petendae sint. Hoc docet dictum Matth. 6.: Quaerite primum regnum Dei, et caetera adiicientur vobis. Sed addatur labor honestus et cuique conveniens iuxta vocationem.
+
+V. Quomodo fides exercenda sit in petitione corporalium bonorum. Primum sciendum est, semper petitioni corporalium oportere praelucere fidem, qua credimus nos propter Christum recipi et exaudiri. Imo ut haec fides in nobis accendatur et crescat, ideo tam variae externae occasiones, pericula, afflictiones propositae sunt.
+
+Sciamus ergo primam et summam promissionem de Mediatore, et de reconciliatione, semper simul complectendam esse. Quotidie igitur cum ad mensam recitas haec verba: Panem nostrum quotidianum da nobis hodie, quia mox obstrepit infirmitas nostra: Deus te indignum non exaudit, te non vult defesum aut alitum: hic intuenda est promissio de Christo, et addenda fides, quod propter Mediatorem recipiamur et exaudiamur.
+
+Ideo mox sequitur: Et remitte nobis debita nostra. Postea fides illa tria cogitet, quae supra recensui: Deum velle a se peti bona corporis.
+
+Primum, ut credamus ea dari divinitus, non putemus obiici casu. Secundo: Quia vult servari Ecclesiam in hac vita, dat victum, defensionem, hospitia mirabiliter etc. Tertio vult agnosci et coli Deus hac invocatione, ideo multas res proposuit, quas peti vult.
+
+Vult et confirmari fidem petitione corporalium, cum experientia ostendit, non fuisse irritam precationem, ut in Psalmo dicitur: Iste pauper clamavit ad Dominum, et Deus exaudivit eum.
+
+Postremo, vult etiam Deus gratiarum actione coli propter liberationes, ut dulcissime dicitur 2. Corinth. 1., ubi Paulus iubet multos pro se petere, ut multi agant gratias.
+
+Sed hic obiicit humana imbecillitas: Quid attinet petere, cum sciamus oportere nos affligi? sicut scriptum est: Corpus autem subiectum est morti propter peccatum. Item manifestum est, saepe non liberari ex praesentibus calamitatibus sanctos, ut Ionathan, Maccabaeum. Cum igitur debeamus offerre obedientiam, ut Christus orat, veruntamen non mea voluntas, sed tua fiat, quid prodest petitio, et quidem cum dubitatione?
+
+Respondeo: Tenenda est regula firmissime, quod Deus mandaverit et postulet invocationem, et quod nunquam sit inanis aut irrita invocatio piorum, etiam si liberatio differtur, aut non ita respondent eventus, ut nos imaginamur, et non est nostrum, praescribere Deo modum opitulandi, et nos ad obedientiam obligati sumus, sicut Christus inquit: Tua voluntas fiat. Deinde sciamus semper duo obiecta includenda esse in petitionem corporalium: Universam Ecclesiam, et privatam necessitatem. Petitio pii semper impetrat universae Ecclesiae, et ita fides statuat ratam esse hanc petitionem, et non dubitet, recipi petitionem a Deo pro universa Ecclesia. Privatim vero pro nobis petere debemus cum hac conditione, ut nos ad obedientiam offeramus, sicut se offert Christus.
+
+VI. Applicatio historiae.
+
+Quod Christus pascit auditores suos, ostenditur exemplum promissionis: Primum quaerite regnum Dei, et caetera adiicientur vobis.
+
+Hac fide sequamur Christum, simus fideles in studio et propagatione Evangelii, et in sua quisque vocatione, et exspectemus a filio Dei auxilium, victum et defensionem. Quod vero iubet Apostolos proponere, monet gubernatores Ecclesiae, ut curent eleemosynas dari, et sciant non minui, sed augeri facultates eleemosynis.
+
+Tecte et doctrinam significat, hanc proponant doctores, et colligant reliquias, curent propagari veras enarrationes, ne doctrinae lux exstinguatur ad posteros, et hoc studio ipsi doctores fiunt eruditiores.
+
+## 15:21-22 Dominica Reminiscere
+Dominica Reminiscere. Gospel of Matthew 15.
+
+And Jesus went out from there, and withdrew into the parts of Tyre and Sidon, and behold, a Canaanite woman coming out from those borders, cried out to him, saying:
+
+Have mercy on me, O Lord, son of David, my daughter is badly vexed by a demon. But he did not answer her a word. And his disciples approaching, asked him, saying: Dismiss her, because she cries out after us. But he answering said: I am not sent except to the sheep that have perished, of the house of Israel. But she came and worshipped him, saying: Lord, help me. But he answering said: It is not good to take the bread of the children, and to cast it to the dogs. But she said: Yes, Lord, for even the dogs eat of the crumbs which fall from the table of their masters. Then Jesus answering, said to her: O woman, great is your faith, let it be done to you as you wish. And her daughter was healed from that hour.
+
+There are three principal topics. I. Topic, Concerning miracles. II. Concerning the temptations that obstruct the one praying. III. Concerning faith and the principal worship.
+
+Concerning the first.
+
+First, the general doctrine must be repeated here, that miracles are testimonies that this teacher was truly sent by God. Likewise, that this teacher is the Lord, and the promised savior, such as he proclaims himself to be, destroying the works of the devil, sin, the tyranny of the devil, and death.
+
+On the second.
+
+A peculiar image is proposed here. Nowhere does He pass by so harshly, or reject prayers arising from true and great sorrow, as here. And two things are objected. First, that she is not from Israel. Second, that she is unworthy, like a dog. From these temptations, however, she struggles forth, and at length by faith obtains what she seeks. Here, therefore, let us learn that the souls of individuals are attacked by similar temptations. And that faith is not to be cast away on account of this, but rather to be raised up amidst these waves.
+
+There are, however, two principal temptations: the one concerning unworthiness, the other concerning election. The former arises from the law. For the law always cries out in our consciences that God regards, hears, and saves the worthy and the just. But that we are unjust, unworthy, polluted, and abject like dogs. To this temptation must be opposed the doctrine of the Gospel concerning gratuitous justification, and concerning the exclusive, Freely, and testimonies must be gathered which show the unworthy, the un just are received. Rom. 3: We are justified freely by faith. Item: Blessed are they whose iniquities are forgiven. Item, I am only a sinner to you. Item, in this place sin and grace must be compared. As Paul compares in Rom. 6: Grace abounds over sin. Let the Son of God, and the sacrifice of the Son of God, be made of more value than our sin, so that we may conclude that we are forgiven, that sin is remitted, and we may begin to obey God. These are firm… remitted, and that we may begin to obey God. These are firm and true consolations against the temptation concerning unworthiness.
+
+The other [temptation] concerns election. Because men, when they see many who are well-deserving rejected, such as Saul, Augustus, Cicero, and those far worse received, such as Magdalene, the thief on the cross, etc., they dispute about particularity, namely, that God has a certain catalog of those whom He wills to make saved, while the others are neglected, like dogs. Thus they attribute inequality to God, which in reality is to accuse Him of tyranny. This is a most harsh temptation. But against this temptation, the doctrine must be opposed that the promises are universal.
+
+And the universal ones must be diligently collected, as in John 3: That everyone who believes in the Son may not perish. Item: Come to me all. Item, Rom. 10: God is the same to all, rich to all who call upon Him. To this must be added the immutable command, and that which is placed far above all laws, namely, that He commands that all should believe in the Son of God, and it is necessary for all to obey this command. Nor should we seek or scrutinize the will of God, setting aside this command and rejecting the promises.
+
+And since Christ says: I am the way, the truth, and the life. Item: He who sees me, sees also the Father, the will of God must necessarily be sought in the Son given to us, and in the Gospel, which the Son of God brought forth from the bosom of the Father. Let us remember these consolations, so that we may have firm refutations of those temptations which exercise the minds of many, and let us daily bring forth these consolations in prayer.
+
+For if you look into your own soul, you will see that you are hindered by these two temptations from calling upon Him, because you think yourself to be unworthy. Item, you think that God has chosen some of His own, but that you are neglected. And human arguments are added to this, because we are not equal to Abraham, Elijah, Elisha, Daniel, and the like; we are weak, without great gifts, without authority, therefore we judge ourselves to be neglected, and in a certain despair we omit prayer. But here we must look with our minds at the doctrine of the Gospel, which commands faith, as has already been said.
+
+We must also look at this Cananaean teacher, who, having refuted unworthiness and particularity, reasons that the promises pertain not only to Israel, but also to the Gentiles. Dogs, she says, eat of the crumbs. Thus, with faith awakened, we must call upon God in the acknowledgment of His Son.
+
+And this faith and invocation in those who perform repentance is the highest worship of God, and the chief [worship] of the Church, as it is said here: O woman, great is your faith. And that this is not in vain, but obtains good things, this very voice testifies: Let it be to you as you wish, according to that: Ask, and you shall receive.
+
+Therefore, in this Gospel, an example is proposed to us of faith struggling out of the most grievous temptations and obtaining good things, so that we too may learn to overcome diffidence, and to awaken faith and prayer. Nor do we have lesser causes than this Cananaean woman, who labors for her daughter; so do we for our own necessities, and for public ones.
+
+Latin:
+
+Dominica Reminiscere. Evangelium Matth. 15.
+
+Et egressus inde Iesus, secessit in partes Tyri et Sidonis, Et ecce mulier Cananaea a fini- bus illis egressa, clamavit ad eum, dicens:
+
+Miserere mei Domine fili David, filia mea a daemonio male vexatur. Ille autem non respondit ei verbum. Et accedentes disci- puli eius, rogabant eum, dicentes: Dimitte eam, quia clamat post nos. Ipse autem respondens ait: Non sum missus nisi ad oves, quae perierunt, domus Israël. At illa venit et adoravit eum, dicens: Domine adiuva me. Ille autem respondens ait: Non est bonum sumere panem filiorum, ac proiicere catellis. At illa dixit: Etiam Domine, Sed enim et catelli edunt de micis, quae cadunt de mensa dominorum suorum. Tunc respondens Iesus, ait illi: O mulier, magna est fides tua, fiat tibi sicut vis. Et sanata est filia eius ex illa hora.
+
+Loci praecipui tres sunt. I. Locus, De miraculis. II. De tentationibus quae obstrepunt pre- canti. III. De fide et praecipuo cultu.
+
+De primo.
+
+Primum hic generalis doctrina repetenda est, quod miracula sint testimonia hunc doctorem vere missum esse a Deo. Item, quod hic doctor sit Dominus, et promissus salvator, qualem se prae- dicat, destruens opera diaboli, peccatum, tyran- nidem diaboli, et mortem.
+
+De secundo.
+
+Peculiaris imago hic proponitur. Nusquam adeo duriter praeterit, aut reiicit preces ortas ex vero et magno dolore, ut hic. Et duo obiiciun- tur. Primum, quod non sit ex Israël. Secundo, quod sit indigna, ut canis. Ex his tentationibus ipsa tamen eluctatur, et tandem fide impetrat, quod petit. Hic igitur discamus singulorum ani- mos oppugnari similibus tentationibus. Nec pro- pterea fidem abiiciendam esse, sed potius erigen- dam inter hos fluctus.
+
+Sunt autem duae praecipue tentationes: al- tera de indignitate, altera de electione. Prior ex lege oritur. Semper enim clamitat lex in con- scientiis nostris Deum respicere, exaudire, sal- vare dignos, iustos. Nos vero iniustos, indi- gnos, pollutos et abiectos esse sicut canes. Huic tentationi debet opponi doctrina Evangelii de gra- tuita iustificatione, et de exclusiva, Gratis, et colligi testimonia quae ostendunt indignos, iniu- stos recipi. Rom. 3.: Gratis iustificamur fide. Item: Beati quorum remissae sunt iniquitates. Item, tibi sum tantum peccator. Item, hoc loco conferri debent peccatum et gratia. Sicut Paulus confert Rom. 6.: Gratia exuberat supra peccatum. Pluris fiat Filius Dei, et sacrificium Filii Dei, quam nostrum peccatum, ut statuamus nobis ignosci, remitti peccatum, et incipiamus obedire Deo. Hae sunt firmae et verae consolationes, contra tentationem de indignitate.
+
+Altera concurrit de electione. Quia homines, cum vident reiici multos bene meritos, ut Saulem, Augustum, Ciceronem, et recipi longe deteriores, ut Magdalenam, latronem in cruce etc. disputant de particularitate, videlicet, Deum habere quendam catalogum eorum, quos velit salvos facere, caeteros vero negligi, sicut canes. Ita tribuunt Deo inaequalitatem, quod reipsa est accusare eum tyrannidis. Haec est durissima tentatio. Sed huic tentationi opponenda est doctrina, quod promissiones sunt universales.
+
+Et diligenter universales colligendae sunt, ut Iohan. 3.: Ut omnis qui credit in Filium, non pereat. Item: Venite ad me omnes. Item, Rom. 10.: Deus est idem omnibus, dives in omnes invocantes se. Huc adiungatur mandatum immutabile, et quod longe positum est, supra omnes leges, videlicet, quod praecipit, ut omnes credant Filio Dei, et huic mandato necesse est omnes obtemperare.
+
+Nec nos quaerere, aut scrutari voluntatem Dei debemus, seposito hoc mandato, et reiectis promissionibus. Et cum Christus dicat: Ego sum via, veritas, et vita. Item: Qui videt me, videt et patrem, voluntas Dei necessario quaerenda est in Filio nobis donato, et Evangelio, quod Filius Dei ex sinu patris protulit.
+
+Has consolationes meminerimus, ut habeamus firmas refutationes illarum tentationum, quae plurimorum animos exercent, et quotidie in invocatione proferamus has consolationes. Nam si inspexeris animum tuum, videbis te his duabus tentationibus impediri, ne invokes, quia cogitas te indignum esse. Item, cogitas Deum suos quosdam elegisse, te vero negligi. Et accedunt huc humana argumenta, quia non sumus pares Abrahae, Eliae, Elisaeo, Danieli, et similibus, sumus imbecilles, sine magnis donis, sine autoritate, ideo negligi nos iudicamus, et desperatione quadam omittimus invocationem.
+
+Sed hic debemus intueri animis doctrinam Evangelii, quae praecipit de fide, sicut iam dictum est. Debemus etiam intueri hanc Cananaeam magistram, quae refutata indignitate et particularitate ratiocinatur promissiones non tantum ad Israël pertinere, sed etiam ad gentes. Canes, inquit, edunt de micis.
+
+Ita excitata fide invocare Deum in agnitione Filii eius debemus. Et haec fides ac invocatio in his qui agunt poenitentiam, est summus cultus Dei, et praecipuus Ecclesiae, sicut hic dicitur: O mulier magna est fides tua. Et hanc non esse irritam, sed impetrare bona, haec ipsa vox testatur: Fiat tibi sicut vis, iuxta illud: Petite, et accipietis. Proponitur ergo nobis in hoc Evangelio exemplum fidei eluctantis ex gravissimis tentationibus, et bona impetrantis, ut nos quoque discamus vincere diffidentiam, excitare fidem et invocationem.
+
+Nec habemus minores causas, quam haec Cananaea, quae laborat de filia sua, sic et nos de nostris necessitatibus, et de publicis.
+
+## 16:1 Sermons on Matthew: Argument
 Chapter XVI. And the Pharisees with the Sadducees came, and tempting asked him that he would show them a sign from heaven, etc.
 
 First topic.
@@ -19328,152 +19562,6 @@ For these are the beginnings of that new kingdom.
 
 Latin:
 
-Caput XV.
-
-Insignis doctrina hoc loco continetur, de discrimine verorum et falsorum cultuum, seu de discrimine mandatorum divinorum, et humanarum traditionum, quae doctrina valde necessaria est. Quia usitatissima superstitio est generis humani, relictis mandatis Dei, collocare religionem in traditionibus humanis, ut omnes senes meminerunt, fuisse hanc opinionem: Maius peccatum esse, si Sacerdos duceret uxorem, quam si occideret hominem. Item maius peccatum ducebatur, comedere carnes die sexta, quam adulterium. Haec stulta et impia opinio saepe in Ecclesia vagatur. Et Deus eam subinde per Prophetas, Christum, Apostolos, et alios pios doctores refutavit.
-
-Ut autem haec doctrina recte intelligatur, volumus ordine procedere, et primum dicere, qui sint veri cultus Dei, quos Deus postulat et approbat, et qui sunt prorsus necessarii. Et volumus nobis proponere dictum Pauli, quod semper debetis meminisse: Milita bonam militiam, retinens fidem et bonam conscientiam.
-
-Sunt igitur cultus necessarii, primum fides, quae est vera agnitio Dei iuxta totum Symbolum, et est fiducia misericordiae, qua accipimus remissionem peccatorum, et reputamur iusti, et exaudimur propter filium Dei. Hoc lumen in corde est primus et principalis et summus cultus, quia oportet per filium accedere ad Patrem iuxta illud: Nemo venit ad Patrem, nisi per Filium. Item, Qui non honorificat Filium, non honorificat Patrem. Et hoc lumen semper debet lucere, in omni invocatione, et in omnibus aliis operibus. Non debet homo vivere in hac opinione: Ego displiceo Deo, ego dubito an placeam, dubito an me recipiat, dubito an recipiat preces meas. Hae dubitationes naturaliter sunt in mentibus, sed homo debet agere poenitentiam, et postea statuere, certo se recipi, et Deo placere obedientiam, propter Dominum nostrum Iesum Christum, et in hac fiducia debet accedere ad Deum, et eum invocare.
-
-Secundo, cultus sunt necessarii, bona conscientia, secundum mandata Dei, id est, ut homo iuxta omnia mandata habeat bonam conscientiam. Non sit adulter, non scortator, non fur, non mendax, non homicida, non gerat in corde sciens et volens iniustum odium contra proximum, etc. Talia opera a Deo mandata, sunt veri cultus Dei cum fide.
-
-Ezechielis 20.: In praeceptis patrum vestrorum ne ambuletis, sed in praeceptis meis ambulate. Hic expresse retrahit nos ad mandata Dei, et iubet, ut faciamus ea, quae ipse praecepit.
-
-Et haec doctrina saepe repetita est, et magna consolatio est piis, scire, quod cultus Dei sint haec ipsa opera communi vitae necessaria, honesta vita coniugalis, honesta opera alia vocationis. Item, nostra patientia in cruce, sicut dicit Psalmus: Sacrificium Deo Spiritus contribulatus. Et in his omnibus semper debent lucere fides et invocatio, in omnibus operibus et periculis. Invoca et pete et exspecta auxilium Dei, ut Psalmus dicit: Commenda Deo viam tuam, et ipse faciet.
-
-Secunda pars.
-
-Postquam dixi, qui sint necessarii cultus, iam dicam de traditionibus.
-
-Et scitote duplices esse traditiones, aliae sunt contra Deum, ut omnes quae praecipiunt impossibilia, vel impia, ut prohibitio coniugii. Item ordinationes Monachorum, et missae, quas servaverunt tanquam cultus, et merita remissionis peccatorum. Haec impia simpliciter abolenda sunt.
-
-De talibus traditionibus hic Christus dicit: Quare propter vestram traditionem violatis mandatum Dei? His verbis significat, mandatum Dei anteferendum esse mandatis humanis, et quando mandata hominum praecipiunt aliquid facere contra mandata Dei, tunc debeamus servare regulam: Oportet Deo magis obedire, quam hominibus. Haec regula est immota, et semper in Ecclesia hanc regulam notissimam esse oportet.
-
-Et de his traditionibus manifestum est, quod non sint cultus Dei, sed ut Paulus dicit, sunt doctrina Daemoniorum. Et econtra cultus Dei est, resistere talibus cultibus et doctrinis.
-
-Secundo, aliae sunt traditiones de mediis rebus, quae non sunt contra Deum, et sunt factae boni ordinis causa, ut quod servatur certo tempore dies paschalis, certo tempore dies natalis Christi, quod haec hora constituta est ad concionem, quia oportet in vita humana esse ordinem. Et hic ordo sic servandus est, sicut servatis honestum ordinem in domo, mane pueri dicunt precationem, postea comedunt, deinde vadunt ad scholam. Sic serventur et bonae ordinationes in Ecclesia, non quod sint iustitiae vel res necessariae ad iustitiam, sed propter bonum ordinem et tranquillitatem.
-
-Hanc doctrinam necesse est sciri, et nunquam recipiatur opinio, qualis olim fuit, ubi cogitabant, abstinentiam a carne esse sanctum opus, quo Deus velit honore affici, et cogitabant rem necessariam esse.
-
-Haec opinio simpliciter falsa et reiicienda est, et interea quaerendi sunt veri cultus, fides et bona conscientia in operibus a Deo praeceptis.
-
-Applicatio.
-
-Haec est summa doctrinae in hoc textu, Christus docet, cultus esse opera a Deo praecepta, et non opera traditionum humanarum, sicut infra dicit: Frustra colunt me mandatis hominum.
-
-Et taxat Pharisaicam traditionem. Dicebant, melius esse, offerre templo, quam alere parentes, sicut nunc dicunt: Melius est fundare missam, vel alere multos Monachos propter missam, quam de bonis Ecclesiae iuvare pauperes scholasticos vel alios miseros. Omnino similis intellectus fuit traditionis Pharisaicae.
-
-Reiicit igitur Christus hanc traditionem, quia pugnat cum mandato divino.
-
-Excusat et suos discipulos, quod non lavent manus, et reiicit stultas opiniones, quod putabant talia opera necessaria esse, et sanctitatem esse.
-
-Sed quando haec dicuntur, tunc offenduntur Pharisaei, hic est opus doctrina de scandalo.
-
-Non quod ingreditur in os.
-
-Iterum initio admoneo de infirmitate Apostolorum. Est et in Apostolis error, qui adhuc putant discrimina ciborum, esse cultus Dei magnos et singulares, et hunc populum Israël ideo antecellere gentibus, quod tam sancta opera faciant, videlicet quod a carnibus suillis et a leporibus etc. abstineant. Imo habent hanc persuasionem Apostoli, non solum de ceremoniis, sed etiam de humanis traditionibus.
-
-Discamus igitur ex hoc exemplo, quod non sit mirum, in Augustino, Ambrosio, et similibus fuisse etiam aliquos errores. Semper in omnibus hominibus aliqua sunt peccata, et aliqua ignorantia, in aliis plus, in aliis minus.
-
-Sed hic duo praecepta teneamus.
-
-Primum, quod necesse sit tenere fundamentum, id est, articulos fidei, ut 1. Corinth. 3. dicitur: Fundamentum aliud poni non potest, praeter id, quod positum est, quod est Iesus Christus.
-
-Id necesse est ita teneri, ne penitus ignoretur ullus articulus fidei, aut ne contrarium asseveretur. Qui vero contrarium asseverant pertinaciter, haud dubie damnati sunt, iuxta illud: Omnis qui non credit, iam damnatus est.
-
-II. Secunda doctrina: Quando autem fundamentum tenetur, et deinde aliquid erroris accedit, etsi hoc obscuratur articulum aliquem fidei, tamen homo potest salvari, ut ibi dicitur 1. Corinth. 8.: Alius superaedificat stipulas, salvabitur, sic tamen quasi per ignem.
-
-Sed talis homo debet esse docilis, et quando Deus patefacit errores, sicut Deus subinde instaurat Ecclesiam et repurgat doctrinam, non debet pertinaciter adversari. Quia isti errores etiamsi videntur esse de rebus parvis, tamen sunt magni, et obscurant semper aliquos articulos fidei, et impediunt fidem et veros cultus Dei. Et Deus est hostis mendacii, non vult nos defendere mendacia, sicut scriptum est: Abominatio coram Deo mendacium, Proverb. 12.: Imo quando accedit pertinacia tanta, ut corrigi nolit, tunc fit blasphemia et peccatum in Spiritum sanctum, quia tales scientes resistunt veritati etc.
-
-Haec dixi, ut sciatis veram doctrinam etiam de his traditionibus, ut de cibis, vestitu, et similibus retinendam esse. Uti potes carne vel piscibus, sed tamen hoc scias, tale opus non esse cultum Dei. Item non mereri remissionem peccatorum. Item, non esse res necessarias, et posse omitti extra casum scandali.
-
-Nunc venio ad alteram partem concionis.
-
-Primum dicit: Cibis non coinquinari hominem, id est, non esse peccata coram Deo, vesci rebus a Deo ordinatis.
-
-I. Hanc doctrinam sciamus, ne conscientiae illaqueentur.
-
-II. Item, ut sciamus cultus Dei esse, non discrimina ciborum aut vestium, aut ullas tradi- tiones humanas, sed tantum opera a Deo manda- ta, iuxta regulam hic traditam: Frustra colunt me mandatis hominum. Item Psalm. 119.: Lu- cerna pedibus meis etc.
-
-Secundo dicit: Ex corde exeunt pravae co- gitationes.
-
-Hic docet, quis sit fons peccatorum, scili- cet, inobedientia in corde contra Deum.
-
-Et primo nominat cogitationes malas, quod intelligatur de omnibus praeceptis, praecipue de primo, scilicet de Epicureis opinionibus, con- temtu Dei, et securitate carnali, dubitationibus, et multis falsis opinionibus, quae subinde turbant fidem et timorem et spem. Item, intelligatur de omnibus vitiosis adfectibus. Et testatur hic lo- cus, peccata esse non tantum externa facta, sed etiam morbos interiores.
-
-Tenenda est doctrina de his morbis, quod operteat resistere pravis adfectibus, ne opere compleantur, et simul petere, ut propter Media- torem haec mala nobis condonentur, sicut docet doctrina ad Rom. 7. 8.:
-
-Et egressus inde Iesus secessit in partes Tyri etc.
-
-De Cananaea.
-
-In hac historia tres continentur doctrinae. I. De miraculis. II. De tentationibus, quae obstrepunt precanti. III. De fide et praecipuo cultu.
-
-I. De miraculis.
-
-Primum hic generalis doctrina repetenda est, quod miracula sint testimonia, hunc doctorem vere missum esse a Deo. Item, quod hic doctor sit Dominus et promissus salvator, qualem se praedicat, destruens opera Diaboli, peccatum, tyrannidem Diaboli et mortem.
-
-Peculiaris imago hic proponitur. Nusquam adeo duriter praeterit, aut reiicit preces, ortas ex vero et magno dolore, ut hic. Et duo obii- ciuntur, primum, quod non sit ex Israël; se- cundo, quod sit indigna, ut canis. Ex his ten- tationibus ipsa tamen eluctatur, et tandem fide impetrat, quod petit. Hic igitur discamus, sin- gulorum animos oppugnari similibus tentationi- bus, nec propterea fidem abiiciendam esse, sed potius erigendam inter hos fluctus.
-
-Sunt autem duae praecipuae tentationes, altera de indignitate, altera de electione. Prior ex lege oritur. Semper enim clamat lex in con- scientiis nostris, Deum respicere, exaudire, sal- vare dignos, iustos, nos vero iniustos, indignos, pollutos et abiectos esse, sicut canes. Huic ten- tationi debet opponi Evangelium de gratuita iu- stificatione, et de exclusiva, gratis, et colligi te- stimonia, quae ostendunt, indignos et iniustos recipi. Gratis iustificamur fide. Item: Beati quorum remissae sunt iniquitates. Item: Tibi sum tantum peccator. Item, hoc loco conferri debent peccatum et gratia, sicut Paulus confert: Gratia exuberat supra peccatum. Pluris fiat filius Dei et sacrificium filii Dei, quam nostrum pecca- tum, ut statuamus nobis ignosci, remitti pecca- tum, et incipiamus obedire Deo. Hae sunt fir- mae et verae consolationes contra tentationem de indignitate.
-
-Altera concurrit de electione. Quia homi- nes, cum vident reiici multos benemeritos, ut Saulem, Augustum, Ciceronem, et recipi longe deteriores, ut Magdalenam, latronem in cruce, disputant de particularitate, videlicet, Deum habere quendam catalogum eorum, quos velit salvos facere, caeteros vero negligi, sicut canes. Ita tribuunt Deo inaequalitatem, quod re ipsa est accusare eum tyrannidis. Haec est durissima tentatio.
-
-Sed huic tentationi opponenda est doctrina, quod promissiones sunt universales. Et diligen- ter universales colligendae sunt, ut: Omnis qui credit in filium non pereat. Item: Venite ad me omnes. Item, Rom. 10.: Deus est idem omni- bus, dives in omnes invocantes se. Huc adiun- gatur mandatum immutabile, et quod longe posi- tum est, supra omnes leges, videlicet, quod prae- cipit, ut omnes credant filio Dei, et huic man- dato necesse est omnes obtemperare. Nec nos quaerere, aut scrutari voluntatem Dei debemus, seposito hoc mandato, et reiectis promissionibus. Et cum Christus dicat: Ego sum via, veritas et vita. Item: Qui videt me, videt et patrem: vo- luntas Dei necessario quaerenda est in filio nobis donato, et Evangelio, quod filius Dei ex sinu Patris protulit.
-
-Has consolationes meminerimus, ut habea- mus firmas refutationes illarum tentationum, quae plurimorum animos exercent, et quotidie in in- vocatione proferamus has consolationes. Nam si inspexeris animum tuum, videbis te his duabus tentationibus impediri, ne invokes, quia cogitas te indignum esse. Item cogitas Deum suos quosdam elegisse, te vero negligi. Et accedunt huc humana argumenta, quia non sumus pares Abrahae, Eliae, Elisaeo, Danieli, et similibus, sumus imbecilles, sine magnis donis, sine autoritate, ideo negligi nos iudicamus, et desperatione quadam omittimus invocationem.
-
-Sed hic debemus intueri animis doctrinam Evangelii, quae praecipit de fide, sicut iam dictum est. Debemus etiam intueri hanc Cananaeam magistram, quae refutata indignitate, et particularitate, ratiocinatur, promissiones non tantum ad Israël pertinere, sed etiam ad gentes, Canes, inquit, edunt de micis.
-
-Ita excitata fide invocare Deum in agnitione filii eius debemus. Et haec fides ac invocatio in his qui agunt poenitentiam, est summus cultus Dei, et praecipuus Ecclesiae, sicut hic dicitur: O mulier magna est fides tua.
-
-Et hanc non esse irritam, sed impetrare bona, haec ipsa vox testatur: Fiat tibi sicut vis. Iuxta illud: Petite et accipietis.
-
-Proponitur ergo nobis in hoc Evangelio exemplum fidei, eluctantis ex gravissimis tentationibus, et bona impetrantis, ut nos quoque discamus vincere diffidentiam, excitare fidem et invocationem. Nec habemus minores causas, quam haec Cananaea, quae laborat de filia sua, sic et nos de nostris necessitatibus et de publicis.
-
-Sequitur in textu historia de quatuor millibus auditorum Christi, saturatorum septem panibus.
-
-In hac historia haec consideranda et discenda sunt.
-
-I. Discrimen inter promissiones de rebus aeternis, et de rebus praesentibus seu corporalibus.
-
-II. Quod semper promissioni corporali addenda sit doctrina de cruce, cui subiecta est Ecclesia propter causas, quae alibi recitatae sunt.
-
-III. Cur sint traditae promissiones de rebus praesentibus, nempe: I. Ut statuamus haec bona non obiici casu, nec parari tantum industria humana, sed credamus Dei beneficia esse.
-
-II. Causa, cum Deus velit in hac vita semper aliquam esse suam Ecclesiam, opus est corpori victu, hospitio, defensione, politiis, pace aliqua, ut educari soboles, et coli studia possint.
-
-Ideo et addidit has promissiones, et haec beneficia praestat Deus, sed mirabiliter. Etsi enim grassatur semper Diabolus adversus Ecclesiam, et sunt assidui tumultus in mundo, quibus humani generis peccata assidua horribiliter puniuntur: tamen inter hos tumultus servat Deus Ecclesiam suam, ut stantem populum Israël in mari rubro servabat. Et manet corpus, etiamsi aliqua membra trucidentur, ut manet Davidis exercitus, etiamsi aliqui milites praeliantes interficiuntur.
-
-III. Tertia causa est, cur hae promissiones traditae sunt, ut sint exercitia fidei et invocationis. Vult Deus se agnosci per invocationem. Ideo multa proposuit, quae nos de invocatione admoneant. Vult nos ad se confugere, etiam cum a tota rerum natura deserti et proiecti videmur, sicut David inquit: Pater et mater dereliquit me, Dominus autem suscepit me.
-
-IIII. Quo ordine petendae sint. Hoc docet dictum Matth. 6.: Quaerite primum regnum Dei, et caetera adiicientur vobis. Sed addatur labor honestus et cuique conveniens iuxta vocationem.
-
-V. Quomodo fides exercenda sit in petitione corporalium bonorum. Primum sciendum est, semper petitioni corporalium oportere praelucere fidem, qua credimus nos propter Christum recipi et exaudiri. Imo ut haec fides in nobis accendatur et crescat, ideo tam variae externae occasiones, pericula, afflictiones propositae sunt.
-
-Sciamus ergo primam et summam promissionem de Mediatore, et de reconciliatione, semper simul complectendam esse. Quotidie igitur cum ad mensam recitas haec verba: Panem nostrum quotidianum da nobis hodie, quia mox obstrepit infirmitas nostra: Deus te indignum non exaudit, te non vult defesum aut alitum: hic intuenda est promissio de Christo, et addenda fides, quod propter Mediatorem recipiamur et exaudiamur.
-
-Ideo mox sequitur: Et remitte nobis debita nostra. Postea fides illa tria cogitet, quae supra recensui: Deum velle a se peti bona corporis.
-
-Primum, ut credamus ea dari divinitus, non putemus obiici casu. Secundo: Quia vult servari Ecclesiam in hac vita, dat victum, defensionem, hospitia mirabiliter etc. Tertio vult agnosci et coli Deus hac invocatione, ideo multas res proposuit, quas peti vult.
-
-Vult et confirmari fidem petitione corporalium, cum experientia ostendit, non fuisse irritam precationem, ut in Psalmo dicitur: Iste pauper clamavit ad Dominum, et Deus exaudivit eum.
-
-Postremo, vult etiam Deus gratiarum actione coli propter liberationes, ut dulcissime dicitur 2. Corinth. 1., ubi Paulus iubet multos pro se petere, ut multi agant gratias.
-
-Sed hic obiicit humana imbecillitas: Quid attinet petere, cum sciamus oportere nos affligi? sicut scriptum est: Corpus autem subiectum est morti propter peccatum. Item manifestum est, saepe non liberari ex praesentibus calamitatibus sanctos, ut Ionathan, Maccabaeum. Cum igitur debeamus offerre obedientiam, ut Christus orat, veruntamen non mea voluntas, sed tua fiat, quid prodest petitio, et quidem cum dubitatione?
-
-Respondeo: Tenenda est regula firmissime, quod Deus mandaverit et postulet invocationem, et quod nunquam sit inanis aut irrita invocatio piorum, etiam si liberatio differtur, aut non ita respondent eventus, ut nos imaginamur, et non est nostrum, praescribere Deo modum opitulandi, et nos ad obedientiam obligati sumus, sicut Christus inquit: Tua voluntas fiat. Deinde sciamus semper duo obiecta includenda esse in petitionem corporalium: Universam Ecclesiam, et privatam necessitatem. Petitio pii semper impetrat universae Ecclesiae, et ita fides statuat ratam esse hanc petitionem, et non dubitet, recipi petitionem a Deo pro universa Ecclesia. Privatim vero pro nobis petere debemus cum hac conditione, ut nos ad obedientiam offeramus, sicut se offert Christus.
-
-VI. Applicatio historiae.
-
-Quod Christus pascit auditores suos, ostenditur exemplum promissionis: Primum quaerite regnum Dei, et caetera adiicientur vobis.
-
-Hac fide sequamur Christum, simus fideles in studio et propagatione Evangelii, et in sua quisque vocatione, et exspectemus a filio Dei auxilium, victum et defensionem. Quod vero iubet Apostolos proponere, monet gubernatores Ecclesiae, ut curent eleemosynas dari, et sciant non minui, sed augeri facultates eleemosynis.
-
-Tecte et doctrinam significat, hanc proponant doctores, et colligant reliquias, curent propagari veras enarrationes, ne doctrinae lux exstinguatur ad posteros, et hoc studio ipsi doctores fiunt eruditiores.
-
 Caput XVI. Et accedentes Pharisaei cum Sadducaeis tentantes rogabant eum, ut signum e coelo eis ostenderet, etc.
 
 Primus locus.
@@ -19733,73 +19821,6 @@ Hic dicit de alio regno, in quo glorificabitur Ecclesia.
 Puto simplicissime de resurrectione Christi intelligi, quod ait: Non gustabunt mortem, donec viderint filium hominis venire in regno suo, scilicet tunc, quando resurget Christus ex morte, et ostendet, et mittet Spiritum sanctum.
 
 Haec enim initia sunt illius novi regni.
-
-## 15:21-22 Dominica Reminiscere
-Dominica Reminiscere. Gospel of Matthew 15.
-
-And Jesus went out from there, and withdrew into the parts of Tyre and Sidon, and behold, a Canaanite woman coming out from those borders, cried out to him, saying:
-
-Have mercy on me, O Lord, son of David, my daughter is badly vexed by a demon. But he did not answer her a word. And his disciples approaching, asked him, saying: Dismiss her, because she cries out after us. But he answering said: I am not sent except to the sheep that have perished, of the house of Israel. But she came and worshipped him, saying: Lord, help me. But he answering said: It is not good to take the bread of the children, and to cast it to the dogs. But she said: Yes, Lord, for even the dogs eat of the crumbs which fall from the table of their masters. Then Jesus answering, said to her: O woman, great is your faith, let it be done to you as you wish. And her daughter was healed from that hour.
-
-There are three principal topics. I. Topic, Concerning miracles. II. Concerning the temptations that obstruct the one praying. III. Concerning faith and the principal worship.
-
-Concerning the first.
-
-First, the general doctrine must be repeated here, that miracles are testimonies that this teacher was truly sent by God. Likewise, that this teacher is the Lord, and the promised savior, such as he proclaims himself to be, destroying the works of the devil, sin, the tyranny of the devil, and death.
-
-On the second.
-
-A peculiar image is proposed here. Nowhere does He pass by so harshly, or reject prayers arising from true and great sorrow, as here. And two things are objected. First, that she is not from Israel. Second, that she is unworthy, like a dog. From these temptations, however, she struggles forth, and at length by faith obtains what she seeks. Here, therefore, let us learn that the souls of individuals are attacked by similar temptations. And that faith is not to be cast away on account of this, but rather to be raised up amidst these waves.
-
-There are, however, two principal temptations: the one concerning unworthiness, the other concerning election. The former arises from the law. For the law always cries out in our consciences that God regards, hears, and saves the worthy and the just. But that we are unjust, unworthy, polluted, and abject like dogs. To this temptation must be opposed the doctrine of the Gospel concerning gratuitous justification, and concerning the exclusive, Freely, and testimonies must be gathered which show the unworthy, the un just are received. Rom. 3: We are justified freely by faith. Item: Blessed are they whose iniquities are forgiven. Item, I am only a sinner to you. Item, in this place sin and grace must be compared. As Paul compares in Rom. 6: Grace abounds over sin. Let the Son of God, and the sacrifice of the Son of God, be made of more value than our sin, so that we may conclude that we are forgiven, that sin is remitted, and we may begin to obey God. These are firm… remitted, and that we may begin to obey God. These are firm and true consolations against the temptation concerning unworthiness.
-
-The other [temptation] concerns election. Because men, when they see many who are well-deserving rejected, such as Saul, Augustus, Cicero, and those far worse received, such as Magdalene, the thief on the cross, etc., they dispute about particularity, namely, that God has a certain catalog of those whom He wills to make saved, while the others are neglected, like dogs. Thus they attribute inequality to God, which in reality is to accuse Him of tyranny. This is a most harsh temptation. But against this temptation, the doctrine must be opposed that the promises are universal.
-
-And the universal ones must be diligently collected, as in John 3: That everyone who believes in the Son may not perish. Item: Come to me all. Item, Rom. 10: God is the same to all, rich to all who call upon Him. To this must be added the immutable command, and that which is placed far above all laws, namely, that He commands that all should believe in the Son of God, and it is necessary for all to obey this command. Nor should we seek or scrutinize the will of God, setting aside this command and rejecting the promises.
-
-And since Christ says: I am the way, the truth, and the life. Item: He who sees me, sees also the Father, the will of God must necessarily be sought in the Son given to us, and in the Gospel, which the Son of God brought forth from the bosom of the Father. Let us remember these consolations, so that we may have firm refutations of those temptations which exercise the minds of many, and let us daily bring forth these consolations in prayer.
-
-For if you look into your own soul, you will see that you are hindered by these two temptations from calling upon Him, because you think yourself to be unworthy. Item, you think that God has chosen some of His own, but that you are neglected. And human arguments are added to this, because we are not equal to Abraham, Elijah, Elisha, Daniel, and the like; we are weak, without great gifts, without authority, therefore we judge ourselves to be neglected, and in a certain despair we omit prayer. But here we must look with our minds at the doctrine of the Gospel, which commands faith, as has already been said.
-
-We must also look at this Cananaean teacher, who, having refuted unworthiness and particularity, reasons that the promises pertain not only to Israel, but also to the Gentiles. Dogs, she says, eat of the crumbs. Thus, with faith awakened, we must call upon God in the acknowledgment of His Son.
-
-And this faith and invocation in those who perform repentance is the highest worship of God, and the chief [worship] of the Church, as it is said here: O woman, great is your faith. And that this is not in vain, but obtains good things, this very voice testifies: Let it be to you as you wish, according to that: Ask, and you shall receive.
-
-Therefore, in this Gospel, an example is proposed to us of faith struggling out of the most grievous temptations and obtaining good things, so that we too may learn to overcome diffidence, and to awaken faith and prayer. Nor do we have lesser causes than this Cananaean woman, who labors for her daughter; so do we for our own necessities, and for public ones.
-
-Latin:
-
-Dominica Reminiscere. Evangelium Matth. 15.
-
-Et egressus inde Iesus, secessit in partes Tyri et Sidonis, Et ecce mulier Cananaea a fini- bus illis egressa, clamavit ad eum, dicens:
-
-Miserere mei Domine fili David, filia mea a daemonio male vexatur. Ille autem non respondit ei verbum. Et accedentes disci- puli eius, rogabant eum, dicentes: Dimitte eam, quia clamat post nos. Ipse autem respondens ait: Non sum missus nisi ad oves, quae perierunt, domus Israël. At illa venit et adoravit eum, dicens: Domine adiuva me. Ille autem respondens ait: Non est bonum sumere panem filiorum, ac proiicere catellis. At illa dixit: Etiam Domine, Sed enim et catelli edunt de micis, quae cadunt de mensa dominorum suorum. Tunc respondens Iesus, ait illi: O mulier, magna est fides tua, fiat tibi sicut vis. Et sanata est filia eius ex illa hora.
-
-Loci praecipui tres sunt. I. Locus, De miraculis. II. De tentationibus quae obstrepunt pre- canti. III. De fide et praecipuo cultu.
-
-De primo.
-
-Primum hic generalis doctrina repetenda est, quod miracula sint testimonia hunc doctorem vere missum esse a Deo. Item, quod hic doctor sit Dominus, et promissus salvator, qualem se prae- dicat, destruens opera diaboli, peccatum, tyran- nidem diaboli, et mortem.
-
-De secundo.
-
-Peculiaris imago hic proponitur. Nusquam adeo duriter praeterit, aut reiicit preces ortas ex vero et magno dolore, ut hic. Et duo obiiciun- tur. Primum, quod non sit ex Israël. Secundo, quod sit indigna, ut canis. Ex his tentationibus ipsa tamen eluctatur, et tandem fide impetrat, quod petit. Hic igitur discamus singulorum ani- mos oppugnari similibus tentationibus. Nec pro- pterea fidem abiiciendam esse, sed potius erigen- dam inter hos fluctus.
-
-Sunt autem duae praecipue tentationes: al- tera de indignitate, altera de electione. Prior ex lege oritur. Semper enim clamitat lex in con- scientiis nostris Deum respicere, exaudire, sal- vare dignos, iustos. Nos vero iniustos, indi- gnos, pollutos et abiectos esse sicut canes. Huic tentationi debet opponi doctrina Evangelii de gra- tuita iustificatione, et de exclusiva, Gratis, et colligi testimonia quae ostendunt indignos, iniu- stos recipi. Rom. 3.: Gratis iustificamur fide. Item: Beati quorum remissae sunt iniquitates. Item, tibi sum tantum peccator. Item, hoc loco conferri debent peccatum et gratia. Sicut Paulus confert Rom. 6.: Gratia exuberat supra peccatum. Pluris fiat Filius Dei, et sacrificium Filii Dei, quam nostrum peccatum, ut statuamus nobis ignosci, remitti peccatum, et incipiamus obedire Deo. Hae sunt firmae et verae consolationes, contra tentationem de indignitate.
-
-Altera concurrit de electione. Quia homines, cum vident reiici multos bene meritos, ut Saulem, Augustum, Ciceronem, et recipi longe deteriores, ut Magdalenam, latronem in cruce etc. disputant de particularitate, videlicet, Deum habere quendam catalogum eorum, quos velit salvos facere, caeteros vero negligi, sicut canes. Ita tribuunt Deo inaequalitatem, quod reipsa est accusare eum tyrannidis. Haec est durissima tentatio. Sed huic tentationi opponenda est doctrina, quod promissiones sunt universales.
-
-Et diligenter universales colligendae sunt, ut Iohan. 3.: Ut omnis qui credit in Filium, non pereat. Item: Venite ad me omnes. Item, Rom. 10.: Deus est idem omnibus, dives in omnes invocantes se. Huc adiungatur mandatum immutabile, et quod longe positum est, supra omnes leges, videlicet, quod praecipit, ut omnes credant Filio Dei, et huic mandato necesse est omnes obtemperare.
-
-Nec nos quaerere, aut scrutari voluntatem Dei debemus, seposito hoc mandato, et reiectis promissionibus. Et cum Christus dicat: Ego sum via, veritas, et vita. Item: Qui videt me, videt et patrem, voluntas Dei necessario quaerenda est in Filio nobis donato, et Evangelio, quod Filius Dei ex sinu patris protulit.
-
-Has consolationes meminerimus, ut habeamus firmas refutationes illarum tentationum, quae plurimorum animos exercent, et quotidie in invocatione proferamus has consolationes. Nam si inspexeris animum tuum, videbis te his duabus tentationibus impediri, ne invokes, quia cogitas te indignum esse. Item, cogitas Deum suos quosdam elegisse, te vero negligi. Et accedunt huc humana argumenta, quia non sumus pares Abrahae, Eliae, Elisaeo, Danieli, et similibus, sumus imbecilles, sine magnis donis, sine autoritate, ideo negligi nos iudicamus, et desperatione quadam omittimus invocationem.
-
-Sed hic debemus intueri animis doctrinam Evangelii, quae praecipit de fide, sicut iam dictum est. Debemus etiam intueri hanc Cananaeam magistram, quae refutata indignitate et particularitate ratiocinatur promissiones non tantum ad Israël pertinere, sed etiam ad gentes. Canes, inquit, edunt de micis.
-
-Ita excitata fide invocare Deum in agnitione Filii eius debemus. Et haec fides ac invocatio in his qui agunt poenitentiam, est summus cultus Dei, et praecipuus Ecclesiae, sicut hic dicitur: O mulier magna est fides tua. Et hanc non esse irritam, sed impetrare bona, haec ipsa vox testatur: Fiat tibi sicut vis, iuxta illud: Petite, et accipietis. Proponitur ergo nobis in hoc Evangelio exemplum fidei eluctantis ex gravissimis tentationibus, et bona impetrantis, ut nos quoque discamus vincere diffidentiam, excitare fidem et invocationem.
-
-Nec habemus minores causas, quam haec Cananaea, quae laborat de filia sua, sic et nos de nostris necessitatibus, et de publicis.
 
 ## 17:1 Sermons on Matthew: Argument
 Chapter XVII.
@@ -23773,134 +23794,6 @@ Think often on this doctrine.
 
 If you tremble at the thought of the judgment and wrath of God, approach the Son of God, think on this voice: Come to me all you who labor etc. Now God draws you, if you approach the Son, and God meets you, just as it is most sweetly said of the prodigal Son, the Father meets him, and rushes into his embrace. This doctrine is useful, and is to be learned in the daily exercises of repentance and invocation.
 
-Chapter XXIII.
-
-And they were showing him the building of the temple, etc. In this chapter is contained the prediction concerning the destruction of Jerusalem, and concerning the end of the world. For he mixes these two, the destruction of Jerusalem and the end of the world, because the preceding signs are similar. Afterwards he adds admonitions and consolations, because whenever punishments are preached, admonitions are added at the same time, so that we may perform repentance, and then consolations, as to how punishments may be mitigated or removed.
-
-Let this, however, be the first doctrine: In the Apostles there was still great infirmity. The Apostles had not yet laid aside this error, that the kingdom of Christ would be worldly. And there was such security in them, that although the time of the Passion was already at hand, they themselves were admiring the building of the temple, and at the same time were talking, that they themselves would soon reign in this temple, after Annas, Caiaphas, and such impious swine had been destroyed. Let us know, therefore, that in this life there are infirmities and errors even in the Saints. And let us acknowledge these evils, and amend them. And let us know, however, that such infirmities are remitted to us on account of Christ, when we believe in him with true faith.
-
-Christ rebukes their error, and predicts the destruction of the temple, and the ruin of the city of Jerusalem, and the dissipation of the whole Jewish nation, and the deletion of their polity. Here you may learn an example of the wrath of God, the most horrendous of all, because he destroyed the entire polity established by himself, in which he himself truly dwelt, in which the Church truly was, in which huge miracles and wondrous liberations were done by God, and where the Fathers and Prophets had lived. These great prerogatives do not liberate Jerusalem, and yet the Jews were very proud of these prerogatives, and thought it impossible that their polity could be destroyed.
-
-They cried out, "The temple of the Lord," just as the Papists cry out: "The Church, the Church," and imagine that their dominion cannot be destroyed. But the slower the punishment is, the greater it will be. And they and the Turks are the final dregs of the impiety of the world. Therefore, the punishment comes more slowly, but it will come more gravely.
-
-We also were secure, and we boasted on account of a cause which is good, but we were more negligent in many things, in helping the Churches, we were gluttons, avaricious, proud, etc. Therefore we have been punished, and the punishment begins at the house of God. But the Papists will be punished more horribly, and let us be more modest, otherwise we shall again be punished more atrociously.
-
-Consider also what the punishment of the Jews was in that destruction of Jerusalem. The city was surrounded by a siege for six months, from the Passover until the feast of Tabernacles. Just as the Passover was the beginning of this polity, when they went out from Egypt: so now is the beginning of the siege and destruction. And just as the feast of Tabernacles was celebrated every year in September, for thanksgiving, because they had been introduced into the land: so now was the end of this polity.
-
-1. In the city there was such great famine, that mothers cooked their children.
-
-2. There were also seditions, and daily slaughters of citizens among themselves.
-
-3. Many were killed on the walls and in the eruptions, when they were defending the city, and many fires also occurred.
-
-4. After the destruction of the city, the captives were thrown to the lions, and torn by them in the spectacles.
-
-And thus the whole nation was dissipated. Nor is such a horrendous destruction of any city read of, and I think it is said in this text for that reason. There will be great tribulation, such as has not been from the beginning of the world until now, nor will be.
-
-Consider these great calamities, and think about the causes. The causes were blasphemies, and many other sins joined together.
-
-Therefore, lest similar things happen to us, let us amend ourselves, and cry out to God, as he commands: "Turn to me, and I will turn to you." Likewise, cease to do evil, and learn to do good.
-
-If your sins shall be as scarlet, you shall be white as snow. Consider this also, concerning the Saints who were in Jerusalem before the siege. Some of these, having a prophetic spirit, ordered everyone to depart from the city, and they departed. After the destruction, these returned, and lived in the ruins as best they could, and rebuilt some villages again.
-
-Thus God liberates the Saints in dangers.
-
-See that no one deceives you.
-
-It was said above that the predictions concerning the destruction of Jerusalem and the end of the world are mixed, because the preceding signs are similar.
-
-However, we spoke first about the destruction of Jerusalem. Now we shall speak about the signs of the last day.
-
-And we shall distribute this part into these three members.
-
-First, when the day of the resurrection of the dead and the final judgment is to come. Second, why the signs are preached. Third, what the signs are. On the first article.
-
-When the day of the resurrection and the final judgment is to come.
-
-Here, first, the pious must be admonished to consider the difference.
-
-Heathens, Epicureans, and all the impious think that it is mere fables when it is said that there will be a future resurrection and a future judgment. And in the second Epistle of Peter it is manifestly written that this blasphemy will be more common in the last time of the world than before. Just as now, at Rome, it is considered the height of foolishness to believe in the resurrection of the dead and the final judgment. But the Church of God has always known this article from the beginning, from the clear revelation of God, and has embraced it with the firmest faith, and believes with certainty that there will be a future resurrection of the dead and a universal judgment.
-
-This article has been handed down most expressly by the voice of Christ himself, and confirmed by his own resurrection and the resuscitation of many holy fathers. And the Saints saw, throughout forty days of daily familiarity, Christ and others who had been raised, conversing with them. For God wished to confirm this article with the clearest and by no means doubtful testimony. Let this, therefore, be the first doctrine, that we separate ourselves from the Heathens and Epicureans, and truly believe these articles, namely, that there will be a future resurrection of the dead and a universal judgment.
-
-Let us also learn from the Prophets and the sayings of Christ that this day is not as far off as many dream, and even if the resurrection and judgment are to come, yet many thousands of years still remain until that time, and therefore the secure mock the whole mention of judgment.
-
-Christ says in this chapter: Of that day and hour no one knows, not even the angels, but the Father alone.
-
-He did not wish to reveal the day, but yet he indicated a space near to the end, so that we might be in fear. For security grows in the world. Daniel clearly says that the judgment will come at the end of the fourth monarchy.
-
-And God distributed the times of the world after the flood into monarchies, so that we might know that the end is to come, and when the time is near to the end. But all men ought to know the saying which is said to have been handed down by Elias, and it is credible that many such sayings were handed down by the Fathers and Prophets; the words sound thus: Six thousand years will be the time of the world, and afterwards destruction.
-
-Two thousand inane [void/without law]. Two thousand law. Two thousand the days of the Messiah, and if anything is lacking, it is because of our sins, which are many. Behold, in this saying it is predicted that the whole time of the world will be six thousand years.
-
-And it is most certain from the computation of the years of the world, which God wished us to know from his book handed down through the Fathers and Prophets, that five thousand five hundred years and somewhat more have already passed.
-
-And in this year from the birth of Christ, 1550, according to accurate computations made, there are five thousand five hundred and twelve years. Since these things are so, it is most certain that the end of the world is not far off, because God will even cut short the time near the end, as it is written: Unless those days were shortened, no flesh would be saved.
-
-And so much for the first member, when the day of judgment and resurrection is to come.
-
-Second article.
-
-Why are these things predicted?
-
-I answer: Principally for two reasons.
-
-The former is so that the secure, being admonished, may perform repentance and not become too wild and profane. The latter is so that pious men, fearing the magnitude of the punishments and the public and private miseries, may nevertheless have consolation, because God at the same time mixed consolations with these threats; he says that he will preserve his Church, he says that repentance and invocation will be profitable for the mitigation of punishments: Pray that you may be able to escape these evils, lest they come upon you. Let men consider these causes well.
-
-Let the secure consider the horrendous calamities, wars, distractions of the Churches, persecutions, schisms, and let them be affected with sorrow, and let them know that we are warned by God through these punishments of the future judgment and eternal punishments.
-
-Other pious people, who grieve on account of their own and public miseries, let them propose to themselves consolations, let them know that the Son of God is truly present with His Church, as He says: Behold I am with you all days even to the consummation of the world. Isaiah 46: I will carry you even in old age. This consolation is the principal one, to know for certain that the Son of God is present with us, and is present for this reason, that He may sustain and save this miserable, afflicted, and wretched part of the human race, which acknowledges and calls upon Him. This consolation must always be considered most diligently. Nor can the magnitude of such great mercy be understood by the secure, who are not affected by the sense of common miseries.
-
-On the third member.
-
-What are the signs?
-
-They are threefold. 1. Physical disturbances, unusual disorder in natural things. 2. Political disturbances, such as the ruin of kingdoms, destruction of the great Empire. 3. Ecclesiastical tribulations, such as Heresies, Schisms, Papacy, in the Church, Sects, Factions, Heresy. We see examples of physical ones.
-
-Many monsters are born, there have been many Comets, earthquakes, blood erupted from the earth in certain places in the duchy of Duke Henry of Brunswick, crops perish. And the text says concerning physical things: There shall be famines, pestilences, and earthquakes.
-
-But political ones are clearer. It is manifest that many kingdoms are falling, that the great Kingdoms are being destroyed. The Hungarian [kingdom] has fallen completely. The principalities in Germany are also weaker than they have ever been. The other kingdoms, the Polish, the French, and the English, have sufficiently great disturbances. The Turkish [empire] is also near its end. And we see the burdens of plunder growing more and more, and greater confusions occurring in every government. All things are full of robberies, the people are exhausted without measure. And always when there were to be changes of kingdoms, civil discords and seditions preceded them, as before the empire of Augustus, Sulla and Marius first fought among themselves for supreme power, afterwards Julius and Pompey, then Antony, Brutus, Cassius, until at length Augustus was made monarch.
-
-But ecclesiastical confusions are more conspicuous, and they are nearer signs. Just as before Christ was born of the virgin, there were in Judea Pharisees, Sadducees, and many other sects, and the Pontificate was a worldly empire, similar to the heathen one, Hyrcanus, Aristobulus, Antigonus, were fighting among themselves for the Pontificate, and were buying the Pontificate from neighboring kings and from Roman Governors, one from another: so in the last time before the day of judgment there will be similar evils in the Church, as is said here concerning sects: Many will come saying: I am Christ. Also many False prophets will come and will deceive many, just as it is manifest that in these our years there have been many False prophets, Anabaptists, Stenckfeldians, and many others: we hear that many fanatical men are still wandering in Belgium and in other places.
-
-But specifically here he speaks of the abomination of desolation, that is, of the Idol, which causes universal devastation, of the Idol, which makes everything desolate, that is, by which the whole Church is devastated. Here is understood the idolatry proper to the Roman Papacy. This idolatry is the idol devastating all things.
-
-It consists, however, in these four great and principal errors. 1. Because the Pope deletes the entire doctrine of the righteousness of faith, and commands doubt. And in this error many others are comprehended.
-
-2. Because he has feigned a false adoration and merit in the Mass, he depraves the whole supper of the Lord. 3. Because he has feigned heathen cults, the invocation of the dead. 4. Because he has feigned heathen cults, the vows of Monks and other works devised by men.
-
-All these together are that devastating idol, which precedes the day of judgment. And it is necessary that this idol be revealed a little before, just as now the revelation has been made. Let these things be said briefly concerning the signs.
-
-Then again consolations and admonitions will follow. He who is on the housetop, let him not descend. Although admonitions are variously mixed here, yet let the reader diligently consider the distinctions. And I will speak first of the admonitions.
-
-He warns that we should be vigilant in the preservation of doctrine, in repentance, in invocation, and in avoiding impediments. Therefore he says: 'He who is on the housetop, let him not descend to take anything,' etc. That is: Do not be hindered by the care of accumulating wealth, or pleasures, or other corporal things, so that you neglect doctrine and invocation, but avoid all such impediments. Know, therefore, that this admonition especially comprises these four things: 1. The care of preserving doctrine. 2. Repentance. 3. Invocation. 4. The care of avoiding impediments.
-
-He spoke of doctrine before, and here: 'False prophets shall arise, see that you are not deceived, do not believe.' And 2 Peter 3: 'Beware, lest being seduced by the deception of the impious, you fall from your own stability, but grow in grace and the knowledge of our Lord Jesus Christ.' Regarding repentance, this voice always cries out: 'As I live, says the Lord, I do not desire the death of the sinner,' etc. Regarding invocation, he says in Luke: 'Pray, that you may be able to escape these evils.' This is to be well considered, that he affirms that the Church which invokes is spared, and that our prayers are not useless. Here he says: 'Pray, that your flight may not be in the Sabbath, or in winter,' that is, that impediments may not occur because of fears or because of security. Winter signifies fears, just as many fail in doctrine through fear of poverty or persecutions. Sabbath signifies security and leisure; some, while they are too secure, do not guard against errors, and at the same time, just like drunkards, are drawn into false opinions. Regarding avoiding impediments, it is said: 'Take heed, lest your hearts be burdened with gluttony, and the cares of life,' just as luxury, ambition, avarice, usury, gluttony, and profusion are now growing. Let these things be said concerning the admonition.
-
-There follows the consolation, which contains these three members: 1.
-
-The promise that the Church shall remain until the resurrection in this life, and thereafter in the eternal one. 2. The promise that the end of calamities in this life shall soon come, and that the Lord shall soon raise the dead and liberate the Church from all evils. Therefore he makes mention here of the fig tree. Just as you know that summer is coming when the fig tree blossoms, because the fig tree blossoms first: so when you hear these tumults and confusions, know that the day of resurrection will soon come. 3. It contains the promise that God is willing to mitigate these evils for those who invoke Him, as he says: 'Pray, that you may be able to escape.' Also: 'All the hairs of your head are numbered.' But certainly there must be repentance, this gross security must be cast off, the wrath of God must be acknowledged, and one must flee to the Lord with true invocation. They shall see the Son of man coming in the clouds.
-
-This part pertains to consolation, in which the sentence concerning the liberation of the Church is now expressly set forth, by whom and how it is to be done. The liberation of the Church shall happen, and it shall happen through the Son of God, who will again show Himself to the human race and judge. And here He shall gather the elect from the whole world, He shall raise the dead, and He shall adorn the elect with perpetual glory, life, wisdom, and justice, and He shall cast the impious into eternal punishments. He often proposes this end here, but the clearest words are these: 'They shall see the Son of man coming in the clouds.' And indeed, all men must always look toward this end. Let us know that we are not born only for this mortal life, to eat, drink, and seek wealth and pleasures, but that a judgment remains after this life, in which God will most severely punish the impious with eternal torments, and will give eternal glory to others who have performed repentance and believed in the Son. May this doctrine of the Catechism and the Creed always be in sight, and be thought upon seriously, so that it may turn us to the fear of God, to repentance, and to faith. Therefore, let it be recited here too, not so that it may be an empty narrative about future things, but so that it may warn us, lest we securely despise the future judgment, as many Epicureans and tyrants and others despise it, but so that we may truly be terrified, perform repentance, seek consolation by faith, and await that glorious liberation promised by God. Devils know that this judgment is to come, and they tremble, and would prefer to be reduced to nothing, if that were possible: but spiritual nature is so created that it is not broken, as the corporeal is. No man in this corporeal nature could live now before the resurrection if he were tormented by such fear as the Devil is.
-
-But the Devil adds hatred of God, and indignation, and therefore he rages furiously against men, and the closer the time of greater punishment is, the more he rages. Therefore, at the end of the world, evils are now growing, but yet after the final judgment the punishments of the Devil will be greater than they are now.
-
-If the master of the house knew in what watch the thief would come, etc.
-
-At the end of this chapter he returns to admonitions. He wants us to be prepared at all times, and although it was said above that God willed it to be known in general that the end of the world is not far off, after the preaching of the Gospel, when now the fourth monarchy, that is, the Roman, is being destroyed, nevertheless he did not want us to know the year and the day. He wants us, however, to be prepared at all times. Therefore he says: At an hour you do not think, he will come. And Paul says: When they shall say, peace and security, then behold it comes, where he signifies that there will be too great a security in the last time. Concerning this, these similitudes recited here preach. Specifically, however, two servants are placed here, the faithful and the evil servant. The faithful servant signifies that in the end, however, God is going to save the remnants of the Church, and that there will be some future faithful teachers and ministers. Just as Noah was faithful before the flood, and Lot was faithful in Sodom. And Isaiah says: I will carry you even into old age. God will not allow the Church to be utterly extinguished. And it was said above: For the sake of the elect those days will be shortened. There are therefore some few who nevertheless think about the coming judgment, and are faithful in teaching. I have also recited this consolation above, which is certainly pleasing and necessary for pious minds, lest they think: Behold, God has cast away the whole human race. Therefore you invoke in vain, you believe in remission in vain, you expect the help of God and eternal life in vain. Against these temptations let us arm ourselves with these most certain consolations and promises, which affirm that the Church of God will always remain even in this life. Which is confirmed by the Supper of the Lord itself, do this until I come. Behold, as often as the Supper of the Lord is celebrated, think of this consolation: The Church is going to remain until the Lord comes. Therefore we do not invoke in vain, the promises are not void.
-
-To this pertains also this saying: Behold I am with you even unto the consummation of the age.
-
-Be therefore most certain that God preserves the remnants in this world, and that the promises given to the Church are always valid. Invoke, believe, and know for certain that you are heard. These things are most true and most certain. And here the faithful servant is praised, who retains this faith.
-
-But there is another, an unfaithful servant, who is a drunkard, drinks, eats, and beats his fellow servants.
-
-Such are undoubtedly the Pope, Bishops, Canons, and those adhering to them. These neglect doctrine, they gorge themselves, they seek wealth and power and pleasures. And they beat their fellow servants, that is, they persecute the Church, they kill the Priests who faithfully teach, and other pious men who embrace and confess the Gospel. Just as now many are everywhere either driven into exile or killed.
-
-The Pope also previously beat his fellow servants in their consciences, through his traditions concerning celibacy, and other foolish traditions. Now he beats their bodies, he kills those who confess the true doctrine.
-
-But when the Son of God comes, he will cut him asunder, and will place his portion with the hypocrites, he will cast him into eternal punishments, where there will be weeping, that is, where there will be horrible pains, the magnitude of which cannot be described in words, but in the dying damned, as in murderers and such, an image of such pains is seen, here they are described by these signs, weeping and gnashing of teeth, but let us know that such great pains cannot be sufficiently described in words. And let us truly tremble at the thought of the divine judgment, and let us seek consolation, as Peter says, Acts 3: Repent, and be converted, that your sins may be blotted out, when the times of refreshing shall come from the presence of the Lord, that is, that when the Lord comes you may not perish in terror, but may have recreation, and rejoice at the sight of the Son of God, Amen.
-
 Latin:
 
 Vae vobis Scribae et Pharisaei, qui decimatis mentam etc.
@@ -23973,6 +23866,41 @@ Hanc doctrinam saepe cogitate. Si, expavescis ...cogitatione iudicii et irae Dei
 
 Iam trahit te Deus, si ad Filium accedis, et Deus tibi occurrit, sicut dulcissime dicitur de Filio prodigo, Pater occurrit ei, et in amplexus eius irruit. Haec doctrina est utilis, et in quotidianis exercitiis poenitentiae et invocationis discenda.
 
+## 24:1 Sermons on Matthew: Argument
+Chapter XXIII.
+
+And they were showing him the building of the temple, etc. In this chapter is contained the prediction concerning the destruction of Jerusalem, and concerning the end of the world. For he mixes these two, the destruction of Jerusalem and the end of the world, because the preceding signs are similar. Afterwards he adds admonitions and consolations, because whenever punishments are preached, admonitions are added at the same time, so that we may perform repentance, and then consolations, as to how punishments may be mitigated or removed.
+
+Let this, however, be the first doctrine: In the Apostles there was still great infirmity. The Apostles had not yet laid aside this error, that the kingdom of Christ would be worldly. And there was such security in them, that although the time of the Passion was already at hand, they themselves were admiring the building of the temple, and at the same time were talking, that they themselves would soon reign in this temple, after Annas, Caiaphas, and such impious swine had been destroyed. Let us know, therefore, that in this life there are infirmities and errors even in the Saints. And let us acknowledge these evils, and amend them. And let us know, however, that such infirmities are remitted to us on account of Christ, when we believe in him with true faith.
+
+Christ rebukes their error, and predicts the destruction of the temple, and the ruin of the city of Jerusalem, and the dissipation of the whole Jewish nation, and the deletion of their polity. Here you may learn an example of the wrath of God, the most horrendous of all, because he destroyed the entire polity established by himself, in which he himself truly dwelt, in which the Church truly was, in which huge miracles and wondrous liberations were done by God, and where the Fathers and Prophets had lived. These great prerogatives do not liberate Jerusalem, and yet the Jews were very proud of these prerogatives, and thought it impossible that their polity could be destroyed.
+
+They cried out, "The temple of the Lord," just as the Papists cry out: "The Church, the Church," and imagine that their dominion cannot be destroyed. But the slower the punishment is, the greater it will be. And they and the Turks are the final dregs of the impiety of the world. Therefore, the punishment comes more slowly, but it will come more gravely.
+
+We also were secure, and we boasted on account of a cause which is good, but we were more negligent in many things, in helping the Churches, we were gluttons, avaricious, proud, etc. Therefore we have been punished, and the punishment begins at the house of God. But the Papists will be punished more horribly, and let us be more modest, otherwise we shall again be punished more atrociously.
+
+Consider also what the punishment of the Jews was in that destruction of Jerusalem. The city was surrounded by a siege for six months, from the Passover until the feast of Tabernacles. Just as the Passover was the beginning of this polity, when they went out from Egypt: so now is the beginning of the siege and destruction. And just as the feast of Tabernacles was celebrated every year in September, for thanksgiving, because they had been introduced into the land: so now was the end of this polity.
+
+1. In the city there was such great famine, that mothers cooked their children.
+
+2. There were also seditions, and daily slaughters of citizens among themselves.
+
+3. Many were killed on the walls and in the eruptions, when they were defending the city, and many fires also occurred.
+
+4. After the destruction of the city, the captives were thrown to the lions, and torn by them in the spectacles.
+
+And thus the whole nation was dissipated. Nor is such a horrendous destruction of any city read of, and I think it is said in this text for that reason. There will be great tribulation, such as has not been from the beginning of the world until now, nor will be.
+
+Consider these great calamities, and think about the causes. The causes were blasphemies, and many other sins joined together.
+
+Therefore, lest similar things happen to us, let us amend ourselves, and cry out to God, as he commands: "Turn to me, and I will turn to you." Likewise, cease to do evil, and learn to do good.
+
+If your sins shall be as scarlet, you shall be white as snow. Consider this also, concerning the Saints who were in Jerusalem before the siege. Some of these, having a prophetic spirit, ordered everyone to depart from the city, and they departed. After the destruction, these returned, and lived in the ruins as best they could, and rebuilt some villages again.
+
+Thus God liberates the Saints in dangers.
+
+Latin:
+
 Caput XXIII.
 
 Et ostendebant ei aedificium templi, etc. In hoc capite continetur praedictio de destructione Ierosolymae, et de fine mundi. Miscet enim haec duo, excidium Ierosolymae, et finem mundi, quia signa praecedentia similia sunt. Postea addit admonitiones et consolationes, quia quandocunque praedicuntur poenae, simul adduntur et admonitiones, ut agamus poenitentiam, et deinde consolationes, quomodo mitigentur vel tollantur poenae.
@@ -24004,6 +23932,124 @@ Ideo ne similia nobis accidant, emendemus nos, et clamemus ad Deum, ut praecipit
 Si fuerint peccata vestra sicut coccinum, eritis candidi sicut nix. Hoc etiam considerate, de Sanctis, qui fuerunt Ierosolymae ante obsidionem. Hos aliqui habentes spiritum propheticum, iusserunt omnes ex urbe discedere, et discesserunt. Post destructionem hi reversi sunt, et in ruinis utcunque habitaverunt, et aliquos vicos rursus aedificaverunt.
 
 Ita Deus liberat Sanctos in periculis.
+
+## 24:3 Sermons on Matthew
+What are the signs?
+
+They are threefold. 1. Physical disturbances, unusual disorder in natural things. 2. Political disturbances, such as the ruin of kingdoms, destruction of the great Empire. 3. Ecclesiastical tribulations, such as Heresies, Schisms, Papacy, in the Church, Sects, Factions, Heresy. We see examples of physical ones.
+
+Many monsters are born, there have been many Comets, earthquakes, blood erupted from the earth in certain places in the duchy of Duke Henry of Brunswick, crops perish. And the text says concerning physical things: There shall be famines, pestilences, and earthquakes.
+
+But political ones are clearer. It is manifest that many kingdoms are falling, that the great Kingdoms are being destroyed. The Hungarian [kingdom] has fallen completely. The principalities in Germany are also weaker than they have ever been. The other kingdoms, the Polish, the French, and the English, have sufficiently great disturbances. The Turkish [empire] is also near its end. And we see the burdens of plunder growing more and more, and greater confusions occurring in every government. All things are full of robberies, the people are exhausted without measure. And always when there were to be changes of kingdoms, civil discords and seditions preceded them, as before the empire of Augustus, Sulla and Marius first fought among themselves for supreme power, afterwards Julius and Pompey, then Antony, Brutus, Cassius, until at length Augustus was made monarch.
+
+But ecclesiastical confusions are more conspicuous, and they are nearer signs. Just as before Christ was born of the virgin, there were in Judea Pharisees, Sadducees, and many other sects, and the Pontificate was a worldly empire, similar to the heathen one, Hyrcanus, Aristobulus, Antigonus, were fighting among themselves for the Pontificate, and were buying the Pontificate from neighboring kings and from Roman Governors, one from another: so in the last time before the day of judgment there will be similar evils in the Church, as is said here concerning sects: Many will come saying: I am Christ. Also many False prophets will come and will deceive many, just as it is manifest that in these our years there have been many False prophets, Anabaptists, Stenckfeldians, and many others: we hear that many fanatical men are still wandering in Belgium and in other places.
+
+But specifically here he speaks of the abomination of desolation, that is, of the Idol, which causes universal devastation, of the Idol, which makes everything desolate, that is, by which the whole Church is devastated. Here is understood the idolatry proper to the Roman Papacy. This idolatry is the idol devastating all things.
+
+It consists, however, in these four great and principal errors. 1. Because the Pope deletes the entire doctrine of the righteousness of faith, and commands doubt. And in this error many others are comprehended.
+
+2. Because he has feigned a false adoration and merit in the Mass, he depraves the whole supper of the Lord. 3. Because he has feigned heathen cults, the invocation of the dead. 4. Because he has feigned heathen cults, the vows of Monks and other works devised by men.
+
+All these together are that devastating idol, which precedes the day of judgment. And it is necessary that this idol be revealed a little before, just as now the revelation has been made. Let these things be said briefly concerning the signs.
+
+Then again consolations and admonitions will follow. He who is on the housetop, let him not descend. Although admonitions are variously mixed here, yet let the reader diligently consider the distinctions. And I will speak first of the admonitions.
+
+He warns that we should be vigilant in the preservation of doctrine, in repentance, in invocation, and in avoiding impediments. Therefore he says: 'He who is on the housetop, let him not descend to take anything,' etc. That is: Do not be hindered by the care of accumulating wealth, or pleasures, or other corporal things, so that you neglect doctrine and invocation, but avoid all such impediments. Know, therefore, that this admonition especially comprises these four things: 1. The care of preserving doctrine. 2. Repentance. 3. Invocation. 4. The care of avoiding impediments.
+
+He spoke of doctrine before, and here: 'False prophets shall arise, see that you are not deceived, do not believe.' And 2 Peter 3: 'Beware, lest being seduced by the deception of the impious, you fall from your own stability, but grow in grace and the knowledge of our Lord Jesus Christ.' Regarding repentance, this voice always cries out: 'As I live, says the Lord, I do not desire the death of the sinner,' etc. Regarding invocation, he says in Luke: 'Pray, that you may be able to escape these evils.' This is to be well considered, that he affirms that the Church which invokes is spared, and that our prayers are not useless. Here he says: 'Pray, that your flight may not be in the Sabbath, or in winter,' that is, that impediments may not occur because of fears or because of security. Winter signifies fears, just as many fail in doctrine through fear of poverty or persecutions. Sabbath signifies security and leisure; some, while they are too secure, do not guard against errors, and at the same time, just like drunkards, are drawn into false opinions. Regarding avoiding impediments, it is said: 'Take heed, lest your hearts be burdened with gluttony, and the cares of life,' just as luxury, ambition, avarice, usury, gluttony, and profusion are now growing. Let these things be said concerning the admonition.
+
+There follows the consolation, which contains these three members: 1.
+
+The promise that the Church shall remain until the resurrection in this life, and thereafter in the eternal one. 2. The promise that the end of calamities in this life shall soon come, and that the Lord shall soon raise the dead and liberate the Church from all evils. Therefore he makes mention here of the fig tree. Just as you know that summer is coming when the fig tree blossoms, because the fig tree blossoms first: so when you hear these tumults and confusions, know that the day of resurrection will soon come. 3. It contains the promise that God is willing to mitigate these evils for those who invoke Him, as he says: 'Pray, that you may be able to escape.' Also: 'All the hairs of your head are numbered.' But certainly there must be repentance, this gross security must be cast off, the wrath of God must be acknowledged, and one must flee to the Lord with true invocation. They shall see the Son of man coming in the clouds.
+
+This part pertains to consolation, in which the sentence concerning the liberation of the Church is now expressly set forth, by whom and how it is to be done. The liberation of the Church shall happen, and it shall happen through the Son of God, who will again show Himself to the human race and judge. And here He shall gather the elect from the whole world, He shall raise the dead, and He shall adorn the elect with perpetual glory, life, wisdom, and justice, and He shall cast the impious into eternal punishments. He often proposes this end here, but the clearest words are these: 'They shall see the Son of man coming in the clouds.' And indeed, all men must always look toward this end. Let us know that we are not born only for this mortal life, to eat, drink, and seek wealth and pleasures, but that a judgment remains after this life, in which God will most severely punish the impious with eternal torments, and will give eternal glory to others who have performed repentance and believed in the Son. May this doctrine of the Catechism and the Creed always be in sight, and be thought upon seriously, so that it may turn us to the fear of God, to repentance, and to faith. Therefore, let it be recited here too, not so that it may be an empty narrative about future things, but so that it may warn us, lest we securely despise the future judgment, as many Epicureans and tyrants and others despise it, but so that we may truly be terrified, perform repentance, seek consolation by faith, and await that glorious liberation promised by God. Devils know that this judgment is to come, and they tremble, and would prefer to be reduced to nothing, if that were possible: but spiritual nature is so created that it is not broken, as the corporeal is. No man in this corporeal nature could live now before the resurrection if he were tormented by such fear as the Devil is.
+
+But the Devil adds hatred of God, and indignation, and therefore he rages furiously against men, and the closer the time of greater punishment is, the more he rages. Therefore, at the end of the world, evils are now growing, but yet after the final judgment the punishments of the Devil will be greater than they are now.
+
+Latin:
+
+Quae sunt signa?
+
+Sunt triplicia. 1. Physicae turbationes, ungewönliche vnordnung in natürlichen dingen. 2. Politicae turbationes, ut ruinae regnorum, zerstörung der grossen Reich. 3. Ecclesiasticae tribulationes, ut Haereses, Schismata, Papatus, in der Kirchen, Secten, Rotten, Keherey. De physicis exempla videmus.
+
+Nascuntur multa monstra, multi fuerunt Cometae, terraemotus, sanguis erupit ex terra in quibusdam locis in ducatu Ducis Henrici Brunsuicensis, pereunt fruges. Et textus de physicis inquit: Erunt fames, pestilentiae et terraemotus.
+
+Sed politica sunt clariora. Manifestum est multa regna ruere, daß die großen Königreich zerstöret werden. Hungaricum penitus cecidit. Principatus in Germania etiam sunt infirmiores, quam unquam fuerunt. Regna caetera, Polonicum, Gallicum, et Anglicum, habent satis magnas turbationes. Turcicum etiam prope finem est. Et videmas magis magisque crescere onera expilationum, et fieri maiores confusiones in omni gubernatione. Omnia sunt plena latrociniorum, populus exhauritur sine modo. Et semper quando fuerunt secuturae regnorum mutationes, praecesserunt civiles discordiae, et seditiones, ut ante Augusti imperium prius dimicarunt inter se de summa potentia Sylla et Marius, postea Iulius et Pompeius, deinde Antonius, Brutus, Cassius, donec tandem factus est monarcha Augustus.
+
+Sed ecclesiasticae confusiones sunt magis perspicuae, et sunt signa propiora. Sicut antequam natus est Christus ex virgine, fuerunt in Iudaea Pharisaei, Sadducaei, et aliae sectae plures, et Pontificatus fuit mundanum imperium, simile ethnico, Hircanus, Aristobulus, Antigonus, inter se dimicabant de Pontificatu, et emebant Pontificatum a vicinis regibus et a Romanis Praesidibus, alii ab aliis: ita postremo tempore ante diem iudicii similia mala erunt in Ecclesia, ut hic dicitur de sectis: Multi venient dicentes: Ego sum Christus. Item venient multi Pseudoprophetae et decipient multos, sicut manifestum est, his nostris annis fuisse multos Pseudoprophetas, Anabaptistas, Stenckfeldianos et alios multos: audimus multos fanaticos homines adhuc in Belgico et in aliis locis vagari.
+
+Nominatim autem hic dicit de abominatione desolationis, id est, de Idolo, quod facit vastationem universalem, vom Göhen, der alles wüst machet, id est, quo vastatur Ecclesia tota. Hic intelligitur idololatria propria Papatus Romani. Haec idololatria est idolum omnia vastans.
+
+Consistit autem in his quatuor magnis et praecipuis erroribus. 1. Quia Papa delet doctrinam de iustitia fidei totam, et praecipit dubitationem. Et in hoc errore multi alii comprehenduntur.
+
+2. Quia finxit falsam adorationem et meritum in Missa, depravat totam coenam Domini. 3. Quia finxit ethnicos cultus, invocationem mortuorum. 4. Quia finxit ethnicos cultus, vota Machorum et alia opera ab hominibus excogitata.
+
+Haec omnia simul sunt illud idolum vastans, quod antecedit diem iudicii. Et oportet paulo ante revelari hoc idolum, sicut nunc facta est revelatio. Haec de signis breviter dicta sint.
+
+Deinde rursus sequentur consolationes et admonitiones. Qui in tecto est, non descendat. Quanquam varie mixtae sunt hic admonitiones, tamen lector diligenter consideret discrimina. Et ego primum de admonitionibus dicam.
+
+Monet, ut simus vigilantes in doctrinae conservatione, in poenitentia, in invocatione, et in vitandis impedimentis. Ideo dicit: Qui est in tecto, non descendat, ut auferat aliquid etc. Id est: Non sitis impediti cura cumulandarum opum, aut voluptatum, aut aliarum rerum corporalium, ut negligatis doctrinam et invocationem, sed vitate omnia talia impedimenta. Scitote ergo hanc admonitionem praecipue complecti haec quatuor: 1. Curam custodiendae doctrinae. 2. Poenitentiam. 3. Invocationem. 4. Curam vitandi impedimenta.
+
+De doctrina dixit prius, et hic: Surgent Pseudoprophetae, videte ne decipiamini, non credatis. Et 2. Petri 3.: Cavete, ne impiorum deceptione seducti, excidatis ex propria stabilitate, sed crescatis in gratia et agnitione Domini nostri Iesu Christi. De poenitentia semper clamat haec vox: Vivo ego, dicit Dominus, nolo mortem peccatoris etc. De invocatione dicit in Luca: Orate, ut possitis effugere haec mala. Hoc bene considerandum est, quod affirmat parci Ecclesiae invocanti, et quod nostrae precationes non sint inutiles. Hic dicit: Orate, ne fuga vestra fiat in Sabbato, aut in hieme, id est, ne incidant impedimenta propter pavores, aut propter securitatem. Hiems significat pavores, sicut metu paupertatis aut persecutionum multi deficiunt a doctrina. Sabbatum significat securitatem et otium, quidam dum nimis securi sunt, non cavent errores, et simul ita sicut ebrii trahuntur ad falsas opiniones. De vitandis impedimentis dicitur: Attendite, ne corda vestra graventur crapula, et curis victus, sicut iam crescunt luxus, ambitio, avaritia, usurae, helluationes, profusiones. Haec de admonitione dicta sint.
+
+Sequitur consolatio, quae continet haec tria membra: 1.
+
+Promissionem, quod Ecclesia sit mansura usque ad resurrectionem in hac vita, et deinceps in aeterna. 2. Promissionem, quod cito venturus sit finis calamitatum in hac vita, et quod Dominus cito sit resuscitaturus mortuos, et Ecclesiam liberaturus ab omnibus malis. Ideo hic facit mentionem de ficu. Sicut scitis venire aestatem florescente ficu, quia ficus primum floret: ita cum audietis hos tumultus et confusiones, scitote quod cito veniet dies resurrectionis. 3. Promissionem continet, quod Deus velit haec mala mitigare invocantibus, sicut dicit: Orate, ut possitis effugere. Item: Omnes capilli capitis vestri numerati sunt. Sed certe oportet esse poenitentiam, oportet exui hanc crassam securitatem, oportet agnosci iram Dei, et vera invocatione confugere ad Dominum. Videbunt Filium hominis venientem in nubibus. Haec pars ad consolationem pertinet, in qua iam expresse ponitur sententia de liberatione Ecclesiae, per quem et quomodo facienda sit.
+
+Fiet liberatio Ecclesiae, et fiet per Filium Dei rursus ostendentem se generi humano, et iudicantem. Et hic colliget electos ex toto orbe terrarum, resuscitabit mortuos, et ornabit perpetua gloria, vita, sapientia, iustitia electos, et abiiciet impios in aeternas poenas. Hunc finem hic saepe proponit, sed verba clarissima sunt haec: Videbunt Filium hominis venientem in nubibus. Et quidem oportet omnes homines semper intueri hunc finem. Sciamus nos non tantum ad hanc vitam mortalem nasci, ut comedamus, bibamus, quaeramus opes et voluptates, sed restare iudicium post hanc vitam, in quo Deus severissime puniturus est impios aeternis poenis, et aliis daturus est aeternam gloriam, qui egerunt poenitentiam, et crediderunt in Filium. Haec doctrina Catechismi et Symboli, semper sit in conspectu, et cogitetur serio, ut nos flectat ad timorem Dei, ad poenitentiam, ad fidem. Ideo et hic recitetur, non ut sit inanis narratio de rebus futuris, sed ut nos moneat, ne securi contemnamus futurum iudicium, sicut multi Epicurei et tyranni et alii contemnunt, sed ut vere expavescamus, agamus poenitentiam, fide quaeramus consolationem, et exspectemus illam promissam a Deo liberationem gloriosam. Diaboli sciunt hoc iudicium futurum esse, et contremiscunt, et mallent redigi in nihilum, si fieri posset: sed sic condita est spiritualis natura, ut non frangatur, sicut corporea. Nullus homo in hac corporali natura nunc ante resurrectionem posset vivere, si tali metu cruciaretur, sicut Diabolus.
+
+Sed addit Diabolus odium Dei, et indigna- tionem, et propterea furenter saevit adversus ho- mines, et quo tempus poenae maioris propius est, eo magis saevit. Ideo in fine mundi nunc crescunt mala, sed tamen post iudicium extremum poenae Diaboli maiores erunt, quam nunc sunt.
+
+## 24:4 Sermons on Matthew
+See that no one deceives you.
+
+It was said above that the predictions concerning the destruction of Jerusalem and the end of the world are mixed, because the preceding signs are similar.
+
+However, we spoke first about the destruction of Jerusalem. Now we shall speak about the signs of the last day.
+
+And we shall distribute this part into these three members.
+
+First, when the day of the resurrection of the dead and the final judgment is to come. Second, why the signs are preached. Third, what the signs are. On the first article.
+
+When the day of the resurrection and the final judgment is to come.
+
+Here, first, the pious must be admonished to consider the difference.
+
+Heathens, Epicureans, and all the impious think that it is mere fables when it is said that there will be a future resurrection and a future judgment. And in the second Epistle of Peter it is manifestly written that this blasphemy will be more common in the last time of the world than before. Just as now, at Rome, it is considered the height of foolishness to believe in the resurrection of the dead and the final judgment. But the Church of God has always known this article from the beginning, from the clear revelation of God, and has embraced it with the firmest faith, and believes with certainty that there will be a future resurrection of the dead and a universal judgment.
+
+This article has been handed down most expressly by the voice of Christ himself, and confirmed by his own resurrection and the resuscitation of many holy fathers. And the Saints saw, throughout forty days of daily familiarity, Christ and others who had been raised, conversing with them. For God wished to confirm this article with the clearest and by no means doubtful testimony. Let this, therefore, be the first doctrine, that we separate ourselves from the Heathens and Epicureans, and truly believe these articles, namely, that there will be a future resurrection of the dead and a universal judgment.
+
+Let us also learn from the Prophets and the sayings of Christ that this day is not as far off as many dream, and even if the resurrection and judgment are to come, yet many thousands of years still remain until that time, and therefore the secure mock the whole mention of judgment.
+
+Christ says in this chapter: Of that day and hour no one knows, not even the angels, but the Father alone.
+
+He did not wish to reveal the day, but yet he indicated a space near to the end, so that we might be in fear. For security grows in the world. Daniel clearly says that the judgment will come at the end of the fourth monarchy.
+
+And God distributed the times of the world after the flood into monarchies, so that we might know that the end is to come, and when the time is near to the end. But all men ought to know the saying which is said to have been handed down by Elias, and it is credible that many such sayings were handed down by the Fathers and Prophets; the words sound thus: Six thousand years will be the time of the world, and afterwards destruction.
+
+Two thousand inane [void/without law]. Two thousand law. Two thousand the days of the Messiah, and if anything is lacking, it is because of our sins, which are many. Behold, in this saying it is predicted that the whole time of the world will be six thousand years.
+
+And it is most certain from the computation of the years of the world, which God wished us to know from his book handed down through the Fathers and Prophets, that five thousand five hundred years and somewhat more have already passed.
+
+And in this year from the birth of Christ, 1550, according to accurate computations made, there are five thousand five hundred and twelve years. Since these things are so, it is most certain that the end of the world is not far off, because God will even cut short the time near the end, as it is written: Unless those days were shortened, no flesh would be saved.
+
+And so much for the first member, when the day of judgment and resurrection is to come.
+
+Second article.
+
+Why are these things predicted?
+
+I answer: Principally for two reasons.
+
+The former is so that the secure, being admonished, may perform repentance and not become too wild and profane. The latter is so that pious men, fearing the magnitude of the punishments and the public and private miseries, may nevertheless have consolation, because God at the same time mixed consolations with these threats; he says that he will preserve his Church, he says that repentance and invocation will be profitable for the mitigation of punishments: Pray that you may be able to escape these evils, lest they come upon you. Let men consider these causes well.
+
+Let the secure consider the horrendous calamities, wars, distractions of the Churches, persecutions, schisms, and let them be affected with sorrow, and let them know that we are warned by God through these punishments of the future judgment and eternal punishments.
+
+Other pious people, who grieve on account of their own and public miseries, let them propose to themselves consolations, let them know that the Son of God is truly present with His Church, as He says: Behold I am with you all days even to the consummation of the world. Isaiah 46: I will carry you even in old age. This consolation is the principal one, to know for certain that the Son of God is present with us, and is present for this reason, that He may sustain and save this miserable, afflicted, and wretched part of the human race, which acknowledges and calls upon Him. This consolation must always be considered most diligently. Nor can the magnitude of such great mercy be understood by the secure, who are not affected by the sense of common miseries.
+
+On the third member.
+
+Latin:
 
 Videte ne quis vos decipiat.
 
@@ -24052,54 +24098,6 @@ Securi considerent horrendas calamitates, bella, distractiones Ecclesiarum, pers
 Alii pii, qui dolent propter suas et publicas miserias, proponant sibi consolationes, sciant quod filius Dei vere adsit suae Ecclesiae, sicut inquit: Ecce ego vobiscum sum omnibus diebus usque ad consummationem seculi. Esaiae 46.: Ego gestabo vos etiam in senecta. Haec consolatio est praecipua, certo scire, quod nobiscum adfit filius Dei, et adsit ideo, ut hanc miseram, adflictam, aerumnosam partem generis humani, quae ipsum agnoscit et invocat, sustentet et servet. Haec consolatio semper et diligentissime consideranda est. Nec magnitudo huius tantae misericordiae intelligi potest a securis, qui non adficiuntur sensu communium miseriarum.
 
 De tertio membro.
-
-Quae sunt signa?
-
-Sunt triplicia. 1. Physicae turbationes, ungewönliche vnordnung in natürlichen dingen. 2. Politicae turbationes, ut ruinae regnorum, zerstörung der grossen Reich. 3. Ecclesiasticae tribulationes, ut Haereses, Schismata, Papatus, in der Kirchen, Secten, Rotten, Keherey. De physicis exempla videmus.
-
-Nascuntur multa monstra, multi fuerunt Cometae, terraemotus, sanguis erupit ex terra in quibusdam locis in ducatu Ducis Henrici Brunsuicensis, pereunt fruges. Et textus de physicis inquit: Erunt fames, pestilentiae et terraemotus.
-
-Sed politica sunt clariora. Manifestum est multa regna ruere, daß die großen Königreich zerstöret werden. Hungaricum penitus cecidit. Principatus in Germania etiam sunt infirmiores, quam unquam fuerunt. Regna caetera, Polonicum, Gallicum, et Anglicum, habent satis magnas turbationes. Turcicum etiam prope finem est. Et videmas magis magisque crescere onera expilationum, et fieri maiores confusiones in omni gubernatione. Omnia sunt plena latrociniorum, populus exhauritur sine modo. Et semper quando fuerunt secuturae regnorum mutationes, praecesserunt civiles discordiae, et seditiones, ut ante Augusti imperium prius dimicarunt inter se de summa potentia Sylla et Marius, postea Iulius et Pompeius, deinde Antonius, Brutus, Cassius, donec tandem factus est monarcha Augustus.
-
-Sed ecclesiasticae confusiones sunt magis perspicuae, et sunt signa propiora. Sicut antequam natus est Christus ex virgine, fuerunt in Iudaea Pharisaei, Sadducaei, et aliae sectae plures, et Pontificatus fuit mundanum imperium, simile ethnico, Hircanus, Aristobulus, Antigonus, inter se dimicabant de Pontificatu, et emebant Pontificatum a vicinis regibus et a Romanis Praesidibus, alii ab aliis: ita postremo tempore ante diem iudicii similia mala erunt in Ecclesia, ut hic dicitur de sectis: Multi venient dicentes: Ego sum Christus. Item venient multi Pseudoprophetae et decipient multos, sicut manifestum est, his nostris annis fuisse multos Pseudoprophetas, Anabaptistas, Stenckfeldianos et alios multos: audimus multos fanaticos homines adhuc in Belgico et in aliis locis vagari.
-
-Nominatim autem hic dicit de abominatione desolationis, id est, de Idolo, quod facit vastationem universalem, vom Göhen, der alles wüst machet, id est, quo vastatur Ecclesia tota. Hic intelligitur idololatria propria Papatus Romani. Haec idololatria est idolum omnia vastans.
-
-Consistit autem in his quatuor magnis et praecipuis erroribus. 1. Quia Papa delet doctrinam de iustitia fidei totam, et praecipit dubitationem. Et in hoc errore multi alii comprehenduntur.
-
-2. Quia finxit falsam adorationem et meritum in Missa, depravat totam coenam Domini. 3. Quia finxit ethnicos cultus, invocationem mortuorum. 4. Quia finxit ethnicos cultus, vota Machorum et alia opera ab hominibus excogitata.
-
-Haec omnia simul sunt illud idolum vastans, quod antecedit diem iudicii. Et oportet paulo ante revelari hoc idolum, sicut nunc facta est revelatio. Haec de signis breviter dicta sint.
-
-Deinde rursus sequentur consolationes et admonitiones. Qui in tecto est, non descendat. Quanquam varie mixtae sunt hic admonitiones, tamen lector diligenter consideret discrimina. Et ego primum de admonitionibus dicam.
-
-Monet, ut simus vigilantes in doctrinae conservatione, in poenitentia, in invocatione, et in vitandis impedimentis. Ideo dicit: Qui est in tecto, non descendat, ut auferat aliquid etc. Id est: Non sitis impediti cura cumulandarum opum, aut voluptatum, aut aliarum rerum corporalium, ut negligatis doctrinam et invocationem, sed vitate omnia talia impedimenta. Scitote ergo hanc admonitionem praecipue complecti haec quatuor: 1. Curam custodiendae doctrinae. 2. Poenitentiam. 3. Invocationem. 4. Curam vitandi impedimenta.
-
-De doctrina dixit prius, et hic: Surgent Pseudoprophetae, videte ne decipiamini, non credatis. Et 2. Petri 3.: Cavete, ne impiorum deceptione seducti, excidatis ex propria stabilitate, sed crescatis in gratia et agnitione Domini nostri Iesu Christi. De poenitentia semper clamat haec vox: Vivo ego, dicit Dominus, nolo mortem peccatoris etc. De invocatione dicit in Luca: Orate, ut possitis effugere haec mala. Hoc bene considerandum est, quod affirmat parci Ecclesiae invocanti, et quod nostrae precationes non sint inutiles. Hic dicit: Orate, ne fuga vestra fiat in Sabbato, aut in hieme, id est, ne incidant impedimenta propter pavores, aut propter securitatem. Hiems significat pavores, sicut metu paupertatis aut persecutionum multi deficiunt a doctrina. Sabbatum significat securitatem et otium, quidam dum nimis securi sunt, non cavent errores, et simul ita sicut ebrii trahuntur ad falsas opiniones. De vitandis impedimentis dicitur: Attendite, ne corda vestra graventur crapula, et curis victus, sicut iam crescunt luxus, ambitio, avaritia, usurae, helluationes, profusiones. Haec de admonitione dicta sint.
-
-Sequitur consolatio, quae continet haec tria membra: 1.
-
-Promissionem, quod Ecclesia sit mansura usque ad resurrectionem in hac vita, et deinceps in aeterna. 2. Promissionem, quod cito venturus sit finis calamitatum in hac vita, et quod Dominus cito sit resuscitaturus mortuos, et Ecclesiam liberaturus ab omnibus malis. Ideo hic facit mentionem de ficu. Sicut scitis venire aestatem florescente ficu, quia ficus primum floret: ita cum audietis hos tumultus et confusiones, scitote quod cito veniet dies resurrectionis. 3. Promissionem continet, quod Deus velit haec mala mitigare invocantibus, sicut dicit: Orate, ut possitis effugere. Item: Omnes capilli capitis vestri numerati sunt. Sed certe oportet esse poenitentiam, oportet exui hanc crassam securitatem, oportet agnosci iram Dei, et vera invocatione confugere ad Dominum. Videbunt Filium hominis venientem in nubibus. Haec pars ad consolationem pertinet, in qua iam expresse ponitur sententia de liberatione Ecclesiae, per quem et quomodo facienda sit.
-
-Fiet liberatio Ecclesiae, et fiet per Filium Dei rursus ostendentem se generi humano, et iudicantem. Et hic colliget electos ex toto orbe terrarum, resuscitabit mortuos, et ornabit perpetua gloria, vita, sapientia, iustitia electos, et abiiciet impios in aeternas poenas. Hunc finem hic saepe proponit, sed verba clarissima sunt haec: Videbunt Filium hominis venientem in nubibus. Et quidem oportet omnes homines semper intueri hunc finem. Sciamus nos non tantum ad hanc vitam mortalem nasci, ut comedamus, bibamus, quaeramus opes et voluptates, sed restare iudicium post hanc vitam, in quo Deus severissime puniturus est impios aeternis poenis, et aliis daturus est aeternam gloriam, qui egerunt poenitentiam, et crediderunt in Filium. Haec doctrina Catechismi et Symboli, semper sit in conspectu, et cogitetur serio, ut nos flectat ad timorem Dei, ad poenitentiam, ad fidem. Ideo et hic recitetur, non ut sit inanis narratio de rebus futuris, sed ut nos moneat, ne securi contemnamus futurum iudicium, sicut multi Epicurei et tyranni et alii contemnunt, sed ut vere expavescamus, agamus poenitentiam, fide quaeramus consolationem, et exspectemus illam promissam a Deo liberationem gloriosam. Diaboli sciunt hoc iudicium futurum esse, et contremiscunt, et mallent redigi in nihilum, si fieri posset: sed sic condita est spiritualis natura, ut non frangatur, sicut corporea. Nullus homo in hac corporali natura nunc ante resurrectionem posset vivere, si tali metu cruciaretur, sicut Diabolus.
-
-Sed addit Diabolus odium Dei, et indigna- tionem, et propterea furenter saevit adversus ho- mines, et quo tempus poenae maioris propius est, eo magis saevit. Ideo in fine mundi nunc crescunt mala, sed tamen post iudicium extremum poenae Diaboli maiores erunt, quam nunc sunt.
-
-Si paterfamilias sciret, qua vigilia fur ven- turus esset, etc.
-
-In fine huius capitis redit ad admonitiones. Vult nos omni tempore paratos esse, et quan- quam supra dictum est, voluisse Deum sciri in genere, non procul esse finem mundi, post prae- dicationem Evangelii, quando iam quarta mo- narchia, id est, Romana, destruitur, tamen an- num et diem non voluit nos scire. Vult autem nos paratos esse omni tempore. Ideo dicit: Qua hora non putatis, veniet. Et Paulus inquit: Cum dicent, pax et secu- ritas, tunc ecce venit, ubi significat securitatem nimis magnam fore novissimo tempore. De hac concionantur et hae similitudines hic recitatae. Nominatim autem ponuntur hic duo servi, fidelis et malus servus. Fidelis servus significat, quod in fine tamen Deus servaturus sit reliquias Ecclesiae, et quod aliqui sint futuri fideles doctores et ministri. Sicut Noha fuit fidelis ante diluvium, et Loth fuit fidelis in Sodomis. Et Esaias dicit: Ego gestabo vos in senecta etiam. Non sinet Deus prorsus exstingui Eccle- siam. Et supra dictum est: Propter electos ab- breviabuntur isti dies. Sunt igitur aliqui pauci, qui tamen cogitant de venturo iudicio, et sunt fideles in docendo. Hanc consolationem supra quoque recitavi, quae certe piis mentibus grata et necessaria est, ne cogitent: Ecce Deus abiecit totum genus hu- manum. Ideo frustra invocas, frustra credis re- missionem, frustra exspectas auxilium Dei et vi- tam aeternam. Contra has tentationes armemus nos his certissimis consolationibus et promissioni- bus, quae adfirmant, Ecclesiam Dei semper man- suram esse etiam in hac vita. Quod confirmatur per ipsam coenam Domini, hoc facite donec ve- niam. Ecce quoties fit coena Domini, hanc conso- lationem cogitate: Ecclesia mansura est, donec veniet Dominus. Ergo non frustra invocamus, non sunt irritae promissiones.
-
-Huc pertinet et hoc dictum: Ecce ego vo- biscum sum usque ad consummationem seculi.
-
-Sis igitur certissimus, quod Deus servet re- liquias in hoc mundo, et semper ratae sint pro- missiones datae Ecclesiae. Invoca, crede, et certo scias te exaudiri. Haec verissima sunt et certissima. Et laudatur hic servus fidelis, qui hanc fidem retinet.
-
-Sed alius est servus infidelis, qui est ebrio- sus, bibit, comedit, et verberat conservos.
-
-Tales sunt haud dubie Papa, Episcopi, Ca- nonici, et eis adhaerentes. Hi negligunt doctri- nam, helluantur, quaerunt opes et potentiam et voluptates. Et verberant conservos, id est, per- sequuntur Ecclesiam, interficiunt Sacerdotes, qui fideliter docent, et alios homines pios, qui Evan- gelium amplectuntur et confitentur. Sicut iam multi passim aut pelluntur in exilia, aut interfi- ciuntur.
-
-Verberavit Papa et antea conservos in con- scientiis, per suas traditiones de coelibatu, et alias stultas traditiones. Nunc verberat corpora, interficit confitentes veram doctrinam.
-
-Sed cum veniet filius Dei, dissecabit eum, et ponet partem eius cum hypocritis, abiiciet eum in aeternas poenas, ubi erit ploratus, id est, ubi erunt horrendi dolores, quorum magnitudo non potest verbis describi, sed in damnatis morituris, ut in homicidis et talibus, imago talium dolorum conspicitur, hic describuntur per haec signa, plo- ratum et stridorem dentium, sed sciamus tantos dolores non posse verbis satis describi. Et vere expavescamus cogitatione iudicii divini, et quae- ramus consolationem, sicut Petrus dicit, Acto. 3.: Agite poenitentiam, et convertimini, ut delean- tur peccata vestra, cum venient tempora refrigerii a facie Domini, id est, ut veniente Domino non pereatis pavore, sed habeatis recreationem, et laetemini conspectu filii Dei, Amen.
 
 ## 24:15-28 The Twenty-fifth Sunday After Trinity
 The Twenty-Fifth Sunday after Trinity. The Gospel
@@ -24291,6 +24289,41 @@ IIII. Quod Christus rursus se ostensurus sit mundo, et glorificaturus Ecclesiam,
 Doctrina vero est, quod monet, ut Evangelium retineamus, nec assentiamur impostoribus. Item, iubet precari, ac significat Deum calamitates mitigaturum esse precantibus. Orate, ut possitis evadere ex futuris malis, et stare coram filio hominis.
 
 ENARRATIONES EVANGELIORUM, QUAE LEGUNTUR DE FESTIS CHRISTI, ET HISTORIIS SANCTORUM.
+
+## 24:43 Sermons on Matthew
+If the master of the house knew in what watch the thief would come, etc.
+
+At the end of this chapter he returns to admonitions. He wants us to be prepared at all times, and although it was said above that God willed it to be known in general that the end of the world is not far off, after the preaching of the Gospel, when now the fourth monarchy, that is, the Roman, is being destroyed, nevertheless he did not want us to know the year and the day. He wants us, however, to be prepared at all times. Therefore he says: At an hour you do not think, he will come. And Paul says: When they shall say, peace and security, then behold it comes, where he signifies that there will be too great a security in the last time. Concerning this, these similitudes recited here preach. Specifically, however, two servants are placed here, the faithful and the evil servant. The faithful servant signifies that in the end, however, God is going to save the remnants of the Church, and that there will be some future faithful teachers and ministers. Just as Noah was faithful before the flood, and Lot was faithful in Sodom. And Isaiah says: I will carry you even into old age. God will not allow the Church to be utterly extinguished. And it was said above: For the sake of the elect those days will be shortened. There are therefore some few who nevertheless think about the coming judgment, and are faithful in teaching. I have also recited this consolation above, which is certainly pleasing and necessary for pious minds, lest they think: Behold, God has cast away the whole human race. Therefore you invoke in vain, you believe in remission in vain, you expect the help of God and eternal life in vain. Against these temptations let us arm ourselves with these most certain consolations and promises, which affirm that the Church of God will always remain even in this life. Which is confirmed by the Supper of the Lord itself, do this until I come. Behold, as often as the Supper of the Lord is celebrated, think of this consolation: The Church is going to remain until the Lord comes. Therefore we do not invoke in vain, the promises are not void.
+
+To this pertains also this saying: Behold I am with you even unto the consummation of the age.
+
+Be therefore most certain that God preserves the remnants in this world, and that the promises given to the Church are always valid. Invoke, believe, and know for certain that you are heard. These things are most true and most certain. And here the faithful servant is praised, who retains this faith.
+
+But there is another, an unfaithful servant, who is a drunkard, drinks, eats, and beats his fellow servants.
+
+Such are undoubtedly the Pope, Bishops, Canons, and those adhering to them. These neglect doctrine, they gorge themselves, they seek wealth and power and pleasures. And they beat their fellow servants, that is, they persecute the Church, they kill the Priests who faithfully teach, and other pious men who embrace and confess the Gospel. Just as now many are everywhere either driven into exile or killed.
+
+The Pope also previously beat his fellow servants in their consciences, through his traditions concerning celibacy, and other foolish traditions. Now he beats their bodies, he kills those who confess the true doctrine.
+
+But when the Son of God comes, he will cut him asunder, and will place his portion with the hypocrites, he will cast him into eternal punishments, where there will be weeping, that is, where there will be horrible pains, the magnitude of which cannot be described in words, but in the dying damned, as in murderers and such, an image of such pains is seen, here they are described by these signs, weeping and gnashing of teeth, but let us know that such great pains cannot be sufficiently described in words. And let us truly tremble at the thought of the divine judgment, and let us seek consolation, as Peter says, Acts 3: Repent, and be converted, that your sins may be blotted out, when the times of refreshing shall come from the presence of the Lord, that is, that when the Lord comes you may not perish in terror, but may have recreation, and rejoice at the sight of the Son of God, Amen.
+
+Latin:
+
+Si paterfamilias sciret, qua vigilia fur ven- turus esset, etc.
+
+In fine huius capitis redit ad admonitiones. Vult nos omni tempore paratos esse, et quan- quam supra dictum est, voluisse Deum sciri in genere, non procul esse finem mundi, post prae- dicationem Evangelii, quando iam quarta mo- narchia, id est, Romana, destruitur, tamen an- num et diem non voluit nos scire. Vult autem nos paratos esse omni tempore. Ideo dicit: Qua hora non putatis, veniet. Et Paulus inquit: Cum dicent, pax et secu- ritas, tunc ecce venit, ubi significat securitatem nimis magnam fore novissimo tempore. De hac concionantur et hae similitudines hic recitatae. Nominatim autem ponuntur hic duo servi, fidelis et malus servus. Fidelis servus significat, quod in fine tamen Deus servaturus sit reliquias Ecclesiae, et quod aliqui sint futuri fideles doctores et ministri. Sicut Noha fuit fidelis ante diluvium, et Loth fuit fidelis in Sodomis. Et Esaias dicit: Ego gestabo vos in senecta etiam. Non sinet Deus prorsus exstingui Eccle- siam. Et supra dictum est: Propter electos ab- breviabuntur isti dies. Sunt igitur aliqui pauci, qui tamen cogitant de venturo iudicio, et sunt fideles in docendo. Hanc consolationem supra quoque recitavi, quae certe piis mentibus grata et necessaria est, ne cogitent: Ecce Deus abiecit totum genus hu- manum. Ideo frustra invocas, frustra credis re- missionem, frustra exspectas auxilium Dei et vi- tam aeternam. Contra has tentationes armemus nos his certissimis consolationibus et promissioni- bus, quae adfirmant, Ecclesiam Dei semper man- suram esse etiam in hac vita. Quod confirmatur per ipsam coenam Domini, hoc facite donec ve- niam. Ecce quoties fit coena Domini, hanc conso- lationem cogitate: Ecclesia mansura est, donec veniet Dominus. Ergo non frustra invocamus, non sunt irritae promissiones.
+
+Huc pertinet et hoc dictum: Ecce ego vo- biscum sum usque ad consummationem seculi.
+
+Sis igitur certissimus, quod Deus servet re- liquias in hoc mundo, et semper ratae sint pro- missiones datae Ecclesiae. Invoca, crede, et certo scias te exaudiri. Haec verissima sunt et certissima. Et laudatur hic servus fidelis, qui hanc fidem retinet.
+
+Sed alius est servus infidelis, qui est ebrio- sus, bibit, comedit, et verberat conservos.
+
+Tales sunt haud dubie Papa, Episcopi, Ca- nonici, et eis adhaerentes. Hi negligunt doctri- nam, helluantur, quaerunt opes et potentiam et voluptates. Et verberant conservos, id est, per- sequuntur Ecclesiam, interficiunt Sacerdotes, qui fideliter docent, et alios homines pios, qui Evan- gelium amplectuntur et confitentur. Sicut iam multi passim aut pelluntur in exilia, aut interfi- ciuntur.
+
+Verberavit Papa et antea conservos in con- scientiis, per suas traditiones de coelibatu, et alias stultas traditiones. Nunc verberat corpora, interficit confitentes veram doctrinam.
+
+Sed cum veniet filius Dei, dissecabit eum, et ponet partem eius cum hypocritis, abiiciet eum in aeternas poenas, ubi erit ploratus, id est, ubi erunt horrendi dolores, quorum magnitudo non potest verbis describi, sed in damnatis morituris, ut in homicidis et talibus, imago talium dolorum conspicitur, hic describuntur per haec signa, plo- ratum et stridorem dentium, sed sciamus tantos dolores non posse verbis satis describi. Et vere expavescamus cogitatione iudicii divini, et quae- ramus consolationem, sicut Petrus dicit, Acto. 3.: Agite poenitentiam, et convertimini, ut delean- tur peccata vestra, cum venient tempora refrigerii a facie Domini, id est, ut veniente Domino non pereatis pavore, sed habeatis recreationem, et laetemini conspectu filii Dei, Amen.
 
 ## 25:1 Sermons on Matthew: Argument
 Chapter XXV.

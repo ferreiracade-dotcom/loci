@@ -36,7 +36,10 @@ matches no heading, so a part starts at its first page.
 
   vol. 14  PRO --pages 14-57; ECC --pages 58-93; --pericopes --pages 95-287 --from-head "^Dominica prima";
            MAT --pages 288-292 --start-chapter 1 --label "Notes on Matthew";
-           MAT --pages 293-542 --from-head "^CONCIONES" --label "Sermons on Matthew"
+           MAT --pages 293-542 --from-head "^CONCIONES" --label "Sermons on Matthew" --chapter-start
+               "7@^Dominus noster Iesus Christus ipse donet nobis suam gratiam, nosque Spiritu suo sancto regat"
+           (chapter 7 opens with a sermon and no heading; chapters 3, 4, 16 and 24 have theirs run into a
+           paragraph or misprinted, which the converter reads)
            (pages 543-637, the Annotations on John of 1523, are Melanchthon John.md)
   vol. 15  JHN --pages 14-233; ROM --pages 235-259 --start-chapter 1 --label "Disposition of Romans";
            ROM --pages 414-545; 1CO --pages 546-621 --start-chapter 1; 2CO --pages 622-629;
@@ -360,6 +363,8 @@ def main():
     ap.add_argument("--pericopes", action="store_true",
                     help="annotations on the Sunday and feast Gospels: each section at its reading (code is ignored)")
     ap.add_argument("--label", help="a name set before each excerpt's title, to tell this work from others merged with it")
+    ap.add_argument("--chapter-start", action="append", default=[],
+                    help="N@REGEX: chapter N begins at the block matching REGEX, where the edition marks it by nothing else")
     ap.add_argument("--pages", help="A-B: only these pages of the work (a volume holding several)")
     args = ap.parse_args()
     meta = json.loads(tb.get(args.slug, "meta.json"))
@@ -397,9 +402,26 @@ def main():
     if args.start_chapter:
         chapter = args.start_chapter
         open_(chapter, 1, title="Argument")
-    for kind, t_en, t_la, part, lead in blocks[start:]:
+    # Each chapter heading's number, for a heading printed twice ("Caput XXIII." over chapter XXIV).
+    heads_at = [(i, chapter_number(b[2] or b[1])) for i, b in enumerate(blocks) if i >= start and b[0] == "head"]
+    heads_at = [(i, n) for i, n in heads_at if n]
+    starts = [(int(n), re.compile(rx)) for n, _, rx in (x.partition("@") for x in args.chapter_start)]
+    run_in = None
+    for i, (kind, t_en, t_la, part, lead) in enumerate(blocks[start:], start):
         src = t_la or t_en
         n = chapter_number(src) if kind == "head" else None
+        if kind == "p" and re.match(r"^\W*Caput\s+[IVXL]+\.\s", src):
+            n = chapter_number(src)  # "Caput IIII. De tentationibus Christi. Praefatio." set as a paragraph
+        if n and n == chapter and not treatise and next((m for j, m in heads_at if j > i), 0) == chapter + 2:
+            n = chapter + 1  # the heading repeated in error: the next one skips this chapter
+        for c, rx in starts:
+            if c == chapter + 1 and rx.search(src):
+                n = c  # a chapter the edition marks by nothing but its opening words (--chapter-start)
+        if run_in and not n:
+            n, run_in = run_in, None  # "... gloriae etc. Caput III.": the heading run into the paragraph before
+        m = re.search(r"\bCaput\s+([IVXL]+)\.\s*$", src) if kind == "p" and not treatise else None
+        if m and chapter < tb.roman(m.group(1)) <= chapter + 2:
+            run_in = tb.roman(m.group(1))
         found = match(src, code, chapter, verse) if chapter and kind == "head" and n is None and not args.sections_only and not (
             treatise and len(content(src)) < 3) else None
         if chapter and not found and n is None and not args.sections_only and not treatise and kind == "head":
