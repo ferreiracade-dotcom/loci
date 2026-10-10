@@ -289,6 +289,12 @@ interface Store {
   ) => Promise<void>
   /** Open/focus the Book of Concord as a center pane (left-rail "Confessions" entry). */
   showConfessions: () => Promise<void>
+  /** Open (or focus) the commentary reader tab. With a target, the reader jumps there; without
+   *  one it resumes the last-read chapter, else the first indexed source's first chapter. */
+  showCommentary: (target?: { sourceId: string; book: string; chapter: number; verse?: number }) => Promise<void>
+  /** Open (or focus) the dogmatics reader tab. With a target, the reader jumps there; without
+   *  one it resumes where the user left off, else the first indexed source's first book. */
+  showDogmatics: (target?: { sourceId: string; work: number; book: number; section?: number; topic?: string }) => Promise<void>
   addBocQuote: (input: BocQuoteInput) => Promise<void>
   /** Quote an excerpt from a BoC *commentary* source (anchored to the commentary source row,
    *  not the primary text — they live in separate tables). */
@@ -1113,6 +1119,103 @@ export const useStore = create<Store>((set, get) => {
         }
         get().navigateBoc(doc.documentCode, doc.ordinal)
       }
+    },
+
+    showCommentary: async (target) => {
+      const existing = get().tabs.find((t) => t.kind === 'commentary')
+      if (existing && !target) {
+        get().focusTab(existing.id)
+        get().saveLayout({ activeLeftView: 'reading' })
+        return
+      }
+      let dest = target
+      if (!dest) {
+        const last = await api.getSession('lastCommentary')
+        if (last) {
+          try {
+            const p = JSON.parse(last) as { sourceId?: string; book?: string; chapter?: number }
+            if (p.sourceId && p.book && p.chapter) dest = { sourceId: p.sourceId, book: p.book, chapter: p.chapter }
+          } catch {
+            /* ignore malformed session value */
+          }
+        }
+      }
+      if (!dest) {
+        // First visit: the first source (in the user's order) that has anything indexed.
+        for (const source of await api.listCommentarySources()) {
+          const first = (await api.listCommentaryCoverage(source.id))[0]
+          if (first) {
+            dest = { sourceId: source.id, book: first.book, chapter: first.chapters[0] }
+            break
+          }
+        }
+      }
+      // Nothing indexed yet: the reader still opens, showing how to add a commentary.
+      const content: TabContent = {
+        kind: 'commentary',
+        commentarySourceId: dest?.sourceId ?? '',
+        book: dest?.book ?? 'MAT',
+        chapter: dest?.chapter ?? 1,
+        verse: dest?.verse
+      }
+      if (existing) {
+        get().setTabContent(existing.id, content)
+        get().focusTab(existing.id)
+      } else if (target) {
+        // Jumping in from a verse (the reference bar): keep the Bible visible beside it.
+        get().openTabInSplit(content)
+      } else {
+        get().openTab(content)
+      }
+      get().saveLayout({ activeLeftView: 'reading' })
+    },
+
+    showDogmatics: async (target) => {
+      const existing = get().tabs.find((t) => t.kind === 'dogmatics')
+      if (existing && !target) {
+        get().focusTab(existing.id)
+        get().saveLayout({ activeLeftView: 'reading' })
+        return
+      }
+      let dest = target
+      if (!dest) {
+        const last = await api.getSession('lastDogmatics')
+        if (last) {
+          try {
+            const p = JSON.parse(last) as { sourceId?: string; work?: number; book?: number; topic?: string }
+            // Book 0 is a topic's overview.
+            if (p.sourceId && p.work && (p.book || p.topic))
+              dest = { sourceId: p.sourceId, work: p.work, book: p.book ?? 0, topic: p.topic }
+          } catch {
+            /* ignore malformed session value */
+          }
+        }
+      }
+      if (!dest) {
+        for (const source of await api.listDogmaticsSources()) {
+          const first = (await api.listDogmaticsOutline(source.id))[0]
+          if (first?.books[0]) {
+            dest = { sourceId: source.id, work: first.ordinal, book: first.books[0].ordinal }
+            break
+          }
+        }
+      }
+      // Nothing indexed yet: the reader still opens, saying how to add one.
+      const content: TabContent = {
+        kind: 'dogmatics',
+        dogmaticsSourceId: dest?.sourceId ?? '',
+        dogmaticsWork: dest?.work ?? 1,
+        dogmaticsBook: dest?.book ?? 1,
+        sectionOrdinal: dest?.section,
+        dogmaticsTopic: dest?.topic
+      }
+      if (existing) {
+        get().setTabContent(existing.id, content)
+        get().focusTab(existing.id)
+      } else {
+        get().openTab(content)
+      }
+      get().saveLayout({ activeLeftView: 'reading' })
     },
 
     addBocQuote: async (input) => {

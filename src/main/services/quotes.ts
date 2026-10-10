@@ -20,6 +20,7 @@ import type {
   Annotation,
   BocQuoteInput,
   CommentaryQuoteInput,
+  DogmaticsQuoteInput,
   NewQuote,
   NewScriptureHighlight,
   Quote,
@@ -59,6 +60,9 @@ interface QuoteRow {
   boc_section_number: string | null
   boc_section_label: string | null
   boc_paragraph: number | null
+  dogmatics_source_id: string | null
+  dogmatics_ref: string | null
+  dogmatics_label: string | null
 }
 
 /** Parse a stored canonical ref like "JHN 3:16-18" into its parts. */
@@ -115,6 +119,18 @@ function bocCommentarySourceMeta(id: string): BocSourceMetaRow | undefined {
   return getDb()
     .prepare('SELECT display_name, author FROM boc_commentary_sources WHERE id = ?')
     .get(id) as BocSourceMetaRow | undefined
+}
+
+function dogmaticsSourceMeta(id: string): CommentarySourceRow | undefined {
+  return getDb()
+    .prepare('SELECT display_name, author FROM dogmatics_sources WHERE id = ?')
+    .get(id) as CommentarySourceRow | undefined
+}
+
+/** Citation for a dogmatics quote: "Author, *Source*, <location>" (author omitted if absent);
+ *  the location was captured at quote time (see migration 20). */
+function dogmaticsCitationOf(src: CommentarySourceRow, label: string | null): string {
+  return [src.author?.trim() || '', `*${src.display_name}*`, label ?? ''].filter(Boolean).join(', ')
 }
 
 /** Per-call lookup caches for the list paths, so mapping N quote rows doesn't run a tag query
@@ -394,6 +410,10 @@ function citationForRow(r: QuoteRow, ctx?: QuoteListCtx): string {
       return bocCitationOf(doc.abbreviation, r.boc_section_number, r.boc_section_label, r.boc_paragraph, src)
     }
   }
+  if (r.dogmatics_source_id) {
+    const src = dogmaticsSourceMeta(r.dogmatics_source_id)
+    if (src) return dogmaticsCitationOf(src, r.dogmatics_label)
+  }
   return ''
 }
 
@@ -444,6 +464,13 @@ function rowToQuote(r: QuoteRow, ctx?: QuoteListCtx): Quote {
       }
     }
   }
+  let dogmaticsSource: string | undefined
+  let dogmaticsAuthor: string | undefined
+  if (r.dogmatics_source_id) {
+    const src = dogmaticsSourceMeta(r.dogmatics_source_id)
+    dogmaticsSource = src?.display_name
+    dogmaticsAuthor = src?.author ?? undefined
+  }
   return {
     id: r.id,
     bookId: r.book_id ?? '',
@@ -463,7 +490,12 @@ function rowToQuote(r: QuoteRow, ctx?: QuoteListCtx): Quote {
     commentaryRef,
     scriptureBook,
     verseStart,
-    verseEnd
+    verseEnd,
+    dogmaticsSourceId: r.dogmatics_source_id ?? undefined,
+    dogmaticsSource,
+    dogmaticsAuthor,
+    dogmaticsRef: r.dogmatics_ref ?? undefined,
+    dogmaticsLabel: r.dogmatics_label ?? undefined
   }
 }
 
@@ -1044,6 +1076,96 @@ export function listCommentaryQuotes(sourceId: string): Quote[] {
   return keyed.map((x) => rowToQuote(x.r, ctx))
 }
 
+// Dogmatics quotes live in one note per source, like commentary quotes.
+function ensureDogmaticsNote(vault: string, displayName: string): string {
+  const rel = `notes/dogmatics/${sanitizeName(displayName)}.md`
+  const abs = join(vault, rel)
+  if (!existsSync(abs)) {
+    mkdirSync(dirname(abs), { recursive: true })
+    const fm =
+      `---\n` +
+      `title: ${displayName.replace(/\r?\n/g, ' ')}\n` +
+      `type: dogmatics-note\n` +
+      `---\n\n# ${displayName}\n`
+    writeFileSync(abs, fm, 'utf-8')
+  }
+  return rel
+}
+
+/** Where a dogmatics section is, as cited: the work (when the source holds more than one, or
+ *  names it differently), the book and the section, e.g. "On Holy Scripture, § 5". */
+export function dogmaticsLabel(
+  sourceName: string,
+  s: { workTitle: string; multiWork: boolean; bookNumber: string | null; bookTitle: string; sectionNumber: string | null; sectionTitle: string }
+): string {
+  const work = s.workTitle && (s.multiWork || s.workTitle !== sourceName) ? s.workTitle : ''
+  const book = s.bookTitle || (s.bookNumber ? `bk. ${s.bookNumber}` : '')
+  const section = s.sectionNumber ? `§ ${s.sectionNumber}` : s.sectionTitle
+  return [work, book, section].filter(Boolean).join(', ')
+}
+
+/**
+ * Capture a dogmatics section (or a selected portion of one) as a quote, anchored to its source
+ * and its place ("work.book.section" ordinals), and homed in the per-source dogmatics note.
+ */
+export function addDogmaticsQuote(input: DogmaticsQuoteInput): Quote {
+  const vault = localVaultDir()
+  if (!vault) throw new Error('No vault')
+  const db = getDb()
+  const src = dogmaticsSourceMeta(input.sourceId)
+  if (!src) throw new Error('Dogmatics source not found')
+  const sec = db
+    .prepare(
+      `SELECT work_title, book_number, book_title, section_number, section_title FROM dogmatics_sections
+       WHERE source_id = ? AND work_ordinal = ? AND book_ordinal = ? AND section_ordinal = ?`
+    )
+    .get(input.sourceId, input.workOrdinal, input.bookOrdinal, input.sectionOrdinal) as
+    | { work_title: string; book_number: string | null; book_title: string; section_number: string | null; section_title: string }
+    | undefined
+  if (!sec) throw new Error('Dogmatics section not found')
+  const works = (
+    db.prepare('SELECT COUNT(DISTINCT work_ordinal) AS n FROM dogmatics_sections WHERE source_id = ?').get(input.sourceId) as {
+      n: number
+    }
+  ).n
+  const label = dogmaticsLabel(src.display_name, {
+    workTitle: sec.work_title,
+    multiWork: works > 1,
+    bookNumber: sec.book_number,
+    bookTitle: sec.book_title,
+    sectionNumber: sec.section_number,
+    sectionTitle: sec.section_title
+  })
+  const ref = `${input.workOrdinal}.${input.bookOrdinal}.${input.sectionOrdinal}`
+
+  const id = randomUUID()
+  const color = input.color ?? 'amber'
+  const rel = ensureDogmaticsNote(vault, src.display_name)
+  upsertQuoteBlock(vault, rel, id, buildBlock(id, input.text, dogmaticsCitationOf(src, label), []))
+
+  db.prepare(
+    `INSERT INTO quotes
+       (id, book_id, text, page, color, note_path, used_in, created, dogmatics_source_id, dogmatics_ref, dogmatics_label)
+     VALUES (?, NULL, ?, NULL, ?, ?, ?, ?, ?, ?, ?)`
+  ).run(id, input.text, color, rel, JSON.stringify([rel]), Date.now(), input.sourceId, ref, label)
+
+  reindexQuote(id)
+  return rowToQuote(db.prepare('SELECT * FROM quotes WHERE id = ?').get(id) as QuoteRow)
+}
+
+/** All saved quotes from one dogmatics source, in reading order. */
+export function listDogmaticsQuotes(sourceId: string): Quote[] {
+  const rows = getDb().prepare('SELECT * FROM quotes WHERE dogmatics_source_id = ?').all(sourceId) as QuoteRow[]
+  const key = (r: QuoteRow): number[] => (r.dogmatics_ref ?? '').split('.').map(Number)
+  rows.sort((a, b) => {
+    const ka = key(a)
+    const kb = key(b)
+    return ka[0] - kb[0] || ka[1] - kb[1] || ka[2] - kb[2] || a.created - b.created
+  })
+  const ctx = buildQuoteListCtx()
+  return rows.map((r) => rowToQuote(r, ctx))
+}
+
 /** Every saved quote, for cross-cutting groupings (by author, by tag) that span book/Scripture/
  *  commentary quotes alike rather than being scoped to one book/source. */
 export function listAllQuotes(): Quote[] {
@@ -1127,7 +1249,18 @@ export function listQuoteGroups(translation: string): QuoteGroups {
         a.sourceName.localeCompare(b.sourceName)
     )
 
-  return { books, scripture, commentary, boc }
+  const dogmatics = db
+    .prepare(
+      `SELECT q.dogmatics_source_id AS sourceId, s.display_name AS displayName, s.author AS author,
+              COUNT(*) AS count
+       FROM quotes q JOIN dogmatics_sources s ON s.id = q.dogmatics_source_id
+       WHERE q.dogmatics_source_id IS NOT NULL
+       GROUP BY q.dogmatics_source_id
+       ORDER BY s.sort_order, s.display_name`
+    )
+    .all() as QuoteGroups['dogmatics']
+
+  return { books, scripture, commentary, boc, dogmatics }
 }
 
 /** Every quote captured from one BoC source within one document, in section order. Mirrors

@@ -55,6 +55,8 @@ export const Channels = {
   listAllQuotes: 'quotes:listAll',
   addBocQuote: 'quotes:addBoc',
   addBocCommentaryQuote: 'quotes:addBocCommentary',
+  addDogmaticsQuote: 'quotes:addDogmatics',
+  listDogmaticsQuotes: 'quotes:listDogmatics',
   saveNote: 'notes:save',
   readNote: 'notes:read',
   listStandaloneNotes: 'notes:listStandalone',
@@ -84,6 +86,11 @@ export const Channels = {
   listCommentarySources: 'commentary:listSources',
   createCommentarySource: 'commentary:createSource',
   addMarkdownCommentarySource: 'commentary:addMarkdownSource',
+  addMyBibleCommentarySource: 'commentary:addMyBibleSource',
+  listSermonIndexCatalog: 'commentary:listSermonIndexCatalog',
+  installSermonIndexModule: 'commentary:installSermonIndexModule',
+  listCommentaryCoverage: 'commentary:listCoverage',
+  listCommentaryChapter: 'commentary:listChapter',
   updateCommentarySource: 'commentary:updateSource',
   deleteCommentarySource: 'commentary:deleteSource',
   reorderCommentarySources: 'commentary:reorderSources',
@@ -102,6 +109,12 @@ export const Channels = {
   listBocDocumentSections: 'boc:listDocumentSections',
   listBocSources: 'boc:listSources',
   listBocCommentarySources: 'boc:listCommentarySources',
+
+  listDogmaticsSources: 'dogmatics:listSources',
+  listDogmaticsOutline: 'dogmatics:listOutline',
+  listDogmaticsBook: 'dogmatics:listBook',
+  listDogmaticsTopics: 'dogmatics:listTopics',
+  listDogmaticsTopic: 'dogmatics:listTopic',
 
   // main → renderer events
   importProgress: 'library:importProgress',
@@ -289,6 +302,10 @@ export interface LociApi {
   /** Capture a Book of Concord commentary excerpt as a quote (anchored to the commentary
    *  source rather than the primary-text source). */
   addBocCommentaryQuote(input: BocQuoteInput): Promise<Quote>
+  /** Capture a dogmatics section (or a selected portion of one) as a quote. */
+  addDogmaticsQuote(input: DogmaticsQuoteInput): Promise<Quote>
+  /** Saved quotes from one dogmatics source, in reading order. */
+  listDogmaticsQuotes(sourceId: string): Promise<Quote[]>
   saveNote(path: string, content: string): Promise<void>
   readNote(path: string): Promise<string>
   listStandaloneNotes(): Promise<NoteSummary[]>
@@ -344,6 +361,20 @@ export interface LociApi {
   /** Prompt for a canonical commentary-Markdown (.md) file and register it as a source —
    *  headings are the excerpt boundaries, nothing to profile. Null if cancelled. */
   addMarkdownCommentarySource(): Promise<CommentarySource | null>
+  /** Prompt for a MyBible commentary module (.SQLite3, or the .zip it is distributed in) and
+   *  register it as a source. Null if cancelled. */
+  addMyBibleCommentarySource(): Promise<CommentarySource | null>
+  /** The SermonIndex commentaries offered for one-click install. */
+  listSermonIndexCatalog(): Promise<SermonIndexModule[]>
+  /** Download a SermonIndex module into the vault and register it (not yet indexed). Progress
+   *  arrives as `downloading` phases on onCommentaryIndexProgress. */
+  installSermonIndexModule(slug: string): Promise<CommentarySource>
+  /** Which books and chapters a source has (non-flagged) excerpts for, in canonical order. */
+  listCommentaryCoverage(sourceId: string): Promise<CommentaryBookCoverage[]>
+  /** A source's non-flagged excerpts starting in one chapter, in verse order (the reader tab).
+   *  With ALL_COMMENTARIES as the source (here and in listCommentaryCoverage): every commentary's,
+   *  one commentary after another in the user's order. */
+  listCommentaryChapter(sourceId: string, book: string, chapter: number): Promise<CommentaryExcerpt[]>
   updateCommentarySource(id: string, patch: CommentarySourceUpdate): Promise<void>
   deleteCommentarySource(id: string): Promise<void>
   /** Persist a new display order for all commentary sources (full list of ids, in order). */
@@ -367,6 +398,17 @@ export interface LociApi {
   listBocDocumentSections(documentCode: string, sourceId: string): Promise<BocSectionRow[]>
   listBocSources(): Promise<BocSource[]>
   listBocCommentarySources(): Promise<BocSource[]>
+
+  /** Dogmatics sources (one per Markdown file in the vault's dogmatics folder). */
+  listDogmaticsSources(): Promise<DogmaticsSource[]>
+  /** A source's works and their books, for the reader's navigation. */
+  listDogmaticsOutline(sourceId: string): Promise<DogmaticsOutlineWork[]>
+  /** Every section of one book of one work. */
+  listDogmaticsBook(sourceId: string, workOrdinal: number, bookOrdinal: number): Promise<DogmaticsSectionRow[]>
+  /** The topics (Baptism, Justification…) some dogmatics takes up, in the order of the loci. */
+  listDogmaticsTopics(): Promise<DogmaticsTopicCount[]>
+  /** Every dogmatics' treatment of one topic. */
+  listDogmaticsTopic(topicId: string): Promise<DogmaticsTreatment[]>
 
   /** Subscribe to import progress; returns an unsubscribe function. */
   onImportProgress(cb: (p: ImportProgress) => void): () => void
@@ -509,7 +551,8 @@ export function normalizeQuoteGroups(g: Partial<QuoteGroups> | null | undefined)
     books: g?.books ?? [],
     scripture: g?.scripture ?? [],
     commentary: g?.commentary ?? [],
-    boc: g?.boc ?? []
+    boc: g?.boc ?? [],
+    dogmatics: g?.dogmatics ?? []
   }
 }
 
@@ -531,6 +574,8 @@ export interface QuoteGroups {
     sourceName: string
     count: number
   }[]
+  /** Dogmatics sources with captured quotes. */
+  dogmatics: { sourceId: string; displayName: string; author: string | null; count: number }[]
 }
 
 export interface Annotation {
@@ -695,6 +740,9 @@ export interface ScriptureQuoteBook {
 
 /** Registered verse-keyed commentary source (a canonical Markdown file in the vault). `bookId`
  *  is vestigial — always null now — kept because it's still a real, indexed schema column. */
+/** The source id the commentary reader passes to mean every commentary at once. */
+export const ALL_COMMENTARIES = '*'
+
 export interface CommentarySource {
   id: string
   bookId: string | null
@@ -747,12 +795,30 @@ export interface CommentaryExcerptReassign {
   verseEnd: number
 }
 
-export type CommentaryIndexPhase = 'extracting' | 'validating' | 'done'
+export type CommentaryIndexPhase = 'downloading' | 'extracting' | 'validating' | 'done'
 
 export interface CommentaryIndexProgress {
   phase: CommentaryIndexPhase
   done: number
   total: number
+}
+
+/** A commentary SermonIndex publishes as a MyBible module (see sermonIndex.ts). */
+export interface SermonIndexModule {
+  slug: string
+  moduleCode: string
+  title: string
+  author: string
+  /** Comments are keyed to a passage's first verse only; stretch them over the passage
+   *  (see MyBibleParseOptions.passageComments). */
+  passageComments?: boolean
+  /** Strip Lenski's repeated abbreviation key (see MyBibleParseOptions.stripAbbreviationKey). */
+  stripAbbreviationKey?: boolean
+}
+
+export interface CommentaryBookCoverage {
+  book: string
+  chapters: number[]
 }
 
 export interface CommentaryIndexSummary {
@@ -795,6 +861,60 @@ export interface BocSectionRow {
   part: string | null
   text: string
 }
+/** A dogmatics source: one Markdown file, holding one or more works. */
+export interface DogmaticsSource {
+  id: string
+  displayName: string
+  author: string | null
+  mdRelativePath: string
+  sortOrder: number
+  status: string
+  indexedAt: string | null
+}
+/** A work in a dogmatics source and its books (the reader's navigation list). */
+export interface DogmaticsOutlineWork {
+  ordinal: number
+  title: string
+  books: { ordinal: number; number: string | null; title: string; sections: number }[]
+}
+/** One section of a book: its printed number and title (either may be empty) and its text. */
+export interface DogmaticsSectionRow {
+  ordinal: number
+  number: string | null
+  title: string
+  text: string
+}
+/** A topic in the Topics list: how many treatments of it there are, across how many works. */
+export interface DogmaticsTopicCount {
+  id: string
+  name: string
+  treatments: number
+  works: number
+}
+/** One place a dogmatics takes up a topic: a whole book on it (`matched` empty), or the
+ *  sections of a book on something else whose titles name it. */
+export interface DogmaticsTreatment {
+  sourceId: string
+  sourceName: string
+  author: string | null
+  workOrdinal: number
+  workTitle: string
+  bookOrdinal: number
+  bookNumber: string | null
+  bookTitle: string
+  sections: number
+  matched: { ordinal: number; number: string | null; title: string }[]
+}
+export interface DogmaticsQuoteInput {
+  sourceId: string
+  workOrdinal: number
+  bookOrdinal: number
+  sectionOrdinal: number
+  /** The section text to store (whole, or the user's selection within it). */
+  text: string
+  color?: string
+}
+
 export interface BocCommentaryMatch {
   excerptId: string
   sourceId: string
@@ -836,4 +956,11 @@ export interface Quote {
   /** For Scripture AND commentary quotes: the verse range the quote is anchored to. */
   verseStart?: number
   verseEnd?: number
+  /** For dogmatics quotes: the source row, its name and author, the "work.book.section"
+   *  ordinal ref (for jumping back) and the cited location. */
+  dogmaticsSourceId?: string
+  dogmaticsSource?: string
+  dogmaticsAuthor?: string
+  dogmaticsRef?: string
+  dogmaticsLabel?: string
 }

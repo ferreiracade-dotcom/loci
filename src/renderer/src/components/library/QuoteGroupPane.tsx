@@ -31,6 +31,8 @@ export function QuoteGroupPane({ group }: { group: QuoteGroupRef }) {
     } else if (group.type === 'author') {
       const all = await api.listAllQuotes()
       setQuotes(all.filter((q) => authorFor(q, books) === group.author))
+    } else if (group.type === 'dogmatics') {
+      setQuotes(await api.listDogmaticsQuotes(group.sourceId))
     } else if (group.type === 'boc') {
       setQuotes(await api.listBocQuotes(group.bocSourceId, group.documentCode))
     } else {

@@ -3582,6 +3582,21 @@ select.field {
   gap: 8px;
   flex-wrap: wrap;
 }
+.commentary-mgr-section {
+  font-family: var(--font-title);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 20px 0 8px;
+}
+.commentary-mgr-actions .commentary-mgr-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 0;
+}
 .commentary-mgr-row {
   display: flex;
   align-items: center;
@@ -4842,4 +4857,277 @@ select.field {
 }
 .commentary-view-pdf {
   margin-top: 0;
+}
+
+/* Commentary reader tab: a commentary read chapter by chapter, comment by comment */
+.cr-text {
+  max-width: 720px;
+  margin: 0 auto;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.cr-source {
+  font-family: var(--font-title);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+  user-select: none;
+}
+.cr-excerpt {
+  padding: 16px 0 18px;
+  border-top: 1px solid var(--border);
+}
+.cr-excerpt:first-of-type {
+  border-top: none;
+}
+.cr-excerpt-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+  user-select: none;
+}
+.cr-ref {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent);
+  font-family: var(--font-title);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cr-ref:hover {
+  text-decoration: underline;
+}
+.cr-excerpt-actions {
+  display: flex;
+  gap: 6px;
+  opacity: 0.55;
+  transition: opacity 0.15s ease;
+}
+.cr-excerpt:hover .cr-excerpt-actions,
+.cr-excerpt-actions:focus-within {
+  opacity: 1;
+}
+.cr-excerpt-text {
+  font-family: var(--font-read);
+  font-size: 16.5px;
+  line-height: 1.75;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+.cr-none,
+.cr-empty {
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 13px;
+}
+.cr-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+}
+
+/* Dogmatics reader tab: the commentary reader's layout, with sections in place of verses */
+.dg-section-ref {
+  cursor: default;
+}
+.dg-section-ref:hover {
+  text-decoration: none;
+}
+.dg-original {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 15px;
+}
+.dg-original summary {
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  user-select: none;
+}
+
+/* Commentary reader, all commentaries at once: commentator chips, then a folding group each */
+.cr-all-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+  user-select: none;
+}
+.cr-all-chip {
+  background: none;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  padding: 3px 10px;
+  cursor: pointer;
+}
+.cr-all-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.cr-all-group {
+  margin-bottom: 18px;
+  scroll-margin-top: 8px;
+}
+.cr-all-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border-strong);
+  padding: 8px 0 6px;
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+}
+.cr-all-name {
+  font-family: var(--font-title);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.cr-all-author,
+.cr-all-count {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--muted);
+}
+.cr-all-count {
+  margin-left: auto;
+}
+
+/* Dogmatics reader: Works / Topics switch, and a topic's treatments across the works */
+.dg-mode {
+  display: flex;
+  gap: 4px;
+  margin: 6px 0;
+}
+.dg-mode button {
+  flex: 1;
+  background: none;
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  padding: 4px 0;
+  cursor: pointer;
+}
+.dg-mode button.active {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.dg-topic-count {
+  float: right;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+.dg-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: auto;
+  padding: 0 8px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--accent);
+}
+.dg-topic-work {
+  margin-bottom: 20px;
+}
+.dg-topic-work-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  border-bottom: 1px solid var(--border-strong);
+  padding: 8px 0 6px;
+  margin-bottom: 4px;
+}
+.dg-treatment {
+  padding: 4px 0;
+}
+.dg-treatment-book,
+.dg-treatment-section {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: var(--text);
+}
+.dg-treatment-book {
+  font-family: var(--font-read);
+  font-size: 16px;
+  padding: 4px 0;
+}
+.dg-treatment-section {
+  font-family: var(--font-read);
+  font-size: 14.5px;
+  color: var(--muted);
+  padding: 2px 0 2px 18px;
+}
+.dg-treatment-book:hover,
+.dg-treatment-section:hover {
+  color: var(--accent);
+}
+.dg-treatment-count {
+  margin-left: auto;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.cr-all-mode {
+  display: inline-flex;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.cr-all-mode button {
+  background: none;
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  padding: 3px 10px;
+  cursor: pointer;
+}
+.cr-all-mode button.active {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.cr-all-chip.verse {
+  min-width: 30px;
+  padding: 3px 6px;
+}
+.cr-byline {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--gold);
+  margin-right: auto;
 }

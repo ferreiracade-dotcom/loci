@@ -5,6 +5,7 @@ import type {
   Annotation,
   AppState,
   BocQuoteInput,
+  DogmaticsQuoteInput,
   BookUpdate,
   CommentaryExcerptReassign,
   CommentaryIndexProgress,
@@ -30,7 +31,9 @@ import * as exporter from '../services/export'
 import * as scripture from '../services/scripture'
 import * as commentary from '../services/commentary'
 import * as commentaryIndex from '../services/commentaryIndex'
+import { SERMON_INDEX_CATALOG, downloadModule } from '../services/sermonIndex'
 import * as boc from '../services/boc'
+import * as dogmatics from '../services/dogmatics'
 import { deleteCorrectionsForSource } from '../services/commentaryCorrections'
 import { syncVault } from '../services/vaultsync'
 import {
@@ -359,6 +362,49 @@ export function registerIpc(): void {
     }
     return source
   })
+  ipcMain.handle(Channels.addMyBibleCommentarySource, async (e) => {
+    const win = BrowserWindow.fromWebContents(e.sender)
+    const opts: OpenDialogOptions = {
+      title: 'Choose a MyBible commentary module',
+      properties: ['openFile'],
+      filters: [{ name: 'MyBible commentary', extensions: ['SQLite3', 'sqlite3', 'zip'] }]
+    }
+    const res = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts)
+    if (res.canceled || !res.filePaths[0]) return null
+    const source = commentary.createSourceFromMyBible(res.filePaths[0], commentaryIndex.describeCommentaryFile)
+    try {
+      syncVault() // push the module to Drive so it reaches other devices
+    } catch {
+      /* best effort — the periodic sync will catch it */
+    }
+    return source
+  })
+  ipcMain.handle(Channels.listSermonIndexCatalog, () => SERMON_INDEX_CATALOG)
+  ipcMain.handle(Channels.installSermonIndexModule, async (e, slug: string) => {
+    const storedPath = await downloadModule(slug, (done, total) =>
+      e.sender.send(Channels.commentaryIndexProgress, { phase: 'downloading', done, total })
+    )
+    const fileName = storedPath.slice('commentaries/'.length)
+    const source =
+      commentary.getSourceByPath(storedPath) ??
+      commentary.createSource({
+        ...commentaryIndex.describeCommentaryFile(fileName),
+        bookId: null,
+        pdfRelativePath: storedPath
+      })
+    try {
+      syncVault()
+    } catch {
+      /* best effort */
+    }
+    return source
+  })
+  ipcMain.handle(Channels.listCommentaryCoverage, (_e, sourceId: string) =>
+    commentary.listCoverage(sourceId)
+  )
+  ipcMain.handle(Channels.listCommentaryChapter, (_e, sourceId: string, book: string, chapter: number) =>
+    commentary.listChapter(sourceId, book, chapter)
+  )
   ipcMain.handle(Channels.updateCommentarySource, (_e, id: string, patch: CommentarySourceUpdate) =>
     commentary.updateSource(id, patch)
   )
@@ -405,4 +451,11 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.listBocDocumentSections, (_e, d: string, s: string) => boc.listSections(d, s))
   ipcMain.handle(Channels.listBocSources, () => boc.listSources())
   ipcMain.handle(Channels.listBocCommentarySources, () => boc.listCommentarySources())
+  ipcMain.handle(Channels.listDogmaticsSources, () => dogmatics.listSources())
+  ipcMain.handle(Channels.listDogmaticsOutline, (_e, s: string) => dogmatics.listOutline(s))
+  ipcMain.handle(Channels.listDogmaticsBook, (_e, s: string, w: number, b: number) => dogmatics.listBook(s, w, b))
+  ipcMain.handle(Channels.listDogmaticsTopics, () => dogmatics.listTopics())
+  ipcMain.handle(Channels.listDogmaticsTopic, (_e, id: string) => dogmatics.listTopic(id))
+  ipcMain.handle(Channels.addDogmaticsQuote, (_e, input: DogmaticsQuoteInput) => quotes.addDogmaticsQuote(input))
+  ipcMain.handle(Channels.listDogmaticsQuotes, (_e, sourceId: string) => quotes.listDogmaticsQuotes(sourceId))
 }
