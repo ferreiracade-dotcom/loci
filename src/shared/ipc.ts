@@ -113,6 +113,8 @@ export const Channels = {
   listDogmaticsSources: 'dogmatics:listSources',
   listDogmaticsOutline: 'dogmatics:listOutline',
   listDogmaticsBook: 'dogmatics:listBook',
+  listDogmaticsTopics: 'dogmatics:listTopics',
+  listDogmaticsTopic: 'dogmatics:listTopic',
 
   // main → renderer events
   importProgress: 'library:importProgress',
@@ -369,7 +371,9 @@ export interface LociApi {
   installSermonIndexModule(slug: string): Promise<CommentarySource>
   /** Which books and chapters a source has (non-flagged) excerpts for, in canonical order. */
   listCommentaryCoverage(sourceId: string): Promise<CommentaryBookCoverage[]>
-  /** A source's non-flagged excerpts starting in one chapter, in verse order (the reader tab). */
+  /** A source's non-flagged excerpts starting in one chapter, in verse order (the reader tab).
+   *  With ALL_COMMENTARIES as the source (here and in listCommentaryCoverage): every commentary's,
+   *  one commentary after another in the user's order. */
   listCommentaryChapter(sourceId: string, book: string, chapter: number): Promise<CommentaryExcerpt[]>
   updateCommentarySource(id: string, patch: CommentarySourceUpdate): Promise<void>
   deleteCommentarySource(id: string): Promise<void>
@@ -401,6 +405,10 @@ export interface LociApi {
   listDogmaticsOutline(sourceId: string): Promise<DogmaticsOutlineWork[]>
   /** Every section of one book of one work. */
   listDogmaticsBook(sourceId: string, workOrdinal: number, bookOrdinal: number): Promise<DogmaticsSectionRow[]>
+  /** The topics (Baptism, Justification…) some dogmatics takes up, in the order of the loci. */
+  listDogmaticsTopics(): Promise<DogmaticsTopicCount[]>
+  /** Every dogmatics' treatment of one topic. */
+  listDogmaticsTopic(topicId: string): Promise<DogmaticsTreatment[]>
 
   /** Subscribe to import progress; returns an unsubscribe function. */
   onImportProgress(cb: (p: ImportProgress) => void): () => void
@@ -732,6 +740,9 @@ export interface ScriptureQuoteBook {
 
 /** Registered verse-keyed commentary source (a canonical Markdown file in the vault). `bookId`
  *  is vestigial — always null now — kept because it's still a real, indexed schema column. */
+/** The source id the commentary reader passes to mean every commentary at once. */
+export const ALL_COMMENTARIES = '*'
+
 export interface CommentarySource {
   id: string
   bookId: string | null
@@ -872,6 +883,27 @@ export interface DogmaticsSectionRow {
   number: string | null
   title: string
   text: string
+}
+/** A topic in the Topics list: how many treatments of it there are, across how many works. */
+export interface DogmaticsTopicCount {
+  id: string
+  name: string
+  treatments: number
+  works: number
+}
+/** One place a dogmatics takes up a topic: a whole book on it (`matched` empty), or the
+ *  sections of a book on something else whose titles name it. */
+export interface DogmaticsTreatment {
+  sourceId: string
+  sourceName: string
+  author: string | null
+  workOrdinal: number
+  workTitle: string
+  bookOrdinal: number
+  bookNumber: string | null
+  bookTitle: string
+  sections: number
+  matched: { ordinal: number; number: string | null; title: string }[]
 }
 export interface DogmaticsQuoteInput {
   sourceId: string

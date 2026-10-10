@@ -136,6 +136,8 @@ const api: LociApi = {
   listDogmaticsSources: () => ipcRenderer.invoke(Channels.listDogmaticsSources),
   listDogmaticsOutline: (sourceId) => ipcRenderer.invoke(Channels.listDogmaticsOutline, sourceId),
   listDogmaticsBook: (sourceId, work, book) => ipcRenderer.invoke(Channels.listDogmaticsBook, sourceId, work, book),
+  listDogmaticsTopics: () => ipcRenderer.invoke(Channels.listDogmaticsTopics),
+  listDogmaticsTopic: (topicId) => ipcRenderer.invoke(Channels.listDogmaticsTopic, topicId),
 
   onImportProgress: (cb) => {
     const listener = (_e: IpcRendererEvent, p: ImportProgress): void => cb(p)

@@ -8,7 +8,14 @@ import { dogmaticsVaultDir } from './config'
 import { installBundled } from './bundledCommentaries'
 import { shouldReindex } from './commentaryIndex'
 import { parseDogmaticsMarkdown, type DogmaticsSection } from './dogmaticsMarkdown'
-import type { DogmaticsOutlineWork, DogmaticsSectionRow, DogmaticsSource } from '../../shared/ipc'
+import { DOGMATICS_TOPICS, topicsOf } from '../../shared/dogmaticsTopics'
+import type {
+  DogmaticsOutlineWork,
+  DogmaticsSectionRow,
+  DogmaticsSource,
+  DogmaticsTopicCount,
+  DogmaticsTreatment
+} from '../../shared/ipc'
 
 // Dogmatic works, read like a commentary: the work in the Bible book's place, its books in the
 // chapters' and its sections in the verses'. Each Markdown file in the vault's dogmatics/ folder
@@ -94,6 +101,7 @@ export function replaceSections(sourceId: string, sections: DogmaticsSection[]):
         s.sectionTitle,
         s.text
       )
+    topicIndex = null
     db.prepare('UPDATE dogmatics_sources SET status = ?, indexed_at = ? WHERE id = ?').run(
       sections.length > 0 ? 'indexed' : 'unindexed',
       new Date().toISOString(),
@@ -145,6 +153,100 @@ export function listBook(sourceId: string, workOrdinal: number, bookOrdinal: num
       text: string
     }[]
   ).map((r) => ({ ordinal: r.section_ordinal, number: r.section_number, title: r.section_title, text: r.text }))
+}
+
+/** Every treatment of every topic, built from the titles on first use and dropped whenever a
+ *  source is re-indexed. */
+let topicIndex: Map<string, DogmaticsTreatment[]> | null = null
+
+function buildTopicIndex(): Map<string, DogmaticsTreatment[]> {
+  const db = getDb()
+  const books = db
+    .prepare(
+      `SELECT x.source_id, s.display_name, s.author, x.work_ordinal, x.work_title, x.book_ordinal,
+              x.book_number, x.book_title, COUNT(*) AS sections
+       FROM dogmatics_sections x JOIN dogmatics_sources s ON s.id = x.source_id
+       GROUP BY x.source_id, x.work_ordinal, x.book_ordinal
+       ORDER BY s.sort_order, s.display_name, x.source_id, x.work_ordinal, x.book_ordinal`
+    )
+    .all() as {
+    source_id: string
+    display_name: string
+    author: string | null
+    work_ordinal: number
+    work_title: string
+    book_ordinal: number
+    book_number: string | null
+    book_title: string
+    sections: number
+  }[]
+  const titled = db
+    .prepare(
+      `SELECT source_id, work_ordinal, book_ordinal, section_ordinal, section_number, section_title
+       FROM dogmatics_sections WHERE section_title != '' ORDER BY section_ordinal`
+    )
+    .all() as {
+    source_id: string
+    work_ordinal: number
+    book_ordinal: number
+    section_ordinal: number
+    section_number: string | null
+    section_title: string
+  }[]
+  const sectionsOf = new Map<string, typeof titled>()
+  for (const r of titled) {
+    const key = `${r.source_id}|${r.work_ordinal}|${r.book_ordinal}`
+    const list = sectionsOf.get(key) ?? []
+    list.push(r)
+    sectionsOf.set(key, list)
+  }
+  const index = new Map<string, DogmaticsTreatment[]>(DOGMATICS_TOPICS.map((x) => [x.id, []]))
+  for (const b of books) {
+    const base = {
+      sourceId: b.source_id,
+      sourceName: b.display_name,
+      author: b.author,
+      workOrdinal: b.work_ordinal,
+      workTitle: b.work_title,
+      bookOrdinal: b.book_ordinal,
+      bookNumber: b.book_number,
+      bookTitle: b.book_title,
+      sections: b.sections
+    }
+    const whole = new Set(topicsOf(b.book_title))
+    for (const id of whole) index.get(id)!.push({ ...base, matched: [] })
+    // Sections that take up another topic inside this book.
+    const parts = new Map<string, DogmaticsTreatment['matched']>()
+    for (const sec of sectionsOf.get(`${b.source_id}|${b.work_ordinal}|${b.book_ordinal}`) ?? []) {
+      for (const id of topicsOf(sec.section_title)) {
+        if (whole.has(id)) continue
+        const list = parts.get(id) ?? []
+        list.push({ ordinal: sec.section_ordinal, number: sec.section_number, title: sec.section_title })
+        parts.set(id, list)
+      }
+    }
+    for (const [id, matched] of parts) index.get(id)!.push({ ...base, matched })
+  }
+  return index
+}
+
+function topics(): Map<string, DogmaticsTreatment[]> {
+  topicIndex ??= buildTopicIndex()
+  return topicIndex
+}
+
+/** The topics some dogmatics takes up, in the order of the loci, with how many works do. */
+export function listTopics(): DogmaticsTopicCount[] {
+  const index = topics()
+  return DOGMATICS_TOPICS.map((x) => {
+    const list = index.get(x.id) ?? []
+    return { id: x.id, name: x.name, treatments: list.length, works: new Set(list.map((t) => `${t.sourceId}|${t.workOrdinal}`)).size }
+  }).filter((x) => x.treatments > 0)
+}
+
+/** Every treatment of one topic, in the user's order of sources and then reading order. */
+export function listTopic(id: string): DogmaticsTreatment[] {
+  return topics().get(id) ?? []
 }
 
 export async function indexSource(sourceId: string, absPath: string): Promise<number> {

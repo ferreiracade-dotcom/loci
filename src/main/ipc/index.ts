@@ -454,6 +454,8 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.listDogmaticsSources, () => dogmatics.listSources())
   ipcMain.handle(Channels.listDogmaticsOutline, (_e, s: string) => dogmatics.listOutline(s))
   ipcMain.handle(Channels.listDogmaticsBook, (_e, s: string, w: number, b: number) => dogmatics.listBook(s, w, b))
+  ipcMain.handle(Channels.listDogmaticsTopics, () => dogmatics.listTopics())
+  ipcMain.handle(Channels.listDogmaticsTopic, (_e, id: string) => dogmatics.listTopic(id))
   ipcMain.handle(Channels.addDogmaticsQuote, (_e, input: DogmaticsQuoteInput) => quotes.addDogmaticsQuote(input))
   ipcMain.handle(Channels.listDogmaticsQuotes, (_e, sourceId: string) => quotes.listDogmaticsQuotes(sourceId))
 }

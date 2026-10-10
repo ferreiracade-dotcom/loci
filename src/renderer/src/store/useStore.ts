@@ -293,7 +293,7 @@ interface Store {
   showCommentary: (target?: { sourceId: string; book: string; chapter: number; verse?: number }) => Promise<void>
   /** Open (or focus) the dogmatics reader tab. With a target, the reader jumps there; without
    *  one it resumes where the user left off, else the first indexed source's first book. */
-  showDogmatics: (target?: { sourceId: string; work: number; book: number; section?: number }) => Promise<void>
+  showDogmatics: (target?: { sourceId: string; work: number; book: number; section?: number; topic?: string }) => Promise<void>
   addBocQuote: (input: BocQuoteInput) => Promise<void>
   /** Quote an excerpt from a BoC *commentary* source (anchored to the commentary source row,
    *  not the primary text — they live in separate tables). */
@@ -1178,8 +1178,10 @@ export const useStore = create<Store>((set, get) => {
         const last = await api.getSession('lastDogmatics')
         if (last) {
           try {
-            const p = JSON.parse(last) as { sourceId?: string; work?: number; book?: number }
-            if (p.sourceId && p.work && p.book) dest = { sourceId: p.sourceId, work: p.work, book: p.book }
+            const p = JSON.parse(last) as { sourceId?: string; work?: number; book?: number; topic?: string }
+            // Book 0 is a topic's overview.
+            if (p.sourceId && p.work && (p.book || p.topic))
+              dest = { sourceId: p.sourceId, work: p.work, book: p.book ?? 0, topic: p.topic }
           } catch {
             /* ignore malformed session value */
           }
@@ -1200,7 +1202,8 @@ export const useStore = create<Store>((set, get) => {
         dogmaticsSourceId: dest?.sourceId ?? '',
         dogmaticsWork: dest?.work ?? 1,
         dogmaticsBook: dest?.book ?? 1,
-        sectionOrdinal: dest?.section
+        sectionOrdinal: dest?.section,
+        dogmaticsTopic: dest?.topic
       }
       if (existing) {
         get().setTabContent(existing.id, content)

@@ -36,6 +36,8 @@ export interface Tab {
   dogmaticsSourceId?: string
   dogmaticsWork?: number
   dogmaticsBook?: number
+  /** Dogmatics reader: the topic being read across the works, if any (book 0 = its overview). */
+  dogmaticsTopic?: string
 }
 
 /** A pane: which tabs live in it (via `Tab.paneId`) plus which one is active. */
@@ -65,6 +67,7 @@ export type TabContent =
       dogmaticsWork: number
       dogmaticsBook: number
       sectionOrdinal?: number
+      dogmaticsTopic?: string
     }
   | { kind: 'picker' }
 
@@ -95,7 +98,8 @@ export function tabContent(tab: Tab): TabContent {
         dogmaticsSourceId: tab.dogmaticsSourceId ?? '',
         dogmaticsWork: tab.dogmaticsWork ?? 1,
         dogmaticsBook: tab.dogmaticsBook ?? 1,
-        sectionOrdinal: tab.sectionOrdinal
+        sectionOrdinal: tab.sectionOrdinal,
+        dogmaticsTopic: tab.dogmaticsTopic
       }
     case 'picker':
       return { kind: 'picker' }

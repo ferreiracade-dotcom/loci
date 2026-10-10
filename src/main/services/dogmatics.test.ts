@@ -128,3 +128,38 @@ describe('the dogmatics Loci ships', () => {
     expect(sections.every((s) => s.bookTitle || s.bookNumber)).toBe(true)
   })
 })
+
+describe('dogmatics topics', () => {
+  it('finds whole books and stray sections on a topic across every work', async () => {
+    writeFileSync(
+      join(dogmaticsVaultDir(), 'Pieper.md'),
+      [
+        '# Christian Dogmatics',
+        '## 1 The Means of Grace',
+        '### 1 The Word',
+        'Text.',
+        '### 2 Holy Baptism',
+        'Text.',
+        '### 3 The Lord’s Supper',
+        'Text.',
+        '## 2 Of Baptism and Faith',
+        '### 1',
+        'Text.'
+      ].join('\n')
+    )
+    writeFileSync(join(dogmaticsVaultDir(), 'Gerhard Loci.md'), MD + '\n## 3 De Baptismo\n### 1\nBaptismus.')
+    await dogmatics.syncDogmaticsFolder()
+    const baptism = dogmatics.listTopic('baptism')
+    expect(baptism.map((t) => [t.sourceName, t.bookTitle, t.matched.map((m) => m.title)])).toEqual([
+      ['Gerhard Loci', 'De Baptismo', []],
+      ['Pieper', 'The Means of Grace', ['Holy Baptism']],
+      ['Pieper', 'Of Baptism and Faith', []]
+    ])
+    expect(dogmatics.listTopics().find((t) => t.id === 'baptism')).toMatchObject({ treatments: 3, works: 2 })
+    // A re-index drops the cached index.
+    writeFileSync(join(dogmaticsVaultDir(), 'Pieper.md'), '# Christian Dogmatics\n## 1 On God\n### 1\nText.')
+    const [pieper] = dogmatics.listSources().filter((s) => s.displayName === 'Pieper')
+    await dogmatics.indexSource(pieper.id, join(dogmaticsVaultDir(), 'Pieper.md'))
+    expect(dogmatics.listTopic('baptism').map((t) => t.sourceName)).toEqual(['Gerhard Loci'])
+  })
+})

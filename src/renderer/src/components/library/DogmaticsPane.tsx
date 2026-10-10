@@ -1,9 +1,26 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight, PanelLeftClose, PanelLeftOpen, Replace, X, Copy, Check, Quote } from 'lucide-react'
+import {
+  ChevronLeft,
+  ChevronRight,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Replace,
+  X,
+  Copy,
+  Check,
+  Quote,
+  ArrowLeft
+} from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import type { Tab } from '../../store/useStore'
 import { api } from '../../lib/api'
-import type { DogmaticsOutlineWork, DogmaticsSectionRow, DogmaticsSource } from '@shared/ipc'
+import type {
+  DogmaticsOutlineWork,
+  DogmaticsSectionRow,
+  DogmaticsSource,
+  DogmaticsTopicCount,
+  DogmaticsTreatment
+} from '@shared/ipc'
 
 /** Below this pane width the book list collapses to its rail automatically. */
 const NARROW_PANE = 560
@@ -14,6 +31,8 @@ interface Place {
   work: number
   book: number
   section?: number
+  /** Read as part of a topic: the reader steps through the topic's treatments. */
+  topic?: string
 }
 
 /** "12 On the Church", "On the Church" or "12". */
@@ -98,9 +117,65 @@ function ReaderSection({
   )
 }
 
+/** Where a topic's treatment is: the book, and its first section on the topic if the book is on
+ *  something else. */
+function treatmentPlace(t: DogmaticsTreatment, topic: string): Place {
+  return { sourceId: t.sourceId, work: t.workOrdinal, book: t.bookOrdinal, section: t.matched[0]?.ordinal, topic }
+}
+
+/** One topic across every dogmatics: each work's treatment of it, to read one after another. */
+function TopicOverview({
+  treatments,
+  onOpen
+}: {
+  treatments: DogmaticsTreatment[] | null
+  onOpen: (t: DogmaticsTreatment, section?: number) => void
+}) {
+  if (treatments === null) return <div className="sr-loading">Loading…</div>
+  // One group per work, in the order the treatments come (the user's order of sources).
+  const groups: { key: string; name: string; author: string | null; items: DogmaticsTreatment[] }[] = []
+  for (const t of treatments) {
+    const key = `${t.sourceId}|${t.workOrdinal}`
+    const last = groups[groups.length - 1]
+    if (last?.key === key) last.items.push(t)
+    else groups.push({ key, name: t.workTitle || t.sourceName, author: t.author, items: [t] })
+  }
+  return (
+    <div className="cr-text">
+      {groups.length === 0 && <p className="cr-none">No dogmatics takes this up yet.</p>}
+      {groups.map((g) => (
+        <div key={g.key} className="dg-topic-work">
+          <div className="dg-topic-work-head">
+            <span className="cr-all-name">{g.name}</span>
+            {g.author && <span className="cr-all-author">{g.author}</span>}
+          </div>
+          {g.items.map((t) => (
+            <div key={`${t.bookOrdinal}`} className="dg-treatment">
+              <button className="dg-treatment-book" onClick={() => onOpen(t)}>
+                {bookLabel({ number: t.bookNumber, title: t.bookTitle })}
+                <span className="dg-treatment-count">
+                  {t.matched.length === 0
+                    ? `${t.sections} section${t.sections === 1 ? '' : 's'}`
+                    : `${t.matched.length} of ${t.sections} sections`}
+                </span>
+              </button>
+              {t.matched.map((m) => (
+                <button key={m.ordinal} className="dg-treatment-section" onClick={() => onOpen(t, m.ordinal)}>
+                  {[m.number ? `§ ${m.number}` : '', m.title].filter(Boolean).join(' ')}
+                </button>
+              ))}
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 /**
  * A dogmatics in a center workspace pane, read the way a commentary is: pick a work, then one
- * of its books, and read it section by section.
+ * of its books, and read it section by section. Or pick a topic (Baptism, Justification…) and
+ * read every work's treatment of it, one after another.
  */
 export function DogmaticsPane({
   tab,
@@ -117,6 +192,9 @@ export function DogmaticsPane({
   const [sources, setSources] = useState<DogmaticsSource[] | null>(null)
   const [outline, setOutline] = useState<DogmaticsOutlineWork[] | null>(null)
   const [sections, setSections] = useState<DogmaticsSectionRow[] | null>(null)
+  const [topics, setTopics] = useState<DogmaticsTopicCount[] | null>(null)
+  const [treatments, setTreatments] = useState<DogmaticsTreatment[] | null>(null)
+  const [navMode, setNavMode] = useState<'works' | 'topics'>(tab.dogmaticsTopic ? 'topics' : 'works')
   const [navCollapsed, setNavCollapsed] = useState(false)
   const [reloadToken, setReloadToken] = useState(0)
   const bodyRef = useRef<HTMLDivElement>(null)
@@ -137,6 +215,8 @@ export function DogmaticsPane({
   const source = sources?.find((s) => s.id === tab.dogmaticsSourceId) ?? sources?.[0] ?? null
   const work = tab.dogmaticsWork ?? 1
   const book = tab.dogmaticsBook ?? 1
+  const topicId = tab.dogmaticsTopic
+  const overview = !!topicId && book === 0
 
   useEffect(() => {
     void api.getSession('dogmaticsNavCollapsed').then((v) => setNavCollapsed(v === '1'))
@@ -147,7 +227,22 @@ export function DogmaticsPane({
 
   useEffect(() => {
     void api.listDogmaticsSources().then(setSources)
+    void api.listDogmaticsTopics().then(setTopics)
   }, [reloadToken])
+
+  useEffect(() => {
+    if (!topicId) {
+      setTreatments(null)
+      return
+    }
+    let alive = true
+    void api.listDogmaticsTopic(topicId).then((t) => {
+      if (alive) setTreatments(t)
+    })
+    return () => {
+      alive = false
+    }
+  }, [topicId, reloadToken])
 
   useEffect(() => {
     if (!source) return
@@ -161,7 +256,7 @@ export function DogmaticsPane({
   }, [source?.id, source?.indexedAt, reloadToken])
 
   useEffect(() => {
-    if (!source) return
+    if (!source || overview) return
     let alive = true
     setSections(null)
     void api.listDogmaticsBook(source.id, work, book).then((rows) => {
@@ -170,17 +265,22 @@ export function DogmaticsPane({
     return () => {
       alive = false
     }
-  }, [source?.id, source?.indexedAt, work, book, reloadToken])
+  }, [source?.id, source?.indexedAt, work, book, overview, reloadToken])
 
-  // Land on the requested section (or the top of the book) once the book has rendered.
+  // Land on the requested section (or the top) once the book or overview has rendered.
   useEffect(() => {
-    if (!sections || !bodyRef.current) return
+    if (!bodyRef.current) return
+    if (overview) {
+      bodyRef.current.scrollTop = 0
+      return
+    }
+    if (!sections) return
     const el = tab.sectionOrdinal
       ? bodyRef.current.querySelector(`[data-section="${tab.sectionOrdinal}"]`)
       : null
     if (el) el.scrollIntoView({ block: 'start' })
     else bodyRef.current.scrollTop = 0
-  }, [sections, tab.sectionOrdinal])
+  }, [sections, tab.sectionOrdinal, overview])
 
   const go = (place: Place): void => {
     setPeek(false)
@@ -189,10 +289,15 @@ export function DogmaticsPane({
       dogmaticsSourceId: place.sourceId,
       dogmaticsWork: place.work,
       dogmaticsBook: place.book,
-      sectionOrdinal: place.section
+      sectionOrdinal: place.section,
+      dogmaticsTopic: place.topic
     })
     void api.setSession('lastDogmatics', JSON.stringify(place))
   }
+
+  /** A topic's overview: the source/work stay as they were, for coming back to them. */
+  const openTopic = (id: string): void =>
+    go({ sourceId: source?.id ?? '', work, book: 0, topic: id })
 
   const pickSource = async (id: string): Promise<void> => {
     const first = (await api.listDogmaticsOutline(id))[0]
@@ -208,19 +313,26 @@ export function DogmaticsPane({
     void api.setSession('dogmaticsNavCollapsed', next ? '1' : '0')
   }
 
-  // Prev/next walk the books in order, across works.
-  const sequence = useMemo(
-    () =>
-      (outline ?? []).flatMap((w) =>
-        w.books.map((b) => ({ work: w.ordinal, book: b.ordinal, label: bookLabel(b) }))
-      ),
-    [outline]
+  // Prev/next: through a topic's treatments when reading a topic, else the books in order.
+  const sequence = useMemo((): (Place & { label: string })[] => {
+    if (topicId && treatments) {
+      return treatments.map((t) => ({
+        ...treatmentPlace(t, topicId),
+        label: `${t.author || t.workTitle || t.sourceName}: ${bookLabel({ number: t.bookNumber, title: t.bookTitle })}`
+      }))
+    }
+    return (outline ?? []).flatMap((w) =>
+      w.books.map((b) => ({ sourceId: source?.id ?? '', work: w.ordinal, book: b.ordinal, label: bookLabel(b) }))
+    )
+  }, [outline, treatments, topicId, source?.id])
+  const at = sequence.findIndex(
+    (p) => p.sourceId === (source?.id ?? '') && p.work === work && p.book === book
   )
-  const at = sequence.findIndex((p) => p.work === work && p.book === book)
   const prev = at > 0 ? sequence[at - 1] : null
   const next = at >= 0 && at < sequence.length - 1 ? sequence[at + 1] : null
   const current = outline?.find((w) => w.ordinal === work)
   const currentBook = current?.books.find((b) => b.ordinal === book)
+  const currentTopic = topics?.find((x) => x.id === topicId)
 
   const quote = (s: DogmaticsSectionRow, text: string): Promise<void> =>
     source
@@ -239,6 +351,20 @@ export function DogmaticsPane({
         <p>Put a dogmatics Markdown file in your vault’s dogmatics folder and it appears here.</p>
       </div>
     )
+  } else if (overview) {
+    main = (
+      <div className="scripture-reader compact">
+        <div className="sr-head">
+          <span className="sr-title">{currentTopic?.name ?? 'Topic'}</span>
+        </div>
+        <div className="sr-body" ref={bodyRef}>
+          <TopicOverview
+            treatments={treatments}
+            onOpen={(t, section) => go({ ...treatmentPlace(t, topicId!), section: section ?? t.matched[0]?.ordinal })}
+          />
+        </div>
+      </div>
+    )
   } else if (outline && outline.length === 0) {
     main = (
       <div className="cr-empty">
@@ -249,22 +375,17 @@ export function DogmaticsPane({
     main = (
       <div className="scripture-reader compact">
         <div className="sr-head">
-          <button
-            className="icon-btn"
-            title={prev?.label}
-            disabled={!prev}
-            onClick={() => prev && go({ sourceId: source.id, work: prev.work, book: prev.book })}
-          >
+          {topicId && (
+            <button className="icon-btn dg-back" title="Back to the topic" onClick={() => openTopic(topicId)}>
+              <ArrowLeft size={14} /> {currentTopic?.name ?? 'Topic'}
+            </button>
+          )}
+          <button className="icon-btn" title={prev?.label} disabled={!prev} onClick={() => prev && go(prev)}>
             <ChevronLeft size={16} />
           </button>
           <span className="sr-title">{currentBook ? bookLabel(currentBook) : ''}</span>
           {source.author && <span className="sr-abbr">{source.author}</span>}
-          <button
-            className="icon-btn"
-            title={next?.label}
-            disabled={!next}
-            onClick={() => next && go({ sourceId: source.id, work: next.work, book: next.book })}
-          >
+          <button className="icon-btn" title={next?.label} disabled={!next} onClick={() => next && go(next)}>
             <ChevronRight size={16} />
           </button>
         </div>
@@ -283,6 +404,43 @@ export function DogmaticsPane({
       </div>
     )
   }
+
+  const worksList =
+    source &&
+    (outline ?? []).map((w) => (
+      <div key={w.ordinal} className="sv-testament">
+        {(outline!.length > 1 || (w.title && w.title !== source.displayName)) && (
+          <div className="sv-testament-head">{w.title || source.displayName}</div>
+        )}
+        {w.books.map((b) => (
+          <button
+            key={b.ordinal}
+            className={`sv-book${!topicId && work === w.ordinal && book === b.ordinal ? ' active' : ''}`}
+            title={bookLabel(b)}
+            onClick={() => go({ sourceId: source.id, work: w.ordinal, book: b.ordinal })}
+          >
+            {bookLabel(b)}
+          </button>
+        ))}
+      </div>
+    ))
+
+  const topicsList = (
+    <div className="sv-testament">
+      {topics && topics.length === 0 && <div className="sv-testament-head">No topics found yet</div>}
+      {(topics ?? []).map((x) => (
+        <button
+          key={x.id}
+          className={`sv-book${topicId === x.id ? ' active' : ''}`}
+          title={`${x.works} work${x.works === 1 ? '' : 's'}`}
+          onClick={() => openTopic(x.id)}
+        >
+          {x.name}
+          <span className="dg-topic-count">{x.works}</span>
+        </button>
+      ))}
+    </div>
+  )
 
   return (
     <div className="scripture-view" ref={rootRef}>
@@ -321,7 +479,15 @@ export function DogmaticsPane({
                 </button>
               )}
             </div>
-            {sources && sources.length > 0 && (
+            <div className="dg-mode">
+              <button className={navMode === 'works' ? 'active' : ''} onClick={() => setNavMode('works')}>
+                Works
+              </button>
+              <button className={navMode === 'topics' ? 'active' : ''} onClick={() => setNavMode('topics')}>
+                Topics
+              </button>
+            </div>
+            {navMode === 'works' && sources && sources.length > 0 && (
               <select
                 className="sv-translation"
                 value={source?.id ?? ''}
@@ -335,26 +501,7 @@ export function DogmaticsPane({
               </select>
             )}
           </div>
-          <div className="sv-books">
-            {source &&
-              (outline ?? []).map((w) => (
-                <div key={w.ordinal} className="sv-testament">
-                  {(outline!.length > 1 || (w.title && w.title !== source.displayName)) && (
-                    <div className="sv-testament-head">{w.title || source.displayName}</div>
-                  )}
-                  {w.books.map((b) => (
-                    <button
-                      key={b.ordinal}
-                      className={`sv-book${work === w.ordinal && book === b.ordinal ? ' active' : ''}`}
-                      title={bookLabel(b)}
-                      onClick={() => go({ sourceId: source.id, work: w.ordinal, book: b.ordinal })}
-                    >
-                      {bookLabel(b)}
-                    </button>
-                  ))}
-                </div>
-              ))}
-          </div>
+          <div className="sv-books">{navMode === 'works' ? worksList : topicsList}</div>
         </div>
       )}
 

@@ -16,6 +16,7 @@ import { useStore } from '../../store/useStore'
 import type { Tab } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { BOOKS, bookByCode } from '@shared/scriptureRef'
+import { ALL_COMMENTARIES } from '@shared/ipc'
 import type { CommentaryBookCoverage, CommentaryExcerpt, CommentarySource } from '@shared/ipc'
 import { CommentariesManager } from './CommentariesManager'
 
@@ -101,6 +102,88 @@ function ReaderExcerpt({
   )
 }
 
+/** Every commentary's comments on one chapter: a row of commentator names to jump by, then
+ *  each commentator's comments under their name, which folds them away. */
+function AllCommentaries({
+  excerpts,
+  sources,
+  bookName,
+  onOpenVerse,
+  onQuote
+}: {
+  excerpts: CommentaryExcerpt[]
+  sources: CommentarySource[]
+  bookName: string
+  onOpenVerse: (e: CommentaryExcerpt) => void
+  onQuote: (e: CommentaryExcerpt, text: string) => Promise<void>
+}) {
+  const [folded, setFolded] = useState<Set<string>>(new Set())
+  const groupRefs = useRef(new Map<string, HTMLDivElement>())
+  // Excerpts arrive grouped by commentary already, in the user's order.
+  const groups: { source: CommentarySource | undefined; sourceId: string; excerpts: CommentaryExcerpt[] }[] = []
+  for (const e of excerpts) {
+    const last = groups[groups.length - 1]
+    if (last?.sourceId === e.sourceId) last.excerpts.push(e)
+    else groups.push({ sourceId: e.sourceId, source: sources.find((s) => s.id === e.sourceId), excerpts: [e] })
+  }
+  // A commentator's name, unless two of their commentaries are here (Melanchthon on Romans).
+  const authors = groups.map((g) => g.source?.author)
+  const chipLabel = (src: CommentarySource | undefined): string =>
+    (src?.author && authors.filter((a) => a === src.author).length === 1 ? src.author : src?.displayName) ??
+    'Commentary'
+  const toggle = (id: string): void =>
+    setFolded((f) => {
+      const next = new Set(f)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  return (
+    <>
+      <div className="cr-all-jump">
+        {groups.map((g) => (
+          <button
+            key={g.sourceId}
+            title={g.source?.displayName}
+            className="cr-all-chip"
+            onClick={() => groupRefs.current.get(g.sourceId)?.scrollIntoView({ block: 'start' })}
+          >
+            {chipLabel(g.source)}
+          </button>
+        ))}
+      </div>
+      {groups.map((g) => (
+        <div
+          key={g.sourceId}
+          className="cr-all-group"
+          ref={(el) => {
+            if (el) groupRefs.current.set(g.sourceId, el)
+            else groupRefs.current.delete(g.sourceId)
+          }}
+        >
+          <button className="cr-all-head" onClick={() => toggle(g.sourceId)}>
+            <span className="cr-all-name">{g.source?.displayName ?? 'Commentary'}</span>
+            {g.source?.author && <span className="cr-all-author">{g.source.author}</span>}
+            <span className="cr-all-count">
+              {folded.has(g.sourceId) ? `${g.excerpts.length} comment${g.excerpts.length === 1 ? '' : 's'}` : ''}
+            </span>
+          </button>
+          {!folded.has(g.sourceId) &&
+            g.excerpts.map((e) => (
+              <ReaderExcerpt
+                key={e.id}
+                excerpt={e}
+                bookName={bookName}
+                onOpenVerse={() => onOpenVerse(e)}
+                onQuote={(text) => onQuote(e, text)}
+              />
+            ))}
+        </div>
+      ))}
+    </>
+  )
+}
+
 /**
  * A commentary in a center workspace pane, read the way SermonIndex presents one: pick a
  * commentary, then a book and chapter, and read its comments verse by verse. The verse-click
@@ -145,8 +228,12 @@ export function CommentaryPane({
     return () => observer.disconnect()
   }, [])
 
+  // "All commentaries" reads every commentator on a chapter together, one after another.
+  const all = tab.commentarySourceId === ALL_COMMENTARIES
   // A tab can outlive its source (removed in the manager): fall back to the first one.
   const source = sources?.find((s) => s.id === tab.commentarySourceId) ?? sources?.[0] ?? null
+  // The id the reader reads from: one source, or all of them.
+  const sid = all && source ? ALL_COMMENTARIES : (source?.id ?? null)
   const book = tab.book ?? 'MAT'
   const chapter = tab.chapter ?? 1
   const bookName = bookByCode(book)?.name ?? book
@@ -164,27 +251,27 @@ export function CommentaryPane({
   }, [reloadToken, managerOpen])
 
   useEffect(() => {
-    if (!source) return
+    if (!sid) return
     let alive = true
-    void api.listCommentaryCoverage(source.id).then((c) => {
+    void api.listCommentaryCoverage(sid).then((c) => {
       if (alive) setCoverage(c)
     })
     return () => {
       alive = false
     }
-  }, [source?.id, source?.indexedAt, reloadToken])
+  }, [sid, source?.indexedAt, reloadToken])
 
   useEffect(() => {
-    if (!source) return
+    if (!sid) return
     let alive = true
     setExcerpts(null)
-    void api.listCommentaryChapter(source.id, book, chapter).then((rows) => {
+    void api.listCommentaryChapter(sid, book, chapter).then((rows) => {
       if (alive) setExcerpts(rows)
     })
     return () => {
       alive = false
     }
-  }, [source?.id, source?.indexedAt, book, chapter, reloadToken])
+  }, [sid, source?.indexedAt, book, chapter, reloadToken])
 
   useEffect(() => {
     setExpanded(book)
@@ -279,13 +366,13 @@ export function CommentaryPane({
             >
               {b.name}
             </button>
-            {expanded === b.code && source && (
+            {expanded === b.code && sid && (
               <div className="sv-chapters">
                 {covered.get(b.code)!.map((ch) => (
                   <button
                     key={ch}
                     className={`sv-chap${book === b.code && chapter === ch ? ' active' : ''}`}
-                    onClick={() => go({ sourceId: source.id, book: b.code, chapter: ch })}
+                    onClick={() => go({ sourceId: sid, book: b.code, chapter: ch })}
                   >
                     {ch}
                   </button>
@@ -333,32 +420,40 @@ export function CommentaryPane({
             className="icon-btn"
             title={prev ? `${bookByCode(prev.book)?.name} ${prev.chapter}` : undefined}
             disabled={!prev}
-            onClick={() => prev && go({ sourceId: source.id, ...prev })}
+            onClick={() => prev && go({ sourceId: sid!, ...prev })}
           >
             <ChevronLeft size={16} />
           </button>
           <span className="sr-title">
             {bookName} {chapter}
           </span>
-          {source.author && <span className="sr-abbr">{source.author}</span>}
+          {!all && source.author && <span className="sr-abbr">{source.author}</span>}
           <button
             className="icon-btn"
             title={next ? `${bookByCode(next.book)?.name} ${next.chapter}` : undefined}
             disabled={!next}
-            onClick={() => next && go({ sourceId: source.id, ...next })}
+            onClick={() => next && go({ sourceId: sid!, ...next })}
           >
             <ChevronRight size={16} />
           </button>
         </div>
         <div className="sr-body" ref={bodyRef}>
           <div className="cr-text">
-            <div className="cr-source">{source.displayName}</div>
+            {!all && <div className="cr-source">{source.displayName}</div>}
             {excerpts === null ? (
               <div className="sr-loading">Loading…</div>
             ) : excerpts.length === 0 ? (
               <p className="cr-none">
-                {source.displayName} has no comments on {bookName} {chapter}.
+                {all ? 'No commentary has' : `${source.displayName} has no`} comments on {bookName} {chapter}.
               </p>
+            ) : all ? (
+              <AllCommentaries
+                excerpts={excerpts}
+                sources={sources}
+                bookName={bookName}
+                onOpenVerse={openVerse}
+                onQuote={quote}
+              />
             ) : (
               excerpts.map((e) => (
                 <ReaderExcerpt
@@ -420,9 +515,10 @@ export function CommentaryPane({
             {sources && sources.length > 0 && (
               <select
                 className="sv-translation"
-                value={source?.id ?? ''}
+                value={sid ?? ''}
                 onChange={(e) => void pickSource(e.target.value)}
               >
+                {sources.length > 1 && <option value={ALL_COMMENTARIES}>All commentaries</option>}
                 {sources.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.displayName}

@@ -7,6 +7,7 @@ import { commentaryVaultDir, localVaultDir } from './config'
 import { extractFromZip } from './mybible'
 import { removeFromDrive } from './vaultsync'
 import { BOOKS } from '../../shared/scriptureRef'
+import { ALL_COMMENTARIES } from '../../shared/ipc'
 import type {
   CommentaryBookCoverage,
   CommentaryExcerpt,
@@ -169,15 +170,27 @@ export function createSourceFromMyBible(
   )
 }
 
+/** The source id that stands for every commentary at once in listCoverage/listChapter. */
+export const ALL_SOURCES = ALL_COMMENTARIES
+
 /** Which books/chapters a source has non-flagged excerpts for, in canonical book order. An
  *  excerpt counts toward the chapter it starts in (the reader groups by start chapter). */
 export function listCoverage(sourceId: string): CommentaryBookCoverage[] {
-  const rows = getDb()
-    .prepare(
-      `SELECT DISTINCT book, chapter_start AS chapter FROM commentary_excerpts
-       WHERE source_id = ? AND flagged = 0 ORDER BY chapter_start`
-    )
-    .all(sourceId) as { book: string; chapter: number }[]
+  const rows = (
+    sourceId === ALL_SOURCES
+      ? getDb()
+          .prepare(
+            `SELECT DISTINCT book, chapter_start AS chapter FROM commentary_excerpts
+             WHERE flagged = 0 ORDER BY chapter_start`
+          )
+          .all()
+      : getDb()
+          .prepare(
+            `SELECT DISTINCT book, chapter_start AS chapter FROM commentary_excerpts
+             WHERE source_id = ? AND flagged = 0 ORDER BY chapter_start`
+          )
+          .all(sourceId)
+  ) as { book: string; chapter: number }[]
   const byBook = new Map<string, number[]>()
   for (const r of rows) {
     const list = byBook.get(r.book) ?? []
@@ -192,6 +205,20 @@ export function listCoverage(sourceId: string): CommentaryBookCoverage[] {
  *  first, so a section overview ("Vv. 1-7") precedes the verse notes inside it; equal ones keep
  *  the source's own order (insertion order, the rowid). */
 export function listChapter(sourceId: string, book: string, chapter: number): CommentaryExcerpt[] {
+  if (sourceId === ALL_SOURCES) {
+    // Every commentary's comments on the chapter, one commentary after another in the user's
+    // order, each in verse order as above.
+    return (
+      getDb()
+        .prepare(
+          `SELECT e.* FROM commentary_excerpts e JOIN commentary_sources s ON s.id = e.source_id
+           WHERE e.book = ? AND e.chapter_start = ? AND e.flagged = 0
+           ORDER BY s.sort_order, s.display_name, e.source_id,
+                    e.verse_start, e.chapter_end DESC, e.verse_end DESC, e.rowid`
+        )
+        .all(book, chapter) as ExcerptRow[]
+    ).map(toExcerpt)
+  }
   return (
     getDb()
       .prepare(
