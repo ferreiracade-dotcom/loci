@@ -18,7 +18,7 @@ beforeEach(() => {
 
 describe('migration: church-fathers', () => {
   it('creates the fathers tables and the quote columns', () => {
-    expect(db.pragma('user_version', { simple: true })).toBeGreaterThanOrEqual(20)
+    expect(db.pragma('user_version', { simple: true })).toBeGreaterThanOrEqual(21)
     const tables = (db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all() as { name: string }[]).map(
       (r) => r.name
     )
@@ -56,6 +56,14 @@ describe('migration: church-fathers', () => {
     for (const t of ['fathers_scripture_refs', 'fathers_notes', 'fathers_pages']) {
       expect((db.prepare(`SELECT COUNT(*) AS n FROM ${t}`).get() as { n: number }).n).toBe(0)
     }
+  })
+
+  it('is idempotent: re-running it over existing fathers tables and quote columns does not throw', () => {
+    db.pragma('user_version = 20')
+    expect(() => runMigrations(db)).not.toThrow()
+    expect(db.pragma('user_version', { simple: true })).toBeGreaterThanOrEqual(21)
+    const cols = (db.prepare('PRAGMA table_info(quotes)').all() as { name: string }[]).map((c) => c.name)
+    expect(cols.filter((c) => c === 'fathers_volume')).toHaveLength(1)
   })
 })
 

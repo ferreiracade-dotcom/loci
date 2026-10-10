@@ -463,7 +463,7 @@ const migrations: Migration[] = [
     }
   },
   {
-    version: 20,
+    version: 21,
     name: 'church-fathers',
     up: (db) => {
       // Church Fathers (CCEL ThML, Schaff's ANF/NPNF series). The vault's fathers/*.xml files
@@ -482,7 +482,7 @@ const migrations: Migration[] = [
       // key, so re-indexing a volume can never cascade-delete the user's quotes — plus the page
       // (a printed page label such as "415" or "xiv") and paragraph captured at quote time.
       db.exec(`
-        CREATE TABLE fathers_volumes (
+        CREATE TABLE IF NOT EXISTS fathers_volumes (
           code        TEXT PRIMARY KEY,
           series      TEXT NOT NULL,
           number      INTEGER NOT NULL,
@@ -494,7 +494,7 @@ const migrations: Migration[] = [
           indexed_at  TEXT
         );
 
-        CREATE TABLE fathers_sections (
+        CREATE TABLE IF NOT EXISTS fathers_sections (
           volume_code  TEXT NOT NULL REFERENCES fathers_volumes(code) ON DELETE CASCADE,
           id           TEXT NOT NULL,
           ordinal      INTEGER NOT NULL,
@@ -509,10 +509,10 @@ const migrations: Migration[] = [
           text         TEXT NOT NULL,
           PRIMARY KEY (volume_code, id)
         );
-        CREATE INDEX idx_fathers_sections_order ON fathers_sections(volume_code, ordinal);
-        CREATE INDEX idx_fathers_sections_author ON fathers_sections(author_id);
+        CREATE INDEX IF NOT EXISTS idx_fathers_sections_order ON fathers_sections(volume_code, ordinal);
+        CREATE INDEX IF NOT EXISTS idx_fathers_sections_author ON fathers_sections(author_id);
 
-        CREATE TABLE fathers_scripture_refs (
+        CREATE TABLE IF NOT EXISTS fathers_scripture_refs (
           volume_code    TEXT NOT NULL,
           section_id     TEXT NOT NULL,
           anchor         TEXT NOT NULL,
@@ -527,10 +527,10 @@ const migrations: Migration[] = [
           char_offset    INTEGER NOT NULL DEFAULT 0,
           FOREIGN KEY (volume_code, section_id) REFERENCES fathers_sections(volume_code, id) ON DELETE CASCADE
         );
-        CREATE INDEX idx_fathers_refs_lookup ON fathers_scripture_refs(book, chapter_start, chapter_end);
-        CREATE INDEX idx_fathers_refs_section ON fathers_scripture_refs(volume_code, section_id);
+        CREATE INDEX IF NOT EXISTS idx_fathers_refs_lookup ON fathers_scripture_refs(book, chapter_start, chapter_end);
+        CREATE INDEX IF NOT EXISTS idx_fathers_refs_section ON fathers_scripture_refs(volume_code, section_id);
 
-        CREATE TABLE fathers_notes (
+        CREATE TABLE IF NOT EXISTS fathers_notes (
           volume_code  TEXT NOT NULL,
           section_id   TEXT NOT NULL,
           anchor       TEXT NOT NULL,
@@ -538,18 +538,18 @@ const migrations: Migration[] = [
           html         TEXT NOT NULL,
           FOREIGN KEY (volume_code, section_id) REFERENCES fathers_sections(volume_code, id) ON DELETE CASCADE
         );
-        CREATE INDEX idx_fathers_notes_section ON fathers_notes(volume_code, section_id);
+        CREATE INDEX IF NOT EXISTS idx_fathers_notes_section ON fathers_notes(volume_code, section_id);
 
-        CREATE TABLE fathers_pages (
+        CREATE TABLE IF NOT EXISTS fathers_pages (
           volume_code  TEXT NOT NULL,
           section_id   TEXT NOT NULL,
           n            TEXT NOT NULL,
           char_offset  INTEGER NOT NULL,
           FOREIGN KEY (volume_code, section_id) REFERENCES fathers_sections(volume_code, id) ON DELETE CASCADE
         );
-        CREATE INDEX idx_fathers_pages_section ON fathers_pages(volume_code, section_id);
+        CREATE INDEX IF NOT EXISTS idx_fathers_pages_section ON fathers_pages(volume_code, section_id);
 
-        CREATE TABLE fathers_authors (
+        CREATE TABLE IF NOT EXISTS fathers_authors (
           id           TEXT PRIMARY KEY,
           name         TEXT NOT NULL,
           sort_year    INTEGER,
@@ -557,11 +557,18 @@ const migrations: Migration[] = [
           bio          TEXT
         );
 
-        ALTER TABLE quotes ADD COLUMN fathers_volume TEXT;
-        ALTER TABLE quotes ADD COLUMN fathers_section_id TEXT;
-        ALTER TABLE quotes ADD COLUMN fathers_page TEXT;
-        ALTER TABLE quotes ADD COLUMN fathers_paragraph INTEGER;
       `)
+      // Idempotent: this migration was first drafted as v20 (before main's dogmatics took that
+      // number), so tolerate a database that already has some of these columns.
+      const have = new Set((db.prepare('PRAGMA table_info(quotes)').all() as { name: string }[]).map((c) => c.name))
+      for (const [col, type] of [
+        ['fathers_volume', 'TEXT'],
+        ['fathers_section_id', 'TEXT'],
+        ['fathers_page', 'TEXT'],
+        ['fathers_paragraph', 'INTEGER']
+      ] as const) {
+        if (!have.has(col)) db.exec(`ALTER TABLE quotes ADD COLUMN ${col} ${type}`)
+      }
     }
   }
 ]

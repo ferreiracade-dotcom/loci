@@ -190,12 +190,14 @@ app.whenReady().then(() => {
           if (indexed > 0)
             BrowserWindow.getAllWindows().forEach((w) => w.webContents.send(Channels.libraryChanged))
         })
+        .catch(() => {})
+        // Then the Church Fathers (CCEL ThML) volumes in the vault's fathers/ folder. Parsing a
+        // 5 MB volume is synchronous, so this is chained after the dogmatics sync + bundled
+        // install rather than overlapping them, and yields between volumes (see syncFathersFolder).
+        .then(() => syncFathersFolder())
         .catch(() => {}),
     3000
   )
-  // Church Fathers (CCEL ThML) volumes in the vault's fathers/ folder. Parsing a 5 MB volume is
-  // synchronous, so this starts last and yields between volumes (see syncFathersFolder).
-  setTimeout(() => void syncFathersFolder().catch(() => {}), 3500)
 
   // Keep the Drive backup fresh during long sessions (best-effort, skips when offline).
   setInterval(() => {
