@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
   X,
+  ArrowRightLeft,
   Plus,
   RefreshCw,
   Trash2,
@@ -16,6 +17,7 @@ import { splitAuthors, joinAuthors } from '../../lib/authors'
 import { setCachedCover } from '../../lib/coverCache'
 import { DrawerOverlay } from '../DrawerOverlay'
 import { BookCover } from './BookCover'
+import { KIND_LABEL } from '@shared/libraryKind'
 import type { PdfSource, ReadingStatus } from '@shared/ipc'
 
 const SOURCE_LABEL: Record<PdfSource, string> = {
@@ -39,6 +41,11 @@ type Form = {
   year: string
   publisher: string
   pageOffset: string
+  journal: string
+  volume: string
+  issue: string
+  pages: string
+  doi: string
 }
 
 export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: () => void }) {
@@ -52,6 +59,7 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
   const refetchMetadata = useStore((s) => s.refetchMetadata)
   const openBook = useStore((s) => s.openBook)
   const refreshLibrary = useStore((s) => s.refreshLibrary)
+  const moveBook = useStore((s) => s.moveBook)
   const libraryBusy = useStore((s) => s.libraryBusy)
   const [coverKey, setCoverKey] = useState(0)
 
@@ -72,10 +80,19 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
     seriesAbbr: '',
     year: '',
     publisher: '',
-    pageOffset: '0'
+    pageOffset: '0',
+    journal: '',
+    volume: '',
+    issue: '',
+    pages: '',
+    doi: ''
   })
   const [tagText, setTagText] = useState('')
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [doiBusy, setDoiBusy] = useState(false)
+  const [doiError, setDoiError] = useState<string | null>(null)
+  const [moveBusy, setMoveBusy] = useState(false)
+  const [moveError, setMoveError] = useState<string | null>(null)
 
   // Existing authors / series across the library, for the typeaheads.
   const authorOptions = useMemo(
@@ -108,7 +125,7 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
     })
 
   const bookKey = book
-    ? `${book.id}:${book.author ?? ''}:${book.series ?? ''}:${book.seriesNumber ?? ''}:${book.seriesAbbr ?? ''}:${book.year ?? ''}`
+    ? `${book.id}:${book.kind}:${book.author ?? ''}:${book.series ?? ''}:${book.seriesNumber ?? ''}:${book.seriesAbbr ?? ''}:${book.year ?? ''}`
     : ''
   useEffect(() => {
     if (book) {
@@ -120,7 +137,12 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
         seriesAbbr: book.seriesAbbr ?? '',
         year: book.year?.toString() ?? '',
         publisher: book.publisher ?? '',
-        pageOffset: book.pageOffset.toString()
+        pageOffset: book.pageOffset.toString(),
+        journal: book.journal ?? '',
+        volume: book.volume ?? '',
+        issue: book.issue ?? '',
+        pages: book.pages ?? '',
+        doi: book.doi ?? ''
       })
       setTagText(book.tags.join(', '))
     }
@@ -153,6 +175,46 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
       return { ...f, authors: authors.length ? authors : [''] }
     })
 
+  // Crossref fills the form only; nothing is stored until the user presses "Save details".
+  const fillFromDoi = async (): Promise<void> => {
+    if (doiBusy) return
+    setDoiBusy(true)
+    setDoiError(null)
+    try {
+      const res = await api.lookupDoi(form.doi)
+      if (!res.ok) {
+        setDoiError(res.error)
+        return
+      }
+      const f = res.fields
+      setForm((cur) => ({
+        ...cur,
+        title: f.title ?? cur.title,
+        authors: f.authors.length ? f.authors : cur.authors,
+        journal: f.journal ?? cur.journal,
+        volume: f.volume ?? cur.volume,
+        issue: f.issue ?? cur.issue,
+        pages: f.pages ?? cur.pages,
+        year: f.year != null ? String(f.year) : cur.year,
+        doi: f.doi
+      }))
+    } finally {
+      setDoiBusy(false)
+    }
+  }
+
+  const doMove = async (): Promise<void> => {
+    if (moveBusy) return
+    setMoveBusy(true)
+    setMoveError(null)
+    try {
+      const ok = await moveBook(book.id, book.kind === 'article' ? 'book' : 'article')
+      if (!ok) setMoveError('Could not move the file. Check that its folder is available and try again.')
+    } finally {
+      setMoveBusy(false)
+    }
+  }
+
   const saveMeta = (): void => {
     void updateBook(book.id, {
       title: form.title.trim() || book.title,
@@ -162,7 +224,16 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
       seriesAbbr: form.seriesAbbr.trim() || null,
       year: form.year.trim() ? Number(form.year) : null,
       publisher: form.publisher.trim() || null,
-      pageOffset: Number(form.pageOffset) || 0
+      pageOffset: Number(form.pageOffset) || 0,
+      ...(book.kind === 'article'
+        ? {
+            journal: form.journal.trim() || null,
+            volume: form.volume.trim() || null,
+            issue: form.issue.trim() || null,
+            pages: form.pages.trim() || null,
+            doi: form.doi.trim() || null
+          }
+        : {})
     })
   }
   const toggleShelf = (id: string): void => {
@@ -189,7 +260,7 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
   return (
     <DrawerOverlay onClose={onClose} className="drawer wide">
       <div className="drawer-head">
-          <h2 className="drawer-title">Book info</h2>
+          <h2 className="drawer-title">{KIND_LABEL[book.kind]} info</h2>
           <button className="icon-btn" title="Close" onClick={onClose}>
             <X size={16} />
           </button>
@@ -221,7 +292,7 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
               <button
                 className="btn btn-sm bi-refetch"
                 disabled={libraryBusy}
-                title="Re-derive title, author, and series from the PDF's file name"
+                title="Re-derive title, author, and series from the file name"
                 onClick={() => void refetchMetadata(book.id)}
               >
                 <RefreshCw size={14} className={libraryBusy ? 'spin' : ''} /> Re-parse from filename
@@ -275,6 +346,62 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
                 <option key={a} value={a} />
               ))}
             </datalist>
+            {book.kind === 'article' && (
+              <>
+                <label className="set-label">DOI</label>
+                <div className="author-row">
+                  <input
+                    className="field"
+                    value={form.doi}
+                    placeholder="10.1000/xyz123 or https://doi.org/…"
+                    autoComplete="off"
+                    onChange={(e) => {
+                      set('doi', e.target.value)
+                      setDoiError(null)
+                    }}
+                  />
+                  <button
+                    className="btn btn-sm"
+                    disabled={doiBusy || !form.doi.trim()}
+                    title="Fill title, authors, journal, volume, issue, pages and year from Crossref"
+                    onClick={() => void fillFromDoi()}
+                  >
+                    <RefreshCw size={13} className={doiBusy ? 'spin' : ''} /> Fill from DOI
+                  </button>
+                </div>
+                {doiError && (
+                  <p className="folder-hint" role="alert">
+                    {doiError}
+                  </p>
+                )}
+                <label className="set-label">Journal</label>
+                <input
+                  className="field"
+                  value={form.journal}
+                  placeholder="e.g. Concordia Journal"
+                  onChange={(e) => set('journal', e.target.value)}
+                />
+                <div className="field-grid">
+                  <div>
+                    <label className="set-label">Volume</label>
+                    <input className="field" value={form.volume} onChange={(e) => set('volume', e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="set-label">Issue</label>
+                    <input className="field" value={form.issue} onChange={(e) => set('issue', e.target.value)} />
+                  </div>
+                </div>
+                <label className="set-label">Pages</label>
+                <input
+                  className="field"
+                  value={form.pages}
+                  placeholder="e.g. 45–67"
+                  onChange={(e) => set('pages', e.target.value)}
+                />
+              </>
+            )}
+            {book.kind !== 'article' && (
+              <>
             <label className="set-label">Series</label>
             <input
               className="field"
@@ -310,6 +437,8 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
                 />
               </div>
             </div>
+              </>
+            )}
             <div className="field-grid">
               <div>
                 <label className="set-label">Year</label>
@@ -330,12 +459,16 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
                 />
               </div>
             </div>
-            <label className="set-label">Publisher</label>
-            <input
-              className="field"
-              value={form.publisher}
-              onChange={(e) => set('publisher', e.target.value)}
-            />
+            {book.kind !== 'article' && (
+              <>
+                <label className="set-label">Publisher</label>
+                <input
+                  className="field"
+                  value={form.publisher}
+                  onChange={(e) => set('publisher', e.target.value)}
+                />
+              </>
+            )}
             <button className="btn btn-primary btn-sm bi-save" onClick={saveMeta}>
               Save details
             </button>
@@ -384,6 +517,19 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
               <BookOpen size={14} /> Open in reader
             </button>
             {book.lastPage > 1 && <p className="folder-hint">Resumes on page {book.lastPage}.</p>}
+            <button
+              className="btn btn-sm bi-move"
+              disabled={moveBusy}
+              title="Moves the file to the other folder; quotes, highlights and shelves stay attached"
+              onClick={() => void doMove()}
+            >
+              <ArrowRightLeft size={14} /> {book.kind === 'article' ? 'Move to Books' : 'Move to Articles'}
+            </button>
+            {moveError && (
+              <p className="folder-hint" role="alert">
+                {moveError}
+              </p>
+            )}
           </section>
 
           <section className="set-section">
@@ -391,7 +537,7 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
             {confirmDelete ? (
               <div className="confirm-row">
                 <span>
-                  Delete “{book.title}”? Its PDF moves to the vault’s “deleted” folder
+                  Delete “{book.title}”? Its file moves to the vault’s “deleted” folder
                   (recoverable) and leaves your library and Drive folders.
                 </span>
                 <button className="btn btn-sm" onClick={() => setConfirmDelete(false)}>
@@ -403,7 +549,7 @@ export function BookInfoDrawer({ bookId, onClose }: { bookId: string; onClose: (
               </div>
             ) : (
               <button className="btn btn-sm" onClick={() => setConfirmDelete(true)}>
-                <Trash2 size={14} /> Delete book
+                <Trash2 size={14} /> Delete {KIND_LABEL[book.kind].toLowerCase()}
               </button>
             )}
           </section>
