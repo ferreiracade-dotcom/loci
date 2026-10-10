@@ -170,6 +170,9 @@ interface Store {
    *  Mirrored to the session store under `refMode:<pill>`; deliberately NOT in PanelLayout,
    *  which is a database row. */
   refModes: Partial<Record<RefPill, CorpusMode>>
+  /** A passage another surface (a Fathers scripture link) asked the Texts-pill Bible to show.
+   *  A fresh object per request, so asking for the same passage twice still re-navigates. */
+  refBibleTarget: { book: string; chapter: number; highlight: number[] } | null
 
   // --- Center workspace ---
   /** Every open tab across both panes; the source of truth. */
@@ -294,6 +297,18 @@ interface Store {
    *  not the primary text — they live in separate tables). */
   addBocCommentaryQuote: (input: BocQuoteInput) => Promise<void>
 
+  // --- Church Fathers ---
+  /** Route a volume/section into a Fathers pane: reuse the focused or any existing Fathers tab,
+   *  otherwise open one. */
+  navigateFathers: (volumeCode: string, sectionId: string) => void
+  /** Same routing, but to an author's page. */
+  openFathersAuthor: (authorId: string) => void
+  /** Open/focus the Fathers as a center pane (left-rail "Church Fathers" entry), resuming where
+   *  the user left off. */
+  showFathers: () => Promise<void>
+  /** Show a passage in the Texts pill's Bible (a scripture link was clicked in a Father). */
+  showPassageInTexts: (book: string, chapter: number, highlight?: number[]) => void
+
   // --- Center workspace ---
   /** Create a new tab (duplicates allowed) and focus it; returns the new tab's id. */
   openTab: (content: TabContent, opts?: { paneId?: string; activate?: boolean }) => string
@@ -417,6 +432,7 @@ export const useStore = create<Store>((set, get) => {
     bocLookup: null,
     bocMatches: [],
     refModes: {},
+    refBibleTarget: null,
     tabs: [],
     paneOrder: [],
     activePaneId: null,
@@ -1124,6 +1140,74 @@ export const useStore = create<Store>((set, get) => {
     addBocCommentaryQuote: async (input) => {
       await api.addBocCommentaryQuote(input)
       set({ noteReloadToken: get().noteReloadToken + 1 })
+    },
+
+    // --- Church Fathers ---
+    // In-place navigation, like navigateBoc: the focused tab if it is already a Fathers tab,
+    // else any existing Fathers tab (so a catena click does not pile up tabs), else a new one.
+    navigateFathers: (volumeCode, sectionId) => {
+      const { activePaneId } = get()
+      const current = activePaneId
+        ? activeTab({ tabs: get().tabs, paneOrder: get().paneOrder, activePaneId }, activePaneId)
+        : undefined
+      const existing = current?.kind === 'fathers' ? current : get().tabs.find((t) => t.kind === 'fathers')
+      const content: TabContent = { kind: 'fathers', fathersVolume: volumeCode, fathersSection: sectionId }
+      if (existing) {
+        get().setTabContent(existing.id, content)
+        get().focusTab(existing.id)
+      } else {
+        get().openTab(content)
+      }
+      get().saveLayout({ activeLeftView: 'reading' })
+      void api.setSession('lastFathers', JSON.stringify({ volumeCode, sectionId }))
+    },
+
+    openFathersAuthor: (authorId) => {
+      const { activePaneId } = get()
+      const current = activePaneId
+        ? activeTab({ tabs: get().tabs, paneOrder: get().paneOrder, activePaneId }, activePaneId)
+        : undefined
+      const existing = current?.kind === 'fathers' ? current : get().tabs.find((t) => t.kind === 'fathers')
+      const content: TabContent = { kind: 'fathers', fathersAuthor: authorId }
+      if (existing) {
+        get().setTabContent(existing.id, content)
+        get().focusTab(existing.id)
+      } else {
+        get().openTab(content)
+      }
+      get().saveLayout({ activeLeftView: 'reading' })
+    },
+
+    showFathers: async () => {
+      const existing = get().tabs.find((t) => t.kind === 'fathers')
+      if (existing) {
+        get().focusTab(existing.id)
+        get().saveLayout({ activeLeftView: 'reading' })
+        return
+      }
+      // Resume where the user left off; with no history the pane opens on its volume list.
+      let content: TabContent = { kind: 'fathers' }
+      const last = await api.getSession('lastFathers')
+      if (last) {
+        try {
+          const p = JSON.parse(last) as { volumeCode?: string; sectionId?: string }
+          if (p.volumeCode && p.sectionId) {
+            content = { kind: 'fathers', fathersVolume: p.volumeCode, fathersSection: p.sectionId }
+          }
+        } catch {
+          /* ignore malformed session value */
+        }
+      }
+      get().openTab(content)
+      get().saveLayout({ activeLeftView: 'reading' })
+    },
+
+    showPassageInTexts: (book, chapter, highlight = []) => {
+      set({ refBibleTarget: { book, chapter, highlight } })
+      get().setRefMode('texts', 'bible')
+      // Same patch as ThreePanel.selectRightTab: open the panel and give a reader pill room.
+      const widen = (get().layout?.notesWidth ?? 0) < 460 ? { notesWidth: 560 } : {}
+      get().saveLayout({ activeRightTab: 'texts', notesCollapsed: false, ...widen })
     },
 
     openTab: (content, opts) => {

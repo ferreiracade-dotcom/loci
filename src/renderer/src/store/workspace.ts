@@ -1,6 +1,6 @@
 import type { NoteSummary } from '@shared/ipc'
 
-export type TabKind = 'note' | 'bible' | 'pdf' | 'quotes' | 'picker' | 'boc'
+export type TabKind = 'note' | 'bible' | 'pdf' | 'quotes' | 'picker' | 'boc' | 'fathers'
 
 /** A group of saved quotes opened in the center: a PDF, a Bible chapter, or a commentary source. */
 export type QuoteGroupRef =
@@ -28,6 +28,11 @@ export interface Tab {
   documentCode?: string
   sectionOrdinal?: number
   bocSourceId?: string
+  /** Church Fathers: the volume code + CCEL section id being read ... */
+  fathersVolume?: string
+  fathersSection?: string
+  /** ... or, instead, the author whose page is shown. All three unset = the empty Fathers pane. */
+  fathersAuthor?: string
 }
 
 /** A pane: which tabs live in it (via `Tab.paneId`) plus which one is active. */
@@ -50,6 +55,7 @@ export type TabContent =
   | { kind: 'bible'; book: string; chapter: number; highlight?: number[]; translation?: string }
   | { kind: 'quotes'; quotesGroup: QuoteGroupRef }
   | { kind: 'boc'; documentCode: string; sectionOrdinal: number; bocSourceId?: string }
+  | { kind: 'fathers'; fathersVolume?: string; fathersSection?: string; fathersAuthor?: string }
   | { kind: 'picker' }
 
 /** The content a tab is currently showing, independent of its id/pane/order. */
@@ -65,6 +71,13 @@ export function tabContent(tab: Tab): TabContent {
       return { kind: 'quotes', quotesGroup: tab.quotesGroup! }
     case 'boc':
       return { kind: 'boc', documentCode: tab.documentCode!, sectionOrdinal: tab.sectionOrdinal!, bocSourceId: tab.bocSourceId }
+    case 'fathers':
+      return {
+        kind: 'fathers',
+        fathersVolume: tab.fathersVolume,
+        fathersSection: tab.fathersSection,
+        fathersAuthor: tab.fathersAuthor
+      }
     case 'picker':
       return { kind: 'picker' }
   }

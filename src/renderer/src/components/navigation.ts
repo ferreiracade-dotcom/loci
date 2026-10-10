@@ -11,7 +11,8 @@ import {
   File,
   BookOpenText,
   MessageSquareQuote,
-  Quote
+  Quote,
+  Landmark
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { RailItem } from './IconRail'
@@ -24,6 +25,7 @@ export const LEFT_VIEWS: RailItem[] = [
   { id: 'search', label: 'Search', icon: Search },
   { id: 'scripture', label: 'Scripture', icon: ScrollText },
   { id: 'confessions', label: 'Confessions', icon: BookMarked },
+  { id: 'fathers', label: 'Church Fathers', icon: Landmark },
   { id: 'graph', label: 'Graph', icon: Network },
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'pages', label: 'Pages', icon: Files }
@@ -76,6 +78,11 @@ export const CENTER_EMPTY: Record<string, EmptyCopy> = {
     icon: BookMarked,
     title: 'Book of Concord',
     subtitle: 'Pick a document from the reader to begin — the Augsburg Confession opens by default.'
+  },
+  fathers: {
+    icon: Landmark,
+    title: 'Church Fathers',
+    subtitle: 'Pick a volume or an author from the drawer to begin reading the Ante-Nicene and Nicene Fathers.'
   },
   graph: {
     icon: Network,

@@ -216,6 +216,20 @@ describe('tabContent', () => {
       quotesGroup: group
     })
     expect(tabContent({ ...base, kind: 'picker' })).toEqual({ kind: 'picker' })
+    expect(
+      tabContent({ ...base, kind: 'fathers', fathersVolume: 'anf01', fathersSection: 'ix.ii.ii' })
+    ).toEqual({ kind: 'fathers', fathersVolume: 'anf01', fathersSection: 'ix.ii.ii', fathersAuthor: undefined })
+  })
+
+  it('opens a Fathers tab, and setTabContent swaps reader <-> author page without leaking fields', () => {
+    let ws: Workspace = EMPTY_WORKSPACE
+    const opened = openTab(ws, { kind: 'fathers', fathersVolume: 'anf01', fathersSection: 'a' })
+    ws = opened.ws
+    expect(ws.tabs[0]).toMatchObject({ kind: 'fathers', fathersVolume: 'anf01', fathersSection: 'a' })
+    ws = setTabContent(ws, opened.tabId, { kind: 'fathers', fathersAuthor: 'irenaeus' })
+    expect(ws.tabs[0].fathersAuthor).toBe('irenaeus')
+    expect(ws.tabs[0].fathersVolume).toBeUndefined()
+    expect(ws.tabs[0].fathersSection).toBeUndefined()
   })
 
   it('round-trips through openTab: duplicating a lone tab produces an equivalent tab in the new pane', () => {

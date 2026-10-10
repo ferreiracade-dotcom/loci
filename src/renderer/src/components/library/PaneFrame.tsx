@@ -5,6 +5,7 @@ import { RichNoteEditor } from './RichNoteEditor'
 import { PdfReader } from './PdfReader'
 import { BiblePane } from './BiblePane'
 import { BocPane } from './BocPane'
+import { FathersPane } from './FathersPane'
 import { PanePicker } from './PanePicker'
 import { QuoteGroupPane } from './QuoteGroupPane'
 import { TabStrip } from './TabStrip'
@@ -81,6 +82,8 @@ export function PaneFrame({
     body = <PdfReader key={tab.id} bookId={tab.bookId} embedded />
   } else if (tab?.kind === 'note' && tab.notePath) {
     body = <RichNoteEditor key={tab.id} path={tab.notePath} />
+  } else if (tab?.kind === 'fathers') {
+    body = <FathersPane key={tab.id} tab={tab} />
   } else if (tab?.kind === 'quotes' && tab.quotesGroup) {
     body = <QuoteGroupPane key={tab.id} group={tab.quotesGroup} />
   } else if (tab?.kind === 'bible' && tab.book && tab.chapter != null) {

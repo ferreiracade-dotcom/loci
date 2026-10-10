@@ -5008,3 +5008,94 @@ select.field {
   cursor: pointer;
 }
 
+
+/* ---- Church Fathers drawer and author page ---- */
+.fathers-nav-toggle {
+  margin: 8px 8px 4px;
+}
+.fathers-vol-num {
+  display: inline-block;
+  min-width: 1.4em;
+  color: var(--gold);
+  font-family: var(--font-ui);
+  font-size: 11px;
+}
+.fathers-vol-warn {
+  margin-left: 6px;
+  color: var(--accent);
+  vertical-align: -1px;
+}
+.fathers-vol-pending,
+.fathers-dates {
+  color: var(--muted);
+  font-size: 11px;
+}
+.fathers-vol-error {
+  margin: 2px 8px 6px 24px;
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+.fathers-author-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+}
+.fathers-work-head {
+  padding: 4px 8px 2px 14px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-style: italic;
+}
+/* Author page */
+.fathers-author-name {
+  margin: 0 0 2px;
+  font-family: var(--font-title);
+}
+.fathers-author-dates {
+  color: var(--gold);
+  font-family: var(--font-ui);
+  font-size: 13px;
+}
+.fathers-author-bio {
+  margin: 12px 0 18px;
+}
+.fathers-author-vol {
+  margin-bottom: 14px;
+}
+.fathers-author-vol-head {
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+}
+.fathers-author-work {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 6px 8px;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--font-read);
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+.fathers-author-work:hover {
+  background: var(--accent-12);
+}
+.fathers-author-count {
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+}

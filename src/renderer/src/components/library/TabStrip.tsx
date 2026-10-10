@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
-import { FileText, BookOpen, ScrollText, BookMarked, Quote, FilePlus, Plus, X } from 'lucide-react'
+import { FileText, BookOpen, ScrollText, BookMarked, Quote, FilePlus, Plus, X, Landmark } from 'lucide-react'
 import { useStore, tabsForPane } from '../../store/useStore'
 import type { Tab } from '../../store/useStore'
 import { bookByCode } from '@shared/scriptureRef'
 import { bocDocument } from '@shared/bookOfConcord'
+import { fathersVolumeLabel } from '@shared/fathers'
 
 export interface HoverTarget {
   paneId: string
@@ -29,6 +30,11 @@ function tabTitle(
   if (tab.kind === 'boc') {
     const doc = tab.documentCode ? bocDocument(tab.documentCode) : undefined
     return { icon: <BookMarked size={13} />, label: doc?.abbreviation ?? tab.documentCode ?? 'Confessions' }
+  }
+  if (tab.kind === 'fathers') {
+    // Volume code only: the tab strip has no section titles, and the author page is just "Fathers".
+    const label = tab.fathersVolume && !tab.fathersAuthor ? fathersVolumeLabel(tab.fathersVolume) : 'Church Fathers'
+    return { icon: <Landmark size={13} />, label }
   }
   if (tab.kind === 'quotes') {
     const g = tab.quotesGroup

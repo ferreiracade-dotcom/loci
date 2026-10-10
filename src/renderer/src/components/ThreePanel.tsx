@@ -39,6 +39,7 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const tabs = useStore((s) => s.tabs)
   const paneOrder = useStore((s) => s.paneOrder)
   const showConfessions = useStore((s) => s.showConfessions)
+  const showFathers = useStore((s) => s.showFathers)
   const activePaneId = useStore((s) => s.activePaneId)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -47,6 +48,7 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const selectLeftView = (id: string): void => {
     if (id === 'scripture') void showScripture()
     else if (id === 'confessions') void showConfessions()
+    else if (id === 'fathers') void showFathers()
     else saveLayout({ activeLeftView: id })
   }
 
@@ -61,9 +63,11 @@ export function ThreePanel({ onOpenSettings }: { onOpenSettings: () => void }) {
         ? 'scripture'
         : focusedTab.kind === 'boc'
           ? 'confessions'
-          : focusedTab.kind === 'note'
-            ? 'notes'
-            : layout.activeLeftView
+          : focusedTab.kind === 'fathers'
+            ? 'fathers'
+            : focusedTab.kind === 'note'
+              ? 'notes'
+              : layout.activeLeftView
       : layout.activeLeftView
 
   // Normalise the active right tab. Stored values may be legacy ids from before the five-pill
