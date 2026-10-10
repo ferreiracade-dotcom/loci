@@ -40,6 +40,7 @@ export const BUNDLED_DOGMATICS: Record<string, { title: string; author: string }
     author: 'Johann Wilhelm Baier'
   },
   'Meisner Anthropologia Sacra.md': { title: 'Anthropologia Sacra', author: 'Balthasar Meisner' },
+  'Meisner Christologia Sacra.md': { title: 'Christologia Sacra', author: 'Balthasar Meisner' },
   'Musaeus Introductio in Theologiam.md': { title: 'Introductio in Theologiam', author: 'Johannes Musaeus' }
 }
 

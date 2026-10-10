@@ -74,3 +74,23 @@ describe('topicsOf on Meisner and Musaeus', () => {
     expect(topicsOf('Concerning the Cross, as the Token of the Elect and the Faithful')).toEqual(['cross'])
   })
 })
+
+describe('topicsOf on Meisner\'s Christologia', () => {
+  it('takes the natures, union and communication for the person, the states for the work', () => {
+    expect(topicsOf('First Disputation. On the eternal deity of Christ')).toEqual(['person-of-christ'])
+    expect(topicsOf('Seventh Disputation. On Nestorianism')).toEqual(['person-of-christ'])
+    expect(topicsOf('Tenth Disputation, On the Communication of the Hypostasis')).toEqual(['person-of-christ'])
+    expect(topicsOf('Forty-first Disputation. On the Glorious Resurrection of Christ')).toEqual(['work-of-christ'])
+    expect(topicsOf('Disputation Forty-Four. On the Ascension of Christ into Heaven')).toEqual(['work-of-christ'])
+    expect(topicsOf('Thirty-eighth Disputation, On the Death of Christ')).toEqual(['work-of-christ'])
+    expect(topicsOf('Thirty-third Disputation, On the Years of the Ministry and the Whole Course of Christ')).toEqual(['work-of-christ'])
+  })
+
+  it('keeps the general topics for the general loci', () => {
+    expect(topicsOf('Chapter I. Description and hypostasis of the Holy Spirit')).toEqual(['holy-spirit'])
+    expect(topicsOf('Use of the doctrine of Christian Liberty')).toEqual(['liberty'])
+    expect(topicsOf('Q. XVII. What is the form of the ministry?')).toEqual(['ministry'])
+    expect(topicsOf('On the Resurrection of the Dead')).toEqual(['resurrection'])
+    expect(topicsOf('On Temporal Death')).toEqual(['death'])
+  })
+})

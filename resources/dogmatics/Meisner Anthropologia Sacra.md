@@ -34,7 +34,7 @@ Porrò autem Fides & cognitio veritatis duobus absoluitur, 1. Notitiâ Dei, 2. N
 Hominem quidem Deus primum condidit rectum, Eccles. 7. v. 30. ad imaginem suam. Gen. 1. v. 26. 27. in iustitia & sanctitate veritatis, Ephes 4. v. 24. ut non erubesceret, Gen. 1. v. vlt. nec morti subiaceret, Sap. 2. v. 23. Rom. 3. v. 12. cap. 6. vers. vlt. Sed inuidus Diabolus, Sap. 2. v. 23. seduxit πρωτοπλάσους, Gen. 3. ut omnes concipiamur in iniquitate, Ps. 51. v. 6. destituamur gloriâ Dei, Rom. 3. v. 23. & nascamur iræ filij, Eph. 2. v. 5. O mifera sors hominis, exclamat August. cap. 31. Manu. cum hoc perdidit, ad quod factus est! O dirus ac durus casus ille! Heu quid perdidit, & quid inuenit? Quid abscessit, & quid remansit? Perdidit beatitudinem, ad quam factus est: & inuenit miseriam, ad quam factus non est. Abscessit, sine quo nihil felix est; & remansit, quod per se nõ nisi miserum est. Deus
 
 
-### Preface to the First Decade: Preface
+### Preface
 
 Preface.
 
@@ -71,7 +71,7 @@ Præfatio.
 Nobilissimi Mecœnates summi, & æternùm obseruandi, Honoratissimum Nomen Vestrū præscribere volui, vt Patronos haberēt, qui istas defensum irent. Quid enim hodiè dici scribiuè potest, quod ab omni censorum temerè iudicantium morsu immune sit? Verùm nihil timebo, Vestro animatus præsidio, sed pergam potiùs eò alacriùs ad subsequentes συζητήσεις, & in vsum communem conferam, quicquid Altissimi gratia clementer elargita fuerit. Porrò ad idem excitauit me gratitudinis stimulus.Vestram enim erga me immerentem beeuolentiam & humanitatem planè singularem expertus sum sæpius, vt ad grati animi signum edendum me iamdudum fuisse obstrictum ingenuè fatear. Tandem permouit me Zelus vester, quo in religionem feruetis, & amor rerum Theologicarum, quibus grauissimas curas politicas temperare, & quarum lectione vos recreare consueuistis. Vt igitur primitias has serenâ fronte accipiatis, contra maleuolos
 
 
-### Preface to the First Decade: Preface
+### Preface
 
 Preface.
 
@@ -262,7 +262,7 @@ II. An liberi infidelium extra Ecclesiam nati damnentur? 258
 III. Si non baptizati infantes damnantur, an duntaxat damni & non vnà sensus pœnam sint perpessuri? 267
 
 
-### Preface to the First Decade: Disp. VIII. on the Forgiveness and removal of original sin. 270 Questions
+### Disp. VIII. on the Forgiveness and removal of original sin. 270 Questions
 
 DISP. VIII. ON THE FORGIVENESS and removal of original sin. 270 Questions:
 
@@ -1277,7 +1277,7 @@ XX. 2. Quod a nostram spectat sententiam, illa priori directè opposita est, ide
 XXI. Ex hac igitur opinionum collatione patet, duo potissimùm controuerti; Alterum est, conditio naturæ; Alterum conditio iustitiæ, Illam cum rebellione virium creatam, Pontificij adfirmant; Nos negamus. Hanc Pontificij naturalem fuisse negant; Nos adfirmamus. Statu proindè ita constituto, ipsa problemata subnectemus, veritatem adstructuri, & falsitatem pro virili destructuri.
 
 
-### Disputation II. On Original Justice: Question I Whether the nature of the first man was created by God with a rebellion of powers?
+### Question I Whether the nature of the first man was created by God with a rebellion of powers?
 
 QUESTION I.
 
@@ -1733,7 +1733,7 @@ Quid sit peccatum in genere?
 I. Rerum natura & quidditas melius, quam per definitionem non cognoscitur. Est enim ὁρισμὸς τῆς οὐσίας γνωρισμὸς, dicente Philosopho 2. post 3. §. 7. Vulgò autem duplex Definitio constituitur: Altera ὀνοματώδης vel nominalis: Altera πραγματώδης vel realis. Illa definiti nomen; hæc naturam & essentiam declarat. Quòd si ergò peccati quidditatem plenè percipere voluerimus, & nominalis & realis definitio attendenda est, de qua vtraque paucis.
 
 
-### Disputation III. On Sin in General: I. Concerning the nominal definition of sin
+### I. Concerning the nominal definition of sin
 
 I. Concerning the nominal definition of sin.
 
@@ -1782,7 +1782,7 @@ X. 2. GRÆCA, ex quibus vicissim hæc sunt primaria, ἁμαρτία, quæ vox d
 XII. HEBRAICA. Communiter Hebræis peccatum dicitur חטאה à radice חטא aberrare à scopo, deflectere à via, vel potiùs norma diuinæ legis. Alio nomine vocatur עון iniquitas vel perversitas: illo originale, hoc actuale peccatum notari dicunt, sed Scriptura vtrique attribuit. Plura Synonyma tùm Græca, tùm Hebræa vide apud Chemnitium in l. Com. par, 1, loco de pecc. cap. 2. Flacium parte 1. Clauis col. 850. 851. Dn. D. Gerhardum Tom. 2. de pecc. actual, sect. 8. & 9.
 
 
-### Disputation III. On Sin in General: II. On the real definition of sin
+### II. On the real definition of sin
 
 II. On the real definition of sin.
 
@@ -1863,7 +1863,7 @@ XXVII. Stat ergo certa & immota conclusio: Omnem à lege deflexionem, hoc ipso m
 XXIX. Et hactenus definitionem peccati, ab A. Iohanne propositam satis explicuimus: quia verò nonnullæ obiectiones contrà mouentur, idcirco λύσις illarum vel discussio, ad meliorem plenioremque intelligentiam, paucis subiungenda restat.
 
 
-### Disputation III. On Sin in General: Objection I
+### Objection I
 
 OBJECTION I.
 
@@ -1900,7 +1900,7 @@ Respond. 1. Sunt qui distinguant inter ἀπιστίαν & ἀνομίαν, hoc 
 Proinde, vt concludamus, Error contra Euangelium verissimè peccatum & illegalitas dicitur, tùm sensu generali, quia deflectit à voluntate Dei Euangelica vel lege fidei, tũ imprimis speciali quia violat primum legis moralis præceptum de obedientia erga DEVM.
 
 
-### Disputation III. On Sin in General: Objection III
+### Objection III
 
 OBJECTION III.
 
@@ -1949,7 +1949,7 @@ Resp. Augustinus ibi definit peccatum actuale, nec hoc opponi vult peccato origi
 XXXIV. Cum igitur obiectiones hactenus auditae, nullius fuerint ponderis aut momenti; merito definitione illam Iohannis vt accuratissimam retinemus, quia ipsam peccati naturam luculenter exprimit, omnesque species sufficienter includit, nempe anomian tum originalem, tum actualem; quae vel est inurion in internis motibus, quos Augustinus nominat concupiscere contra legem; vel paraphainousa, in externis locutionibus & actibus sita, quos Augustinus dictum vel factum contra legem appellat: Quocirca definitioni huic, non incommode tribui potest, quod de voce autarkes a se excogitata scribit Scaliger Ex 365. sect. 2. eam admirabili ambitu significatus definitum suum exprimere, omnesque definiti species comprehendere.
 
 
-### Disputation III. On Sin in General: Question II Is every sin voluntary?
+### Question II Is every sin voluntary?
 
 QUESTION II.
 
@@ -2006,7 +2006,7 @@ IIX. Quocirca statuimus, labem istam peccati nobis ingeneratam & inhærentem rec
 IX. Proinde cùm Iesuitæ dictum Augustini de voluntario obijciunt; audiant ipsum Augustinum l.contra Iulianum c 5. mentem suam ita explicantem: Frustrà putas, ideo in paruulis nullum esse delictum, quia in eis nulla est; esse non potest. Hæc enim rectè dicuntur DE PROPRIO CVI VSQVE PECCATO, non de originalis peccati contagio, quod tamen & ipsum à prima hominis mala voluntate sumsit exordium, Audis hîc oppositionem inter peccatum originale, & peccata personalia vel actualia, illamŃue de voluntario sententiam non vniuersaliter exponi, sed ad peccata propria & mortalia restringi. Eodem enim sensu vocem peccati accepit Augustinus, quando requirit voluntarium, quo postolus Iacobus, cùm cap. 1. suæ epistolæ v. 15. Concupiscensia, inquit, si conceperit, parit peccatum, videlicet regnans & mortale. Hinc l. 1. Retract. c. 13. expressê scribit, dotrinâ de peccato originali non praeiudicare politicam istam sententiam. Nihil esse peccatum, nisi fiat à sciente & volente.
 
 
-### Disputation III. On Sin in General: Question VI. Was sin absolutely necessary?
+### Question VI. Was sin absolutely necessary?
 
 QUESTION VI. Was sin absolutely necessary?
 
@@ -4392,7 +4392,7 @@ X. Ethæ sunt quatuor communes pœne peccati originalis, de quarum prioribus tri
 XI. Fatemur autem problema hoc satis intricatum & decisione difficillimum esse, quod tamen ipsum neminem offendere debet. Quamuis enim solutionem nesciamus, hinc tamen salus nostra minimè periclitabitur, siquidem quæstio illa potiùs circa fidem est quam de fide; nec quæritur de propria, sed alienâ salute, quæ licet in dubio maneat, nobis tamen nihil decedet, quia iustus sua non alienâ fide viuit & saluatus, Hab. 2. v. 4. Rom. 1. vers. 17. Imo si scitu istud adeò fuiffet necessarium, Scriptura vtique, quid sentiendum sit, disertè exposuisset, cùm omnia scitu ad salutem necessaria in ea contineantur. XII. Neque tamen hinc inferri debet, de talibus abstrusis silendum potius esse, quàm loquendum, cùm ista, quae Scriptura non expressit, sine crimine ignorentur, verùm non sine discrimine indagentur. Nam licèt ista quaestio in sacro codice non decisa habeatur ex toto, tamẽ ex parte; licèt non αὐτολεξεὶ, tamen κατὰ διάνοιαν & per consequentiam. Accedit Pontificiorum audacia, qui non modò certi quid definiunt, sed nostram quoque sententiam erroris insinuant, vt videre est apud Bellarm. l. 6. de A. G. 1. & seqq. vbi quaestio haec fusè disceptata habetur. XIII. Proinde non omninò perdemus operam, neque vitio verti nobis poterit, si ea, quae circa controuersiam istam ex Scripturis colligi queunt, & à nostris Theologis annotata sunt paucis repetendo percurramus Quod vt distinctè fiat, tribus ζητήμασι rem omnem expeditã dabimus, 1. An Christianorum infantes non baptizati propter originis peccatum damnentur? 2. An infidelium liberi damnetur? 3. Quam in damnatione paenam sustineant, an damni tantùm non sensus, vt adfirmant Pontificij?
 
 
-### Disputation VII. On the Punishment of Original Sin: Question I. Are the unbaptized infants of Christians damned on account of original sin?
+### Question I. Are the unbaptized infants of Christians damned on account of original sin?
 
 QUESTION I. Are the unbaptized infants of Christians damned on account of original sin?
 
@@ -4469,7 +4469,7 @@ XV. 1. A fœderali præmissione. Ero Deus tuus & seminis tui post te. Gen. 17. v
 Si exceperint, promissionem istam non esse absolutam, sed limitatam & conditionatam, nempè, si vsus mediorū à Deo ordinatorum accesserit. Resp. quòd principium petant, & vniuersalitatem promissionis contra claram literam impugnent. Deindè ip-
 
 
-### Disputation VII. On the Punishment of Original Sin: promise itself is the reason that infants are admitted to the reception of the…
+### promise itself is the reason that infants are admitted to the reception of the…
 
 promise itself is the reason that infants are admitted to the reception of the means. They could not or should not be baptized in infancy, unless the federal promise pertained to them: for no other reason can be given why the children of unbelievers are excluded from Baptism in infancy than this, because the federal promise does not directly reach them. Since, therefore, an immediate approach to Baptism is open to all children of the faithful, we infer from this that this federal promise reaches all, with none excepted, yet with this distinction, that the application of the promise and the bestowal of the promised good is only mediate with regard to those who can be participants of the Sacraments, but immediate with regard to the rest who are excluded from the Sacraments by a case of necessity. We confirm this clearly by the example of females in the O.T. dying in infancy, and yet saved. For these were not capable of the ordinary means, namely circumcision, and there exists nothing in the whole Scripture concerning another Sacrament proper to females. Therefore, it must be concluded that they were saved immediately. We ask, however, about the cause: whence could the parents be certain of their salvation? A special promise made to females is nowhere read. Therefore, it must be said that they were saved by virtue of the general and federal promise itself. Hence, therefore, we conclude: Just as in the O.T., because of the promise of the covenant, God saved immediately both females and all those who could not become participants of the ordinary means, so also in the N.T., where the same promise exists, He certainly wills to save all children of the faithful who likewise cannot be made partakers of the ordinary means on account of a case of necessity.
 
@@ -4526,7 +4526,7 @@ XXV. Quòd si autem vlterius quæratur: Quid sit statuendum de ijs infantibus qu
 XXVI. Colophonis loco notentur hæc Patrum testimonia, 1. August. l. 4. contra Donat: c. 23. Sicut in latrone per necessitatem corporaliter Baptismus defuit, perfecta salus est, quia per pietatem spiritualiter adfuit: Sic & cùm ipsa præsto est, si per necessitatem desit; quod latroni defuit perficitur salus: 2. Idem l. 1. de Baptismo c. 22. & 24. Tunc Sacramentum Baptismi impletur visibiliter, cùm idipsum non contemptus religionis, sed necessitatis articulus excludit 3. Bern. epist. 77. Voluntas pro facto imputatur, vbi factum excludit necessitas.
 
 
-### Disputation VII. On the Punishment of Original Sin: Question II. Are the children of infidels born outside the Church damned?
+### Question II. Are the children of infidels born outside the Church damned?
 
 QUESTION II. Are the children of infidels born outside the Church damned?
 
@@ -4611,7 +4611,7 @@ XIIX. Atque hactenus varia argumenta reconrecensuimus, quæ ex vna parte salutem
 XIX. Summatim igitur dicendo: Aut quæritur, quid infantes paganorum ob peccatum mereantur? Aut quæ ipsorum sors futura sit in altera vita? Quoad prius, adfirmamus, eos esse meritos ob vitium naturę sempiternum tum exilium à cœlo, tum exitium in inferno, quia nihil immundum intromittitur in regnum cœlorum, Apoc. 21. v. 25. Quoad posterius Dei iudicio illos relinquimus. Est autem hoc, vel ordinarium & vniuersale cuius summa Ioh. 3. vers. vlt. Qui incredulus est Filio Dei, non videbit vitam sed ira Dei manet super eum; quo pacto salutem infantibus paganorum promittere non possumus; vel extraordinarium & particulare, cuius ratio nobis incognita est, qua non reuelata, ideoque nihil hîc absolutè temereque adfirmare præsumimus.
 
 
-### Disputation VII. On the Punishment of Original Sin: Question III. If unbaptized infants are damned, are they to suffer only the punishment of loss and not also of sense?
+### Question III. If unbaptized infants are damned, are they to suffer only the punishment of loss and not also of sense?
 
 QUESTION III. If unbaptized infants are damned, are they to suffer only the punishment of loss and not also of sense?
 
@@ -4652,7 +4652,7 @@ VII. Distinctio ista inter pœnam damni & sensus inepta, imò nulla est. Aut eni
 IIX. 7. Infantes isti aut planè otiosi erunt in suo limbo, & quasi perpetim somno oppressi, aut aliquid agent sentientque. Illud inconueniens & absurdum. Ergò aliquid agent vel sentient: Quare vel delitiabuntur, & gaudebunt, vel patiētur & dolebunt. Gaudere nequeunt, quia sunt exclusi è coelo, & ira Dei manet super eos. Ergò dolebunt. Non igitur solùm damni, sed sensus quoque poenam sustinebunt. Et haec duo posteriora argumenta ita mouerunt Bell. vel. 6. de A. G. c. 6. fateatur, paruulos non baptizatos passuros esse dolorem, non quidem externum ignis, sed internum animi, quamuis mitissimum. Verùm non opus est hanc sententiam nouis refutare rationibus, cùm argumenta hactenus enumerata, ad eam quoque impugnadam satis sint efficacia. Addimus tantùm colophonis loco Augustini testimonium, quod legitur l. 1. de orig. anim. ca. 9. Paruulis non baptizatis nemo promittat quietis aut felicitatis cuuflibet atque vbilibet inter damnationem regnumẽ, coelorum quasi medium locum.
 
 
-### Disputation VII. On the Punishment of Original Sin: To God Alone the Glory
+### To God Alone the Glory
 
 TO GOD ALONE THE GLORY.
 
@@ -6723,7 +6723,7 @@ Ingressus ego sum cum Deo hunc campum, & incepi φιλανθρωπίας diuinæ
 Quia vero ingressus tàm fuit laboriosus, & vnius χαρίσματος consideratio tàm diuturnum tempus postulauit, de progressu & continuatione spem ferè & cogitationem omnem abieci. Nec enim promittit officii ratio, vt multum temporis tribuam huiusmodi meditationibus, si maximè vellem. Has tamen præliminares dissertatiunculas in vnum fasciculum collectas prodire volui, vt pii omnes profunditatem Misericordiæ diuinæ mecum admirarentur, & vbertate cœlestis benedictionis lætarentur. Confitemini ergo Domino, quoniam bonus, quoniam in seculum misericordia eius. Dicat nunc Israel, Quoniam bonus, quoniam in seculum miseri-
 
 
-### Preface to the Second Decade: Preface
+### Preface
 
 Preface.
 
@@ -6752,7 +6752,7 @@ Quod si ergo vestrum accedat suffragium ad has lucubratiunculas meas, instar mul
 Inprimis autem hæc inscriptio certum sit argumentum observantiæ & gratitudinis meæ. Quod enim sincero minimeque fucato animo immerentem me prosequaris, perspectum habeo & compertissimum. Quocunque igitur pacto animum gratum decla-
 
 
-### Preface to the Second Decade: Preface
+### Preface
 
 Preface.
 
@@ -7380,7 +7380,7 @@ Atque huc pertinet illa Lutheri distinctio inter Deum absolutum & relatum, vel q
 XVI. SECVNDA. Non ex doctrina legis, sed Euangelij cognoscenda est prædestinatio. Lex enim peccata arguit, non remittit; accusat, non condonat, Iohan. 5. vers. 45. Ex lege maledictio venit, non salus, Deuter. 27. vers. 16. Gal. 3. v. 10. Salutis ergò decretum ex lege quî cognosci poterit? Euangelium potius consulendum est, quippe in quo solo per Filium enarrantem Ioh. 1. v. 18. voluntas Dei patris manifestatur. Hinc nominatur releuatio mysterij, temporibus æternis taciti, Rom. 16. v. 45. Errant igitur quicunque electionis arcanum, vel secundum opera legis, vt pontificii, vel sine respectu ad Euangelicas promissiones de vniuersali gratia Dei & merito Christi, vt Caluiniani, definiunt.
 
 
-### Disputation II. On the Universal Will and Love of God: XVII. Third. The temporal execution must be diligently compared with the eternal predestination
+### XVII. Third. The temporal execution must be diligently compared with the eternal predestination
 
 XVII. THIRD. The temporal execution must be diligently compared with the eternal predestination.
 
@@ -7409,7 +7409,7 @@ XIX. QVINTA. In Deo non sunt contradictoriæ voluntates.
 Est enim æterna veritas, mentiri nesciens. Vt non essentiam, sic neque mutat essentiam, Ψευδὴς ἐν λόγῳ, vti Plato dixit. In promissis Dei nulla inest falsitas, scribit Fulgentius, l. 1. ad Monim. Proinde cùm in verbo se ita declaret, quòd omnes saluos velit, non cogitandum est, dari in ipso quandam voluntatem arcanam reuelatæ contrariam. Non enim Deus est hypocrita, sed inuariabilis, sibique perpetuò constans veritas. Quod igitur se velle dicit, hoc ipsum, & non aliud vult: vti foris profitetur, ita intus sentit & decernit. Quare, cùm Christum miserit toti mundo, & omnes vocet ad pœnitentiam, vicissim fieri nequit, vt ex absoluto & abscondito decreto plerosque homines præterierit, & æternùm saluos noluerit.
 
 
-### Disputation II. On the Universal Will and Love of God: XX. Sixth. Outside of Christ, one must not think about predestination
+### XX. Sixth. Outside of Christ, one must not think about predestination
 
 XX. SIXTH. Outside of Christ, one must not think about predestination.
 
@@ -7442,7 +7442,7 @@ XXIII. Hâc igitur disputatione faciemus initium à capite primo, quod comprehen
 XXIV. Quia verò prolixum nimis foret, vnâ disputatione omnes istas hypotheses percurrere, idcircò partiemur operas, & hac vice primum duntaxat fontem vel fulcrum electionis considerabimus, nempe vniuersalem & misericordem Dei voluntatem, quâ totum genus hominum complectitur. Duæ autem primarię quæstiones hic ventilandæ occurrunt. I. Quotuplex sit Dei voluntas? Vbi afferuntur distinctiones aliquot, in hac controuersia familiares, I I. An voluntas Dei sit vniuersalis, hoc est, num omnes seriò velit saluos fieri, & ad agnitionem veritatis peruenire? De his ergo duobus problematibus porrò quædam in medium afferenda sunt.
 
 
-### Disputation II. On the Universal Will and Love of God: Question I How manifold is the will of God?
+### Question I How manifold is the will of God?
 
 QUESTION I.
 
@@ -9054,7 +9054,7 @@ Thesis hæc fundamentum est, cui tota de Prædestinatione doctrina innititur. Id
 XVII. Hæc vera, orthodoxa & in Scripturis fundata est prædestinationis αἰτία προηγουμένη doctrina, quam nunc stabilire aggrediemur. Ea autem confirmatio vt euidentiori cum ordine coniuncta sit distinctè procedemus, & demonstrabimus. 1. in gener. meriti fideique. 2. In specie, meriti Christi. 3. Fidei intuitum electioni esse inclusum. Et 4. Omnem meritorum operumq́; respectum, quem fingunt Pontificii, esse exclusum.
 
 
-### Question III. What is predestination, and what causes does it have?: Member I
+### Question III. What is predestination, and what causes does it have?: Member I. XIIX. That God, in choosing, had regard for both, both the merit of Christ and…
 
 MEMBER I.
 
@@ -9229,7 +9229,7 @@ Resp. 1. Futile est hoc discretum. Si enim absolutè prædestinamur ad salutem, 
 2. Coguntur Caluinistæ fateri vi hypothesewn suarum, Christi meritum in multis nè quidem saluris causam esse. Nihil enim prodest sine fide, nec applicatur nisi per fidem. Ast infantes fide carere scribunt. Quare aut nulli infantes in infantia decedentes saluantur, aut si saluantur, quia fidem non habent, sine merito Christi salutem consequentur.
 
 
-### Question III. What is predestination, and what causes does it have?: Member III
+### Question III. What is predestination, and what causes does it have?: Member III. XXXVI. After we have dealt with the merit of Christ, it remains to speak of…
 
 MEMBER III.
 
@@ -9375,7 +9375,7 @@ XLIII. 5. Augustinus inquit : Elegit nos, vt credamus, non quia credidimus. Ali�
 Resp. Augustinus non simpliciter excludit omnem fidei respectum, sed phrasibus istis; & similibus, duo tantum excludit. 1. Fidem, vt est qualitas, & libero arbitrio adscribitur. 2. Fidem, prout causa electionis meritoria dicitur. Vtrumque affumebat Pelagius, recte negabat Augustinus, cum quo & nos. Neque enim fides ingreditur electionem, vt qualitas nostra, sed ὀργανικῶς vt instrumentum apprehendens, quod a solo Deo datur, non ex viribus arbitrij habetur. Eligimur non ad fidem, vt terminum, non propter fidem, vt meritum, sed per fidem, tanquam medium, vel in fide, tanquam parte ordinis praedestinatorij. Vt ergo Pelagianismus non est, cum per fidem iustificari dicimur, ita nec Pelagianismus erit, cum electionem per intuitum fidei a solo Deo in nobis non repugnantibus, sine nobis cooperantibus excitatae describimus. Quaecunque igitur ex Patribus allegantur, ea sunt opposita Pelagianis potissimum & electioni meritoriae, non mediatae, vti patet ex Augustino l. 1. de praedest. c. ult. l. de dono persev. cap. 14. & 28. & lib. 1. Retr. 23. Caetera Argumenta fidei praeuisionem impugnantia ex dictis solutu sunt facilia, & si quis ex abundanti peculiarem eorum desiderat λύσιν, inueniet eam satis luculentam apud Dn. D. Cramerum. li. de praedest c. 8. quaest. 6. Dn. D. Gerhardum Tomo 2. loco de elect. sect. 175 p. 332.
 
 
-### Question III. What is predestination, and what causes does it have?: Member IV
+### Question III. What is predestination, and what causes does it have?: Member IV. XLIII. Finally, that election is made without our merits and works and is…
 
 MEMBER IV.
 
@@ -12472,7 +12472,7 @@ Praefatio.
 qualitatum; sed per imputationem obedientiae Christi. Hic tulit languores nostros, & ipsius liuore sanati sumus vnicè. Quae omnia in tanta luce sunt posita, vt qui scripturam audit legitquè, nullam dubitandi caussam habere possit. Et tamen in media Ecclesia reperiuntur, qui errores circa vtrumque articulum grauissimos pertinaciter fouent, & acriter defendunt. Nuncupari volunt Catholici, & interim Catholicam fidem oppugnant. Videri volunt Ianitores coeli, & nihilominus veram eò perueniendi viam vel ignorant ipsi, vel monstratam nolunt agnoscere. Romanenses intelligo, & illorum praecipuè προμάχους Iesuwitas. Qui licèt turgeant opinione scientiae & veritatis, fallunt tamen & falluntur miserè. Non Apostolis, sed Pharisaeis succedunt, quia vires naturae exaggerant, & iustitiam operum nullibi non inculcant. Patet hoc ex sectae illius primipilo, quondam apud ipsos Patre, nunc Cardinale Bellarmino: Qui sanè in vltimo controuersiarum tomo ad id vnicè videtur collimâsse, vt per peccati extenuationem & liberi arbitrii assertionem, iustitiam inhaerentem & Philosophicam, è lacunis scholasticis haustam, populo Christiano persuaderet, atque sic antiquam conscientiarum carpificinam rursus inveheret. Pro quo instituto obtinendo varia hinc indè corrasit argumenta, quæ primùm apparent speciosa, sed leuiter tacta, in cineres abeunt & fauillas. Cùm ergò absolutâ controuersiâ de peccato, gratiâ & prædestinatione, sequerentur quoad ordinem Bellarmini, cuius filum sequi erat propositum, grauissimi duo articuli, de Liberi arbitrio, & de Iustificatione coram Deo; accuratam illorum anésin suscipere, thesibusq́; comprehensam ad disputandum studiosæ iuventuti proponere volui, vt veritatem fidei maturè imbiberent, & errorum præcipitia cauere discerent. Erat quidem mihi constitutum, cùm Decadem secundam finirem, imposterum amouere manum de cœpta tabula, & ordinariis meę professionis laboribus vnicè incumbere; Voluerunt tamen Patroni mei summi, quibus obtēperare, & Amici, quibus gratificari debeo; vt telam semel inchoatam pertexerem, & Collegium istud Anthropologicum continuarem. Feci ergò, quod facere iussus sum, decemque disputationibus inclusi, quæ de arbitrio in moralibus libero, in spiritualibus seruo, & de vera iustificandi ratione dicenda habui. Quæ tractatio vt completa esset, non tan-
 
 
-### Preface to the Third Decade: Preface
+### Preface
 
 Preface.
 
@@ -12497,7 +12497,7 @@ Præfatio.
 hîc concludantur, & finem suum sortiantur. Hanc verò Decadem tertiam vltimamq́; Illustrissime Comes ac Palatine, Domine Clementissime, Celsitudini Vestræ inscriptam humilimèq́ue dicatam offero. Caussas prolixè non adducam, nè de Vestra Clementia quicquam dubitare videar. Nota est orbi Christiano, & cum primis regno Hungariæ singularis Vestrę Celsitud. Zelus in vera pietate erga Deum ac puritate religionis γνησίως Catholicæ asserenda & propaganda. Quis igitur tanto Heroi, fideiq́; defensori, prõptus nõ offerret, quod pro fide orthodoxâ scriptum est? Arcam V. T. in intimo templi atrio repositam, alis suis tegebant sancti Cherubim. Arca Christi est Ecclesia, quam protegunt pii Principes, veluti cœlestes Che rubim. Hoc Celsitudinem Vestram iamdudum fecisse, & etiamnùm facere, humiliter agnoscit pusillus grex Domini. Verè Cherub es Ecclesiæ Hungaricæ, positus in sancto monte, & protegens quassatam arculam. Quis non tanto Ecclesiæ Nutritio precaretur optima, & perennem voueret felicitatem? Accedit summa in isto honoris fastigio clementia, quam Celsitudo Vestra crebris literis testatam fecit, & cuius Icona quoti-
 
 
-### Preface to the Third Decade: Preface
+### Preface
 
 Preface.
 
@@ -12578,7 +12578,7 @@ VII. Quast. VII. An voluntas in usu suae libertatis dependeat ab intellectu prac
 23
 
 
-### Preface to the Third Decade: Index
+### Index
 
 INDEX.
 
@@ -12723,7 +12723,7 @@ Quæst. III. Quibus præcipuè dictis & testimoniis Scripturæ, Satisfactio Chri
 DISPVTATIO VI: QVIBVS ARGUMENTIS PHOtiniani meritum Christi oppugnent? 284
 
 
-### Preface to the Third Decade: Disputation VII: on the Formal Cause of our justification, opposed to the Papists. 382 Index
+### Disputation VII: on the Formal Cause of our justification, opposed to the Papists. 382 Index
 
 DISPUTATION VII: ON THE FORMAL CAUSE OF our justification, opposed to the Papists. 382
 
@@ -17301,7 +17301,7 @@ III. Resp. 1. GENERALITER: Timor Dei in Scripturis & apud Patres sumitur æquivo
 IV. 2. SPECIALITER ad dictum Ecclesiastici 1. v. 27. & Psal. 110. v. 10. respondemus, per timorem intelligi nihil aliud, quàm totam cultum diuinum, quem nos aliàs vocamus pietatem, Gottes furcht/ Ea propter Tremellius vertit, reverentia Domini. Et quia pietatis princeps pars est Fides, per Synecdochen toti attribuitur depulsio peccati, quae ppriè est partis: Ista verò verba: sine timore nemo potest iustificari, nõ reperiūtur in textu, quippè qui sic habet: ὐ δυνήσεται θυμὼς ἄνηρ δικαιωθῆναι, ἡ γὰρ ῥοπὴ τῶ θυμῶ αὐτῶ πτῶσις αὐτῷ, Id est, non potest iracundus vir iustificari, &c. quod vel intelligi potest de iustificatione coram politico iudice, vt sit sensus, eos qui iracundiae suae indulgent, committere tandem ea flagitia, propter quae in iudicium tracti, non possunt iustificari, id est, absolui: Vel de iustificatione coram Deo, vt sit sensus, eum, qui iracundus est, nec fratri suo libenter ignoscit, non iustificari. Atque sic congrueret cum illo: Remittite, & remittetur vobis. Ἐκ περισσίας respondemus de vulgata versione, non dici timorem iustificare, sed neminem, qui sine timore est, iustificari, quod ipsi concedimus. Hic enim ordo in conuersione obseruatur, vt praecedat timor, dolor, contritio, sed haec non iustificant, nec iustificationem merentur, quod volunt Pontificij. Dictum Esaiae planè nihil agit de iustificatione & salute hominis, vt patet cuiuis textum inspicienti. Idem respondetur ad alia. Nec enim probatur timore iustificare, sed illum semper praecedere iustificationem, quod non negamus. Qui enim conuertitur vel iustificatur, illi proponitur legis maledictio & ira Dei, quam promeruit, vnde oritur Timor, qui etiam in Caino & Iuda aderat. Hic verò timor non iustificat, nec iustificationem meretur, tanquam dispofictio de congruo, alias & Iudas fuisset iustificatus, Phil 2. v. 12 salus non adscribitur timori & tremori, sed prohibetur, ille enim tremor & timor, qui etiam Psal. 2. v 11 præcipitur, nihil est aliud quàm filialis reuerentia, quo ad DeVM, vigilantia quoad Diabolum, prudentia & constantia quoad mundum & propriam carnem: sentusque simplicissimus est, quod ita debeamus credere Christum & expectate vitam æternam, ne efferamur animo & reddamur securi.
 
 
-### Disputation VIII. On the Papist Arguments against Justification by Faith Alone: Second class. Containing sayings to which hope of justification is attributed
+### Second class. Containing sayings to which hope of justification is attributed
 
 Second class. Containing sayings to which hope of justification is attributed.
 
@@ -17326,7 +17326,7 @@ VI. Resp. 1. GENERALITER. Spei vocabulum aliquando sumitur pro ipsâ fiduciâ, s
 VII. Referri huc etiam posset illud Roman. 8: vers. 24. τῇ ἐλπίδι ἐσώθημεν spe salui facti sumus. Ergò non sola fide. Resp. Dupliciter hic locus intelligitur. 1. Vel de reconciliatione hominis seu iustificatione, quæ fit per fidem, vt cum dicitur, fides tua te saluum fecit; Item gratia estis saluati per fidem. Et tunc per ἐλπίδα nihil intelligitur aliud quàm ipsa πίστις. 2. Vel de gloria futuræ vitæ, seu de finali liberatione & glorificatione post hanc vitam, quam adhuc speramus & expectamus. Cùm igitur dicit Apostolus, Spe saluati sumus, intelligi potest glorificatio, hoc est, Apostolus significat non quòd spe simus iustificati, sed quod spe, non re simus glorificati & liberati ab omnibus miserijs, de quibus in præcedentibus dixerat. Sensus ergò est; Vitam æternam non re, sed spe possidemus in hac vitâ, Nunc enim Dei filij sumus, sed nondum apparet quod erimus, 1. Iohan. 3. versu 2.
 
 
-### Disputation VIII. On the Papist Arguments against Justification by Faith Alone: Third class, containing sayings by which justification is attributed to love
+### Third class, containing sayings by which justification is attributed to love
 
 Third class, containing sayings by which justification is attributed to love.
 
@@ -17367,7 +17367,7 @@ XIII. Ad. 1. Corinth. 13. v. 2. respondemus 1. Si de fide iustificante accipimus
 2. Alij respondent, sermonem esse de fide signorum aut miraculorum, quia expressè additur, vt montes transferam. Hanc verò à charitate separari posse, lubenter concedimus. Hîc excipiunt Pontificij, fidem non nisi vnam esse, Ephes. 4 & fidem signorum esse nihil aliud, nisi veram fidem Christianam, sed excellentem, vt ait Bellarminus, vel vt Stapletonus loquitur, fidei integræ aut plenæ argumentum, magnitudinem, vim & intensionem. Sed Bellarminus lib. 1. cap. 15. sibijpsi contradicit, Nam colomn. 981. lit. B. concedit, fidem miraculorum separatam esse posse reipsâ à charitate, & probat ex illo Matth. 7. vers. 12. Multi mihi dicent in illo die, nonne in nomine tuo prophetavimus? Idem scribit lib. 1. de gratiâ cap. 10. Et sanè Bileam erat
 
 
-### Disputation VIII. On the Papist Arguments against Justification by Faith Alone: endowed with the gift of prophesying, but on account of that he did not have…
+### endowed with the gift of prophesying, but on account of that he did not have…
 
 endowed with the gift of prophesying, but on account of that he did not have true faith, nor was he justified. But soon Bellarmine, forgetting himself, col. d. lit. D., writes that the faith of miracles is nothing else than true and excellent faith; from which we infer thus: True and excellent faith is never without charity. The faith of miracles is such. Therefore it is never without charity, which conclusion contradicts Bellarmine's first assertion. Furthermore, we conclude thus: True and justifying faith is never without charity, which they themselves concede, and it is easily proved from that Gal. 5, verse 6: Faith works through charity. But the faith of which the Apostle speaks in 1 Cor. 13 is and was without charity, as Bellarmine admits. Therefore the faith of which the Apostle speaks here is not justifying faith. Note here in passing the unheard-of absurdity of Stapleton, who in Antidotes to Apostolic Faith, page 680, writes thus: that those who have faith without charity indeed comprehend the whole Christ, but comprehend him badly. On the contrary, every apprehension of Christ which occurs through faith is salutary and good. For as many as received him, to them he gave power to become children of God, to those who believe in his name, John 1, verse 12. Therefore it is impossible that there should be given a faith which is a bad apprehension of Christ.
 
@@ -17396,7 +17396,7 @@ XVI. Ad 1. Iohan. 4. versu 16. respondemus quòd docetur ibi, non quomodo DEO in
 XVII. Ad Coloss. 3. versu 14. charitas dicitur vinculum perfectionis, quia nexu charitatis Christiani simul omnes in vnum quoddam integrum perfectumque corpus ceu vinculo quodam colligantur; quo vinculo rupto, excitatis dissensionibus, corpus illud non manet integrum, sed fit hiulcum, lacerum, mutilum atque mancum. Duplex igitur perfectio; Vna Ecclesiastica seu publica, quæ consistit in verâ concordiâ & mutuâ mutuâ societate, cuius vinculum est charitas. Altera purè Theologica seu priuata, quæ consistit in iustitiâ verâ, quam non nisi fide obtinemus.
 
 
-### Disputation VIII. On the Papist Arguments against Justification by Faith Alone: Fourth class. Containing sayings to which justification is attributed for repentance, contrition, and confession
+### Fourth class. Containing sayings to which justification is attributed for repentance, contrition, and confession
 
 Fourth class. Containing sayings to which justification is attributed for repentance, contrition, and confession.
 
@@ -18465,7 +18465,7 @@ R. N. C. quia dicta ista duntaxat probant operum imperfectionem, & naturæ nostr
 VI. Quod verò attinet ver. 21. cap. 9. Vitium est in vulgata, verba sic habent תָּם אָנִי לֹא אֵדַע נַפְשִׁי Perfectus ego, non noscam animam meam. Luth. ita reddidit, Bin ich fromb / so thut sichs meine Seele nicht annemen. Ex priori autem versiculo sensus genuinus apparet. Loquitur ibi hypotheticè, si iustificauero me, & ita hic תם אני id est, si iustus & perfectus fuero visus, vel si mihi perfectus videar, tamen nō noscam, hoc est, ignoro animam meam, vel nequeo meipsum iustificare, quia fortassis occulta sunt delicta. Idem igitur dicit, quod Paulus 1. Cor. 4. vers. 4. Nihil quidem mihi conscius sum, sed in hoc non iustificatus sum. Proindè Iobus hoc indicare voluit: Etiamsi perfectus videar, imo etiamsi mihi ipsi de scelere quodam crasso nil constet, tamen nescio animam meam, an sit omni labe exempta, imo scio non esse, ideoque ex operibus neminem posse iustificari.
 
 
-### Disputation X. On Bellarmine's Arguments against the Certainty of Grace: VII. The second example is that of David, whom he thinks to have doubted, as is…
+### VII. The second example is that of David, whom he thinks to have doubted, as is…
 
 VII. The second example is that of David, whom he thinks to have doubted, as is manifest in Psalm 19, where David says in v. 13: Who can understand his errors? Cleanse thou me from secret faults, O Lord, and spare thy servant from the faults of others.
 
@@ -18534,7 +18534,7 @@ Respon. Verba sic habent, מִי יוֹדֵעַ יָשׁוּב וְנִחָם
 Quis scit si conuertatur & pœniteat eum? Wer weis/es mag jn widerumb gerewen / vnd einen Segen hinder sich lassen : Non autem exindè colligi potest dubitatio Papistica. Sermo enim est non de remissione peccatorum , sed de immissione pœnarum temporalium. Minatus namque est in præcedentibus Propheta varia supplicia , euersionem , sterilitatem &c. pōst addit consolationem & adhortationem ad pœnitentiam, addita ratione, quia fortè passurum, vt Dominus mutet suum decretum de pœnis temporalibus, & largiatur benedictionem. Concedimus autem libenter, nos incertos esse, an Deus semper pœnas auertat, quia pios etiam iustificatos castigat. Quæ autem est consequentia: Certo scire non possumus, an Deus pœnas temporales sit auersurus: Ergo nec scire possumus, an peccata sit remissurus? Ab immissione pœnæ ad dimissionem culpæ argumentari non conceditur.
 
 
-### Disputation X. On Bellarmine's Arguments against the Certainty of Grace: XII. The third exists in Jonah 3
+### XII. The third exists in Jonah 3
 
 XII. The third exists in Jonah 3. v. 9. Who knows, if God may turn, and forgive.
 
@@ -18707,7 +18707,7 @@ Resp: Aliud est temeraria præsumptio, aliud fiducialis certitudo. Præsumptio r
 XXIV. Et ita percurrimus hactenus omnia illa Argumenta, quæ Bellarminus pro asserendo incertitudinis profano dogmate adduxit, quibus sufficienter solutis, finem tùm huic disputationi, tùm toti collegio Anthropologico imponimus; gratias agentes Altissimo procumini S. sancti adiutorio, & eundem Venerati supplices, vt sacrosanctæ doctrinæ depositum conseruet; in illa nos confirmet, & contrà quæsuis aduersariorum molitiones potenter adstruat; quo nomen eius inter nos sanctificetur, regnum adueniat, & voluntas fiat, vt in cælis ab Ecclesia triumphante, sic à nobis in Ecclesia militante; adeoque semper certissimos & maneamus de viâ scripturæ, per quam eundum, de viâ fidei, in qua pergendum, de viâ salutis, ad quam vnicè tendendum; & perpetuò suspiramus. Ipsi soli benedicto & sapienti Deo, sit honor, & virtus, & gloria, & benedictio, nullis seculis terminanda, AMEN.
 
 
-### Disputation X. On Bellarmine's Arguments against the Certainty of Grace: The End
+### The End
 
 THE END.
 

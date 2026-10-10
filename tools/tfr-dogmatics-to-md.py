@@ -38,7 +38,8 @@ Several slugs (a work's volumes) make one file, one work per slug unless --one-w
   --rename [VOL:]PAGE=TITLE  a locus's title, where the contents garble it
                        (VOL: in that volume only, counting the slugs from 1)
 
-Hutter, Quenstedt, Calov, Hollaz, Baier, Meisner and Musaeus, as Loci ships them:
+Hutter, Quenstedt, Calov, Hollaz, Baier, Meisner (the Anthropologia and the Christologia) and Musaeus,
+as Loci ships them:
 
   python3 tools/tfr-dogmatics-to-md.py "resources/dogmatics/Hutter Loci Communes.md" leonhard-hutter-loci-communes-theologici --title "Loci Communes Theologici" \\
     --book "136=Topic II. Concerning the Person, or the two Natures of Christ the Savior" \\
@@ -182,6 +183,14 @@ Downloads are cached in tools/sources/tfr/ (not committed).
     --rename "3:487=Disputation VIII. On the Papist Arguments against Justification by Faith Alone" \\
     --rename "3:548=Disputation IX. On the Certainty of Justification, or of the Remission of Sins" \\
     --rename "3:607=Disputation X. On Bellarmine's Arguments against the Certainty of Grace"
+
+  python3 tools/tfr-dogmatics-to-md.py "resources/dogmatics/Meisner Christologia Sacra.md" balthasar-meisner-christologia-sacra \\
+    --title "Christologia Sacra" --open-titles --drop-running-heads --end 9999 \\
+    --section-match '(?!x)x' \\
+    --book "307=Thirty-sixth Disputation, On the PASSION OF OUR REDEEMER JESUS CHRIST" \\
+    --rename "81=Tenth Disputation, On the Communication of the Hypostasis" \\
+    --rename "435=Fiftieth and Last Disputation. A Synopsis of the Whole Article on the Person, Life and Office of Christ" \\
+    --rename "353=Forty-first Disputation. On the Glorious Resurrection of Christ"
 
   python3 tools/tfr-dogmatics-to-md.py "resources/dogmatics/Musaeus Introductio in Theologiam.md" johannes-musaeus-de-theologia-revelata \\
     --title "Introductio in Theologiam" --any-depth --open-titles --drop-running-heads \\
@@ -358,7 +367,7 @@ def split_long(title, prefix, body, open_titles=False):
     its own headings into parts of a few pages, each titled by the prefix and its first heading."""
     size = lambda bs: sum(len(b[2]) + len(b[3]) for b in bs)
     if size(body) <= LONG:
-        return [(title, body)]
+        return name_bare([(title, body)], prefix, open_titles)
     parts = [[title, []]]
     for b in body:
         if b[1] == "head" and size(parts[-1][1]) >= LONG / 4 and len(words(b[2])) >= 1:
@@ -385,12 +394,25 @@ def split_long(title, prefix, body, open_titles=False):
             else:
                 t = t if t.endswith("(continued)") else f"{t} (continued)"
         out.append((t, bs))
-    if open_titles:
-        # A part headed only by its thesis's number ("XII.") is named by the thesis's words as well.
-        for k, (t, bs) in enumerate(out):
-            num = t[len(prefix) + 2:] if t.startswith(f"{prefix}: ") else ""
-            if re.fullmatch(r"(?:[IVXLC]+|\d+)\.?(?:\s+(?:[IVXLC]+|\d+)\.?)*", num):
-                out[k] = (f"{prefix}: {num.split()[0].rstrip('.')}. {opening(bs)}", bs)
+    return name_bare(out, prefix, open_titles)
+
+
+BARE = re.compile(r"(?:(?:chap(?:ter)?|caput|cap|member|membrum|section|sectio)\.?\s+)?(?:[IVXLC]+|\d+)\.?"
+                  r"(?:\s+(?:[IVXLC]+|\d+)\.?)*", re.I)
+
+
+def name_bare(parts, prefix, open_titles):
+    """With --open-titles, a part titled only by a number ("XII.", "Chapter II") is named by its
+    opening words as well."""
+    if not open_titles:
+        return parts
+    out = []
+    for t, bs in parts:
+        head, _, own = t.rpartition(": ")
+        if BARE.fullmatch(own.strip()):
+            named = f"{own.strip().rstrip('.')}. {opening(bs)}"
+            t = f"{head}: {named}" if head and head.strip(" .") != own.strip(" .") else named
+        out.append((t, bs))
     return out
 
 
@@ -542,6 +564,8 @@ def main():
                 # A long opening, too, is cut: its first part is the locus's introduction.
                 for k_, (sub, part) in enumerate(split_long(title, title, body, args.open_titles)):
                     if k_:
+                        if args.open_titles and sub.startswith(f"{title}: "):
+                            sub = sub[len(title) + 2:]  # the locus is shown already; its parts by their own words
                         out.append(f"\n### {sub}\n")
                         n_sections += 1
                     text = section_text(part)
