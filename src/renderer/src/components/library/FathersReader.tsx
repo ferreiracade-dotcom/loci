@@ -180,7 +180,7 @@ export function FathersReader({
     // words), whitespace collapsed.
     const frag = range.cloneContents()
     frag.querySelectorAll('sup.fn').forEach((n) => n.remove())
-    const picked = (frag.textContent ?? '').replace(/s+/g, ' ').trim()
+    const picked = (frag.textContent ?? '').replace(/\s+/g, ' ').trim()
     if (!picked) {
       setHlSel(null)
       return
