@@ -8,8 +8,8 @@ import { findBookmark, isBookmarkable } from '../../store/bookmarks'
 import { api } from '../../lib/api'
 import { tabBreadcrumb, tabDef, tabLocationText, tabTitle } from './tabRegistry'
 import type { TitleContext } from './tabRegistry'
-import { buildSuggestions } from './omnibox'
-import type { Suggestion } from './omnibox'
+import { buildSuggestions } from './omniboxSuggest'
+import type { Suggestion } from './omniboxSuggest'
 import { runOmniAction } from './openViews'
 
 /** Ctrl+L (from the shortcut hook) asks the omnibox to take focus. */

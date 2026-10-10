@@ -4,7 +4,7 @@ import { api } from '../../lib/api'
 import { bocDocument, pickBocSection } from '@shared/bookOfConcord'
 import { parseReference } from '@shared/scriptureRef'
 import { commentaryStartContent, dogmaticsStartContent, fathersStartContent } from '../../lib/readerStart'
-import type { OmniAction } from './omnibox'
+import type { OmniAction } from './omniboxSuggest'
 
 /** Where the Bible was last read (JHN 1 by default), as tab content. */
 export async function lastBibleContent(): Promise<TabContent> {

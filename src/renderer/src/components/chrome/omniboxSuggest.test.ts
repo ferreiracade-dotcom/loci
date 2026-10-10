@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { buildSuggestions, matchScore } from './omnibox'
-import type { OmniData } from './omnibox'
+import { buildSuggestions, matchScore } from './omniboxSuggest'
+import type { OmniData } from './omniboxSuggest'
 
 const data: OmniData = {
   tabs: [
