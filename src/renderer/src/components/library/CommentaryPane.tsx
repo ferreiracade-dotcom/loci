@@ -4,9 +4,7 @@ import {
   ChevronRight,
   PanelLeftClose,
   PanelLeftOpen,
-  Replace,
   Settings2,
-  X,
   Copy,
   Check,
   Quote,
@@ -243,15 +241,7 @@ function AllCommentaries({
  * commentary, then a book and chapter, and read its comments verse by verse. The verse-click
  * lookup in the reference bar is separate and unchanged; this is for reading straight through.
  */
-export function CommentaryPane({
-  tab,
-  onClose,
-  onReplace
-}: {
-  tab: Tab
-  onClose?: () => void
-  onReplace?: () => void
-}) {
+export function CommentaryPane({ tab }: { tab: Tab }) {
   const setTabContent = useStore((s) => s.setTabContent)
   const tabs = useStore((s) => s.tabs)
   const focusTab = useStore((s) => s.focusTab)
@@ -535,16 +525,6 @@ export function CommentaryPane({
           <button className="rail-btn" title="Manage commentaries" onClick={() => setManagerOpen(true)}>
             <Settings2 size={16} />
           </button>
-          {onReplace && (
-            <button className="rail-btn" title="Change content" onClick={onReplace}>
-              <Replace size={16} />
-            </button>
-          )}
-          {onClose && (
-            <button className="rail-btn" title="Close pane" onClick={onClose}>
-              <X size={16} />
-            </button>
-          )}
         </div>
       ) : (
         <div className="sv-nav">
@@ -552,19 +532,9 @@ export function CommentaryPane({
             <div className="sv-nav-bar">
               <span className="sv-nav-title">Commentary</span>
               {manageButton}
-              {onReplace && (
-                <button className="icon-btn" title="Change content" onClick={onReplace}>
-                  <Replace size={15} />
-                </button>
-              )}
               <button className="icon-btn" title="Hide books" onClick={() => toggleNav(true)}>
                 <PanelLeftClose size={15} />
               </button>
-              {onClose && (
-                <button className="icon-btn" title="Close pane" onClick={onClose}>
-                  <X size={15} />
-                </button>
-              )}
             </div>
             {sources && sources.length > 0 && (
               <select

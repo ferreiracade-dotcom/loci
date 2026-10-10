@@ -95,21 +95,11 @@ export function PaneFrame({
     )
   } else if (tab?.kind === 'commentary' && tab.book && tab.chapter != null) {
     body = (
-      <CommentaryPane
-        key={tab.id}
-        tab={tab}
-        onClose={() => closeTab(tab.id)}
-        onReplace={() => resetTabToPicker(tab.id)}
-      />
+      <CommentaryPane key={tab.id} tab={tab} />
     )
   } else if (tab?.kind === 'dogmatics') {
     body = (
-      <DogmaticsPane
-        key={tab.id}
-        tab={tab}
-        onClose={() => closeTab(tab.id)}
-        onReplace={() => resetTabToPicker(tab.id)}
-      />
+      <DogmaticsPane key={tab.id} tab={tab} />
     )
   } else if (tab?.kind === 'picker') {
     body = (

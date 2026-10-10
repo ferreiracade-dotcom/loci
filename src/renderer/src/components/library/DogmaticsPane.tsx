@@ -4,8 +4,6 @@ import {
   ChevronRight,
   PanelLeftClose,
   PanelLeftOpen,
-  Replace,
-  X,
   Copy,
   Check,
   Quote,
@@ -177,15 +175,7 @@ function TopicOverview({
  * of its books, and read it section by section. Or pick a topic (Baptism, Justification…) and
  * read every work's treatment of it, one after another.
  */
-export function DogmaticsPane({
-  tab,
-  onClose,
-  onReplace
-}: {
-  tab: Tab
-  onClose?: () => void
-  onReplace?: () => void
-}) {
+export function DogmaticsPane({ tab }: { tab: Tab }) {
   const setTabContent = useStore((s) => s.setTabContent)
   const bumpReload = useStore((s) => s.bumpReload)
 
@@ -449,35 +439,15 @@ export function DogmaticsPane({
           <button className="rail-btn" title="Show books" onClick={() => toggleNav(false)}>
             <PanelLeftOpen size={16} />
           </button>
-          {onReplace && (
-            <button className="rail-btn" title="Change content" onClick={onReplace}>
-              <Replace size={16} />
-            </button>
-          )}
-          {onClose && (
-            <button className="rail-btn" title="Close pane" onClick={onClose}>
-              <X size={16} />
-            </button>
-          )}
         </div>
       ) : (
         <div className="sv-nav">
           <div className="sv-nav-top">
             <div className="sv-nav-bar">
               <span className="sv-nav-title">Dogmatics</span>
-              {onReplace && (
-                <button className="icon-btn" title="Change content" onClick={onReplace}>
-                  <Replace size={15} />
-                </button>
-              )}
               <button className="icon-btn" title="Hide books" onClick={() => toggleNav(true)}>
                 <PanelLeftClose size={15} />
               </button>
-              {onClose && (
-                <button className="icon-btn" title="Close pane" onClick={onClose}>
-                  <X size={15} />
-                </button>
-              )}
             </div>
             <div className="dg-mode">
               <button className={navMode === 'works' ? 'active' : ''} onClick={() => setNavMode('works')}>
