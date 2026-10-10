@@ -492,7 +492,7 @@ export const FATHERS_AUTHOR_OVERRIDES: Record<string, string | null> = {
   'anf07:xi': null, // Nicene Creed
   'anf07:xii': null, // Early Liturgies
   'anf08:iii': null, // Testaments of the Twelve Patriarchs
-  'anf08:iv': null, // Excerpts of Theodotus
+  'anf08:iv': 'clement_alex', // Excerpts of Theodotus: Clement of Alexandria's notes on a Valentinian teacher
   'anf08:vii': null, // Apocrypha of the New Testament
   'anf08:viii': null, // The Decretals
   'anf08:ix': null, // Memoirs of Edessa and other Syriac documents
@@ -548,10 +548,7 @@ export const FATHERS_NON_AUTHOR_IDS: ReadonlySet<string> = new Set([
   'appendix',
   'title_page',
   'title_pages',
-  'second_title_page',
-  'rutherford_an', // translator of The Passion of the Scillitan Martyrs
-  'zosimus', // The Narrative of Zosimus and the Testament of Abraham are anonymous apocrypha
-  'theodotus' // Excerpts of Theodotus: Clement's notes on a Valentinian Gnostic, not a Father's own work
+  'second_title_page'
 ])
 
 /** The authorID a section is stored under: the per-div1 override if there is one, else what the
