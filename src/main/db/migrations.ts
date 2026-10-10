@@ -168,6 +168,16 @@ function addFathersCitation(db: Database.Database): void {
   if (!have.has('fathers_citation')) db.exec('ALTER TABLE quotes ADD COLUMN fathers_citation TEXT')
 }
 
+/** Books vs articles (version 25; idempotent). `kind` is derived from the file's folder on every
+ *  library sync; the article columns are only filled for kind = 'article'. */
+function addBookKindAndArticleFields(db: Database.Database): void {
+  const have = new Set((db.prepare('PRAGMA table_info(books)').all() as { name: string }[]).map((c) => c.name))
+  if (!have.has('kind')) db.exec("ALTER TABLE books ADD COLUMN kind TEXT NOT NULL DEFAULT 'book'")
+  for (const col of ['journal', 'volume', 'issue', 'pages', 'doi'] as const) {
+    if (!have.has(col)) db.exec(`ALTER TABLE books ADD COLUMN ${col} TEXT`)
+  }
+}
+
 // Append new migrations here; never edit a shipped one. The index is rebuildable
 // from the vault, so destructive forward migrations are acceptable when needed.
 const migrations: Migration[] = [
@@ -629,6 +639,11 @@ const migrations: Migration[] = [
       createFathers(db)
       addFathersCitation(db)
     }
+  },
+  {
+    version: 25,
+    name: 'books-kind-and-article-fields',
+    up: (db) => addBookKindAndArticleFields(db)
   }
 ]
 

@@ -26,6 +26,7 @@ import {
 } from './sidecar'
 import type {
   Book,
+  BookKind,
   BookUpdate,
   ImportProgress,
   ImportResult,
@@ -59,6 +60,12 @@ interface BookRow {
   date_added: number
   last_opened: number | null
   indexed: number
+  kind: string
+  journal: string | null
+  volume: string | null
+  issue: string | null
+  pages: string | null
+  doi: string | null
 }
 
 const INVALID_FILENAME = /[:/\\?*"<>|]/g
@@ -268,7 +275,13 @@ function rowToBook(
     lastOpened: r.last_opened,
     indexed: !!r.indexed,
     shelfIds,
-    tags
+    tags,
+    kind: (r.kind === 'article' ? 'article' : 'book') satisfies BookKind,
+    journal: r.journal,
+    volume: r.volume,
+    issue: r.issue,
+    pages: r.pages,
+    doi: r.doi
   }
 }
 
@@ -1164,7 +1177,12 @@ export function updateBook(id: string, patch: BookUpdate): void {
     city: 'city',
     genre: 'genre',
     status: 'status',
-    pageOffset: 'page_offset'
+    pageOffset: 'page_offset',
+    journal: 'journal',
+    volume: 'volume',
+    issue: 'issue',
+    pages: 'pages',
+    doi: 'doi'
   }
   const sets: string[] = []
   const params: Record<string, string | number | null> = { id }

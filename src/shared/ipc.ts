@@ -500,6 +500,9 @@ export interface Tag {
   name: string
 }
 
+/** Whether a library item is a book or a journal article (the folder it lives in decides). */
+export type BookKind = 'book' | 'article'
+
 export interface Book {
   id: string
   title: string
@@ -522,6 +525,12 @@ export interface Book {
   indexed: boolean
   shelfIds: string[]
   tags: string[]
+  kind: BookKind
+  journal: string | null
+  volume: string | null
+  issue: string | null
+  pages: string | null
+  doi: string | null
 }
 
 export interface BookUpdate {
@@ -536,6 +545,11 @@ export interface BookUpdate {
   genre?: string | null
   status?: ReadingStatus
   pageOffset?: number
+  journal?: string | null
+  volume?: string | null
+  issue?: string | null
+  pages?: string | null
+  doi?: string | null
 }
 
 export interface ImportResult {

@@ -35,6 +35,11 @@ interface SideRow {
   cover_path: string | null
   pdf_path: string | null
   local_path: string | null
+  journal: string | null
+  volume: string | null
+  issue: string | null
+  pages: string | null
+  doi: string | null
 }
 
 export interface SidecarData {
@@ -50,6 +55,11 @@ export interface SidecarData {
   status?: string
   pageOffset?: number
   tags?: string[]
+  journal?: string | null
+  volume?: string | null
+  issue?: string | null
+  pages?: string | null
+  doi?: string | null
   /** Absolute path to the sidecar cover image, if one exists. */
   coverPath: string | null
 }
@@ -102,7 +112,7 @@ export function writeSidecarForBook(id: string): void {
   const r = getDb()
     .prepare(
       `SELECT id, title, author, series, series_number, series_abbr, year, publisher, city,
-              status, page_offset, cover_path, pdf_path, local_path
+              status, page_offset, cover_path, pdf_path, local_path, journal, volume, issue, pages, doi
        FROM books WHERE id = ?`
     )
     .get(id) as SideRow | undefined
@@ -120,6 +130,11 @@ export function writeSidecarForBook(id: string): void {
     city: r.city,
     status: r.status,
     pageOffset: r.page_offset,
+    journal: r.journal,
+    volume: r.volume,
+    issue: r.issue,
+    pages: r.pages,
+    doi: r.doi,
     tags: tagsFor(r.id)
   }
   const json = JSON.stringify(meta, null, 2)
