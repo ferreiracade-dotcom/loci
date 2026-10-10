@@ -32,7 +32,7 @@ function tabTitle(
     return { icon: <BookMarked size={13} />, label: doc?.abbreviation ?? tab.documentCode ?? 'Confessions' }
   }
   if (tab.kind === 'fathers') {
-    // Volume code only: the tab strip has no section titles, and the author page is just "Fathers".
+    // Volume code only: the tab strip has no section titles, and the author page is "Church Fathers".
     const label = tab.fathersVolume && !tab.fathersAuthor ? fathersVolumeLabel(tab.fathersVolume) : 'Church Fathers'
     return { icon: <Landmark size={13} />, label }
   }

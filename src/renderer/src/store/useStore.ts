@@ -377,6 +377,22 @@ export const useStore = create<Store>((set, get) => {
   let indexCancel = false
   let bibleIndexCancel = false
 
+  // Shared by navigateFathers / openFathersAuthor: the focused tab if it is already a Fathers tab,
+  // else any existing Fathers tab, else a new one.
+  const routeFathers = (content: TabContent): void => {
+    const { activePaneId } = get()
+    const current = activePaneId
+      ? activeTab({ tabs: get().tabs, paneOrder: get().paneOrder, activePaneId }, activePaneId)
+      : undefined
+    const existing = current?.kind === 'fathers' ? current : get().tabs.find((t) => t.kind === 'fathers')
+    if (existing) {
+      get().setTabContent(existing.id, content)
+      get().focusTab(existing.id)
+    } else {
+      get().openTab(content)
+    }
+  }
+
   // Coalesce background "library changed" events into at most one refresh per 1.5s.
   const scheduleRefresh = (): void => {
     const since = Date.now() - lastRefresh
@@ -1146,35 +1162,13 @@ export const useStore = create<Store>((set, get) => {
     // In-place navigation, like navigateBoc: the focused tab if it is already a Fathers tab,
     // else any existing Fathers tab (so a catena click does not pile up tabs), else a new one.
     navigateFathers: (volumeCode, sectionId) => {
-      const { activePaneId } = get()
-      const current = activePaneId
-        ? activeTab({ tabs: get().tabs, paneOrder: get().paneOrder, activePaneId }, activePaneId)
-        : undefined
-      const existing = current?.kind === 'fathers' ? current : get().tabs.find((t) => t.kind === 'fathers')
-      const content: TabContent = { kind: 'fathers', fathersVolume: volumeCode, fathersSection: sectionId }
-      if (existing) {
-        get().setTabContent(existing.id, content)
-        get().focusTab(existing.id)
-      } else {
-        get().openTab(content)
-      }
+      routeFathers({ kind: 'fathers', fathersVolume: volumeCode, fathersSection: sectionId })
       get().saveLayout({ activeLeftView: 'reading' })
       void api.setSession('lastFathers', JSON.stringify({ volumeCode, sectionId }))
     },
 
     openFathersAuthor: (authorId) => {
-      const { activePaneId } = get()
-      const current = activePaneId
-        ? activeTab({ tabs: get().tabs, paneOrder: get().paneOrder, activePaneId }, activePaneId)
-        : undefined
-      const existing = current?.kind === 'fathers' ? current : get().tabs.find((t) => t.kind === 'fathers')
-      const content: TabContent = { kind: 'fathers', fathersAuthor: authorId }
-      if (existing) {
-        get().setTabContent(existing.id, content)
-        get().focusTab(existing.id)
-      } else {
-        get().openTab(content)
-      }
+      routeFathers({ kind: 'fathers', fathersAuthor: authorId })
       get().saveLayout({ activeLeftView: 'reading' })
     },
 

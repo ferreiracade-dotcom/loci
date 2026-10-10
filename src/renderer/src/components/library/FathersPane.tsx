@@ -40,15 +40,22 @@ export function FathersPane({ tab }: { tab: Tab }) {
   const [sectionsByVolume, setSectionsByVolume] = useState<Record<string, FathersSectionSummary[]>>({})
   const [collapsedAuthors, setCollapsedAuthors] = useState<Set<string>>(new Set())
 
+  const [loadError, setLoadError] = useState<string | null>(null)
   const signature = useRef('')
   const refresh = useCallback(async () => {
-    const [v, a] = await Promise.all([api.listFathersVolumes(), api.listFathersAuthors()])
-    // A re-indexed volume has a different section list: drop the cached trees when anything moved.
-    const sig = JSON.stringify(v.map((x) => [x.code, x.status, x.sectionCount]))
-    if (signature.current && signature.current !== sig) setSectionsByVolume({})
-    signature.current = sig
-    setVolumes(v)
-    setAuthors(a)
+    try {
+      const [v, a] = await Promise.all([api.listFathersVolumes(), api.listFathersAuthors()])
+      // A re-indexed volume has a different section list: drop the cached trees when anything moved.
+      const sig = JSON.stringify(v.map((x) => [x.code, x.status, x.sectionCount]))
+      if (signature.current && signature.current !== sig) setSectionsByVolume({})
+      signature.current = sig
+      setVolumes(v)
+      setAuthors(a)
+      setLoadError(null)
+    } catch (err) {
+      // The poll keeps retrying while the list is empty; show why instead of loading forever.
+      setLoadError(err instanceof Error ? err.message : String(err))
+    }
   }, [])
 
   useEffect(() => {
@@ -104,7 +111,9 @@ export function FathersPane({ tab }: { tab: Tab }) {
 
   const volumesNav = (
     <div className="sv-testament">
-      {volumes === null ? (
+      {volumes === null && loadError ? (
+        <div className="quotes-empty">Could not load the Church Fathers list: {loadError}</div>
+      ) : volumes === null ? (
         <div className="sr-loading" style={{ height: 'auto', padding: '6px 8px' }}>
           Loading…
         </div>
@@ -191,7 +200,9 @@ export function FathersPane({ tab }: { tab: Tab }) {
 
   const authorsNav = (
     <div className="sv-testament">
-      {authors === null ? (
+      {authors === null && loadError ? (
+        <div className="quotes-empty">Could not load the Church Fathers list: {loadError}</div>
+      ) : authors === null ? (
         <div className="sr-loading" style={{ height: 'auto', padding: '6px 8px' }}>
           Loading…
         </div>
