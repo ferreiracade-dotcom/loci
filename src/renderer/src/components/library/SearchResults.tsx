@@ -172,6 +172,9 @@ export function SearchResults({
               {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
               <GroupThumb bookId={g.bookId} kind={g.kind} books={books} />
               <span className="hit-group-title">{g.title}</span>
+              {g.bookId && books.find((b) => b.id === g.bookId)?.kind === 'article' && (
+                <span className="hit-group-kind">Article</span>
+              )}
               <span className="hit-group-count">{g.items.length}</span>
             </button>
             {open && (

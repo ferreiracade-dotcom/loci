@@ -1,5 +1,7 @@
 import { bookByCode } from '@shared/scriptureRef'
 import { bocDocument } from '@shared/bookOfConcord'
+import { KIND_LABEL } from '@shared/libraryKind'
+import type { BookKind } from '@shared/ipc'
 import { contentKey, migrateLocation } from '../../store/workspace'
 import type { TabContent, TabKind } from '../../store/workspace'
 
@@ -28,7 +30,15 @@ export interface TileSections {
 export interface TileInput {
   /** History entries, newest first (as `api.listHistory` returns them). */
   history: { title: string; location: string; visitedAt: string }[]
-  books: { id: string; title: string; lastPage: number; lastOpened: number | null; pageOffset: number; status: string }[]
+  books: {
+    id: string
+    title: string
+    lastPage: number
+    lastOpened: number | null
+    pageOffset: number
+    status: string
+    kind?: BookKind
+  }[]
   notes: { path: string; title: string }[]
   /** Where the Bible / Confessions were last read (session state), if ever. */
   lastBible: { book: string; chapter: number } | null
@@ -159,7 +169,8 @@ export function buildTiles(input: TileInput): TileSections {
     if (!RECENT_KINDS.has(c.kind) || taken.has(key) || recent.length >= TILE_LIMITS.recent) continue
     if (c.kind === 'pdf' && !bookById.has(c.bookId)) continue
     const title = c.kind === 'pdf' ? (bookById.get(c.bookId)?.title ?? v.title) : v.title
-    const subtitle = RECENT_SUBTITLES[c.kind] ?? 'Quotes'
+    const bookKind = c.kind === 'pdf' ? bookById.get(c.bookId)?.kind : undefined
+    const subtitle = bookKind ? KIND_LABEL[bookKind] : (RECENT_SUBTITLES[c.kind] ?? 'Quotes')
     tile = { key, content: c, title, subtitle, kind: c.kind, at: v.at }
     if (!isHidden(tile, input.hidden)) recent.push(tile)
   }

@@ -13,7 +13,7 @@ export function CommentaryReviewQueue({
   onClose
 }: {
   sourceId: string
-  /** The source's linked library book, for "View in PDF" — null if unlinked. */
+  /** The source's linked library book, for "Open in Library" — null if unlinked. */
   bookId: string | null
   onClose: () => void
 }) {
@@ -98,7 +98,7 @@ function OpenPdfButton({ bookId, page }: { bookId: string | null; page: number }
   if (!bookId) return null
   return (
     <button className="btn btn-sm" onClick={() => openBookAt(bookId, page)}>
-      <ExternalLink size={13} /> View in PDF
+      <ExternalLink size={13} /> Open in Library
     </button>
   )
 }

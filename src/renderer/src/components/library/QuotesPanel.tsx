@@ -293,7 +293,7 @@ export function QuoteCard({
             <div className="quote-cite">
               {renderCitation(citation)}
               {verifyPage && (
-                <span className="cite-verify" title="No page offset set for this book — the printed page may differ from the PDF page. Set it in Book Info.">
+                <span className="cite-verify" title="No page offset set for this book — the printed page may differ from the file’s page. Set it in the info panel.">
                   {' '}
                   · verify page
                 </span>
@@ -480,7 +480,7 @@ export function QuotesPanel() {
   if (booksWithQuotes.length === 0) {
     return (
       <div className="quotes-empty">
-        Select text in the PDF and click <b>Add quote</b> to capture it here. Each quote becomes a
+        Select text while reading and click <b>Add quote</b> to capture it here. Each quote becomes a
         bubble you can tag, comment on, copy, or drag into a note.
       </div>
     )

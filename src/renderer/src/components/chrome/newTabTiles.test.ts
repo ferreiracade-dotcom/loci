@@ -71,6 +71,17 @@ describe('buildTiles', () => {
     expect(recent).toHaveLength(TILE_LIMITS.recent)
   })
 
+  it('labels a revisited library item by its kind', () => {
+    const { recent } = buildTiles({
+      ...base,
+      history: [visit({ kind: 'pdf', bookId: 'a1' }, 'On Grace', '2026-10-09T10:00:00Z')],
+      books: [{ id: 'a1', title: 'On Grace', lastPage: 1, lastOpened: null, pageOffset: 0, status: 'unread', kind: 'article' }],
+      lastBible: null,
+      lastBoc: null
+    })
+    expect(recent.map((t) => `${t.title}|${t.subtitle}`)).toEqual(['On Grace|Article'])
+  })
+
   it('works with no history or last-read places', () => {
     const t = buildTiles({ ...base, history: [], lastBible: null, lastBoc: null, books: [] })
     expect(t).toEqual({ continueReading: [], recent: [], recentNotes: [] })

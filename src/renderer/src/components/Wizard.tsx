@@ -99,7 +99,7 @@ export function Wizard() {
           {step === 0 && (
             <FolderRow
               label="Vault folder"
-              hint="Where your notes, highlights, pages, and books live and sync. A Google Drive for Desktop folder is recommended so your study follows you across machines. Drop a PDF into the vault’s Books folder and Loci adds it automatically."
+              hint="Where your notes, highlights, pages, and books live and sync. A Google Drive for Desktop folder is recommended so your study follows you across machines. Drop a book into the vault’s Books folder (or an article into its Articles folder) and Loci adds it automatically."
               value={vaultPath}
               onPick={() => pick(setVaultPath)}
             />
@@ -115,7 +115,7 @@ export function Wizard() {
                 <div>
                   <div className="set-label">Keep a local copy of books on this device</div>
                   <p className="set-help">
-                    <strong>On:</strong> imported PDFs are saved both to this machine and the Drive
+                    <strong>On:</strong> imported books and articles are saved both to this machine and the Drive
                     vault, and Drive-only books download to disk so your whole library works offline.{' '}
                     <strong>Off:</strong> books live on Drive and are cached only when you open them —
                     lighter on disk, good for a phone or a small drive. You can change this anytime in
@@ -124,8 +124,8 @@ export function Wizard() {
                 </div>
               </label>
               <FolderRow
-                label="Existing local PDF folder (optional)"
-                hint="Already keep PDFs on this PC? Point Loci at that folder and it reads those files directly — fast, no copying. Books here are added automatically and mirrored to your Drive vault."
+                label="Existing library folder (optional)"
+                hint="Already keep books and articles on this PC? Point Loci at that folder and it reads those files directly — fast, no copying. Files here are added automatically and mirrored to your Drive vault; anything inside a folder named “Articles” is filed as an article. (They are still PDF files.)"
                 value={primaryLibraryPath}
                 onPick={() => pick(setPrimaryLibraryPath)}
                 onClear={() => setPrimaryLibraryPath(null)}

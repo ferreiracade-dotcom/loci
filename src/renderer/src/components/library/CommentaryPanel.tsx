@@ -106,8 +106,8 @@ function CommentaryExcerpt({ e }: { e: CommentaryExcerptVM }) {
         {/* Only PDF-sourced excerpts have a book + page to jump to. Markdown sources (EPUB/
             scraped commentary) carry the full comment inline, so there's nothing to open. */}
         {e.onViewInPdf && (
-          <button className="commentary-excerpt-act commentary-view-pdf" title="View in PDF" onClick={e.onViewInPdf}>
-            <ExternalLink size={12} /> View in PDF
+          <button className="commentary-excerpt-act commentary-view-pdf" title="Open in Library" onClick={e.onViewInPdf}>
+            <ExternalLink size={12} /> Open in Library
           </button>
         )}
       </div>

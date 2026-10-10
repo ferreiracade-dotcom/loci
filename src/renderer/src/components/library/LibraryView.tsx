@@ -389,7 +389,7 @@ export function LibraryView() {
                   onClick={() => changeTab(t.id)}
                 >
                   <Icon size={14} /> {t.label}
-                  {(t.id === 'books' || t.id === 'articles') && <span className="chip-n"> {tabCounts[t.id]}</span>}
+                  {(t.id === 'books' || t.id === 'articles') && <span className="chip-n">{tabCounts[t.id]}</span>}
                 </button>
               )
             })}

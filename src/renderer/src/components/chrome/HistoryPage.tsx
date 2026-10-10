@@ -52,6 +52,7 @@ function deviceRows(d: DeviceTabs, q: string): { title: string; c: TabContent; g
 /** Chrome's "Tabs from other devices": each other computer's open tabs, by device. */
 function OtherDevices({ q }: { q: string }) {
   const openTab = useStore((s) => s.openTab)
+  const books = useStore((s) => s.books)
   const devices = useStore((s) => s.remoteDevices)
   const shown = devices.map((d) => ({ d, rows: deviceRows(d, q) })).filter((x) => x.rows.length > 0)
   if (shown.length === 0) return null
@@ -86,7 +87,7 @@ function OtherDevices({ q }: { q: string }) {
                     {group}
                   </span>
                 )}
-                <span className="history-sub">{def.subtitle(asTab)}</span>
+                <span className="history-sub">{def.subtitle(asTab, { books })}</span>
               </button>
             )
           })}
@@ -172,7 +173,7 @@ export function HistoryPage() {
                 </span>
                 <Icon size={15} />
                 <span className="history-title">{e.title}</span>
-                <span className="history-sub">{def.subtitle(asTab)}</span>
+                <span className="history-sub">{def.subtitle(asTab, { books })}</span>
               </button>
             )
           })}

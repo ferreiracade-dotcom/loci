@@ -24,7 +24,7 @@ const WIDE_RIGHT_TABS = new Set(['books', 'texts', 'commentary'])
 
 /**
  * The window body under the toolbar: tab content, plus Chrome's side panel (the reference
- * panel, toggled from the toolbar): a header with a dropdown to pick Quotes / Notes / Books /
+ * panel, toggled from the toolbar): a header with a dropdown to pick Quotes / Notes / Library /
  * Texts / Commentary and a close button.
  */
 export function ThreePanel() {

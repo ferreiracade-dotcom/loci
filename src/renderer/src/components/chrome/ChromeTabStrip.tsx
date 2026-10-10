@@ -406,7 +406,7 @@ function HoverCard({ tabId, left, top, ctx }: { tabId: string; left: number; top
     <div className="ct-hovercard" style={{ left: Math.min(left, window.innerWidth - 270), top }}>
       <b>{tabTitle(tab, ctx)}</b>
       <span>
-        {def.subtitle(tab)}
+        {def.subtitle(tab, ctx)}
         {tab.splitId ? ' · Split view' : ''}
         {tab.pinned ? ' · Pinned' : ''}
         {group ? ` · ${groupName(group)}` : ''}
@@ -516,7 +516,7 @@ function TabSearch({
   const match = (t: Tab): boolean => {
     if (!ql) return true
     const def = tabDef(t.kind)
-    return `${tabTitle(t, ctx)} ${def.subtitle(t)}`.toLowerCase().includes(ql)
+    return `${tabTitle(t, ctx)} ${def.subtitle(t, ctx)}`.toLowerCase().includes(ql)
   }
   const open = sortedTabs(tabs).filter(match)
   const recent = [...closed].reverse().filter((c) => match(c.tab)).slice(0, 5)

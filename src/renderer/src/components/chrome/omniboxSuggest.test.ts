@@ -70,6 +70,22 @@ describe('buildSuggestions', () => {
     expect(buildSuggestions('bible', data).some((s) => s.action.type === 'view')).toBe(true)
   })
 
+  it('hints a book or an article by its kind', () => {
+    const withKinds: OmniData = {
+      ...data,
+      tabs: [],
+      bookmarks: [],
+      notes: [],
+      books: [
+        { id: 'a1', title: 'On Grace', kind: 'article' },
+        { id: 'b9', title: 'On Grace and Free Will', kind: 'book' }
+      ]
+    }
+    const hints = Object.fromEntries(buildSuggestions('on grace', withKinds).map((s) => [s.label, s.hint]))
+    expect(hints['On Grace']).toBe('Article')
+    expect(hints['On Grace and Free Will']).toBe('Book')
+  })
+
   it('needs two characters for title matches', () => {
     expect(kinds('c')).toEqual(['search:Search Loci for “c”'])
   })

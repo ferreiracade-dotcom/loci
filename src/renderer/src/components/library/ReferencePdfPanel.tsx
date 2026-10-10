@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { GripVertical, Search, Replace } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
@@ -31,9 +31,13 @@ export function ReferencePdfPanel() {
     void api.setSession('refPdf', '')
   }
 
+  // Set once a saved item is restored: its own kind wins over the separately saved list choice,
+  // whichever of the two session reads resolves first.
+  const restoredRef = useRef(false)
+
   useEffect(() => {
     void api.getSession('refLibraryKind').then((v) => {
-      if (v === 'book' || v === 'article') setKind(v)
+      if (!restoredRef.current && (v === 'book' || v === 'article')) setKind(v)
     })
   }, [])
 
@@ -42,6 +46,7 @@ export function ReferencePdfPanel() {
     void api.getSession('refPdf').then((id) => {
       const hit = id ? books.find((b) => b.id === id) : undefined
       if (hit) {
+        restoredRef.current = true
         setBookId(hit.id)
         setKind(hit.kind)
         setBrowsing(false)

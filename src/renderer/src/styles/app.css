@@ -2946,6 +2946,15 @@ select.field {
   border-radius: 999px;
   padding: 1px 9px;
 }
+
+.hit-group-kind {
+  font-size: 10px;
+  color: var(--muted);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 0 6px;
+  margin-left: 6px;
+}
 .hit-children {
   display: flex;
   flex-direction: column;

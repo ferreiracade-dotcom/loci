@@ -1,6 +1,8 @@
 import { parseLooseReferences, parseReference, refLabel } from '@shared/scriptureRef'
 import type { ParsedRef } from '@shared/scriptureRef'
 import { bocDocument, parseBocQuery } from '@shared/bookOfConcord'
+import { KIND_LABEL } from '@shared/libraryKind'
+import type { BookKind } from '@shared/ipc'
 import type { PageKind, TabContent, TabKind, TabLocation } from '../../store/workspace'
 
 /** What picking an omnibox suggestion does. */
@@ -28,7 +30,7 @@ export interface OmniData {
   tabs: { id: string; kind: TabKind; title: string }[]
   currentTabId: string | null
   bookmarks: { title: string; location: TabLocation }[]
-  books: { id: string; title: string }[]
+  books: { id: string; title: string; kind?: BookKind }[]
   notes: { path: string; title: string }[]
   /** Translation for parsed Bible references. */
   translation: string
@@ -132,7 +134,7 @@ export function buildSuggestions(query: string, data: OmniData, opts: { searchFi
         suggestion: {
           action: { type: 'open', content: { kind: 'pdf', bookId: b.id } },
           label: b.title,
-          hint: 'Library',
+          hint: b.kind ? KIND_LABEL[b.kind] : 'Library',
           icon: 'pdf'
         } satisfies Suggestion
       })),

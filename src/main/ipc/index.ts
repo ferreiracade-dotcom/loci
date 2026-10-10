@@ -250,7 +250,7 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.relinkBook, async (e, id: string) => {
     const win = BrowserWindow.fromWebContents(e.sender)
     const opts: OpenDialogOptions = {
-      title: 'Locate this book’s PDF',
+      title: 'Locate this file',
       properties: ['openFile'],
       filters: [{ name: 'PDF', extensions: ['pdf'] }]
     }

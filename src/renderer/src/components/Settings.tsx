@@ -138,7 +138,7 @@ export function Settings({ onClose }: { onClose?: () => void } = {}) {
               The folders below are the <strong>Vault</strong> (the master copy, synced to the
               cloud through Google Drive), an optional <strong>Primary library</strong> (a local
               folder to read books from for speed), and the <strong>Local backup</strong> (an
-              on-disk snapshot). Drop a PDF into the Vault or your local library and Loci adds it
+              on-disk snapshot). Drop a book or article into the Vault or your local library and Loci adds it
               automatically and mirrors it to the other side — no import folder needed.
             </p>
 
@@ -154,7 +154,7 @@ export function Settings({ onClose }: { onClose?: () => void } = {}) {
               </div>
               <p className="set-help">
                 The master copy of everything Loci creates — notes, highlights, reading progress,
-                and imported PDFs. Because it lives inside Google Drive, Drive mirrors it across
+                and imported books and articles. Because it lives inside Google Drive, Drive mirrors it across
                 your machines and keeps the off-machine copy. The search index is rebuilt from
                 here, so this folder is the source of truth.
               </p>
@@ -221,7 +221,7 @@ export function Settings({ onClose }: { onClose?: () => void } = {}) {
               <div>
                 <div className="set-label">Keep a local copy of books</div>
                 <p className="set-help">
-                  <strong>On:</strong> imported PDFs are saved to this machine and the Drive vault,
+                  <strong>On:</strong> imported books and articles are saved to this machine and the Drive vault,
                   and turning this on now downloads your Drive-only books to disk so the whole
                   library works offline. <strong>Off:</strong> books live on Drive and are cached
                   only when you open them — lighter on disk, good for a phone or a small drive.

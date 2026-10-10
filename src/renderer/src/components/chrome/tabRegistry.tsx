@@ -18,7 +18,8 @@ import {
   Settings as SettingsIcon
 } from 'lucide-react'
 import type { Tab, TabKind, TabLocation } from '../../store/workspace'
-import type { ProjectItem } from '@shared/ipc'
+import type { BookKind, ProjectItem } from '@shared/ipc'
+import { KIND_LABEL, KIND_PLURAL } from '@shared/libraryKind'
 import { bookByCode } from '@shared/scriptureRef'
 import { bocDocument } from '@shared/bookOfConcord'
 import { dogmaticsTopic } from '@shared/dogmaticsTopics'
@@ -44,7 +45,7 @@ import { BookmarksManager } from './BookmarksManager'
 
 /** What a tab's title may need to look up. */
 export interface TitleContext {
-  books: { id: string; title: string }[]
+  books: { id: string; title: string; kind?: BookKind }[]
   notes: { path: string; title: string }[]
   /** The focused Confessions section's number/label, when the caller has looked it up. */
   bocSection?: { number: string | null; label: string } | null
@@ -67,8 +68,9 @@ export interface TabKindDef {
   icon: LucideIcon
   /** Tab label. */
   title: (tab: Tab, ctx: TitleContext) => string
-  /** Secondary line for hover cards and the History page. */
-  subtitle: (tab: Tab) => string
+  /** Secondary line for hover cards and the History page. `ctx` lets a kind look up details
+   *  (a library tab says Book or Article). */
+  subtitle: (tab: Tab, ctx?: { books: { id: string; kind?: BookKind }[] }) => string
   /** The tab's content, or null when its fields are incomplete (falls back to New Tab). */
   render: (tab: Tab, ctx: RenderContext) => ReactNode | null
   /** Record visits to this kind on the History page. */
@@ -162,10 +164,17 @@ export const TAB_REGISTRY: Record<TabKind, TabKindDef> = {
   pdf: {
     icon: BookOpen,
     title: (tab, ctx) => ctx.books.find((b) => b.id === tab.bookId)?.title ?? 'Document',
-    subtitle: () => 'Library · PDF',
+    subtitle: (tab, ctx) => {
+      const kind = ctx?.books.find((b) => b.id === tab.bookId)?.kind
+      return kind ? `Library · ${KIND_LABEL[kind]}` : 'Library'
+    },
     render: (tab) => (tab.bookId ? <PdfReader bookId={tab.bookId} embedded /> : null),
     recordHistory: true,
-    breadcrumb: (tab, ctx) => ['Library', TAB_REGISTRY.pdf.title(tab, ctx)]
+    breadcrumb: (tab, ctx) => {
+      const kind = ctx.books.find((b) => b.id === tab.bookId)?.kind
+      const title = TAB_REGISTRY.pdf.title(tab, ctx)
+      return kind ? ['Library', KIND_PLURAL[kind], title] : ['Library', title]
+    }
   },
   note: {
     icon: FileText,
