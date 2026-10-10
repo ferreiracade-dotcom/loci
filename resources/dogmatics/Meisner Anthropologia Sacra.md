@@ -17,25 +17,6 @@ Furthermore, Faith and the knowledge of the truth is completed by two things: 1.
 
 God indeed first created man upright, Eccles. 7:30, in His own image, Gen. 1:26, 27, in righteousness and holiness of truth, Eph. 4:24, so that he would not be ashamed, Gen. 1:last, nor be subject to death, Wisd. 2:23, Rom. 3:12, ch. 6:last. But the envious Devil, Wisd. 2:23, seduced the πρωτοπλάσους, Gen. 3, so that we are all conceived in iniquity, Ps. 51:5, are destitute of the glory of God, Rom. 3:23, and are born children of wrath, Eph. 2:3. O miserable lot of man, exclaims Augustine, ch. 31 of the Manual, when he lost that for which he was made! O dire and hard fall that! Alas, what did he lose, and what did he find? What departed, and what remained? He lost the blessedness for which he was made: and he found misery, for which he was not made. That departed, without which nothing is happy; and that remained, which by itself is nothing but miserable. God
 
-Latin:
-
-Serenißimo Electori Saxoniæ à Consilijs secretioribus. DN. CHRISTOPHORO à Loss in Schleiniz/ DN. MARCO GERSTENBERGERO, in Schwerstadt/ Trackendorff & Schiebla/ Dominis & Mecænatibus meis plurimùm honorandis,
-
-S. P. D. Viri Nobilissimi, Mecœnates magni.
-
-VTi Naturæ; ita Scripturæ duo sunt momenta. Ibi primum à Philosophis nominatur forma; secundum formæ proprium: Hic primum à Theologis vocari potest
-
-Præfatio.
-
-Fides, quæ instar formæ; secūdum Chasritas, quæ instar proprij, formam consequentis. In illis tota vis naturæ, in his summa Christianismi consistit. Nam verissimè scripsit Ignatius Ep. 7. τὸ ὅλον πίσις ἡ εἰς θεὸν, καὶ ἀγάπη περὶ τὸν ὁμόφυλον, Totus noster Christianismus nihil est aliud, quam fides in Deum & Charitas in proximum. Ad Fidem spectat γνῶσις ἀληθείας; ad Charitatem πρᾶξις εὐσεβείας. Ibi apprehenditur veritas, hîc exercetur Pietas. Ibi Deus noscitur, hîc colitur. Illud positum in sensu, hoc in actu. Illud sapientiæ, hoc Religionis est. De utroque breuiter Lactantius l. 4. Div. instit. cap. 4. Idem Deus est, qui & intelligi debet, quod est sapientiæ; & honorari, quod est religionis. Sed sapiētia præcedit, religio sequitur. Quia prius est Deum scire, consequens colere. Sic ergo certum manet, quòd duo sint Christianismi generalia capita, nēpè πίσις καὶ ἀγάπη, Verus de Deo sensus, & Rectus in Deū cultus: Breuissimè; Fides vera & vita sincera. Atque hinc duae partes Theologiae oriuntur, quarum altera est περὶ τῶν πιστῶν, altera περὶ τῶν πρακτῶν. Illa exponit credenda, haec facienda. Illa docet Christianos Rectè credere; Haec piè viuere. Vtrumque insinuatur ab A. Iohanne, 1. Epist. 3. v. 23. Hoc est mandatum Dei, vt CREDAMVS in nomine Filij eius Iesu Christi: & DILIGAMVS alij alios. Per πιστεύειν primam per ἀγαπᾷν secundam Theologiae partem innuit.
-
-Porrò autem Fides & cognitio veritatis duobus absoluitur, 1. Notitiâ Dei, 2. Notitiâ Nostri. Nam vt Augustinus scribit in Manuali cap. 26. Quid est cognitio Veritatis? Primò cognoscere Teipsum: Deinde cognoscere Creatorem tuum: vtrumque est summè necesarium, & maximè fructuosum. Si enim Deum nescimus, à summo Bono alieni sumus, & saluari non possumus. Si Nosmetipsos ignoramus, morbum naturae nec agnoscimus, nec sanitatem recuperamus. Hinc meritò è caelo descendisse dicitur illud γνῶθι σεαυτὸν, Nosce teipsum. Et rectè Bern. c. 11. Medit. Notitia peccati initium est salutis. Cognitâ enim infirmitate, & Medicus quæritur ardentius, & medicamen adhibetur lubentius.
-
-Hominem quidem Deus primum condidit rectum, Eccles. 7. v. 30. ad imaginem suam. Gen. 1. v. 26. 27. in iustitia & sanctitate veritatis, Ephes 4. v. 24. ut non erubesceret, Gen. 1. v. vlt. nec morti subiaceret, Sap. 2. v. 23. Rom. 3. v. 12. cap. 6. vers. vlt. Sed inuidus Diabolus, Sap. 2. v. 23. seduxit πρωτοπλάσους, Gen. 3. ut omnes concipiamur in iniquitate, Ps. 51. v. 6. destituamur gloriâ Dei, Rom. 3. v. 23. & nascamur iræ filij, Eph. 2. v. 5. O mifera sors hominis, exclamat August. cap. 31. Manu. cum hoc perdidit, ad quod factus est! O dirus ac durus casus ille! Heu quid perdidit, & quid inuenit? Quid abscessit, & quid remansit? Perdidit beatitudinem, ad quam factus est: & inuenit miseriam, ad quam factus non est. Abscessit, sine quo nihil felix est; & remansit, quod per se nõ nisi miserum est. Deus
-
-
-### Preface
-
 Preface.
 
 but He, who is rich in mercy, Ephes. 2. verf. 4. in turn loved the human race, Iohan. 3. verf. 16. and sent His Son, made of a woman, Galat. 4. verf. 4. that He might redeem those who were under the law, and we might receive the adoption of sons, verf. 5. For the Son of God was made the son of man, that man also might become the Son of God, Irenæus book 3. chap. 11. For God does not desire the death of the wicked, but that he should turn back and live, Ezech. 33. verse 11. and therefore He sent the Son as Savior of the world, 1. Iohan. 4. v. 14. who died for all, 2. Cor. 5. verf. 14. and 15. even for those who perish, Rom. 14. v. 16. 1. Cor. 8. v. 11. which word of grace is preached to all nations, Matth. 28. v. 19. that they may repent, Act. 17. v. 30. and be saved, 1. Tim 2. v. 4. But because many reject grace, and judge themselves unworthy of eternal life, Act. 13. v. 46. hence on the last day certain ones will proceed to the resurrection of judgment. Ioh. 5. v. 29. For it stands, and will stand forever, that unshaken sentence of Christ the Savior: He who believes in
@@ -52,7 +33,31 @@ Preface.
 
 Most noble and supreme patrons, and eternally to be respected, I wished to prefix your most honorable name, so that these might have patrons who would go to defend them. For what can be said or written today that is immune from the bite of all rashly judging censors? But I will fear nothing, encouraged by your protection, but will rather proceed the more eagerly to the subsequent συζητήσεις, and will contribute to common use whatever the grace of the Most High has mercifully bestowed. Furthermore, the stimulus of gratitude has excited me to the same. For I have often experienced your clearly singular benevolence and kindness toward me, though undeserving, so that I frankly confess that I have long been bound to give a sign of a grateful mind. Finally, your zeal, with which you burn for religion, has moved me, as has your love of theological matters, with which you are accustomed to temper the most serious political cares and by the reading of which you are accustomed to refresh yourselves. That therefore you may receive these first fruits with a serene brow, against the malevolent
 
+Preface.
+
+that you may cherish, and furthermore favor my studies, in all ways that I can and ought, and with the greatest [earnestness] I pray. May God keep your Noble and Distinguished Lordships safe for a very long time, and may He command a most happy new year to dawn upon you. Given at Wittenberg, on the day before the Nativity of the Lord, in the year 1612.
+
+Your Noble and Distinguished Lordships.
+
+Most observant.
+
+Balthasar Meisner, Doctor of Theology.
+
 Latin:
+
+Serenißimo Electori Saxoniæ à Consilijs secretioribus. DN. CHRISTOPHORO à Loss in Schleiniz/ DN. MARCO GERSTENBERGERO, in Schwerstadt/ Trackendorff & Schiebla/ Dominis & Mecænatibus meis plurimùm honorandis,
+
+S. P. D. Viri Nobilissimi, Mecœnates magni.
+
+VTi Naturæ; ita Scripturæ duo sunt momenta. Ibi primum à Philosophis nominatur forma; secundum formæ proprium: Hic primum à Theologis vocari potest
+
+Præfatio.
+
+Fides, quæ instar formæ; secūdum Chasritas, quæ instar proprij, formam consequentis. In illis tota vis naturæ, in his summa Christianismi consistit. Nam verissimè scripsit Ignatius Ep. 7. τὸ ὅλον πίσις ἡ εἰς θεὸν, καὶ ἀγάπη περὶ τὸν ὁμόφυλον, Totus noster Christianismus nihil est aliud, quam fides in Deum & Charitas in proximum. Ad Fidem spectat γνῶσις ἀληθείας; ad Charitatem πρᾶξις εὐσεβείας. Ibi apprehenditur veritas, hîc exercetur Pietas. Ibi Deus noscitur, hîc colitur. Illud positum in sensu, hoc in actu. Illud sapientiæ, hoc Religionis est. De utroque breuiter Lactantius l. 4. Div. instit. cap. 4. Idem Deus est, qui & intelligi debet, quod est sapientiæ; & honorari, quod est religionis. Sed sapiētia præcedit, religio sequitur. Quia prius est Deum scire, consequens colere. Sic ergo certum manet, quòd duo sint Christianismi generalia capita, nēpè πίσις καὶ ἀγάπη, Verus de Deo sensus, & Rectus in Deū cultus: Breuissimè; Fides vera & vita sincera. Atque hinc duae partes Theologiae oriuntur, quarum altera est περὶ τῶν πιστῶν, altera περὶ τῶν πρακτῶν. Illa exponit credenda, haec facienda. Illa docet Christianos Rectè credere; Haec piè viuere. Vtrumque insinuatur ab A. Iohanne, 1. Epist. 3. v. 23. Hoc est mandatum Dei, vt CREDAMVS in nomine Filij eius Iesu Christi: & DILIGAMVS alij alios. Per πιστεύειν primam per ἀγαπᾷν secundam Theologiae partem innuit.
+
+Porrò autem Fides & cognitio veritatis duobus absoluitur, 1. Notitiâ Dei, 2. Notitiâ Nostri. Nam vt Augustinus scribit in Manuali cap. 26. Quid est cognitio Veritatis? Primò cognoscere Teipsum: Deinde cognoscere Creatorem tuum: vtrumque est summè necesarium, & maximè fructuosum. Si enim Deum nescimus, à summo Bono alieni sumus, & saluari non possumus. Si Nosmetipsos ignoramus, morbum naturae nec agnoscimus, nec sanitatem recuperamus. Hinc meritò è caelo descendisse dicitur illud γνῶθι σεαυτὸν, Nosce teipsum. Et rectè Bern. c. 11. Medit. Notitia peccati initium est salutis. Cognitâ enim infirmitate, & Medicus quæritur ardentius, & medicamen adhibetur lubentius.
+
+Hominem quidem Deus primum condidit rectum, Eccles. 7. v. 30. ad imaginem suam. Gen. 1. v. 26. 27. in iustitia & sanctitate veritatis, Ephes 4. v. 24. ut non erubesceret, Gen. 1. v. vlt. nec morti subiaceret, Sap. 2. v. 23. Rom. 3. v. 12. cap. 6. vers. vlt. Sed inuidus Diabolus, Sap. 2. v. 23. seduxit πρωτοπλάσους, Gen. 3. ut omnes concipiamur in iniquitate, Ps. 51. v. 6. destituamur gloriâ Dei, Rom. 3. v. 23. & nascamur iræ filij, Eph. 2. v. 5. O mifera sors hominis, exclamat August. cap. 31. Manu. cum hoc perdidit, ad quod factus est! O dirus ac durus casus ille! Heu quid perdidit, & quid inuenit? Quid abscessit, & quid remansit? Perdidit beatitudinem, ad quam factus est: & inuenit miseriam, ad quam factus non est. Abscessit, sine quo nihil felix est; & remansit, quod per se nõ nisi miserum est. Deus
 
 Præfatio.
 
@@ -70,105 +75,6 @@ Præfatio.
 
 Nobilissimi Mecœnates summi, & æternùm obseruandi, Honoratissimum Nomen Vestrū præscribere volui, vt Patronos haberēt, qui istas defensum irent. Quid enim hodiè dici scribiuè potest, quod ab omni censorum temerè iudicantium morsu immune sit? Verùm nihil timebo, Vestro animatus præsidio, sed pergam potiùs eò alacriùs ad subsequentes συζητήσεις, & in vsum communem conferam, quicquid Altissimi gratia clementer elargita fuerit. Porrò ad idem excitauit me gratitudinis stimulus.Vestram enim erga me immerentem beeuolentiam & humanitatem planè singularem expertus sum sæpius, vt ad grati animi signum edendum me iamdudum fuisse obstrictum ingenuè fatear. Tandem permouit me Zelus vester, quo in religionem feruetis, & amor rerum Theologicarum, quibus grauissimas curas politicas temperare, & quarum lectione vos recreare consueuistis. Vt igitur primitias has serenâ fronte accipiatis, contra maleuolos
 
-
-### Preface
-
-Preface.
-
-that you may cherish, and furthermore favor my studies, in all ways that I can and ought, and with the greatest [earnestness] I pray. May God keep your Noble and Distinguished Lordships safe for a very long time, and may He command a most happy new year to dawn upon you. Given at Wittenberg, on the day before the Nativity of the Lord, in the year 1612.
-
-Your Noble and Distinguished Lordships.
-
-Most observant.
-
-Balthasar Meisner, Doctor of Theology.
-
-DISPUTATION I.
-
-ON THE IMAGE OF GOD Questions: I. How many are the states of the human race? 3
-
-II. How great was the excellence of the first state? 6
-
-III. What rules are to be observed, so that the essence of the divine image may be rightly known? 7
-
-IV. Do image and likeness differ? 10
-
-V. Was the image of God the very substance of man? 13
-
-VI. In what precisely was the notion of the divine image situated? 15
-
-VII. Whether woman was created in the image of God? 38
-
-DISP. II. ON ORIGINAL JUSTICE Questions: 40
-
-I. Whether the nature of the first man with the rebellion of the
-
-INDEX.
-
-of the powers be established by God? 45
-
-II. Whether original justice was a natural gift, or a supernatural one? 54
-
-DISP. III. ON SIN IN GENERAL. 69 Questions:
-
-I. What is sin in general? 71
-
-II. Whether every sin is voluntary? 84
-
-III. Whether sin was absolutely necessary? 89
-
-IV. What is the cause of sin? 91
-
-DISP. IV. ON THE FALL OF THE FIRST MAN. 106 Questions:
-
-I. Who sinned in paradise? 107
-
-II. What was the cause of the first sin? 111
-
-III. What was the first sin? 130
-
-IV. What was the first sin, that is, was it the most grievous of all? 135
-
-DISP. V. ON THE existence & propagation OF ORIGINAL SIN. 139 Questions:
-
-I. What are the appellations of original sin.
-
-ties? 141
-
-II. How various have been and are the opinions concerning original sin. 145
-
-III. By what arguments is the corruption of human nature or original sin demonstrated? 155
-
-IV. How has the sin of origin passed into us? 188
-
-V. If Eve alone had sinned, would she have propagated original sin to her descendants? 189
-
-VI. Do the sins of immediate parents pass into their children? 190
-
-DISP. VI. ON THE ESSENCE and definition OF ORIGINAL SIN. 191 Questions:
-
-I. Is original sin a substance? 195
-
-II. Is original sin a full and total privation of the divine image? 220
-
-III. Does original sin include any positive quality besides the privation of the divine image? 230
-
-IV. What subject does original sin have? 236
-
-V. What is an accurate description of original sin? 239
-
-INDEX.
-
-DISP. VII. ON THE PUNISHMENT and vengeance of original sin. 241 Questions:
-
-I. Are unbaptized infants of Christians damned on account of original sin? 246
-
-II. Are the children of infidels born outside the Church damned? 258
-
-III. If unbaptized infants are damned, will they suffer only the punishment of loss and not also of sense? 267
-
-Latin:
-
 Præfatio.
 
 foueatis, meiq́; studijs porrò faueatis, modis quibus possum & debeo, omnibus, maximisq́; oro. Deus N N. V. V. diutissimè saluas conseruet, nouumq́; annum felicissimum illusescere iubeat. Dabam Witteb. die profesto Nativ. Domini, Anno 1612.
@@ -178,165 +84,6 @@ VV. NN.
 Obseruantiss.
 
 Balth. Meisn. Th. D.
-
-DISPUTATIO I.
-
-DE IMAGINE DEI Quaestiones: I. Quot sint status humani generis?
-
-3 II. Quanta fuerit excellentia primi status?
-
-6 III. Quaenam regulae observandae sint, ut essentia divinae imaginis recte cognoscatur?
-
-7 IV. Num imago et similitudo differant?
-
-10 V. Num imago Dei fuerit ipsa substantia hominis?
-
-13 VI. In quonam ratio divinae imaginis praecise fuerit sita?
-
-15 VII. An mulier ad imaginem Dei sit condita?
-
-38 DISP. II. DE IUSTITIA ORIGINALI Quaestiones: 40 I. An natura primi hominis cum rebellione
-
-INDEX.
-
-virium à Deo sit condita? 45
-
-II. Iustitia originalis àn fuerit donum naturale, nùm supernaturale? 54
-
-DISP. III. DE PECCATO IN GENERE. 69 Quæstiones:
-
-I. Quid sit peccatum in genere? 71
-
-II. An omne peccatum sit voluntarium? 84
-
-III. An peccatum absolutè fuerit necessarium? 89
-
-IV. Quænàm peccati causa sit? 91
-
-DISP. IV. DE LAPSV PRIMI HOMINIS. 106 Quæstiones:
-
-I. Quis in paradiso peccauerit? 107
-
-II. Quænam fuerit primi peccati causa? 111
-
-III. Quodnam fuerit peccatum primum? 130
-
-IV. Quale fuerit peccatum primum, h. e. àn omnium grauissimum? 135
-
-DISP. V. DE PECCATI ORIGINALIS existentia & propagatione. 139 Quæstiones:
-
-I. Quæ sint peccati originalis appellationes.
-
-ties? 141
-
-II. Quàm variæ fuerint & sint de originis peccato sententiæ. 145
-
-III. Quibus argumentis corruptio naturæ humanæ vel peccatum originale demonstretur? 155
-
-IV. Quomodo peccatum originis in nos transierit? 188
-
-V. An si Eua sola peccasset, peccatum originale in posteros propagasset? 189
-
-VI. An peccata proximorum parentum transeant in liberos? 190
-
-DISP. VI. DE PECCATI ORIGINALIS essentia & definitione. 191 Quæstiones:
-
-I. An peccatum originis sit substantia? 195
-
-II. An peccatum originale sit plena & omnimoda imaginis diuinæ priuatio? 220
-
-III. An peccatum originis præter priuationem diuinæ imaginis qualitatem aliquam positiuam includat? 230
-
-IV. Peccatum originis quodnàm subiectum habeat? 236
-
-V. Quæ sit accurata peccati originalis descriptio? 239
-
-INDEX.
-
-DISP. VII. DE PECCATI ORIGINALIS Pœna & vltione. 241 Quæstiones:
-
-I. An Christianorum infantes non baptizati propter peccatum originis damnentur? 246
-
-II. An liberi infidelium extra Ecclesiam nati damnentur? 258
-
-III. Si non baptizati infantes damnantur, an duntaxat damni & non vnà sensus pœnam sint perpessuri? 267
-
-
-### Disp. VIII. on the Forgiveness and removal of original sin. 270 Questions
-
-DISP. VIII. ON THE FORGIVENESS and removal of original sin. 270 Questions:
-
-I. Is concupiscence, remaining in the reborn after Baptism and repentance, truly and properly sin? 273
-
-II. Does renewal consist solely in the removal of dominion and the suppression of the flesh? 315
-
-DISP. IX. ON MORTAL AND VENIAL SIN and hardening. 323 Questions:
-
-I. Are certain sins rightly called mortal, which
-
-INDEX
-
-are they called venial? 316
-
-II. Whether all sins are by their nature mortal, or whether some are truly venial? 328
-
-III. In what does the nature of venial sin consist? 350
-
-IV. Are even the good works of the regenerate mortal sins? 355
-
-V. What is induration? 358
-
-VI. What are the causes of induration? 365
-
-VII. In what sense is God said to indurate? 367
-
-DISP. X. AND LAST. CONCERNING THE SIN AGAINST THE HOLY SPIRIT. 379 Questions:
-
-I. Whether there is and is given a certain special sin against the Holy Spirit. 381
-
-II. What is it? 387
-
-III. What kind is it? 407
-
-IV. How manifold it may be, or what species it has?
-
-Latin:
-
-DISP. IIX. DE PECCATI ORIGINALIS venia & sublatione. 270 Quæstiones:
-
-I. An concupiscentia post Baptismum & pœnitétiam in renatis reliqua, verè proprièque peccatum sit? 273
-
-II. An renouatio in sola dominii sublatione carnisque suppressione consistat? 315
-
-DISP. IX. DE PECCATO MORTALI VEniali & induratione. 323 Quæstiones:
-
-I. An rectè peccata quædam mortalia, quæ-
-
-INDEX
-
-dam venialia nuncupentur? 316
-
-II. An omnia peccata ex natura sua sint mortalia, num vero quædam venialia? 328
-
-III. In quo consistat ratio peccati venialis? 350
-
-IV. Num etiam bona renatorum opera sint peccata mortalia? 355
-
-V. Quid sit induratio? 358
-
-VI. Quænam indurationis causæ sint? 365
-
-VII. Quo sensu Deˢ dicatur indurare? 367
-
-DISP. X. ET VLTIMA. DE PECCATO IN SPIRITVM SANCTVM. 379 Quæstiones:
-
-I. An sit & detur quodam speciale peccatum in Spiritum sanctum. 381
-
-II. Quid sit? 387
-
-III. Quale sit? 407
-
-IV. Quotuplex sit, vel quas species habeat? 413
 
 
 ## 2 Disputation I. On the Image of God
@@ -12285,162 +12032,13 @@ Deinde causa damnationis considerari potest, vel ratione meriti & reatus, vel ra
 XLVI. Sed nolumus plura, cùm sufficiant hactenus dicta Pedem ergò hic figimus, & hymnum glòriæ cantamus Deo patri, qui nos ex animo dilexit; Deo Filio, qui dilectos redemit : Deo Spiritui sancto, qui redemptos quotidiè vocat & regenerat. O quantum ob hæc beneficia debemus sacrosanctæ & gloriosæ Trinitati! Non tantum dedit esse per creationem: sed postquam in Adamo perijmus, dedit benè esse per dilectionem. Nemo hic excluditur; patet ianua omnibus resipiscentibus & credentibus. Laus igitur sit, & benedictio, & honos pro tanto munere. Faxit idem clementissimus Pater, vt quod cœptum est in nobis, perficiatur, vt firmiter credamus, piè vivamus, & suo tempore finem fidei, salutem animarum, cùm omnibus electis reportemus, adeóque quod hic videmus per speculum in ænigmate, ibi cognoscamus clarè, adorantes Agnum, qui nos omnes redemit, celebrantes Deum qui ex gratia prędestinauit & canentes plenâ voce in æternum, ex Apoc. 4. versu 8. Sanctus Sanctus Sanctus Dominus DEVS omnipotens qui erat, & qui est, & qui venturus est. Ita eueniat bone Iesu! Ita eveniat, ob meritũ tuę passionis plenissimum & sanctissimum. AMEN.
 
 
-### Single Question whether the decree of eternal reprobation is absolute: The End of the Second Decade Index of Disputations and Questions of the Second Decade Disputation I. on the Grace of God. page 3
+### Single Question whether the decree of eternal reprobation is absolute: The End of the Second Decade
 
 THE END OF THE SECOND DECADE.
-
-INDEX OF DISPUTATIONS AND QUESTIONS of the Second Decade.
-
-DISPUTATION I. ON THE GRACE OF GOD. page 3.
-
-I. What are the principal significations of Grace in the Scriptures? 3 II. What does the term grace properly signify in the article of justification? 7 III. How many species or divisions of Grace are there? 18
-
-DISP. II. 37 ON THE UNIVERSAL WILL & Love of God.
-
-Questions:
-
-I. In how many ways is the will of God divided? 48 II. Does God seriously and by an internal good pleasure wish all men to be saved? 71
-
-DISP. III. 87 ON THE UNIVERSAL MERIT of Christ
-
-INDEX Of Christ and the calling of men to salvation
-
-Questions I.
-
-I. Whether Christ redeemed all men by his death? 88
-
-II. Whether the merit of Christ and the salvation obtained by that merit is promised and offered to all by God? 110
-
-III. Whether and how infidels, established outside the Church, are called to repentance? 127
-
-DISPUTATION IV. OF ETERNAL PREDESTINATION of believers to life Questions
-
-I. What is the genuine meaning of the terms occurring in the article of election? 139
-
-II. What is the opinion both of our adversaries and of ourselves concerning predestination? 154
-
-III. What is predestination, and what causes does it have? 195
-
-DISPUTATION V. OF THE BOOK OF LIFE Questions
-
-I. What Scripture understands when it attributes to God the Book 196 II. How many books are attributed to God? 198 III. Whether there is one book of life, or several? 212 IV. What the book of life is? 216 V. What the inscription in the book of life is? 220 VI. Whether anyone inscribed in the book of life can be erased from it again? 226 VII. Whether any book of death corresponds to the book of life? 240
-
-DISP. VI. 243 ON THE IMMUTABILITY OF PREDESTINATION, and the use of the whole Article.
-
-Questions:
-
-I. Whether election is immutable 245 II. What is the use of the doctrine of Predestination explained thus far? 282
-
-DISP. VII. 291 ON UNIVERSAL ELECTION, devised in previous years by Huber.
-
-Questions:
-
-I. Whether all Angels are elected? 291 II. Whether all men without distinction are properly elected to salvation? 295
-
-INDEX
-
-DISP. VIII. 327 ON THE NUMBER AND CERTAINTY of the Elect. Questions:
-
-I. Whether the number of the elect is so certain that it can neither be increased, nor diminished, nor altered? 327
-
-II. How many men are elected in comparison to the Angels? 332
-
-III. Whether the number of the elect is smaller than that of the reprobate? 334
-
-IV. Whether and how anyone can be certain of his own election? 341
-
-V. Whether the election of others can be known? 366
-
-DISP. IX. 369 ON THE FALL OF THE ELECT AND the Casting out of the Holy Spirit. Question.
-
-1. Whether the elect cast out faith and the grace of the indwelling Spirit through mortal sins? 369
 
 Latin:
 
 FINIS DECADIS SECVNDÆ.
-
-INDEX DISPVTATIONVM ET QVÆSTIONVM Decadis Secvndæ.
-
-DISPVTATIO I. DE GRATIA DEI. pag. 3.
-
-I. Quæ sint præcipua Gratiæ significata in Scripturis? 3 II. Quid vocabulum gratiæ in articulo iustificationis propriè significet? 7 III. Quot sint Gratiæ species vel diuisiones? 18
-
-DISP. II. 37 DE VNIVERSALI VOLVNTAte & Dilectione Dei.
-
-Quæstiones:
-
-I. Quotuplex sit voluntas Dei? 48 II. Nùm Deus omnes homines seriò internoque beneplacito velit saluos fieri? 71
-
-DISP. III. 87 DE VNIVERSALI MERITO Christi
-
-INDEX
-
-Christi & vocatione Hominum ad salutem Quaestiones
-
-I. Num Christus omnes homines morte sua redemerit? 88
-
-II. An meritum Christi & parta merito salus omnibus a Deo promittatur & offeratur? 110
-
-III. An & quomodo infideles, extra Ecclesiam constituti, vocentur ad poenitentiam? 127
-
-DISP. IV. DE AETERNA PRAEDESTINATIONE credentium ad vitam Quaestiones
-
-I. Quae sit genuina significatio terminorum, in articulo electionis occurrentium? 139
-
-II. Quae tum adversariorum, tum nostra de praedestinatione sit sententia? 154
-
-III. Quid sit praedestinatio, & quas causas habeat? 195
-
-DISP. V. DE LIBRO VITAE Quaestiones
-
-I. Quid Scriptura intelligat, cum Deo Librum brum tribuit? 196 II. Quot Libri Deo tribuantur? 198 III. Nùm vnus sit vitæ liber, vel plures? 212 IV. Quid sit liber vitæ? 216 V. Quid sit inscriptio in librum vitæ? 220 VI. Nùm quis libro vitæ inscriptus, indè iterum deleri possit? 226 VII. Nùm libro vitæ respondeat aliquis liber mortis? 240
-
-DISP. VI. 243 DE PRÆDESTINATIONIS IMmutabilitate, & totius Articuli vsu.
-
-Quæstiones:
-
-I. Nùm electio sit immutabilis 245 II. Quis sit vsus doctrinæ de Prædestinatione hactenus explicatæ? 282
-
-DISP. VII. 291 DE VNIVERSALI ELECTIOne, superioribus annis excogitata ab Hubero.
-
-Quæstiones:
-
-I. Nùmomnes Angeli sint electi? 291 II. Nùm omnes indiscretè homines ad salutem propriè sint electi? 295
-
-INDEX
-
-DISP. IIX. 327 DE NVMERO ET CERTITVdine Electorum. Quæstiones:
-
-I. Annumerús electorũ ita certus sit, vt nec augeri possit, nec minui, nec alterari? 327
-
-II. Quot homines in comparatione ad Angelos electi sint? .332
-
-III. An numerus electorum minor sit, quàm reprobatorum? 334
-
-IV. Num aliquis & quomodo de propria electione certus esse possit? 341
-
-V. Num aliorum electio sciri possit? 366
-
-DISP. IX. 369 DE LAPSV ELECTORVM ET Excussione Spiritus S. Quæstio.
-
-1. Nùm electi fidem & Spiritus inhabitantis gratiam per mortalia peccata excutiant? 369
-
-
-### Single Question whether the decree of eternal reprobation is absolute: Disp. X. 400 on Reprobation. Question
-
-DISP. X. 400 ON REPROBATION. Question.
-
-I. Whether the decree of eternal Reprobation is absolute, or rather limited and conditional? 401
-
-THE END.
-
-Latin:
-
-DISP. X. 400 DE REPROBATIONE. Quæstio.
-
-I. Nùm decretum æternæ Reprobationis, sit absolutum, an verò limitatum & conditionatum? 401
-
-FINIS.
 
 
 ## 23 Preface to the Third Decade
@@ -12457,6 +12055,28 @@ Preface.
 
 qualities; but through the imputation of the obedience of Christ. He bore our infirmities, and by his stripes we are healed alone. All of which things are placed in such light that he who hears and reads the scripture can have no cause for doubting. And yet in the midst of the Church are found those who pertinaciously cherish and bitterly defend most grave errors concerning both articles. They wish to be called Catholics, and meanwhile they attack the Catholic faith. They wish to be seen as the gatekeepers of heaven, and nevertheless they either are ignorant themselves of the true way of arriving there, or refuse to acknowledge it when shown. I mean the Romanists, and especially their champions, the Jesuits. Who, although they may swell with the opinion of knowledge and truth, yet deceive and are miserably deceived. They do not succeed the Apostles, but the Pharisees, because they exaggerate the powers of nature, and everywhere inculcate the righteousness of works. This is evident from the leader of that sect, formerly a Father among them, now Cardinal Bellarmine: Who indeed in the last volume of his controversies seems to have aimed solely at this, that through the extenuation of sin and the assertion of free will, he might persuade the Christian people of an inherent and Philosophical righteousness, drawn from scholastic pits, and thus reintroduce that ancient butchery of consciences. To obtain which purpose, he scraped together various arguments from here and there, which at first appear specious, but when lightly touched, vanish into ashes and embers. Since, therefore, the controversy concerning sin, grace, and predestination having been concluded, there followed, according to the order of Bellarmine, whose thread it was proposed to follow, two most serious articles, concerning free will and justification before God; I wished to undertake an accurate analysis of them, and to propose them, comprised in theses, to the studious youth for disputation, so that they might maturely imbibe the truth of the faith and learn to avoid the precipices of errors. It was indeed my intention, when I finished the second decade, to remove my hand from the begun tablet henceforth, and to devote myself solely to the ordinary labors of my profession; however, my highest patrons, whom I ought to obey, and friends, whom I ought to gratify, wished that I should weave through the web once begun, and continue this Anthropological College. I did, therefore, what I was ordered to do, and included in ten disputations what I had to say concerning the will, free in moral matters, enslaved in spiritual matters, and concerning the true method of justification. So that this treatment might be complete, not so
 
+Preface.
+
+when I considered the Papist controversies, but I have also opposed some things from the most harmful sect of the Photinians. Indeed, I have often wished that it were permitted to wrap these things in silence rather than to expound upon them at such length. For is it not horrible to hear, and to be deplored with many tears, that matters in the Church, in such a great light of truth, have come to this point, that the most holy merit of Christ our only Redeemer, that merit indeed by which satisfaction was made for the sins of the whole world, the merit in whose confidence many thousands of Christians have fallen asleep, that I say that merit is not only diminished, but utterly impugned, and with more than giant-like audacity is completely denied? How often would Polycarp have exclaimed, if he had reached this age: O God, for what times have you reserved us! But these things must be deplored, they cannot be changed. Wherefore, one must stand against Satan, the Father of lies, lest the unwary be deceived and hold as solid and firm those things which are destitute of strength and are easily dissolved.
+
+As for the controversy that remains in the state of restoration, concerning the distinction between the Law and the Gospel, and concerning good works, since it can scarcely constitute a separate Decade, I shall propose it either by public disputation or by some other method, so that in this way the Anthropological dissertations,
+
+Preface.
+
+be concluded here, and meet their end. This third and final Decade, most Illustrious Count and Palatine, most Clement Lord, I offer inscribed and most humbly dedicated to Your Highness. I shall not bring forward reasons at length, lest I seem to doubt anything regarding Your Clemency. Known to the Christian world, and especially to the kingdom of Hungary, is the singular zeal of Your Highness in asserting and propagating true piety toward God and the purity of the γνησίως Catholic religion. Who, therefore, would not readily offer to such a Hero, and defender of the faith, that which is written for the orthodox faith? The holy Cherubim covered with their wings the Ark of the Old Testament, placed in the innermost atrium of the temple. The Ark of Christ is the Church, which pious Princes protect, like heavenly Cherubim. That Your Highness has long since done this, and still does, the little flock of the Lord humbly acknowledges. You are truly a Cherub of the Hungarian Church, placed on the holy mountain, and protecting the shattered little ark. Who would not pray for the best things for such a Foster-father of the Church, and vow for him everlasting happiness? Added to this is the supreme clemency in that pinnacle of honor, which Your Highness has made manifest by frequent letters, and whose image daily
+
+Preface.
+
+Today it is permitted for me to discern, in the most illustrious and magnificent Count, Lord EMERIC THURZO of Bethlemfalva, Count of Arva, and hereditary Count of that same county, the only son of your Highness, the most magnificent Rector of this Academy, my clement and most benign Lord. In him, as if in a most clear mirror, I behold a living image of paternal virtue and heroic spirit, so that I cannot doubt the clemency of the most illustrious Parent, when I see it so clearly expressed in the illustrious Son. This Academy congratulates itself, not undeservedly, on such an illustrious and magnificent Guest, or rather Head, in whose breast, born and raised for any high purpose, both zeal for religion, sincere piety, and other heroic virtues have long since chosen a stable seat for themselves. May they live, I pray, may this most illustrious Pair live, Parent and Son, for the benefit of the struggling Church, for the patronage of oppressed truth, and for the far greatest increase of the whole Hungarian Kingdom. Thus I pray and vow most often, which same affection, as a sign of my humility and due gratitude, I wished to express in this public προσφωνήσει [address], asking most humbly that your most illustrious Highness most clemently receive this meager little work, and me, although undeserving
+
+Preface
+
+tem, may he not disdain to continue to pursue with his accustomed clemency. GOD, who defends the holy Cherubim, the defenders of his Church, may he preserve your most illustrious Highness with your entire magnificent Family, flourishing for a very long time, so that they may be confounded and put to shame together, who rejoice in evils: but let them exult and be glad, who seek justice, and let them say always: Let the LORD be magnified, who blesses his servant. Let it be done in the name of JESUS CHRIST, the Best and Greatest Protector; Let it be, Let it be! Given at Wittenberg, on the Sunday of Clemency, which is the 22nd after Trinity, in the year of the θεογονία 1615,
+
+Most humbly honoring your most illustrious Highness
+
+BALTHASAR MEISNERUS Doctor of Theology and Public Professor
+
 Latin:
 
 ILLVSTRISSIME COMES AC Palatine, Domine clementissime.
@@ -12471,21 +12091,6 @@ Praefatio.
 
 qualitatum; sed per imputationem obedientiae Christi. Hic tulit languores nostros, & ipsius liuore sanati sumus vnicè. Quae omnia in tanta luce sunt posita, vt qui scripturam audit legitquè, nullam dubitandi caussam habere possit. Et tamen in media Ecclesia reperiuntur, qui errores circa vtrumque articulum grauissimos pertinaciter fouent, & acriter defendunt. Nuncupari volunt Catholici, & interim Catholicam fidem oppugnant. Videri volunt Ianitores coeli, & nihilominus veram eò perueniendi viam vel ignorant ipsi, vel monstratam nolunt agnoscere. Romanenses intelligo, & illorum praecipuè προμάχους Iesuwitas. Qui licèt turgeant opinione scientiae & veritatis, fallunt tamen & falluntur miserè. Non Apostolis, sed Pharisaeis succedunt, quia vires naturae exaggerant, & iustitiam operum nullibi non inculcant. Patet hoc ex sectae illius primipilo, quondam apud ipsos Patre, nunc Cardinale Bellarmino: Qui sanè in vltimo controuersiarum tomo ad id vnicè videtur collimâsse, vt per peccati extenuationem & liberi arbitrii assertionem, iustitiam inhaerentem & Philosophicam, è lacunis scholasticis haustam, populo Christiano persuaderet, atque sic antiquam conscientiarum carpificinam rursus inveheret. Pro quo instituto obtinendo varia hinc indè corrasit argumenta, quæ primùm apparent speciosa, sed leuiter tacta, in cineres abeunt & fauillas. Cùm ergò absolutâ controuersiâ de peccato, gratiâ & prædestinatione, sequerentur quoad ordinem Bellarmini, cuius filum sequi erat propositum, grauissimi duo articuli, de Liberi arbitrio, & de Iustificatione coram Deo; accuratam illorum anésin suscipere, thesibusq́; comprehensam ad disputandum studiosæ iuventuti proponere volui, vt veritatem fidei maturè imbiberent, & errorum præcipitia cauere discerent. Erat quidem mihi constitutum, cùm Decadem secundam finirem, imposterum amouere manum de cœpta tabula, & ordinariis meę professionis laboribus vnicè incumbere; Voluerunt tamen Patroni mei summi, quibus obtēperare, & Amici, quibus gratificari debeo; vt telam semel inchoatam pertexerem, & Collegium istud Anthropologicum continuarem. Feci ergò, quod facere iussus sum, decemque disputationibus inclusi, quæ de arbitrio in moralibus libero, in spiritualibus seruo, & de vera iustificandi ratione dicenda habui. Quæ tractatio vt completa esset, non tan-
 
-
-### Preface
-
-Preface.
-
-when I considered the Papist controversies, but I have also opposed some things from the most harmful sect of the Photinians. Indeed, I have often wished that it were permitted to wrap these things in silence rather than to expound upon them at such length. For is it not horrible to hear, and to be deplored with many tears, that matters in the Church, in such a great light of truth, have come to this point, that the most holy merit of Christ our only Redeemer, that merit indeed by which satisfaction was made for the sins of the whole world, the merit in whose confidence many thousands of Christians have fallen asleep, that I say that merit is not only diminished, but utterly impugned, and with more than giant-like audacity is completely denied? How often would Polycarp have exclaimed, if he had reached this age: O God, for what times have you reserved us! But these things must be deplored, they cannot be changed. Wherefore, one must stand against Satan, the Father of lies, lest the unwary be deceived and hold as solid and firm those things which are destitute of strength and are easily dissolved.
-
-As for the controversy that remains in the state of restoration, concerning the distinction between the Law and the Gospel, and concerning good works, since it can scarcely constitute a separate Decade, I shall propose it either by public disputation or by some other method, so that in this way the Anthropological dissertations,
-
-Preface.
-
-be concluded here, and meet their end. This third and final Decade, most Illustrious Count and Palatine, most Clement Lord, I offer inscribed and most humbly dedicated to Your Highness. I shall not bring forward reasons at length, lest I seem to doubt anything regarding Your Clemency. Known to the Christian world, and especially to the kingdom of Hungary, is the singular zeal of Your Highness in asserting and propagating true piety toward God and the purity of the γνησίως Catholic religion. Who, therefore, would not readily offer to such a Hero, and defender of the faith, that which is written for the orthodox faith? The holy Cherubim covered with their wings the Ark of the Old Testament, placed in the innermost atrium of the temple. The Ark of Christ is the Church, which pious Princes protect, like heavenly Cherubim. That Your Highness has long since done this, and still does, the little flock of the Lord humbly acknowledges. You are truly a Cherub of the Hungarian Church, placed on the holy mountain, and protecting the shattered little ark. Who would not pray for the best things for such a Foster-father of the Church, and vow for him everlasting happiness? Added to this is the supreme clemency in that pinnacle of honor, which Your Highness has made manifest by frequent letters, and whose image daily
-
-Latin:
-
 Praefatio.
 
 cum controuersias Papisticas spectaui, sed nonnulla insuper nocentissimae sectae Photinianorum opposui. Equidem optaui saepius, vt silentio ista liceret magis involuere, quàm prolixius exponere. Annon enim auditu horrendum, multis lachrymis deplorandum, rem eò devenisse in Ecclesia, in tanto veritatis lumine, vt Christi Redemptoris nostri vnici sanctissimum meritum, illud nempè meritum, quo pro peccatis totius mundi satisfactum, meritum, cuius fiducia multa Christianorum millia obdormiuerunt, vt illud inquam meritum, non minuatur tantùm, sed prorsus impugnetur, & plus quàm giganteâ audaciâ penitus negetur? Quoties exclamaret Polycarpus, si hoc seculum attigisset: O Deus, in quae tempora nos reseruâsti! Sed deplorari haec debent, mutari non possunt. Quare obviandum est Satanae, Patri mendaciorum, nè incauti decipiantur & pro solidis firmisquè habeantur, quae robore destituta & solutu sunt facilia.
@@ -12495,41 +12100,6 @@ Quae autem in statu reparationis restat controuersia, de discrimine legis & Evan
 Præfatio.
 
 hîc concludantur, & finem suum sortiantur. Hanc verò Decadem tertiam vltimamq́; Illustrissime Comes ac Palatine, Domine Clementissime, Celsitudini Vestræ inscriptam humilimèq́ue dicatam offero. Caussas prolixè non adducam, nè de Vestra Clementia quicquam dubitare videar. Nota est orbi Christiano, & cum primis regno Hungariæ singularis Vestrę Celsitud. Zelus in vera pietate erga Deum ac puritate religionis γνησίως Catholicæ asserenda & propaganda. Quis igitur tanto Heroi, fideiq́; defensori, prõptus nõ offerret, quod pro fide orthodoxâ scriptum est? Arcam V. T. in intimo templi atrio repositam, alis suis tegebant sancti Cherubim. Arca Christi est Ecclesia, quam protegunt pii Principes, veluti cœlestes Che rubim. Hoc Celsitudinem Vestram iamdudum fecisse, & etiamnùm facere, humiliter agnoscit pusillus grex Domini. Verè Cherub es Ecclesiæ Hungaricæ, positus in sancto monte, & protegens quassatam arculam. Quis non tanto Ecclesiæ Nutritio precaretur optima, & perennem voueret felicitatem? Accedit summa in isto honoris fastigio clementia, quam Celsitudo Vestra crebris literis testatam fecit, & cuius Icona quoti-
-
-
-### Preface
-
-Preface.
-
-Today it is permitted for me to discern, in the most illustrious and magnificent Count, Lord EMERIC THURZO of Bethlemfalva, Count of Arva, and hereditary Count of that same county, the only son of your Highness, the most magnificent Rector of this Academy, my clement and most benign Lord. In him, as if in a most clear mirror, I behold a living image of paternal virtue and heroic spirit, so that I cannot doubt the clemency of the most illustrious Parent, when I see it so clearly expressed in the illustrious Son. This Academy congratulates itself, not undeservedly, on such an illustrious and magnificent Guest, or rather Head, in whose breast, born and raised for any high purpose, both zeal for religion, sincere piety, and other heroic virtues have long since chosen a stable seat for themselves. May they live, I pray, may this most illustrious Pair live, Parent and Son, for the benefit of the struggling Church, for the patronage of oppressed truth, and for the far greatest increase of the whole Hungarian Kingdom. Thus I pray and vow most often, which same affection, as a sign of my humility and due gratitude, I wished to express in this public προσφωνήσει [address], asking most humbly that your most illustrious Highness most clemently receive this meager little work, and me, although undeserving
-
-Preface
-
-tem, may he not disdain to continue to pursue with his accustomed clemency. GOD, who defends the holy Cherubim, the defenders of his Church, may he preserve your most illustrious Highness with your entire magnificent Family, flourishing for a very long time, so that they may be confounded and put to shame together, who rejoice in evils: but let them exult and be glad, who seek justice, and let them say always: Let the LORD be magnified, who blesses his servant. Let it be done in the name of JESUS CHRIST, the Best and Greatest Protector; Let it be, Let it be! Given at Wittenberg, on the Sunday of Clemency, which is the 22nd after Trinity, in the year of the θεογονία 1615,
-
-Most humbly honoring your most illustrious Highness
-
-BALTHASAR MEISNERUS Doctor of Theology and Public Professor
-
-INDEX OF DISPUTATIONS AND QUESTIONS
-
-DISPUTATION I, ON THE NATURE OF FREE WILL AND ON THE POWERS Of the same regarding civil actions. page 1
-
-Quest. I. What is denoted by the terms free will? 3
-
-Quest. II. Whether Luther rightly called the will servile? 7
-
-Quest. III. Whether free and servile are rightly opposed? 9
-
-Quest. IV. What distinctions of liberty commonly occur? 10
-
-Quest. V. What is free will? 14
-
-Quest. VI. Whether the intellect is radically free? 21
-
-Quest. VII. Whether the will in the use of its liberty depends upon the practical intellect, and is determined by it toward one side or the other through the final judgment? 23
-
-Latin:
 
 Præfatio.
 
@@ -12542,242 +12112,6 @@ tem, solitâ clementiâ porrò profequi non dedignetur. DEVS, qui sanctos Che
 Illustrissimam Celsitudinem Vestram humilimè colens
 
 BALTHASAR MEISNERVS Th. D. & Prof. Pub.
-
-INDEX DISPUTATIONUM ET QUAESTIONUM
-
-DISPUTATIO I, DE LIBERI ARBITRII NATURA ET DE VIRIBUS Eiusdem circa civiles actiones. pag.
-
-Quast.
-
-I. Quast. I. Quid per voces liberi arbitrii notetur?
-
-3 Quast.
-
-II. Quast. II. An Lutherus arbitrium recte appellaverit servum?
-
-7 Quast.
-
-III. Quast. III. An liberum et servum recte opponantur?
-
-9 Quast.
-
-IV. Quast. IV. Quae libertatis distinctiones vulgo occurrant?
-
-10 Quast.
-
-V. Quast. V. Quid sit liberum arbitrium?
-
-14 Quast.
-
-VI. Quast. VI. An intellectus radicaliter sit liber?
-
-21 Quast.
-
-VII. Quast. VII. An voluntas in usu suae libertatis dependeat ab intellectu practico, et ab ea in alteram partem per ultimum iudicium determinetur?
-
-23
-
-
-### Index
-
-INDEX.
-
-Ques. VIII. What kind of liberty is required, so that something may be called free? 38.
-
-Ques. IX. What is the subject of liberty? 46
-
-Ques. X. What is the object of liberty? 49
-
-Ques. XI. Whether man is free, and what powers of will he possesses? 51
-
-Ques. XII. What kind of liberty is granted regarding civil and moral actions? 57.
-
-Ques. XIII. What are the impediments to liberty? 66
-
-Ques. XIV. What should be thought of the good works of the Gentiles? 68
-
-DISP. II. ON THE SERVITUDE OF THE WILL regarding the conversion of Man, and other Spiritual acts. 71
-
-Ques. I. What is the opinion of the Papists concerning the powers of the will? 72
-
-Ques. II. Are the Papists rightly numbered among the Pelagians? 81
-
-Ques. III. What is our opinion concerning the will of unregenerate man? 86
-
-Quest. IV. What is the principal and true state of the controversy? 92
-
-Quest. V. By what arguments can the true opinion be defended? 95
-
-Quest. VI. What is the use of the doctrine concerning the bondage of the will? 116
-
-DISP. III. CONCERNING THE PAPISTICAL ARGUMENTS, which are accustomed to be brought forward for free will. 119
-
-Quest. I. What can and ought to be answered to Bellarmine's objections? 120
-
-Quest. II. What should be determined concerning Luther's book, which has the title, On the Bondage of the Will? 159
-
-DISP. IV. CONCERNING THE TERMS occurring in the article of justification, and concerning its efficient, impelling, and meritorious cause. 171
-
-Quest. I. What does the term justice denote? 174
-
-Quest. II. In how many ways is the term just accepted? 178
-
-Quest. III. What does the word justify properly signify? 179
-
-Quest. IV. What does Scripture understand by the word Grace? 189
-
-Quest. V. How is the particle GRATIS accepted? 191
-
-Quest. VI. What does faith signify? 192
-
-Quest. VII. What significations does imputation have? 194
-
-Question VIII. What is the efficient cause of our justification? 199
-
-Question IX. What is the impelling cause? 202
-
-Question X. Who are the principal errors of the Papists concerning the merit of Christ? 206
-
-Question XI. Does the active obedience of Christ concur together to the nature of merit? 213
-
-DISPUTATION V. ON THE MERIT AND SATISFACTION of Christ, opposed to the Photinians. 222
-
-Question I. On what occasion and for what reasons did this error of the Photinians begin to be interpolated into the Churches? 224
-
-Question II. What is the opinion of the Photinians concerning the merit of Christ, and how horrible are the corruptions that follow this one falsehood in almost all articles? 229
-
-Question III. By what principal sayings and testimonies of Scripture can the Satisfaction of Christ for our sins be established? 236
-
-DISPUTATION VI: BY WHAT ARGUMENTS do the Photinians oppose the merit of Christ? 284
-
-Latin:
-
-INDEX.
-
-Quæst. IIX. Qualis requiratur libertas, vt aliquid appelletur liberum? 38.
-
-Quæst. IX. Quodnam libertatis subiectum sit? 46
-
-Quæst. X. Quodnam sit obiectum libertatis? 49
-
-Quæst. XI. An homo sit liber, & quas arbitrij vires habeat? 51
-
-Quæst. XII. Qualis detur libertas circa ciuiles & morales actiones? 57.
-
-Quæst. XIII. Quæ sint impedimenta libertatis? 66
-
-Quæst. XIV. Quid de operibus bonis gentilium sentiendum sit? 68
-
-DISP. II. DE ARBITRII SERVITVTE circa conuersionem Hominis, aliosq; actus Spirituales. 71
-
-Quæst. I. Quæ Pontificiorum de viribus arbitrij sit opinio? 72
-
-Quæst. II. Num Pelagianis rectè annumerentur Pontificij? 81
-
-Quæst. III. Quæ nostra de hominis non renati arbitrio sit sententia? 86
-
-Quæst. IV. Quis præcipuus & verus controuersiæ status? 92
-
-Quæst. V. Quibus argumentis vera sententia propugnari queat? 95
-
-Quæst. VI. Quis sit usus doctrinæ de servitute arbitrii? 116
-
-DISP. III. DE ARGVMENTIS PAPIsticis, quæ pro libero arbitrio afferri consueverunt. 119
-
-Quæst. I. Quid ad Bellarmini obiectiones responderi possit ac debeat? 120
-
-Quæst. II. Quid de Lutheri libro, cui titulus, de Servo arbitrio statuendum sit? 159
-
-DISP. IV. DE VOCABVLIS IN ARTICVlo iustificationis occurrentibus, & de illius causa efficiente, impellente & meritoria. 171
-
-Quæst. I. Iustitiæ vocabulum quid notet? 174
-
-Quæst. II. Quot modis vocabulum iusti accipiatur? 178
-
-Quæst. III. Quid propriè verbum iustificare significet? 179
-
-Quæst IV. Quid Scriptura per vocem Gratiæ intelligat? 189
-
-Quæst. V. Particula GRATIS quomodo accipiatur? 191
-
-Quæst. VI. Fides quid significet? 192
-
-Quæst. VII. Quas significationes habeat imputatio? 194
-
-Quæst. IIX. Quænam iustificationis nostræ sit causa efficiens? 199
-
-Quæst. IX. Quænam causa impellens? 202
-
-Quæst. X Quinam sint præcipui errores Pontificiorum circà meritum Christi? 206
-
-Quæst. XI. Num ad rationem meriti unà concurrat obedientia Christi actiua? 213
-
-DISPVTATIO V. DE MERITO ET SATISFActione Christi Photinianis opposita. 222
-
-Quæst. I. Quâ occasione & quibus excausis error iste Photinianorum in Ecclesiis interpolari cœperit? 224
-
-Quæst II. Quæ sit Photinianorum sententia de Christi merito, & quàm horrenda corruptelæ in omnibus ferè articulis hanc unam falsitatem consequantur? 229
-
-Quæst. III. Quibus præcipuè dictis & testimoniis Scripturæ, Satisfactio Christi pro peccatis nostris stabiliri queat? 236
-
-DISPVTATIO VI: QVIBVS ARGUMENTIS PHOtiniani meritum Christi oppugnent? 284
-
-
-### Disputation VII: on the Formal Cause of our justification, opposed to the Papists. 382 Index
-
-DISPUTATION VII: ON THE FORMAL CAUSE OF our justification, opposed to the Papists. 382
-
-INDEX.
-
-Quæst. I. What is our opinion, and what is that of the Papists, concerning the formal cause? Whence the true state of the controversy emerges. 385
-
-Quæst. II. By what arguments especially can the orthodox opinion concerning imputative justice be confirmed? 408
-
-DISPUTATION VIII.
-
-BY WHAT ARGUMENTS the Papists are accustomed to fight against imputative justice and for inherent justice. 444
-
-DISP. IX.
-
-CONCERNING THE CERTAINTY of justification or the remission of sins. 505
-
-Quæst. I. What is the true state of the controversy between us and the Papists concerning the certainty of grace? 506
-
-Quæst. II. By what arguments especially may we be able to impugn doubt and prove certainty? 532
-
-DISPUTATION X.
-
-BY WHAT ARGUMENTS Bellarmine has attempted to impugn the certainty of grace 564
-
-THE END.
-
-Latin:
-
-DISPVTATIO VII: DE CAVSA FORMALI IVSTIficationis nostræ, Pontificiis opposita. 382
-
-INDEX.
-
-Quæst. I. Quæ tùm nostra, tùm Pontificiorum de causa formali opinio? vndè verus emergit status controuersiæ. 385
-
-Quæst. II. Quibus præcipuè argumentis orthodoxa sententia de imputatiua iustitia confirmari queat? 408
-
-DISPVTATIO IIX.
-
-QVIBVS ARGVMENTIS PONtificii, contra iustitiam imputatiuam, pro inhærente pugnare consueverint. 444
-
-DISP. IX.
-
-DE CERTITVDINE IVstificationis vel remissionis peccatorum. 505
-
-Quæst. I. Quis inter nos & Pontificios de certitudine gratiæ verus sit controuersiæ status? 506
-
-Quæst. II. Quibus præcipuè argumentis dubitationem impugnare, certitudinem probare valeamus? 532
-
-DISPVTATIO X.
-
-QVIBVS ARGVMENTIS BELlarminus certitudinem gratiæ impugnare tentauerit 564
-
-FINIS.
 
 
 ## 24 Disputation I. On the Nature of Free Will and Its Powers in Civil Actions
@@ -18714,17 +18048,4 @@ THE END.
 Latin:
 
 FINIS.
-
-
-## 34 To the Candid Reader
-
-Although, Candid Reader, diligent effort has been given so that errors might be removed in the printing of these five Decades of Anthropology: yet some without doubt have crept into these labors of ours, for no one can be sufficiently sharp-sighted everywhere, especially in such small letters. If therefore some faults occur, (which we do not suspect to be many) such as if even sometimes letters are inverted or transposed, likewise omitted commas or periods, sometimes incorrectly marked accents, and similar things which might even escape a Lynceus; it will be yours, Reader, to acknowledge and to forgive, of which the one will be of your erudition, the other of your humanity. Fare well, and happily enjoy our labors.
-
-ROYAL LIBRARY OF MUNICH.
-
-Latin:
-
-ETsi, Candide Lector, diligens data fuerit opera, vt in excudendis huius Anthropolog 5. Decadibus errata tollerentur: quædam tamẽ sine dubio in hos nostros labores irrepserũt, nemo enim satis oculatus vbiuis esse potest, præsertim in literis tàm minutis. Sin igitur vitia quædã occurrant, (quę nõ suspicamur esse multa) vtpotè si vel interdùm literæ inuersæ aut trãspositæ sint, item omissa commata aut puncta, interdùm non rectè signati accentus, & similia quę vel Lynceum fugere queant; tuum erit Lector agnoscere atque ignoscere, quorum alterum eruditionis tuæ erit, alterum humanitatis. Benè Vale, & nostris laboribus feliciter fruere.
-
-BIBLIOTHECA REGIA MONACENSIS.
 

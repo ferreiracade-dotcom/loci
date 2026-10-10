@@ -34,6 +34,10 @@ Several slugs (a work's volumes) make one file, one work per slug unless --one-w
   --dedupe             a locus or section listed twice in a volume is kept only where it comes last
   --skip-match REGEX   entries whose pages are left out until the next locus (default: indices)
   --book [VOL:]PAGE=TITLE  a locus the contents miss, starting at the heading on PAGE matching TITLE
+  --skip [VOL:]PAGE=TITLE  leave out from the heading on PAGE matching TITLE to the next locus (an
+                       index amid the front matter)
+  --trim [VOL:]PAGE=ENGLISH|LATIN  on PAGE, leave out each language's text before these words (a
+                       volume's contents run into its first page of text)
   --not-book [VOL:]PAGE  a level-two entry on PAGE that is not a locus (its entries join the one before)
   --rename [VOL:]PAGE=TITLE  a locus's title, where the contents garble it
                        (VOL: in that volume only, counting the slugs from 1)
@@ -41,14 +45,16 @@ Several slugs (a work's volumes) make one file, one work per slug unless --one-w
 Hutter, Quenstedt, Calov, Hollaz, Baier, Meisner (the Anthropologia and the Christologia) and Musaeus,
 as Loci ships them:
 
-  python3 tools/tfr-dogmatics-to-md.py "resources/dogmatics/Hutter Loci Communes.md" leonhard-hutter-loci-communes-theologici --title "Loci Communes Theologici" \\
+  python3 tools/tfr-dogmatics-to-md.py "resources/dogmatics/Hutter Loci Communes.md" leonhard-hutter-loci-communes-theologici --title "Loci Communes Theologici" --end 1072 \\
     --book "136=Topic II. Concerning the Person, or the two Natures of Christ the Savior" \\
     --rename "17=Prolegomena" --rename "27=On Holy Scripture and Unwritten Traditions" --rename "280=On Free Will" --rename "104=On God, One and Triune" --rename "136=On the Person and Two Natures of Christ" \\
     --rename "269=On Necessity and Contingency" --rename "323=On Original Sin" \\
     --rename "603=On the Sacraments in General" --rename "695=On the Lord's Supper" \\
     --rename "897=On the Resurrection of the Dead" --rename "905=On Christian Liberty"
 
-  python3 tools/tfr-dogmatics-to-md.py "resources/dogmatics/Quenstedt Theologia Didactico-Polemica.md" quenstedt-systema-theologicum --title "Theologia Didactico-Polemica" \\
+  python3 tools/tfr-dogmatics-to-md.py "resources/dogmatics/Quenstedt Theologia Didactico-Polemica.md" quenstedt-systema-theologicum --title "Theologia Didactico-Polemica" --end 2175 \\
+    --skip "591=CHAPTER I. On Theology in general. page 1" --skip "822=CHAPTER I. On the State of Integrity & the Image of GOD. page 1" \\
+    --skip "1483=CHAPTER I. On the Universal Benevolence of GOD. page 1" \\
     --book-depth 1 --book-match '^\\W*(?:chap|cap)' \\
     --section-match '\\b(?:section|sectio|question|quaestio|corollar|πόρισμ)' --chapter-match '(?!x)x' \\
     --book "1474=CHAPTER XI. ON RENEWAL." --book "2119=CHAPTER XIX. CONCERNING THE EXTREME JUDGMENT." \\
@@ -70,7 +76,7 @@ as Loci ships them:
     --rename "10:157=Concerning the Second Table of the Law, on the Love of Neighbour"
 
   python3 tools/tfr-dogmatics-to-md.py "resources/dogmatics/Hollaz Examen Theologicum Acroamaticum.md" david-hollaz-examen-theologicum-acroamaticum \\
-    --title "Examen Theologicum Acroamaticum" --any-depth --book-match '(?!x)x' --chapter-match '(?!x)x' \\
+    --title "Examen Theologicum Acroamaticum" --end 1414 --any-depth --book-match '(?!x)x' --chapter-match '(?!x)x' \\
     --section-match '^(?!.*\\b(?:chapter|caput|capvt|part|propaedeutics|preface|examen)\\b)' \\
     --book "30=THEOLOGICAL PROPAEDEUTICS CHAPTER I. PRESENTING A GENERAL PROLEGOMENON" --rename "30=Prolegomenon I: On Theology" \\
     --book "61=PRESENTING PROLEGOMENON II." --rename "61=Prolegomenon II: On Religion, the General Object of Theology" \\
@@ -117,6 +123,7 @@ as Loci ships them:
   python3 tools/tfr-dogmatics-to-md.py tools/sources/baier/baier-walther.md $B-vol-1 $B-vol-2 $B-vol-3a $B-vol-3b \\
     --one-work --title "Compendium Theologiae Positivae" --any-depth --open-titles --drop-running-heads \\
     --book-match '(?!x)x' --section-match '(?!x)x' --end 4:219 \\
+    --trim "2:1=OF POSITIVE THEOLOGY PART ONE|Dei a nomine" \\
     --book "1:1=Prolegomena, Chapter I. On the nature of theology" --rename "1:1=Prolegomena: On the Nature of Theology" \\
     --book "1:77=PROLEGOMENA Chapter II. ON THE PRINCIPLE OF REVEALED THEOLOGY" --rename "1:77=Prolegomena: On the Principle of Revealed Theology, or Holy Scripture" \\
     --book "2:1=THEOLOGY PART ONE Chapter I. CONCERNING GOD. § 1." --rename "2:1=Concerning God" \\
@@ -298,6 +305,25 @@ def blocks_of(slug):
     return meta, flat
 
 
+def trim_page(flat, page, en_from, la_from):
+    """The page's English before en_from and Latin before la_from left out (blocks left empty go)."""
+    out, seen = [], {2: False, 3: False}
+    for b in flat:
+        b = list(b)
+        if b[0] == page:
+            for lang, mark in ((2, en_from), (3, la_from)):
+                if not seen[lang]:
+                    at = b[lang].find(mark)
+                    if at < 0:
+                        b[lang] = ""
+                    else:
+                        b[lang], seen[lang] = b[lang][at:], True
+            if not b[2] and not b[3]:
+                continue
+        out.append(tuple(b))
+    return out
+
+
 def locate(flat, entries):
     """The block each contents entry starts at, in order: the best-matching heading on its page or
     a page either side (a heading and the one after it may together make the title), else the top
@@ -436,6 +462,8 @@ def main():
     ap.add_argument("--section-match")
     ap.add_argument("--chapter-match")
     ap.add_argument("--book", action="append", default=[])
+    ap.add_argument("--skip", action="append", default=[])
+    ap.add_argument("--trim", action="append", default=[])
     ap.add_argument("--not-book", action="append", default=[])
     ap.add_argument("--rename", action="append", default=[])
     args = ap.parse_args()
@@ -447,6 +475,8 @@ def main():
         return (int(vol) if vol else None), int(page), title
 
     adds = [scoped(x) for x in args.book]
+    skips = [scoped(x) for x in args.skip]
+    trims = [scoped(x) for x in args.trim]
     ends = [scoped(x + "=") for x in args.end]
     renames = [scoped(x) for x in args.rename]
     not_books = [scoped(x + "=")[:2] for x in args.not_book]
@@ -460,6 +490,9 @@ def main():
     dump = []  # with --dump-json: each locus's title and its paired blocks, for merging editions
     for k, slug in enumerate(args.slugs):
         meta, flat = blocks_of(slug)
+        for vol, page, words_ in trims:
+            if vol in (None, k + 1):
+                flat = trim_page(flat, page, *words_.split("|"))
         if args.drop_running_heads:
             flat = drop_running_heads(flat)
         if k == 0 or not args.one_work:
@@ -510,6 +543,9 @@ def main():
         for vol, page, title in adds:
             if vol in (None, k + 1):
                 entries.append({"title": title, "depth": depth, "page": page, "kind": "book", "added": True})
+        for vol, page, title in skips:
+            if vol in (None, k + 1):
+                entries.append({"title": title, "depth": depth, "page": page, "kind": "skip", "added": True})
         entries.sort(key=lambda e: (e["page"], 0 if e.get("added") else 1))
         # A locus entry that only names the locus the next one titles ("Place XXXII." then "On the
         # Civil Magistracy." on the same page) folds into it.

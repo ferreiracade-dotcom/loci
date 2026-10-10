@@ -94,3 +94,10 @@ describe('topicsOf on Meisner\'s Christologia', () => {
     expect(topicsOf('On Temporal Death')).toEqual(['death'])
   })
 })
+
+describe('topicsOf on the ascension', () => {
+  it('takes Christ\'s ascension into heaven for his work, not for heaven', () => {
+    expect(topicsOf('Q. 149. According to which nature does Christ ascend into heaven?')).toEqual(['work-of-christ'])
+    expect(topicsOf('Chapter V. concerning the Temptation of Jesus')).toEqual(['work-of-christ'])
+  })
+})

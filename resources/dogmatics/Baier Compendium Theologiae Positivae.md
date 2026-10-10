@@ -5456,35 +5456,7 @@ To this point it is also relevant that human beings, especially in calamities, t
 
 From Walther's edition (1879):
 
-JOH. WILH. BAIER COMPENDIUM OF POSITIVE THEOLOGY, WITH ADDED EXTENSIVE NOTES, BY WHICH ORTHODOX DOCTRINE IS EXPLAINED FOR ACADEMIC ΠΑΙΔΕΙΑ [EDUCATION] AND CONFIRMED FROM HOLY SCRIPTURE AND THE THEOLOGICAL REASONS RESTING UPON IT, PREPARED FOR A NEW EDITION BY Carl Ferd. Wilh. Walther, DOCTOR AND PROFESSOR OF SACRED THEOLOGY. AN ENLARGED AND IMPROVED EDITION. VOL. II. PARTS ONE AND TWO. IN THE CITY OF SAINT LOUIS FROM THE PRESS OF THE MISSOURI LUTHERAN SYNOD. (Luth. Concordia-Verlag.) 1879. TABLE OF CONTENTS OF THE SECOND VOLUME. PART ONE. page Chap. I. Concerning God 3
-
-and specifically concerning the existence, essence, and divine attributes 11
-
-concerning the mystery of the Most Holy Trinity 45
-
-Chap. II. Concerning creation 76
-
-Chap. III. Concerning the angels 103
-
-Chap. IV. Concerning the image of God bestowed upon man in the first creation 143
-
-Chap. V. Concerning the providence of God 160
-
-Chap. VI. Concerning eternal blessedness 181
-
-Chap. VII. Concerning eternal damnation 203
-
-Chap. VIII. Concerning temporal death 223
-
-Chap. IX. Concerning the resurrection of the dead 241
-
-Chap. X. Concerning the final judgment and the consummation of the age 250 PART TWO. Chap. I. Concerning sin in general 267
-
-Chap. II. Concerning original sin 280
-
-Chap. III. Concerning actual sins 308
-
-where temptation is also treated 317 OF POSITIVE THEOLOGY PART ONE Chapter I. CONCERNING GOD. § 1. By the name of God, we commonly understand the most excellent being of all, than which nothing better can be or be conceived; or the first being, which is from itself and is the cause of all other beings, and which preserves and governs all things. Quenstedtius: "The definition of the natural knowledge of God is this: Natural knowledge of God is that by which it becomes known to us from the light of nature that there is some supreme Deity, and that the same governs this whole universe and all things created by Him with His wisdom and power." (Theol. did.-pol. P. I. c. 6. s. 1. th. 10. f. 366.)
+OF POSITIVE THEOLOGY PART ONE Chapter I. CONCERNING GOD. § 1. By the name of God, we commonly understand the most excellent being of all, than which nothing better can be or be conceived; or the first being, which is from itself and is the cause of all other beings, and which preserves and governs all things. Quenstedtius: "The definition of the natural knowledge of God is this: Natural knowledge of God is that by which it becomes known to us from the light of nature that there is some supreme Deity, and that the same governs this whole universe and all things created by Him with His wisdom and power." (Theol. did.-pol. P. I. c. 6. s. 1. th. 10. f. 366.)
 
 That the subject of God must be treated first in theology is evident from Proleg. Chap. I. § 3. note c. p. 7, 8, compared with § 17. p. 38, and § 39. p. 76. Gerhardus: "Since Holy Scripture is the sole and proper principle of theology, we therefore rightly make our beginning from it. Some think that the explanation of theological topics should begin with the article concerning God, since He is the principle of being and the author of Holy Scripture itself; but in the treatment of disciplines, regard is had not so much to the principle of being as to the principle of knowing, and not so much to the dignity of the subject as to the ease of teaching and perceiving." (Exeges. l. I. § 1.)
 
@@ -5507,32 +5479,6 @@ ANTITHESIS. Quenstedtius: “Antithesis: 1. Of the Jews, who deny that the name 
 The same: “Antithesis: 1. Of the Socinians, who a. maintain that the name Elohim is attributed promiscuously to creatures and to God; likewise that the name אלהים is by its nature common and is attributed to God only *κατ’ εξοχήν* (by way of eminence). ... b. Because they utterly deny the mystery of the Trinity, they therefore constantly deny that a certain plurality in the divine essence is inferred by the word Elohim. ... 2. Of the Papists, such as Thomas, Bellarmine, and others. ... 3. Of the Calvinists, such as Calvin, Peter Martyr. ... 4. Of Dr. Calixtus the elder. All of whom agree in this, that the word Elohim is indeed plural in its termination, but singular in its signification, and denotes a single individual, by no means a plurality of persons in the unity of the divine essence.” (L. c. q. 2. f. 399.) §
 
 Latin:
-
-JOH. GUILIELMI BAIERI COMPENDIUM THEOLOGIAE POSITIVAE, ADJECTIS NOTIS AMPLIORIBUS, QUIBUS DOCTRINA ORTHODOXA AD ΠΑΙΔΕΙΑΝ ACADEMICAM EXPLICATUR ATQUE EX SCRIPTURA S. EIQUE INNIXIS RATIONIBUS THEO LOGICIS CONFIRMATUR, DENUO EDENDUM CURAVIT Carol. Ferd. Guil. Walther, SS. THEOLOGIAE DOCTOR ET PROFESSOR. EDITIO AUCTIOR ET EMENDATIOR. VOL. II. PARS PRIMA ET SECUNDA. IN URBE SANCTI LUDOVICI EΧ OFFICINA SYNODI ΜISSOURIENSIS LUTHERANAE. (Luth. Concordia·Verlag.) MDCCCLXXIX. CONSPECTUS VOLUMINIS SECUNDI. PARS PRIMA. pag. Cap. I. De Deo 3 et quidem de existentia, essentia, et attributis divinis 11 de mysterio SS. Trinitatis 45
-
-Cap. II. De creatione 76
-
-Cap. III. De angelis 103
-
-Cap. IV. De imagine Dei in prima creatione homini collata 143
-
-Cap. V. De providentia Dei 160
-
-Cap. VI. De beatitudine aeterna 181
-
-Cap. VII. De damnatione aeterna 203
-
-Cap. VIII. De morte temporali 223
-
-Cap. IX. De resurrectione mortuorum 241
-
-Cap. X. De judicio extremo et consummatione saeculi 250 PARS SECUNDA. Cap. I. De peccato in genere 267
-
-Cap. II. De peccato originis 280
-
-Cap. III. De peccatis actualibus 308 ubi etiam de tentatione agitur 317 THEOLOGIAE POSITIVAE PARTIS PRIMAE Caput I. DE DEO. § 1.
-
-Dei a nomine b vulgo intelligimus ens omnium c excellentissimum, quo nihil melius esse vel cogitari potest; vel ens primum, quod a se et caeterorum entium omnium causa est, atque omnia conservat et gubernat. d Quenstedtius: ״Definitio naturalis Dei cognitionis haec est: Notitia Dei naturalis est, qua, esse aliquod supremum Numen, idemque totum lioc universum et res omnes a se conditas sapientia et potentia sua gubernare, ex lumine naturae nobis innotescit. “ (Theol. did. -pol. P. I. c. 6. s. 1. th. 10. f. 366. ) Quod de Deo primum in theologia agendum sit, patet ex Proleg. Cap. I. § 3. not. c. p. 7. 8. collat. cum § 17. p. 38. et § 39. p. 76.Gerhardus: ״Cum Scriptura sacra sit unicum et proprium theologiae principium, ideo ab ea merito initium facimus. Quidam ab articulo de Deo explicationem locorum theolog. inchoandam censent, cum ipse sit principium essendi et ipsius Scripturae s. auctor; sed in disciplinarum tractatione non tam ad essendi, quam cognoscendi principium, nec tam ad rei dignitatem, quam tradendi et percipiendi facilitatem respectus habetur. “ (Exeges. l. I. § 1. ) Proprie videlicet accepto. Nam alias Dei vox improprie accipitur, quando transfertur ad creaturas caeteris excellentiores, v. g. angelos et magistratus, quin etiam ad idola gentilium, quae ex falsa hominum opinione habentur pro diis. Vid. not. a. ad § seq. 3.Quenstedtius: ״An etiam ullibi in Scripturis tribuatur ministris ecclesiae sive sacerdotibus (nomen Dei), dubitatur. Pro affirmativa quidam adducunt verba Exod. 4, 16.:, Tu (Moses) eris ei (Aaroni) לאאזים, pro Deo. ‘ Ex quo loco probare conantur, sacerdotes etiam vocari אורזים in s. S., quia Moses fuerit sacerdos. Ast Moses duplicem sustinuit personam sive duplex officium, politicum et ecclesiasticum; non ratione hujus, sed ratione illius vocatur Elohim, h. e., uti Aaron futurus erat Mosis interpres, sic Moses futurus erat judex et princeps Aaronis. “ (L. c. c. 7. s. l. th. 10. f. 388. ) PART. I. CAP. I.
 
 Nempe per experientiam constat, homines viatores omnes Deum non aliter concipere, quam in ordine ad res creatas. Vid. b. Mus. Introd. Cap. II. § 12. num. II. p. 76. Quo pertinet, quod homines, inprimis in calamitatibus, ad Deum confugiunt, quodque Optimum, Maximum vulgo nominant, conf. Senecam, de Benef. cap. VI. et VII.; quodque nunc, ut judicem, inter se aliosque compellant; nunc, male sibi conscii, metuunt, velut sanctissimum ac potentissimum.§ 2.
 
@@ -16568,7 +16514,7 @@ Nimirum gratias quidem appellatio locum habet ad excludenda nostra merita aut di
 
 In ordine ad bonum, videlicet salutem aeternam, quam nobis vult Deus. Est enim amoris seu caritatis, velle alteri, quae bona putes, eaque pro viribus studere efficere. Ac Deo quidem αγάπη seu amor erga nos, quales post lapsum sumus, adscribitur Joh. 3, 16. Πολλή αγάπη, ην ηγάπησεν ημάς, multa caritas, qua dilexit rios, etiam mm essemus mortui per delicta, Ephes. 2, 4. 5. Deus ipse caritatem suam erga nos, tanquam ingentem, imo singularem, commendare dicitur Rwn. 5, 8. Eadem, objecto simul.cum ipso actu in unam vocem concluso, dicitur φιλανθρωπία, amor erga homines, Tit. 3, 4. Eodem sensu cum voce amoris Graece χρηστότης Tit. 3, 4׳l.egitur; χρηστός autem dicitur, qui alteri utilis, aut causa boni, felicitatis, salutis ejus est. § 3.
 
-### Concerning the Grace of God toward Fallen Men: In the same sense, with the word for love, χρηστότης (kindness) is read in…
+### In the same sense, with the word for love, χρηστότης (kindness) is read in…
 In the same sense, with the word for love, χρηστότης (kindness) is read in Greek, Tit. 3:4; but he is called χρηστός (kind) who is useful to another, or the cause of his good, happiness, and salvation. § 3. The object of this grace is all and every human being, even if corrupted by sin.
 
 Whence it is commonly called universal grace, an appellation taken from the object, which is the whole human race; as is indicated by the following words. Who, being hitherto equal in misery, agree together in the being of a creature, nay, in human nature itself, loved by God above other species of creatures, and all having once been endowed with the image of God in Adam, so equally all, with no one excepted, are the object of divine grace or mercy and benignity.
@@ -16659,7 +16605,7 @@ V. Frider. Spanhemius exerc. de grat. univ. s. 5. th. 7. p. 127. et 128. contend
 
 VI. Polanus in syntagm. p. 613.: ,Deus‘, inquit, ,hic (apud Ezech.) non loquitur de voluntate arcana et beneplaciti, neque de omnibus improbis; voluntate enim arcana et beneplaciti vult omnium eorum, qui pereunt, i. e. (reproborum, mortem; sed loquitur de voluntate signi, revelata in evangelio, quo omnibus offert misericordiam et salutem, ut liberentur a morte et vivant.‘ “ (L. c. P. III. c. 3. s. 2. q. 1. f. 12—17.)
 
-### Concerning the Grace of God toward Fallen Men: ANTITHESIS. Quenstedtius
+### ANTITHESIS. Quenstedtius
 ANTITHESIS. Quenstedtius: "Antithesis: 1. Of the ancient heretics, who were called Predestinarians, who around the year of Christ 415, and Gottschalk the Belgian, who in the year of Christ 849, taught that God absolutely predestined some to death, and does not will the salvation of all. . .
 
 2. Of the Calvinists, who posit that God indeed wills all to be saved by the will manifested in the Scriptures, or the will of the sign, but by His secret will, which they call the will of good pleasure, He wills to save only the elect. Thus Beza, part 2, *Response to the Acts of the Colloquy of Montbéliard*, p. 194, writes: 'There has been no time, nor is there, nor will there be, in which God has willed, wills, or will will to have mercy on individuals.' Calvin, Bk. 3, *Institutes*, ch. 23, § 1, 4, sq. . .
@@ -16726,7 +16672,7 @@ De quibus singulis suo loco distincte agetur, v. g. de mediatore communi omnium,
 
 § 5. Cumque in Deo praeter bonitatem a etiam justitia b vindicativa sit agnoscenda, certum est, bonitatem illam sic tendere in hominum salutem, ut nec justitiae aliquid c decedat; ideoque ipsa bonitas Dei Deum movet ad procurandum d medium, quo justitiae divinae pro peccatoribus satisfiat. Qua non solum in se, sed et hominibus, etiam peccatoribus, tanquam creaturis suis bonus est quaeque gratiae nomine hactenus nobis venit. Tanquam essentiale Dei attributum, juxta P. I. cap. I. § 23. Vol. II. p. 39. Cujus vi Deus ut peccata non potest non odisse, sic ad postulandam satisfactionem pro violatione legis suae non potest non inclinare. Non enim possunt sibi adversari, quae simul in Deo sunt, in quo nulla locum habet inordinatio. Itaque et bonitas aut gratia illa Dei non aliter tendit ad salutem hominum peccatorum, quam in quantum, salva justitia divina, fieri potest. Quenstedtius: ,,Objicit Socinus Praelect. theol. c. 16. fol. 87.: ,Nemo est, qui injurias sibi illatas debitaque secum contracta summo jure condonare et remittere non queat, nulla vera pro ipsis satisfactione accepta. Igitur nisi velimus Deo minus concedere, quam hominibus ipsis concedatur, confitendum omnino est, Deum jure potuisse nobis peccata nostra ignoscere, nulla pro ipsis vera satisfactione accepta.‘ Resp.:
 
-### Concerning the Grace of God toward Fallen Men: Distinguish between the absolute power of God and His ordained power revealed…
+### Distinguish between the absolute power of God and His ordained power revealed…
 1. Distinguish between the absolute power of God and His ordained power revealed in the Word. The question here is not what God could do absolutely (namely, whether He could remit sins without satisfaction), but what He willed and how He has revealed Himself. There is no need to dispute about the power of God where His will is established by revelation.
 
 2. Regarding the argument: 'if it is permitted for any man to remit injuries inflicted upon him without satisfaction, it will also be permitted for God,' we deny both the antecedent and the consequent; the former, because the situation of man is one thing, and that of God, who is the supreme judge of the whole universe, is another; the latter, because a magistrate does not have a free hand to use or not use the sword, to avenge or not avenge injuries that are harmful to the public...
