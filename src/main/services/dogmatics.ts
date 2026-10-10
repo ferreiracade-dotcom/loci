@@ -21,7 +21,9 @@ import type {
 // chapters' and its sections in the verses'. Each Markdown file in the vault's dogmatics/ folder
 // is one source (see dogmaticsMarkdown.ts for the format); like the commentaries, the ones Loci
 // ships are copied in from resources/dogmatics on first launch and travel with the vault. They
-// come from The Faith Received's Latin and its machine translation, by tools/tfr-dogmatics-to-md.py.
+// come from The Faith Received's Latin and its machine translation, by tools/tfr-dogmatics-to-md.py,
+// except Baier's 1686 Compendium, a machine translation prepared by Kaden Green, converted from his
+// PDF by tools/pdf-dogmatics-to-md.py.
 
 /** Title and author for each shipped file (a Markdown file carries only its name). */
 export const BUNDLED_DOGMATICS: Record<string, { title: string; author: string }> = {
@@ -35,6 +37,10 @@ export const BUNDLED_DOGMATICS: Record<string, { title: string; author: string }
   'Baier Compendium Theologiae Positivae.md': {
     title: 'Compendium Theologiae Positivae',
     author: 'Johann Wilhelm Baier, ed. C. F. W. Walther'
+  },
+  'Baier Compendium 1686.md': {
+    title: 'Compendium Theologiae Positivae (1686)',
+    author: 'Johann Wilhelm Baier (machine translation, prepared by Kaden Green)'
   }
 }
 

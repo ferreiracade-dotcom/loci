@@ -1,6 +1,6 @@
 """A dogmatics typeset in Word as a two-column PDF -> one Loci dogmatics Markdown file.
 
-Made for Kaden Green's translation of Baier's Compendium Theologiae Positivae (Jena 1686), whose
+Made for the machine translation, prepared by Kaden Green, of Baier's Compendium Theologiae Positivae (Jena 1686), whose
 pages run: a running head at the top, a page number at the foot, chapter titles in large type
 across both columns ("CHAPTER II." / "ON FAITH IN CHRIST."), and the text in two columns of
 numbered paragraphs ("§ I. ...", "§ II. ...") each followed by its "Notes.". Each chapter (or
@@ -9,8 +9,10 @@ numbered as the edition numbers it.
 
   python3 tools/pdf-dogmatics-to-md.py <in.pdf> <out.md> --title TITLE
 
-The translation is modern and not for redistribution, so its Markdown goes to the user's own vault
-(the dogmatics folder), not into resources/dogmatics.
+As Loci ships it:
+
+  python3 tools/pdf-dogmatics-to-md.py baier.pdf "resources/dogmatics/Baier Compendium 1686.md" \\
+      --title "Compendium Theologiae Positivae (1686)"
 """
 import argparse
 import re
