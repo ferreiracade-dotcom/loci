@@ -6,6 +6,53 @@ interface Migration {
   up: (db: Database.Database) => void
 }
 
+/** Dogmatics: works read the way a commentary is, with the work in the Bible book's place,
+ *  its books in the chapters' and its sections in the verses'. One source per Markdown file
+ *  (which may hold several works); sections are discovered from the file, so the edition's
+ *  printed numbers and titles are stored per row. Quotes carry the source, a "w.b.s"
+ *  ordinal ref for navigation and the citable location captured at quote time.
+ *  Idempotent, because it runs as both version 20 and version 22 (see there). */
+function createDogmatics(db: Database.Database): void {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS dogmatics_sources (
+      id                TEXT PRIMARY KEY,
+      display_name      TEXT NOT NULL,
+      author            TEXT,
+      md_relative_path  TEXT NOT NULL UNIQUE,
+      sort_order        INTEGER NOT NULL DEFAULT 0,
+      indexed_at        TEXT,
+      status            TEXT NOT NULL DEFAULT 'unindexed'
+    );
+
+    CREATE TABLE IF NOT EXISTS dogmatics_sections (
+      id               TEXT PRIMARY KEY,
+      source_id        TEXT NOT NULL REFERENCES dogmatics_sources(id) ON DELETE CASCADE,
+      work_ordinal     INTEGER NOT NULL,
+      work_title       TEXT NOT NULL,
+      book_ordinal     INTEGER NOT NULL,
+      book_number      TEXT,
+      book_title       TEXT NOT NULL,
+      section_ordinal  INTEGER NOT NULL,
+      section_number   TEXT,
+      section_title    TEXT NOT NULL,
+      text             TEXT NOT NULL
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_dogmatics_sections_key
+      ON dogmatics_sections(source_id, work_ordinal, book_ordinal, section_ordinal);
+  `)
+  const cols = new Set(
+    (db.prepare('PRAGMA table_info(quotes)').all() as { name: string }[]).map((c) => c.name)
+  )
+  const add: [string, string][] = [
+    ['dogmatics_source_id', 'TEXT REFERENCES dogmatics_sources(id) ON DELETE CASCADE'],
+    ['dogmatics_ref', 'TEXT'],
+    ['dogmatics_label', 'TEXT']
+  ]
+  for (const [name, type] of add) {
+    if (!cols.has(name)) db.exec(`ALTER TABLE quotes ADD COLUMN ${name} ${type}`)
+  }
+}
+
 // Append new migrations here; never edit a shipped one. The index is rebuildable
 // from the vault, so destructive forward migrations are acceptable when needed.
 const migrations: Migration[] = [
@@ -422,21 +469,36 @@ const migrations: Migration[] = [
   },
   {
     version: 20,
+    name: 'dogmatics',
+    up: (db) => createDogmatics(db)
+  },
+  {
+    version: 21,
     name: 'history',
     up: (db) => {
       // Browsing history for the History page tab: one row per visited tab location.
       // `location` is the tab's content (TabContent) as JSON, so a row can be reopened.
+      // IF NOT EXISTS: a database from before the merge with main may already have this table
+      // (it was version 20 there).
       db.exec(`
-        CREATE TABLE history (
+        CREATE TABLE IF NOT EXISTS history (
           id          INTEGER PRIMARY KEY AUTOINCREMENT,
           visited_at  TEXT NOT NULL,
           kind        TEXT NOT NULL,
           title       TEXT NOT NULL,
           location    TEXT NOT NULL
         );
-        CREATE INDEX idx_history_visited ON history(visited_at);
+        CREATE INDEX IF NOT EXISTS idx_history_visited ON history(visited_at);
       `)
     }
+  },
+  {
+    version: 22,
+    name: 'dogmatics (databases whose version 20 was history)',
+    // Two lines of development both shipped a version 20 (dogmatics on main, history on the
+    // Chrome UI branch). A database at either one reaches 22 with both tables; this re-runs the
+    // idempotent dogmatics setup for the branch's databases and is a no-op otherwise.
+    up: (db) => createDogmatics(db)
   }
 ]
 

@@ -1,16 +1,19 @@
 import { describe, expect, it } from 'vitest'
 import {
   BOC_DOCUMENTS, bocDocument, documentCodeFromName, parseBocRef, formatBocRef,
-  bocSectionMatches, fromRoman, parseBocQuery, toRoman
+  bocRowMatches, bocSectionMatches, fromRoman, parseBocQuery, toRoman
 } from './bookOfConcord'
 
 describe('BOC_DOCUMENTS', () => {
-  it('lists all 14 documents in nav order with unique codes and 1..14 sortOrder', () => {
+  it('lists all 13 documents in nav order with unique codes and 1..13 sortOrder', () => {
     expect(BOC_DOCUMENTS.map((d) => d.code)).toEqual([
-      'CR-AP','CR-NI','CR-ATH','AC','AP','SA','TR','SC','LC','FC-EP','FC-SD','CT','BEC','SVA'
+      'PREF','CR','AC','AP','SA','TR','SC','LC','FC-EP','FC-SD','CT','BEC','SVA'
     ])
-    expect(new Set(BOC_DOCUMENTS.map((d) => d.code)).size).toBe(14)
-    expect(BOC_DOCUMENTS.map((d) => d.sortOrder)).toEqual([...Array(14)].map((_, i) => i + 1))
+    expect(new Set(BOC_DOCUMENTS.map((d) => d.code)).size).toBe(13)
+    expect(BOC_DOCUMENTS.map((d) => d.sortOrder)).toEqual([...Array(13)].map((_, i) => i + 1))
+  })
+  it('flags the documents the site presents as a single page', () => {
+    expect(BOC_DOCUMENTS.filter((d) => d.singleSection).map((d) => d.code)).toEqual(['PREF', 'TR', 'CT', 'BEC'])
   })
   it('puts the three appendices last', () => {
     expect(BOC_DOCUMENTS.slice(-3).map((d) => d.code)).toEqual(['CT','BEC','SVA'])
@@ -19,15 +22,17 @@ describe('BOC_DOCUMENTS', () => {
 
 describe('helpers', () => {
   it('looks up a document definition by code', () => {
-    expect(bocDocument('AC')?.title).toBe('Augsburg Confession')
+    expect(bocDocument('AC')?.title).toBe('The Augsburg Confession')
     expect(bocDocument('ZZ')).toBeUndefined()
   })
   it('resolves a document by title, abbreviation, code, or Reader\'s Edition heading spelling', () => {
     expect(documentCodeFromName('Augsburg Confession')).toBe('AC')
     expect(documentCodeFromName('augsburg confession')).toBe('AC')
+    expect(documentCodeFromName('Preface to the Book of Concord')).toBe('PREF')
+    expect(documentCodeFromName('Preface to the Christian Book of Concord')).toBe('PREF')
     expect(documentCodeFromName('AC')).toBe('AC')
     expect(documentCodeFromName('The Augsburg Confession (1530)')).toBe('AC')
-    expect(documentCodeFromName('The Creed of Athanasius')).toBe('CR-ATH')
+    expect(documentCodeFromName('The Three Universal or Ecumenical Creeds')).toBe('CR')
     expect(documentCodeFromName('Catalog of Testimonies')).toBe('CT')
     expect(documentCodeFromName('nonsense')).toBeUndefined()
   })
@@ -57,7 +62,9 @@ describe('parseBocQuery (omnibox)', () => {
     ['FC-SD 10', [{ code: 'FC-SD', article: 'X' }]],
     ['fc ep iii', [{ code: 'FC-EP', article: 'III' }]],
     ['fc x', [{ code: 'FC-EP', article: 'X' }, { code: 'FC-SD', article: 'X' }]],
-    ['nicene', [{ code: 'CR-NI' }]]
+    ['nicene', [{ code: 'CR', section: 'Nicene' }]],
+    ['Apostles’ Creed', [{ code: 'CR', section: 'Apostles' }]],
+    ['creeds', [{ code: 'CR' }]]
   ])('%s', (q, expected) => {
     expect(parseBocQuery(q)).toEqual(expected)
   })
@@ -84,5 +91,24 @@ describe('bocSectionMatches', () => {
     expect(bocSectionMatches('4', 'IV')).toBe(true)
     expect(bocSectionMatches('IV', 'V')).toBe(false)
     expect(bocSectionMatches(null, 'I')).toBe(false)
+  })
+})
+
+describe('bocRowMatches (sections as bookofconcord.cph.org numbers them)', () => {
+  const row = (number: string | null, label: string): { number: string | null; label: string } => ({ number, label })
+  it('matches the number, including dual numbering, joined and lettered articles', () => {
+    expect(bocRowMatches(row('IV', 'Justification'), 'IV')).toBe(true)
+    expect(bocRowMatches(row('IV (II)', 'Justification'), 'IV')).toBe(true)
+    expect(bocRowMatches(row('IV (II)', 'Justification'), 'II')).toBe(false)
+    expect(bocRowMatches(row('VII and VIII (IV)', 'The Church'), 'VIII')).toBe(true)
+    expect(bocRowMatches(row('XIIa (V)', 'Repentance'), 'XII')).toBe(true)
+  })
+  it('falls back to a numeral leading the label', () => {
+    expect(bocRowMatches(row(null, 'X. Church Practices'), 'X')).toBe(true)
+    expect(bocRowMatches(row(null, 'II. The Creed'), 'II')).toBe(true)
+    expect(bocRowMatches(row(null, 'Article II'), 'II')).toBe(true)
+    expect(bocRowMatches(row(null, 'Introduction'), 'I')).toBe(false)
+    expect(bocRowMatches(row(null, 'Civil Government'), 'C')).toBe(false)
+    expect(bocRowMatches(row(null, 'Preface'), 'I')).toBe(false)
   })
 })

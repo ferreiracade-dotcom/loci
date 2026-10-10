@@ -5,7 +5,7 @@ import { deviceIdentity, localVaultDir, readConfig } from './config'
 // Notes + highlights (and the `app` folder: bookmarks, saved tab groups) are mirrored between the local working copy and the Drive vault. PDFs,
 // covers and other large assets are NOT synced here — they stay on Drive (streamed) and use
 // the library's own local-first resolution.
-const SUBDIRS = ['notes', 'highlights', 'commentaries', 'app']
+const SUBDIRS = ['notes', 'highlights', 'commentaries', 'dogmatics', 'app']
 
 /** Per-device sync folders under `app/` (see browserSync.ts); mirrored by `syncDeviceFolders`. */
 const DEVICE_SYNC_DIR = 'sync'

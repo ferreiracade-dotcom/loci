@@ -46,6 +46,44 @@ function useBocSection(tab: Tab | undefined): { number: string | null; label: st
   return key ? (sectionCache.get(key) ?? null) : null
 }
 
+const readerCache = new Map<string, { source?: string; place?: string } | null>()
+
+/** The focused Commentary/Dogmatics tab's source name and (Dogmatics) book title, for its
+ *  breadcrumb ("Dogmatics › Hollaz › Of God"). */
+function useReaderNames(tab: Tab | undefined): { source?: string; place?: string } | null {
+  const kind = tab?.kind === 'commentary' || tab?.kind === 'dogmatics' ? tab.kind : undefined
+  const sourceId = kind === 'commentary' ? tab?.commentarySourceId : kind === 'dogmatics' ? tab?.dogmaticsSourceId : undefined
+  const work = tab?.dogmaticsWork
+  const book = tab?.dogmaticsBook
+  const key = kind && sourceId ? `${kind}:${sourceId}:${kind === 'dogmatics' ? `${work}:${book}` : ''}` : ''
+  const [, bump] = useState(0)
+  useEffect(() => {
+    if (!key || readerCache.has(key) || !sourceId) return
+    let alive = true
+    void (async () => {
+      try {
+        if (kind === 'commentary') {
+          const source = (await api.listCommentarySources()).find((s) => s.id === sourceId)
+          readerCache.set(key, source ? { source: source.displayName } : null)
+        } else {
+          const source = (await api.listDogmaticsSources()).find((s) => s.id === sourceId)
+          const outline = source ? await api.listDogmaticsOutline(sourceId) : []
+          const b = outline.find((w) => w.ordinal === work)?.books.find((x) => x.ordinal === book)
+          const place = b ? [b.number, b.title].filter(Boolean).join(' ') : undefined
+          readerCache.set(key, source ? { source: source.displayName, place } : null)
+        }
+      } catch {
+        readerCache.set(key, null)
+      }
+      if (alive) bump((n) => n + 1)
+    })()
+    return () => {
+      alive = false
+    }
+  }, [key, kind, sourceId, work, book])
+  return key ? (readerCache.get(key) ?? null) : null
+}
+
 /**
  * The omnibox suggestion list for `text` (empty when blank), from the open tabs, bookmarks,
  * books and notes. Shared by the omnibox and the New Tab page's search box.
@@ -84,6 +122,7 @@ export function Omnibox() {
   const toggleBookmark = useStore((s) => s.toggleBookmark)
   const setToast = useStore((s) => s.setToast)
   const bocSection = useBocSection(tab)
+  const reader = useReaderNames(tab)
 
   const [editing, setEditing] = useState(false)
   const [text, setText] = useState('')
@@ -93,7 +132,7 @@ export function Omnibox() {
   const inputRef = useRef<HTMLInputElement>(null)
   const starRef = useRef<HTMLButtonElement>(null)
 
-  const ctx: TitleContext = useMemo(() => ({ books, notes, bocSection }), [books, notes, bocSection])
+  const ctx: TitleContext = useMemo(() => ({ books, notes, bocSection, reader }), [books, notes, bocSection, reader])
   const crumbs = tab ? tabBreadcrumb(tab, ctx) : []
   const locationText = tab ? tabLocationText(tab, ctx) : ''
   const location = tab ? tabContent(tab) : null

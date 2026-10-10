@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { PanelLeftClose, PanelLeftOpen, Replace, X } from 'lucide-react'
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import type { Tab } from '../../store/useStore'
 import { api } from '../../lib/api'
@@ -7,39 +7,12 @@ import { BOC_DOCUMENTS } from '@shared/bookOfConcord'
 import type { BocSectionRow, BocSource } from '@shared/ipc'
 import { BocReader } from './BocReader'
 import { useOpenElsewhereMenu } from './OpenElsewhere'
-import { bocSectionLabel } from '../../lib/bocGrouping'
-
-interface PartGroup {
-  part: string | null
-  rows: BocSectionRow[]
-}
-
-/** Group an ordinal-ordered section list into contiguous runs sharing the same `part` — parts
- *  appear as unbroken runs in reading order, so this reproduces the document's own part
- *  headings without needing a separate lookup. */
-function groupByPart(rows: BocSectionRow[]): PartGroup[] {
-  const groups: PartGroup[] = []
-  for (const r of rows) {
-    const last = groups[groups.length - 1]
-    if (last && last.part === r.part) last.rows.push(r)
-    else groups.push({ part: r.part, rows: [r] })
-  }
-  return groups
-}
-
+import { bocSectionLabel, groupByPart } from '../../lib/bocGrouping'
 
 /** A Book of Concord document in a center workspace pane: the collapsible document-nav drawer
  *  (mirrors BiblePane's book drawer) plus the BocReader. Navigation and source changes update
  *  *this* pane only. */
-export function BocPane({
-  tab,
-  onClose,
-  onReplace
-}: {
-  tab: Tab
-  onClose?: () => void
-  onReplace?: () => void
-}) {
+export function BocPane({ tab }: { tab: Tab }) {
   const setTabContent = useStore((s) => s.setTabContent)
   const bocSectionClicked = useStore((s) => s.bocSectionClicked)
   const addBocQuote = useStore((s) => s.addBocQuote)
@@ -131,46 +104,64 @@ export function BocPane({
         <div key={d.code} className="sv-book-wrap">
           <button
             className={`sv-book${documentCode === d.code ? ' active' : ''}`}
-            onClick={() => setExpanded(expanded === d.code ? null : d.code)}
+            onClick={() => {
+              // A one-page document has nothing to expand into — open it directly.
+              if (d.singleSection) {
+                setExpanded(null)
+                navigate(d.code, 1)
+              } else setExpanded(expanded === d.code ? null : d.code)
+            }}
+            onContextMenu={
+              d.singleSection
+                ? (e) => onContextMenu(e, { kind: 'boc', documentCode: d.code, sectionOrdinal: 1, bocSourceId })
+                : undefined
+            }
           >
             {d.title}
           </button>
-          {expanded === d.code && (
+          {expanded === d.code && !d.singleSection && (
             <div style={{ paddingLeft: 8 }}>
               {sectionsLoading ? (
                 <div className="sr-loading" style={{ height: 'auto', padding: '6px 8px' }}>
                   Loading…
                 </div>
               ) : (
-                groupByPart(sections).map((g, gi) => (
-                  <div key={gi}>
-                    {g.part && (
-                      <div className="sv-testament-head" style={{ padding: '6px 8px 2px' }}>
-                        {g.part}
-                      </div>
-                    )}
-                    {g.rows.map((r) => (
-                      <button
-                        key={r.ordinal}
-                        className={`sv-book${
-                          documentCode === d.code && sectionOrdinal === r.ordinal ? ' active' : ''
-                        }`}
-                        style={{ fontSize: 12.5 }}
-                        onClick={() => navigate(d.code, r.ordinal)}
-                        onContextMenu={(e) =>
-                          onContextMenu(e, {
-                            kind: 'boc',
-                            documentCode: d.code,
-                            sectionOrdinal: r.ordinal,
-                            bocSourceId
-                          })
-                        }
-                      >
-                        {bocSectionLabel(r)}
-                      </button>
-                    ))}
-                  </div>
-                ))
+                groupByPart(sections).map((g, gi) => {
+                  const row = (r: BocSectionRow): JSX.Element => (
+                    <button
+                      key={r.ordinal}
+                      className={`sv-book${
+                        documentCode === d.code && sectionOrdinal === r.ordinal ? ' active' : ''
+                      }`}
+                      style={{ fontSize: 12.5 }}
+                      onClick={() => navigate(d.code, r.ordinal)}
+                      onContextMenu={(e) =>
+                        onContextMenu(e, {
+                          kind: 'boc',
+                          documentCode: d.code,
+                          sectionOrdinal: r.ordinal,
+                          bocSourceId
+                        })
+                      }
+                    >
+                      {bocSectionLabel(r)}
+                    </button>
+                  )
+                  return (
+                    <div key={gi}>
+                      {g.head ? (
+                        row(g.head)
+                      ) : (
+                        g.part && (
+                          <div className="sv-testament-head" style={{ padding: '6px 8px 2px' }}>
+                            {g.part}
+                          </div>
+                        )
+                      )}
+                      {g.head ? <div style={{ paddingLeft: 10 }}>{g.rows.map(row)}</div> : g.rows.map(row)}
+                    </div>
+                  )
+                })
               )}
             </div>
           )}
@@ -186,35 +177,15 @@ export function BocPane({
           <button className="rail-btn" title="Show documents" onClick={() => toggleNav(false)}>
             <PanelLeftOpen size={16} />
           </button>
-          {onReplace && (
-            <button className="rail-btn" title="Change content" onClick={onReplace}>
-              <Replace size={16} />
-            </button>
-          )}
-          {onClose && (
-            <button className="rail-btn" title="Close pane" onClick={onClose}>
-              <X size={16} />
-            </button>
-          )}
         </div>
       ) : (
         <div className="sv-nav">
           <div className="sv-nav-top">
             <div className="sv-nav-bar">
               <span className="sv-nav-title">Confessions</span>
-              {onReplace && (
-                <button className="icon-btn" title="Change content" onClick={onReplace}>
-                  <Replace size={15} />
-                </button>
-              )}
               <button className="icon-btn" title="Hide documents" onClick={() => toggleNav(true)}>
                 <PanelLeftClose size={15} />
               </button>
-              {onClose && (
-                <button className="icon-btn" title="Close pane" onClick={onClose}>
-                  <X size={15} />
-                </button>
-              )}
             </div>
           </div>
           <div className="sv-books">{docList}</div>

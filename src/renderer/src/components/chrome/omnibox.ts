@@ -8,9 +8,9 @@ export type OmniAction =
   /** Show this location (in the current tab, or a new one with Alt+Enter). */
   | { type: 'open'; content: TabContent }
   /** A Confessions article: its section ordinal is looked up when it is opened. */
-  | { type: 'boc'; code: string; article?: string }
+  | { type: 'boc'; code: string; article?: string; section?: string }
   /** The Bible or Confessions at the last-read place. */
-  | { type: 'view'; view: 'bible' | 'confessions' }
+  | { type: 'view'; view: 'bible' | 'confessions' | 'commentary' | 'dogmatics' }
   | { type: 'switch'; tabId: string }
   | { type: 'search'; query: string }
 
@@ -105,8 +105,12 @@ export function buildSuggestions(query: string, data: OmniData, opts: { searchFi
   for (const b of boc) {
     const doc = bocDocument(b.code)
     out.push({
-      action: { type: 'boc', code: b.code, article: b.article },
-      label: `${doc?.title ?? b.code}${b.article ? `, Article ${b.article}` : ''}`,
+      action: b.section
+        ? { type: 'boc', code: b.code, section: b.section }
+        : { type: 'boc', code: b.code, article: b.article },
+      label: b.section
+        ? `${doc?.title ?? b.code}, ${b.section}`
+        : `${doc?.title ?? b.code}${b.article ? `, Article ${b.article}` : ''}`,
       hint: 'Confessions',
       icon: 'boc'
     })
@@ -146,6 +150,14 @@ export function buildSuggestions(query: string, data: OmniData, opts: { searchFi
       {
         title: 'Confessions',
         suggestion: { action: { type: 'view', view: 'confessions' }, label: 'Confessions', hint: 'Go to', icon: 'boc' }
+      },
+      {
+        title: 'Commentary',
+        suggestion: { action: { type: 'view', view: 'commentary' }, label: 'Commentary', hint: 'Go to', icon: 'commentary' }
+      },
+      {
+        title: 'Dogmatics',
+        suggestion: { action: { type: 'view', view: 'dogmatics' }, label: 'Dogmatics', hint: 'Go to', icon: 'dogmatics' }
       },
       ...PAGES.map((p) => ({
         title: p.label,

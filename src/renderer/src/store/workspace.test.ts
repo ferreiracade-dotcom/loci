@@ -316,6 +316,19 @@ describe('tabContent / contentKey', () => {
     const group = { type: 'author', author: 'Calvin' } as const
     expect(tabContent({ ...base, kind: 'quotes', quotesGroup: group })).toEqual({ kind: 'quotes', quotesGroup: group })
     expect(tabContent({ ...base, kind: 'settings' })).toEqual({ kind: 'settings' })
+    expect(
+      tabContent({ ...base, kind: 'commentary', commentarySourceId: 's1', book: '1CO', chapter: 10, verse: 4 })
+    ).toEqual({ kind: 'commentary', commentarySourceId: 's1', book: '1CO', chapter: 10, verse: 4 })
+    expect(
+      tabContent({ ...base, kind: 'dogmatics', dogmaticsSourceId: 'd1', dogmaticsWork: 2, dogmaticsBook: 3, sectionOrdinal: 5 })
+    ).toEqual({
+      kind: 'dogmatics',
+      dogmaticsSourceId: 'd1',
+      dogmaticsWork: 2,
+      dogmaticsBook: 3,
+      sectionOrdinal: 5,
+      dogmaticsTopic: undefined
+    })
   })
 
   it('treats highlights as the same location and chapters as different', () => {
@@ -416,6 +429,57 @@ describe('restore: validate, sanitize, round trip, legacy migration', () => {
     expect(ws.activeTabId).toBe('r2')
     expect(Object.values(ws.splitRatios)).toEqual([0.6])
     expect(ws.tabs.some((t) => 'paneId' in t)).toBe(false)
+  })
+
+  it('migrates a two-pane session holding commentary and dogmatics tabs', () => {
+    const legacy = {
+      tabs: [
+        { id: 'c1', paneId: 'L', order: 0, kind: 'commentary', commentarySourceId: 'lenski', book: 'ROM', chapter: 3, verse: 28 },
+        { id: 'b1', paneId: 'L', order: 1, kind: 'bible', book: 'ROM', chapter: 3 },
+        {
+          id: 'd1',
+          paneId: 'R',
+          order: 0,
+          kind: 'dogmatics',
+          dogmaticsSourceId: 'hollaz',
+          dogmaticsWork: 1,
+          dogmaticsBook: 4,
+          sectionOrdinal: 2,
+          dogmaticsTopic: 'justification'
+        }
+      ],
+      paneOrder: [
+        { id: 'L', activeTabId: 'c1' },
+        { id: 'R', activeTabId: 'd1' }
+      ],
+      activePaneId: 'L'
+    }
+    const ws = parsePersistedWorkspace(JSON.stringify(legacy))
+    expect(sortedTabs(ws.tabs).map((t) => t.id)).toEqual(['c1', 'd1', 'b1'])
+    expect(splitPartner(ws.tabs, 'c1')?.id).toBe('d1')
+    expect(ws.activeTabId).toBe('c1')
+    const c = ws.tabs.find((t) => t.id === 'c1')!
+    expect(tabContent(c)).toEqual({ kind: 'commentary', commentarySourceId: 'lenski', book: 'ROM', chapter: 3, verse: 28 })
+    expect(c.history).toEqual([tabContent(c)])
+    const d = ws.tabs.find((t) => t.id === 'd1')!
+    expect(tabContent(d)).toEqual({
+      kind: 'dogmatics',
+      dogmaticsSourceId: 'hollaz',
+      dogmaticsWork: 1,
+      dogmaticsBook: 4,
+      sectionOrdinal: 2,
+      dogmaticsTopic: 'justification'
+    })
+    // And it survives a save and restore in the new format.
+    expect(parsePersistedWorkspace(serializeWorkspace(ws))).toEqual(ws)
+  })
+
+  it('moves tabs on the retired per-creed Confessions codes onto the Creeds document', () => {
+    const ws = sanitizeWorkspace({
+      tabs: [{ id: 'n', order: 0, kind: 'boc', documentCode: 'CR-NI', sectionOrdinal: 1 }],
+      activeTabId: 'n'
+    })
+    expect(tabContent(ws.tabs[0])).toMatchObject({ kind: 'boc', documentCode: 'CR', sectionOrdinal: 2 })
   })
 
   it('migrates a single pane without making a split', () => {

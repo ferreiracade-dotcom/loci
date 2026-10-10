@@ -3,10 +3,12 @@ import { BookOpen, FileText, ScrollText, ChevronRight, ChevronDown } from 'lucid
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { getCachedCover, setCachedCover } from '../../lib/coverCache'
+import { bocDocument, parseBocRef } from '@shared/bookOfConcord'
 import type { Book, SearchHit } from '@shared/ipc'
 
-/** Group hits by book (page/quote), by chapter ref (scripture), or bundle notes together. */
+/** Group hits by book (page/quote), by BoC document (confession), by chapter ref (scripture), or bundle notes together. */
 function groupKeyFor(h: SearchHit): string {
+  if (h.kind === 'confession') return `c:${parseBocRef(h.ref ?? '')?.code ?? h.bookId ?? ''}`
   if (h.bookId) return `b:${h.bookId}`
   if (h.kind === 'scripture' && h.ref) return `s:${h.ref}`
   return 'notes'
@@ -57,7 +59,7 @@ function GroupThumb({ bookId, kind, books }: { bookId: string | null; kind: stri
   if (src) return <img className="hit-thumb" src={src} alt="" draggable={false} />
   return (
     <div className="hit-thumb hit-thumb-fallback">
-      {bookId ? <BookOpen size={15} /> : kind === 'scripture' ? <ScrollText size={15} /> : <FileText size={15} />}
+      {bookId ? <BookOpen size={15} /> : kind === 'scripture' || kind === 'confession' ? <ScrollText size={15} /> : <FileText size={15} />}
     </div>
   )
 }
@@ -106,12 +108,16 @@ export function SearchResults({
     const key = groupKeyFor(h)
     let g = byKey.get(key)
     if (!g) {
-      const title = h.bookId
-        ? (books.find((b) => b.id === h.bookId)?.title ?? h.title)
-        : h.kind === 'scripture'
-          ? h.title
-          : 'Notes'
-      g = { key, title, bookId: h.bookId, kind: h.kind, items: [] }
+      // Confession hits carry a BoC source id in bookId (not a library book), so title them by document.
+      const title =
+        h.kind === 'confession'
+          ? (bocDocument(parseBocRef(h.ref ?? '')?.code ?? '')?.title ?? h.title)
+          : h.bookId
+            ? (books.find((b) => b.id === h.bookId)?.title ?? h.title)
+            : h.kind === 'scripture'
+              ? h.title
+              : 'Notes'
+      g = { key, title, bookId: h.kind === 'confession' ? null : h.bookId, kind: h.kind, items: [] }
       byKey.set(key, g)
       groups.push(g)
     }
@@ -129,6 +135,7 @@ export function SearchResults({
   const childLabel = (h: SearchHit): string => {
     if (h.kind === 'note') return h.title || 'Note'
     if (h.kind === 'scripture') return h.page != null ? `v. ${h.page}` : '—'
+    if (h.kind === 'confession') return h.title || 'Section'
     if (h.page != null) {
       // Show the book's printed page (PDF page minus its front-matter offset).
       const book = books.find((b) => b.id === h.bookId)

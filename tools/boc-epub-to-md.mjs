@@ -26,6 +26,7 @@ import { readFileSync, readdirSync, existsSync, mkdirSync, writeFileSync, mkdtem
 import { join, dirname } from 'node:path'
 import { tmpdir } from 'node:os'
 import { execFileSync } from 'node:child_process'
+import { assignParts } from './boc-parts.mjs'
 
 const [inputArg, outDirArg] = process.argv.slice(2)
 if (!inputArg) {
@@ -384,31 +385,6 @@ function convert(opfPath) {
   flushSection()
   assignParts(docsOut)
   return docsOut
-}
-
-/** Structural (not typographic) part-header detection: a part/article-title heading is,
- *  factually, one whose own section carries no body text — the label is a divider, and the
- *  real content lives in the sections that follow it, until the next such divider. This can
- *  only be known once every heading's body is fully collected, so it runs as a post-pass over
- *  each document's finished section list (order preserved from parsing) rather than being
- *  guessed inline while a heading is first seen. Resets the running part at each document
- *  boundary (each `sections` array is one document's).
- *
- *  A part heading's OWN `part` field is left null (it doesn't belong to itself); its label
- *  becomes the running part attributed to every subsequent text-bearing section, until the
- *  next empty-body heading replaces it. */
-function assignParts(docsOut) {
-  for (const sections of docsOut.values()) {
-    let runningPart = null
-    for (const s of sections) {
-      if (s.body.length === 0) {
-        runningPart = s.label
-        s.part = null
-      } else {
-        s.part = runningPart
-      }
-    }
-  }
 }
 
 // --- Output ------------------------------------------------------------------------------

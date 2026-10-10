@@ -3,6 +3,7 @@ import type { MouseEvent as ReactMouseEvent } from 'react'
 import { ChevronRight, Search } from 'lucide-react'
 import { useStore, newTabDrafts } from '../../store/useStore'
 import type { TabContent } from '../../store/useStore'
+import type { TabKind } from '../../store/workspace'
 import { api } from '../../lib/api'
 import { VaultOverview } from '../library/VaultOverview'
 import { PopupMenu } from './PopupMenu'
@@ -18,9 +19,11 @@ import type { Tile, TileSections } from './newTabTiles'
 const HIDDEN_KEY = 'ntpHiddenTiles'
 
 /** The fixed views, so they stay reachable when the bookmarks bar is hidden. */
-const SHORTCUTS: { view: FixedView; label: string; kind: 'bible' | 'boc' | 'fathers' | 'library' | 'notes' | 'quotesIndex' }[] = [
+const SHORTCUTS: { view: FixedView; label: string; kind: TabKind }[] = [
   { view: 'bible', label: 'Bible', kind: 'bible' },
   { view: 'confessions', label: 'Confessions', kind: 'boc' },
+  { view: 'commentary', label: 'Commentary', kind: 'commentary' },
+  { view: 'dogmatics', label: 'Dogmatics', kind: 'dogmatics' },
   { view: 'fathers', label: 'Fathers', kind: 'fathers' },
   { view: 'library', label: 'Library', kind: 'library' },
   { view: 'notes', label: 'Notes', kind: 'notes' },

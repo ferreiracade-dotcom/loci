@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { X, Plus, Trash2, ChevronUp, ChevronDown, RefreshCw, FlagTriangleRight, Loader2 } from 'lucide-react'
+import { X, Plus, Trash2, ChevronUp, ChevronDown, RefreshCw, FlagTriangleRight, Loader2, Download, Check } from 'lucide-react'
 import { api } from '../../lib/api'
 import { DrawerOverlay } from '../DrawerOverlay'
 import { CommentaryReviewQueue } from './CommentaryReviewQueue'
-import type { CommentaryIndexProgress, CommentarySource } from '@shared/ipc'
+import type { CommentaryIndexProgress, CommentarySource, SermonIndexModule } from '@shared/ipc'
 
 /** Move the item at `index` up or down one spot; a no-op at either end. */
 function moved<T>(list: T[], index: number, dir: -1 | 1): T[] {
@@ -14,7 +14,10 @@ function moved<T>(list: T[], index: number, dir: -1 | 1): T[] {
   return next
 }
 
-type View = { kind: 'list' } | { kind: 'indexing'; sourceId: string } | { kind: 'review'; sourceId: string }
+type View =
+  | { kind: 'list' }
+  | { kind: 'indexing'; sourceId: string | null }
+  | { kind: 'review'; sourceId: string }
 
 function coverageLabel(source: CommentarySource): string {
   if (source.status === 'unindexed') return 'Not indexed yet'
@@ -27,6 +30,7 @@ export function CommentariesManager({ onClose }: { onClose: () => void }) {
   const [flaggedCounts, setFlaggedCounts] = useState<Record<string, number>>({})
   const [view, setView] = useState<View>({ kind: 'list' })
   const [toast, setToast] = useState<string | null>(null)
+  const [catalog, setCatalog] = useState<SermonIndexModule[]>([])
 
   const reload = async (): Promise<void> => {
     const list = await api.listCommentarySources()
@@ -38,6 +42,7 @@ export function CommentariesManager({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     void reload()
+    void api.listSermonIndexCatalog().then(setCatalog)
   }, [])
 
   useEffect(() => {
@@ -55,7 +60,9 @@ export function CommentariesManager({ onClose }: { onClose: () => void }) {
   }
 
   const removeSource = async (source: CommentarySource): Promise<void> => {
-    if (!window.confirm(`Remove “${source.displayName}”? Its excerpts will be deleted.`)) return
+    const inVault = source.pdfRelativePath.startsWith('commentaries/')
+    const what = inVault ? 'Its excerpts and its file in your vault will be deleted.' : 'Its excerpts will be deleted.'
+    if (!window.confirm(`Remove “${source.displayName}”? ${what}`)) return
     const keepCorrections = !window.confirm(
       'Also delete any saved corrections for this source? Cancel keeps them (in case you re-add it later).'
     )
@@ -74,6 +81,34 @@ export function CommentariesManager({ onClose }: { onClose: () => void }) {
       setToast(err instanceof Error ? err.message : 'Could not add this Markdown file')
     }
   }
+
+  const addMyBible = async (): Promise<void> => {
+    try {
+      const source = await api.addMyBibleCommentarySource()
+      if (!source) return
+      await reload()
+      await runIndex(source.id)
+    } catch (err) {
+      setToast(err instanceof Error ? err.message : 'Could not add this module')
+    }
+  }
+
+  // Download, register, then index, all behind the one progress view.
+  const installModule = async (slug: string): Promise<void> => {
+    setView({ kind: 'indexing', sourceId: null })
+    try {
+      const source = await api.installSermonIndexModule(slug)
+      await reload()
+      await runIndex(source.id)
+    } catch (err) {
+      setToast(err instanceof Error ? err.message : 'Could not download this commentary')
+      setView({ kind: 'list' })
+    }
+  }
+
+  const installedFiles = new Set(sources.map((s) => s.pdfRelativePath.toLowerCase()))
+  const isInstalled = (m: SermonIndexModule): boolean =>
+    installedFiles.has(`commentaries/${m.moduleCode}.commentaries.sqlite3`.toLowerCase())
 
   const runIndex = async (sourceId: string): Promise<void> => {
     setView({ kind: 'indexing', sourceId })
@@ -106,9 +141,8 @@ export function CommentariesManager({ onClose }: { onClose: () => void }) {
             <div className="commentary-mgr-list">
               {sources.length === 0 && (
                 <p className="folder-hint">
-                  No commentaries registered yet. Add a canonical commentary Markdown (.md) file
-                  — convert a PDF or EPUB to that format first with the tools in{' '}
-                  <code>tools/</code>.
+                  No commentaries registered yet. Install one from SermonIndex below, or add a
+                  MyBible module or a canonical commentary Markdown (.md) file.
                 </p>
               )}
               {sources.map((s, i) => (
@@ -168,6 +202,35 @@ export function CommentariesManager({ onClose }: { onClose: () => void }) {
               <button className="btn btn-sm" onClick={() => void addMarkdown()}>
                 <Plus size={14} /> Add Markdown file
               </button>
+              <button
+                className="btn btn-sm"
+                title="A MyBible commentary module (.SQLite3, or the .zip it comes in)"
+                onClick={() => void addMyBible()}
+              >
+                <Plus size={14} /> Add MyBible module
+              </button>
+            </div>
+            <h3 className="commentary-mgr-section">From SermonIndex</h3>
+            <div className="commentary-mgr-list">
+              {catalog.map((m) => (
+                <div className="commentary-mgr-row" key={m.slug}>
+                  <div className="commentary-mgr-info">
+                    <div className="commentary-mgr-name">{m.title}</div>
+                    <div className="commentary-mgr-author">{m.author}</div>
+                  </div>
+                  <div className="commentary-mgr-actions">
+                    {isInstalled(m) ? (
+                      <span className="commentary-mgr-status">
+                        <Check size={13} /> Installed
+                      </span>
+                    ) : (
+                      <button className="btn btn-sm" onClick={() => void installModule(m.slug)}>
+                        <Download size={13} /> Install
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </>
         )}
@@ -189,7 +252,16 @@ export function CommentariesManager({ onClose }: { onClose: () => void }) {
   )
 }
 
-function IndexingProgress({ sourceId }: { sourceId: string }) {
+function progressLabel(p: CommentaryIndexProgress): string {
+  if (p.phase === 'downloading') {
+    const mb = (n: number): string => (n / 1048576).toFixed(1)
+    return p.total > 0 ? `Downloading… ${mb(p.done)} of ${mb(p.total)} MB` : `Downloading… ${mb(p.done)} MB`
+  }
+  const verb = p.phase === 'extracting' ? 'Reading' : p.phase === 'validating' ? 'Validating' : 'Finishing'
+  return `${verb}… ${p.done}/${p.total}`
+}
+
+function IndexingProgress({ sourceId }: { sourceId: string | null }) {
   const [progress, setProgress] = useState<CommentaryIndexProgress | null>(null)
 
   useEffect(() => {
@@ -201,7 +273,7 @@ function IndexingProgress({ sourceId }: { sourceId: string }) {
       <Loader2 size={20} className="spin" />
       <p>
         {progress
-          ? `${progress.phase === 'extracting' ? 'Reading' : progress.phase === 'validating' ? 'Validating' : 'Finishing'}… ${progress.done}/${progress.total}`
+          ? progressLabel(progress)
           : 'Starting…'}
       </p>
     </div>

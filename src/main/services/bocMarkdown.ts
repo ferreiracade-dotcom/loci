@@ -53,7 +53,14 @@ export function parseBocMarkdown(markdown: string): BocSection[] {
       continue
     }
 
-    // Non-contract heading (stray title, or no document set): end current, open nothing.
+    // A `###`+ non-contract heading inside a section is one of the page's own sub-headings
+    // ("Affirmative Statements", "The First Commandment") — keep it as body for the reader.
+    if (current && level >= 3) {
+      current.text += (current.text ? '\n' : '') + rawLine
+      continue
+    }
+
+    // Other non-contract heading (stray title, or no document set): end current, open nothing.
     flush()
   }
 

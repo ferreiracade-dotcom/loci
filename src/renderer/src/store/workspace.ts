@@ -11,6 +11,8 @@ export type TabKind =
   | 'pdf'
   | 'quotes'
   | 'boc'
+  | 'commentary'
+  | 'dogmatics'
   | 'newtab'
   | 'library'
   | 'notes'
@@ -43,7 +45,17 @@ export const PAGE_KINDS: PageKind[] = [
   'bookmarks'
 ]
 
-const KNOWN_KINDS = new Set<string>(['note', 'bible', 'pdf', 'quotes', 'boc', 'search', ...PAGE_KINDS])
+const KNOWN_KINDS = new Set<string>([
+  'note',
+  'bible',
+  'pdf',
+  'quotes',
+  'boc',
+  'commentary',
+  'dogmatics',
+  'search',
+  ...PAGE_KINDS
+])
 
 /**
  * Kinds that no longer exist, and what a persisted tab, history entry or bookmark of that kind
@@ -51,10 +63,28 @@ const KNOWN_KINDS = new Set<string>(['note', 'bible', 'pdf', 'quotes', 'boc', 's
  */
 const RETIRED_KINDS: Record<string, PageKind> = { dashboard: 'newtab' }
 
-/** A location with a retired kind mapped to its replacement (unchanged otherwise). */
+/**
+ * Confessions document codes that no longer exist: the three creeds were separate documents
+ * before the corpus was rebuilt on bookofconcord.cph.org's layout, where they are the sections
+ * of one 'CR' document, in this order.
+ */
+const RETIRED_BOC_CODES: Record<string, { documentCode: string; sectionOrdinal: number }> = {
+  'CR-AP': { documentCode: 'CR', sectionOrdinal: 1 },
+  'CR-NI': { documentCode: 'CR', sectionOrdinal: 2 },
+  'CR-ATH': { documentCode: 'CR', sectionOrdinal: 3 }
+}
+
+/** A location with a retired kind (or Confessions code) mapped to its replacement. */
 export function migrateLocation<T extends { kind: string }>(loc: T): T {
-  const to = loc && typeof loc === 'object' ? RETIRED_KINDS[loc.kind] : undefined
-  return to ? ({ ...loc, kind: to } as T) : loc
+  if (!loc || typeof loc !== 'object') return loc
+  const to = RETIRED_KINDS[loc.kind]
+  if (to) return { ...loc, kind: to } as T
+  if (loc.kind === 'boc') {
+    const code = (loc as { documentCode?: string }).documentCode
+    const moved = code ? RETIRED_BOC_CODES[code] : undefined
+    if (moved) return { ...loc, ...moved } as T
+  }
+  return loc
 }
 
 /** A persisted tab with retired kinds mapped, in its own location and its back/forward history. */
@@ -73,6 +103,7 @@ export type QuoteGroupRef =
   | { type: 'scripture'; book: string; chapter?: number; translation: string; name: string }
   | { type: 'commentary'; sourceId: string; displayName: string }
   | { type: 'boc'; documentCode: string; bocSourceId: string; name: string }
+  | { type: 'dogmatics'; sourceId: string; displayName: string }
   | { type: 'author'; author: string }
   | { type: 'tag'; tag: string }
 
@@ -97,6 +128,15 @@ export interface Tab {
   documentCode?: string
   sectionOrdinal?: number
   bocSourceId?: string
+  /** Commentary reader: which source (`book`/`chapter` say where; `verse` is scrolled to). */
+  commentarySourceId?: string
+  verse?: number
+  /** Dogmatics reader: which source, work and book (`sectionOrdinal` is scrolled to). */
+  dogmaticsSourceId?: string
+  dogmaticsWork?: number
+  dogmaticsBook?: number
+  /** Dogmatics reader: the topic being read across the works, if any (book 0 = its overview). */
+  dogmaticsTopic?: string
   /** A 'search' tab's query. */
   query?: string
   /**
@@ -132,6 +172,15 @@ export type TabContent =
   | { kind: 'bible'; book: string; chapter: number; highlight?: number[]; translation?: string }
   | { kind: 'quotes'; quotesGroup: QuoteGroupRef }
   | { kind: 'boc'; documentCode: string; sectionOrdinal: number; bocSourceId?: string }
+  | { kind: 'commentary'; commentarySourceId: string; book: string; chapter: number; verse?: number }
+  | {
+      kind: 'dogmatics'
+      dogmaticsSourceId: string
+      dogmaticsWork: number
+      dogmaticsBook: number
+      sectionOrdinal?: number
+      dogmaticsTopic?: string
+    }
   | { kind: 'search'; query: string }
   | { kind: PageKind }
 
@@ -157,6 +206,23 @@ export function tabContent(tab: Tab): TabContent {
       return { kind: 'quotes', quotesGroup: tab.quotesGroup! }
     case 'boc':
       return { kind: 'boc', documentCode: tab.documentCode!, sectionOrdinal: tab.sectionOrdinal!, bocSourceId: tab.bocSourceId }
+    case 'commentary':
+      return {
+        kind: 'commentary',
+        commentarySourceId: tab.commentarySourceId ?? '',
+        book: tab.book!,
+        chapter: tab.chapter!,
+        verse: tab.verse
+      }
+    case 'dogmatics':
+      return {
+        kind: 'dogmatics',
+        dogmaticsSourceId: tab.dogmaticsSourceId ?? '',
+        dogmaticsWork: tab.dogmaticsWork ?? 1,
+        dogmaticsBook: tab.dogmaticsBook ?? 1,
+        sectionOrdinal: tab.sectionOrdinal,
+        dogmaticsTopic: tab.dogmaticsTopic
+      }
     case 'search':
       return { kind: 'search', query: tab.query ?? '' }
     default:

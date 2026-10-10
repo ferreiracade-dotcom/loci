@@ -25,8 +25,13 @@ describe('parseBocMarkdown', () => {
   })
 
   it('switches documents on a new level-1 heading', () => {
-    const s = parseBocMarkdown('# Nicene Creed\n## 1 | I | First Article | \nA\n# Augsburg Confession\n## 1 | I | God | \nB')
-    expect(s.map((x) => x.documentCode)).toEqual(['CR-NI', 'AC'])
+    const s = parseBocMarkdown('# Ecumenical Creeds\n## 2 |  | The Nicene Creed | \nA\n# Augsburg Confession\n## 1 | I | God | \nB')
+    expect(s.map((x) => x.documentCode)).toEqual(['CR', 'AC'])
+  })
+
+  it('keeps a ### sub-heading inside a section as body text', () => {
+    const s = parseBocMarkdown('# The Augsburg Confession\n## 1 |  | Preface | \nA\n### Sub\nB\n## 2 | I | God | \nC')
+    expect(s.map((x) => x.text)).toEqual(['A\n### Sub\nB', 'C'])
   })
 
   it('drops content before any document and ignores non-contract headings', () => {

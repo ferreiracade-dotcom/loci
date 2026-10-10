@@ -1,8 +1,9 @@
 import { useStore } from '../../store/useStore'
 import type { TabContent } from '../../store/useStore'
 import { api } from '../../lib/api'
-import { bocSectionMatches } from '@shared/bookOfConcord'
+import { bocDocument, bocRowMatches } from '@shared/bookOfConcord'
 import { parseReference } from '@shared/scriptureRef'
+import { commentaryStartContent, dogmaticsStartContent } from '../../lib/readerStart'
 import type { OmniAction } from './omnibox'
 
 /** Where the Bible was last read (JHN 1 by default), as tab content. */
@@ -27,19 +28,36 @@ export async function lastBocContent(): Promise<TabContent> {
   try {
     const last = await api.getSession('lastBoc')
     const p = last ? (JSON.parse(last) as { documentCode?: string; ordinal?: number }) : null
-    if (p?.documentCode && p.ordinal != null) return { kind: 'boc', documentCode: p.documentCode, sectionOrdinal: p.ordinal }
+    // Skip a code the registry no longer has (e.g. the pre-merge per-creed codes).
+    if (p?.documentCode && bocDocument(p.documentCode) && p.ordinal != null) {
+      return { kind: 'boc', documentCode: p.documentCode, sectionOrdinal: p.ordinal }
+    }
   } catch {
     /* ignore malformed session value */
   }
   return { kind: 'boc', documentCode: 'AC', sectionOrdinal: 1 }
 }
 
+/** The section a Confessions query names: by article number (see bocRowMatches), or by a word
+ *  in its label (a creed's name). Undefined when nothing matches. */
+export function pickBocSection<R extends { ordinal: number; number: string | null; label: string }>(
+  rows: R[],
+  target: { article?: string; section?: string }
+): R | undefined {
+  if (target.article) return rows.find((r) => bocRowMatches(r, target.article!))
+  if (target.section) {
+    const word = target.section.toLowerCase()
+    return rows.find((r) => r.label.toLowerCase().includes(word))
+  }
+  return undefined
+}
+
 /**
- * The section ordinal for a Confessions article ("AC" + "IV"): looked up in the indexed
- * source's section list (numbers are kept verbatim there). Without an article, or when the
- * article isn't found, the document's first section.
+ * The section ordinal for a Confessions article ("AC" + "IV") or named section ("CR" +
+ * "Nicene"): looked up in the indexed source's section list. Without either, or when it isn't
+ * found, the document's first section.
  */
-export async function resolveBocTarget(code: string, article?: string): Promise<TabContent> {
+export async function resolveBocTarget(code: string, article?: string, section?: string): Promise<TabContent> {
   const s = useStore.getState()
   const current = s.tabs.find((t) => t.id === s.activeTabId)
   let sourceId = current?.kind === 'boc' ? current.bocSourceId : undefined
@@ -47,7 +65,7 @@ export async function resolveBocTarget(code: string, article?: string): Promise<
     if (!sourceId) sourceId = (await api.listBocSources())[0]?.id
     if (sourceId) {
       const rows = await api.listBocDocumentSections(code, sourceId)
-      const hit = article ? rows.find((r) => bocSectionMatches(r.number, article)) : undefined
+      const hit = pickBocSection(rows, { article, section })
       const ordinal = hit?.ordinal ?? rows[0]?.ordinal ?? 1
       return { kind: 'boc', documentCode: code, sectionOrdinal: ordinal, bocSourceId: sourceId }
     }
@@ -84,10 +102,10 @@ export async function runOmniAction(action: OmniAction, newTab: boolean): Promis
       navigateOrOpen(action.content, newTab)
       return
     case 'view':
-      navigateOrOpen(action.view === 'bible' ? await lastBibleContent() : await lastBocContent(), newTab)
+      navigateOrOpen(await fixedViewContent(action.view), newTab)
       return
     case 'boc':
-      navigateOrOpen(await resolveBocTarget(action.code, action.article), newTab)
+      navigateOrOpen(await resolveBocTarget(action.code, action.article, action.section), newTab)
       return
     case 'search':
       navigateOrOpen({ kind: 'search', query: action.query }, newTab)
@@ -155,12 +173,22 @@ export function openInNewTab(content: TabContent, background: boolean): void {
 }
 
 /** The fixed views on the bookmarks bar. */
-export type FixedView = 'bible' | 'confessions' | 'fathers' | 'library' | 'notes' | 'quotesIndex'
+export type FixedView =
+  | 'bible'
+  | 'confessions'
+  | 'commentary'
+  | 'dogmatics'
+  | 'fathers'
+  | 'library'
+  | 'notes'
+  | 'quotesIndex'
 
-/** Where a fixed bookmarks-bar entry goes: the Bible and Confessions resume where you were. */
+/** Where a fixed bookmarks-bar entry goes: the readers resume where you were. */
 export async function fixedViewContent(view: FixedView): Promise<TabContent> {
   if (view === 'bible') return lastBibleContent()
   if (view === 'confessions') return lastBocContent()
+  if (view === 'commentary') return commentaryStartContent()
+  if (view === 'dogmatics') return dogmaticsStartContent()
   return { kind: view }
 }
 

@@ -38,7 +38,7 @@ describe('buildSuggestions', () => {
 
   it('ranks a Confessions article above a book-name prefix match ("ac 4" is not Acts first)', () => {
     const k = kinds('ac 4')
-    expect(k[0]).toBe('boc:Augsburg Confession, Article IV')
+    expect(k[0]).toBe('boc:The Augsburg Confession, Article IV')
     expect(k[1]).toBe('open:Acts 4')
   })
 

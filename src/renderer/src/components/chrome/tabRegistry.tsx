@@ -4,10 +4,12 @@ import {
   Bookmark as BookmarkIcon,
   BookMarked,
   BookOpen,
+  Church,
   FileText,
   History,
   Landmark,
   Library,
+  MessageSquareQuote,
   NotebookPen,
   Plus,
   Quote,
@@ -19,11 +21,15 @@ import type { Tab, TabKind, TabLocation } from '../../store/workspace'
 import type { ProjectItem } from '@shared/ipc'
 import { bookByCode } from '@shared/scriptureRef'
 import { bocDocument } from '@shared/bookOfConcord'
+import { dogmaticsTopic } from '@shared/dogmaticsTopics'
+import { ALL_COMMENTARIES } from '@shared/ipc'
 import { RichNoteEditor } from '../library/RichNoteEditor'
 import { PdfReader } from '../library/PdfReader'
 import { BiblePane } from '../library/BiblePane'
 import { BocPane } from '../library/BocPane'
 import { QuoteGroupPane } from '../library/QuoteGroupPane'
+import { CommentaryPane } from '../library/CommentaryPane'
+import { DogmaticsPane } from '../library/DogmaticsPane'
 import { PanePicker } from '../library/PanePicker'
 import { LibraryView } from '../library/LibraryView'
 import { NotesView } from '../library/NotesView'
@@ -41,6 +47,9 @@ export interface TitleContext {
   notes: { path: string; title: string }[]
   /** The focused Confessions section's number/label, when the caller has looked it up. */
   bocSection?: { number: string | null; label: string } | null
+  /** The focused Commentary/Dogmatics tab's source name and (Dogmatics) book title, when the
+   *  caller has looked them up. */
+  reader?: { source?: string; place?: string } | null
 }
 
 /** What a tab's body is rendered with. */
@@ -90,6 +99,22 @@ function bocParts(tab: Tab, ctx: TitleContext): [string, string] {
   return [abbr, where]
 }
 
+function commentaryRef(tab: Tab): string {
+  if (!tab.book || tab.chapter == null) return 'Commentary'
+  return `${bookByCode(tab.book)?.name ?? tab.book} ${tab.chapter}${tab.verse ? `:${tab.verse}` : ''}`
+}
+
+function commentarySource(tab: Tab, ctx: TitleContext): string | undefined {
+  if (tab.commentarySourceId === ALL_COMMENTARIES) return 'All commentaries'
+  return ctx.reader?.source
+}
+
+/** A dogmatics tab's place: the topic it reads across the works, else its book's title. */
+function dogmaticsPlace(tab: Tab, ctx: TitleContext): string | undefined {
+  if (tab.dogmaticsTopic) return dogmaticsTopic(tab.dogmaticsTopic)?.name
+  return ctx.reader?.place
+}
+
 function quotesLabel(tab: Tab): string {
   const g = tab.quotesGroup
   if (!g) return 'Quotes'
@@ -99,6 +124,7 @@ function quotesLabel(tab: Tab): string {
     case 'scripture':
       return g.chapter != null ? `${g.name} ${g.chapter}` : g.name
     case 'commentary':
+    case 'dogmatics':
       return g.displayName
     case 'boc':
       return g.name
@@ -143,8 +169,7 @@ export const TAB_REGISTRY: Record<TabKind, TabKindDef> = {
     title: (tab) =>
       tab.book && tab.chapter != null ? `${bookByCode(tab.book)?.name ?? tab.book} ${tab.chapter}` : 'Bible',
     subtitle: (tab) => `Bible${tab.translation ? ` · ${tab.translation}` : ''}`,
-    render: (tab, ctx) =>
-      tab.book && tab.chapter != null ? <BiblePane tab={tab} onClose={ctx.close} onReplace={ctx.replace} /> : null,
+    render: (tab) => (tab.book && tab.chapter != null ? <BiblePane tab={tab} /> : null),
     recordHistory: true,
     breadcrumb: (tab) => ['Bible', `${bibleRef(tab)}${tab.translation ? ` (${tab.translation})` : ''}`],
     locationText: bibleRef
@@ -159,13 +184,37 @@ export const TAB_REGISTRY: Record<TabKind, TabKindDef> = {
       const doc = tab.documentCode ? bocDocument(tab.documentCode) : undefined
       return doc ? `${doc.title} · Book of Concord` : 'Book of Concord'
     },
-    render: (tab, ctx) =>
-      tab.documentCode && tab.sectionOrdinal != null ? (
-        <BocPane tab={tab} onClose={ctx.close} onReplace={ctx.replace} />
-      ) : null,
+    render: (tab) => (tab.documentCode && tab.sectionOrdinal != null ? <BocPane tab={tab} /> : null),
     recordHistory: true,
     breadcrumb: (tab, ctx) => ['Confessions', ...bocParts(tab, ctx).filter(Boolean)],
     locationText: (tab, ctx) => bocParts(tab, ctx).filter(Boolean).join(' ')
+  },
+  commentary: {
+    icon: MessageSquareQuote,
+    title: (tab) =>
+      tab.book && tab.chapter != null ? `${bookByCode(tab.book)?.name ?? tab.book} ${tab.chapter}` : 'Commentary',
+    subtitle: () => 'Commentary',
+    render: (tab) => (tab.book && tab.chapter != null ? <CommentaryPane tab={tab} /> : null),
+    recordHistory: true,
+    breadcrumb: (tab, ctx) => ['Commentary', commentarySource(tab, ctx) ?? '', commentaryRef(tab)].filter(Boolean),
+    locationText: (tab, ctx) => {
+      const source = commentarySource(tab, ctx)
+      return source ? `${source}, ${commentaryRef(tab)}` : `Commentary, ${commentaryRef(tab)}`
+    }
+  },
+  dogmatics: {
+    icon: Landmark,
+    title: (tab) => (tab.dogmaticsTopic ? dogmaticsTopic(tab.dogmaticsTopic)?.name : undefined) ?? 'Dogmatics',
+    subtitle: (tab) => (tab.dogmaticsTopic ? 'Dogmatics · topic' : 'Dogmatics'),
+    render: (tab) => <DogmaticsPane tab={tab} />,
+    recordHistory: true,
+    breadcrumb: (tab, ctx) =>
+      ['Dogmatics', tab.dogmaticsTopic ? '' : (ctx.reader?.source ?? ''), dogmaticsPlace(tab, ctx) ?? ''].filter(Boolean),
+    locationText: (tab, ctx) => {
+      const place = dogmaticsPlace(tab, ctx)
+      const source = tab.dogmaticsTopic ? undefined : ctx.reader?.source
+      return [source, place].filter(Boolean).join(', ') || 'Dogmatics'
+    }
   },
   quotes: {
     icon: Quote,
@@ -201,7 +250,7 @@ export const TAB_REGISTRY: Record<TabKind, TabKindDef> = {
   library: page(Library, 'Library', 'Your books', () => <LibraryView />),
   notes: page(NotebookPen, 'Notes', 'All notes', () => <NotesView />),
   quotesIndex: page(Quote, 'Quotes', 'Saved quotes', () => <QuotesView />),
-  fathers: page(Landmark, 'Church Fathers', 'Church Fathers corpus', () => <FathersPage />),
+  fathers: page(Church, 'Church Fathers', 'Church Fathers corpus', () => <FathersPage />),
   settings: page(SettingsIcon, 'Settings', 'loci://settings', () => <Settings />),
   history: page(History, 'History', 'loci://history', () => <HistoryPage />),
   bookmarks: page(BookmarkIcon, 'Bookmarks', 'loci://bookmarks', () => <BookmarksManager />)

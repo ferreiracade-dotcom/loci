@@ -34,6 +34,19 @@ export interface LociConfig {
   deviceName: string | null
   /** mtime of each pre-sync bookmarks/tab-groups file already imported into this device's records. */
   legacyImported: { bookmarks?: number; tabGroups?: number }
+  /** Default SermonIndex commentaries already installed (or found in the vault), by slug. */
+  sermonIndexDefaults: string[] | null
+  /** Commentaries shipped with Loci already copied into the vault (or found there), by file name. */
+  bundledCommentaries: string[] | null
+  /** SHA-256 of the shipped version last put in the vault, by file name: a newer shipped version
+   *  replaces the vault copy only while that copy is still the one Loci put there. */
+  bundledCommentaryHashes: Record<string, string> | null
+  /** Dogmatics shipped with Loci already copied into the vault, by file name (as above). */
+  bundledDogmatics: string[] | null
+  /** SHA-256 of the shipped dogmatics version last put in the vault, by file name (as above). */
+  bundledDogmaticsHashes: Record<string, string> | null
+  /** Legacy single flag from before per-module tracking; true meant Lenski was installed. */
+  sermonIndexDefaultsInstalled?: boolean
 }
 
 const defaults: LociConfig = {
@@ -53,7 +66,12 @@ const defaults: LociConfig = {
   esvKeyEncrypted: null,
   deviceId: null,
   deviceName: null,
-  legacyImported: {}
+  legacyImported: {},
+  sermonIndexDefaults: null,
+  bundledCommentaries: null,
+  bundledCommentaryHashes: null,
+  bundledDogmatics: null,
+  bundledDogmaticsHashes: null
 }
 
 function configPath(): string {
@@ -73,6 +91,12 @@ export function localVaultDir(): string {
  *  commentary sources travel with the vault to every device (see vaultsync SUBDIRS). */
 export function commentaryVaultDir(): string {
   return join(localVaultDir(), 'commentaries')
+}
+
+/** The vault's dogmatics-Markdown folder — sibling of `commentaries/`, same travels-with-the-
+ *  vault rationale. */
+export function dogmaticsVaultDir(): string {
+  return join(localVaultDir(), 'dogmatics')
 }
 
 /** The vault's Book of Concord primary-text Markdown folder — sibling of `commentaries/`,

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Search, PanelLeftClose, PanelLeftOpen, Columns2, Replace } from 'lucide-react'
+import { Search, PanelLeftClose, PanelLeftOpen, Columns2 } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import type { Tab } from '../../store/useStore'
 import { api } from '../../lib/api'
@@ -13,15 +13,7 @@ import { isBackgroundClick, openBibleInBackground } from '../chrome/openViews'
  * full-center ScriptureView) plus the ScriptureReader. Navigation and translation changes
  * update *this* pane only; "Compare" opens a second Bible pane beside it.
  */
-export function BiblePane({
-  tab,
-  onClose,
-  onReplace
-}: {
-  tab: Tab
-  onClose?: () => void
-  onReplace?: () => void
-}) {
+export function BiblePane({ tab }: { tab: Tab }) {
   const translations = useStore((s) => s.scriptureTranslations)
   const defaultTranslation = useStore((s) => s.scriptureTranslation)
   const loadScripture = useStore((s) => s.loadScripture)
@@ -150,11 +142,6 @@ export function BiblePane({
               <Columns2 size={16} />
             </button>
           )}
-          {onReplace && (
-            <button className="rail-btn" title="Change content" onClick={onReplace}>
-              <Replace size={16} />
-            </button>
-          )}
         </div>
       ) : (
         <div className="sv-nav">
@@ -164,11 +151,6 @@ export function BiblePane({
               {canCompare && (
                 <button className="icon-btn" title="Compare translations" onClick={openCompare}>
                   <Columns2 size={15} />
-                </button>
-              )}
-              {onReplace && (
-                <button className="icon-btn" title="Change content" onClick={onReplace}>
-                  <Replace size={15} />
                 </button>
               )}
               <button className="icon-btn" title="Hide books" onClick={() => toggleNav(true)}>
@@ -217,7 +199,6 @@ export function BiblePane({
             translations={translations}
             onTranslationChange={pickTranslation}
             compact
-            onClose={onClose}
           />
         ) : (
           <div className="sr-loading">Loading Bible…</div>

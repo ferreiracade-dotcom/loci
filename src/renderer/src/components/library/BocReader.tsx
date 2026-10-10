@@ -54,6 +54,7 @@ interface BocParagraph {
 // per line). Split the text into paragraph-marker => following-text runs so each run can become
 // its own clickable/citeable span.
 const PARA_MARKER_RE = /\[(\d+)\]\s*/g
+const SUBHEAD_RE = /^(#{3,4}) (.+)$/
 
 function splitBocParagraphs(text: string): BocParagraph[] {
   const out: BocParagraph[] = []
@@ -260,17 +261,29 @@ export function BocReader({
                 }}
               >
                 {p.paragraph != null && <span className="sv-num">{p.paragraph}</span>}
-                {p.text.split(/\n{2,}/).map((line, li, arr) => (
-                  <span key={li}>
-                    {line}
-                    {li < arr.length - 1 && (
-                      <>
-                        <br />
-                        <br />
-                      </>
-                    )}
-                  </span>
-                ))}{' '}
+                {p.text.split(/\n{2,}/).map((line, li, arr) => {
+                  // `### ` / `#### ` lines are the page's own sub-headings (see parseBocMarkdown).
+                  const sub = SUBHEAD_RE.exec(line)
+                  if (sub) {
+                    return (
+                      <span key={li} className={`sr-subhead sr-subhead-${sub[1].length}`}>
+                        {sub[2]}
+                      </span>
+                    )
+                  }
+                  const nextIsSub = li < arr.length - 1 && SUBHEAD_RE.test(arr[li + 1])
+                  return (
+                    <span key={li}>
+                      {line}
+                      {li < arr.length - 1 && !nextIsSub && (
+                        <>
+                          <br />
+                          <br />
+                        </>
+                      )}
+                    </span>
+                  )
+                })}{' '}
               </span>
             ))}
           </div>

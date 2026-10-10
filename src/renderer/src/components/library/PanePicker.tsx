@@ -23,7 +23,7 @@ import { BookListRow } from './LibraryView'
 import { ScriptureReader } from './ScriptureReader'
 import { useOpenElsewhereMenu } from './OpenElsewhere'
 import { BOC_DOCUMENTS } from '@shared/bookOfConcord'
-import { bocSectionLabel } from '../../lib/bocGrouping'
+import { bocSectionLabel, groupByPart } from '../../lib/bocGrouping'
 import { normalizeQuoteGroups } from '@shared/ipc'
 import type { BocSectionRow, BocSource, ProjectItem, QuoteGroups, SearchHit } from '@shared/ipc'
 
@@ -80,7 +80,8 @@ export function PanePicker({
     books: [],
     scripture: [],
     commentary: [],
-    boc: []
+    boc: [],
+    dogmatics: []
   })
 
   // Load once (and whenever the translation changes, since scripture-quote groups are
@@ -170,6 +171,9 @@ export function PanePicker({
   )
   const tabQuoteCommentaryHits = quoteGroups.commentary.filter(
     (c) => !browseQl || c.displayName.toLowerCase().includes(browseQl)
+  )
+  const tabQuoteDogmaticsHits = quoteGroups.dogmatics.filter(
+    (d) => !browseQl || d.displayName.toLowerCase().includes(browseQl)
   )
   const tabQuoteBocHits = quoteGroups.boc.filter(
     (b) => !browseQl || `${b.name} ${b.sourceName}`.toLowerCase().includes(browseQl)
@@ -548,10 +552,26 @@ export function PanePicker({
                   </button>
                 )
               })}
+              {tabQuoteDogmaticsHits.length > 0 && <div className="pp-sec">Dogmatics</div>}
+              {tabQuoteDogmaticsHits.map((d) => {
+                const ref: QuoteGroupRef = { type: 'dogmatics', sourceId: d.sourceId, displayName: d.displayName }
+                return (
+                  <button
+                    key={`qd-${d.sourceId}`}
+                    className="pp-item"
+                    onClick={() => place({ kind: 'quotes', quotesGroup: ref })}
+                    onContextMenu={(e) => onContextMenu(e, { kind: 'quotes', quotesGroup: ref })}
+                  >
+                    <Quote size={14} />
+                    <span className="pp-item-title">{d.displayName}</span>
+                  </button>
+                )
+              })}
               {tabQuoteBookHits.length === 0 &&
                 tabQuoteScriptureHits.length === 0 &&
                 tabQuoteCommentaryHits.length === 0 &&
-                tabQuoteBocHits.length === 0 && (
+                tabQuoteBocHits.length === 0 &&
+                tabQuoteDogmaticsHits.length === 0 && (
                 <div className="pp-empty">No matching quotes.</div>
               )}
             </div>
@@ -653,6 +673,23 @@ export function PanePicker({
                 </div>
               ) : (
                 BOC_DOCUMENTS.map((d) => {
+                  if (d.singleSection) {
+                    // A one-page document has nothing to expand into — open it directly.
+                    return (
+                      <div key={d.code} className="pp-bible-book-group">
+                        <button
+                          className="pp-item"
+                          title={`Open ${d.title}`}
+                          onClick={() => placeBoc(d.code, 1)}
+                          onContextMenu={(e) =>
+                            onContextMenu(e, { kind: 'boc', documentCode: d.code, sectionOrdinal: 1, bocSourceId })
+                          }
+                        >
+                          <span className="pp-item-title">{d.title}</span>
+                        </button>
+                      </div>
+                    )
+                  }
                   const open = expandedDoc === d.code
                   return (
                     <div key={d.code} className="pp-bible-book-group">
@@ -661,24 +698,40 @@ export function PanePicker({
                         <span className="pp-item-title">{d.title}</span>
                       </button>
                       {open &&
-                        docSections.map((r) => (
-                          <button
-                            key={r.ordinal}
-                            className="pp-item pp-boc-section"
-                            title={`Open ${d.abbreviation} ${bocSectionLabel(r)}`}
-                            onClick={() => placeBoc(d.code, r.ordinal)}
-                            onContextMenu={(e) =>
-                              onContextMenu(e, {
-                                kind: 'boc',
-                                documentCode: d.code,
-                                sectionOrdinal: r.ordinal,
-                                bocSourceId
-                              })
-                            }
-                          >
-                            <span className="pp-item-title">{bocSectionLabel(r)}</span>
-                          </button>
-                        ))}
+                        groupByPart(docSections).map((g, gi) => {
+                          const row = (r: BocSectionRow): JSX.Element => (
+                            <button
+                              key={r.ordinal}
+                              className="pp-item pp-boc-section"
+                              title={`Open ${d.abbreviation} ${bocSectionLabel(r)}`}
+                              onClick={() => placeBoc(d.code, r.ordinal)}
+                              onContextMenu={(e) =>
+                                onContextMenu(e, {
+                                  kind: 'boc',
+                                  documentCode: d.code,
+                                  sectionOrdinal: r.ordinal,
+                                  bocSourceId
+                                })
+                              }
+                            >
+                              <span className="pp-item-title">{bocSectionLabel(r)}</span>
+                            </button>
+                          )
+                          return (
+                            <div key={gi}>
+                              {g.head ? (
+                                row(g.head)
+                              ) : (
+                                g.part && (
+                                  <div className="sv-testament-head" style={{ padding: '6px 8px 2px' }}>
+                                    {g.part}
+                                  </div>
+                                )
+                              )}
+                              {g.head ? <div style={{ paddingLeft: 10 }}>{g.rows.map(row)}</div> : g.rows.map(row)}
+                            </div>
+                          )
+                        })}
                     </div>
                   )
                 })

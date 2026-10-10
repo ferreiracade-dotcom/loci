@@ -32,6 +32,8 @@ import { openBookmarkDialog } from './BookmarkDialog'
 const FIXED: { view: FixedView; label: string; kind: keyof typeof TAB_REGISTRY }[] = [
   { view: 'bible', label: 'Bible', kind: 'bible' },
   { view: 'confessions', label: 'Confessions', kind: 'boc' },
+  { view: 'commentary', label: 'Commentary', kind: 'commentary' },
+  { view: 'dogmatics', label: 'Dogmatics', kind: 'dogmatics' },
   { view: 'fathers', label: 'Fathers', kind: 'fathers' },
   { view: 'library', label: 'Library', kind: 'library' },
   { view: 'notes', label: 'Notes', kind: 'notes' },

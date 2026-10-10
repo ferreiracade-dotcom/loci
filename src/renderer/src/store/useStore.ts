@@ -3,6 +3,7 @@ import { api } from '../lib/api'
 import { applyTheme } from '../lib/theme'
 import { extractAndIndexBook } from '../lib/pdfIndex'
 import { BOOKS, parseReference } from '@shared/scriptureRef'
+import { bocDocument } from '@shared/bookOfConcord'
 import { DEFAULT_THEME } from '@shared/ipc'
 import { parseNote, serializeFrontMatter } from '../lib/noteFrontmatter'
 import type { CorpusMode, RefPill } from '../lib/corpusMode'
@@ -102,6 +103,7 @@ import {
 } from './tabGroups'
 import type { GroupColor, GroupState, TabGroup } from './tabGroups'
 import { createSequentialQueue } from '../lib/sequentialQueue'
+import { commentaryStartContent, dogmaticsStartContent } from '../lib/readerStart'
 import { diffItems, isEmptyChanges, stableJson } from '@shared/sync'
 import type { DeviceTabs, SyncChanges, SyncItem, SyncKind, SyncSnapshot } from '@shared/sync'
 import {
@@ -456,6 +458,12 @@ interface Store {
   ) => Promise<void>
   /** Open/focus the Book of Concord as a center pane (left-rail "Confessions" entry). */
   showConfessions: () => Promise<void>
+  /** Open (or focus) the commentary reader tab. With a target, the reader jumps there; without
+   *  one it resumes the last-read chapter, else the first indexed source's first chapter. */
+  showCommentary: (target?: { sourceId: string; book: string; chapter: number; verse?: number }) => Promise<void>
+  /** Open (or focus) the dogmatics reader tab. With a target, the reader jumps there; without
+   *  one it resumes where the user left off, else the first indexed source's first book. */
+  showDogmatics: (target?: { sourceId: string; work: number; book: number; section?: number; topic?: string }) => Promise<void>
   addBocQuote: (input: BocQuoteInput) => Promise<void>
   /** Quote an excerpt from a BoC *commentary* source (anchored to the commentary source row,
    *  not the primary text — they live in separate tables). */
@@ -1458,12 +1466,48 @@ export const useStore = create<Store>((set, get) => {
         if (last) {
           try {
             const p = JSON.parse(last) as { documentCode?: string; ordinal?: number }
-            if (p.documentCode && p.ordinal != null) doc = { documentCode: p.documentCode, ordinal: p.ordinal }
+            // Skip a code the registry no longer has (e.g. the pre-merge per-creed codes).
+            if (p.documentCode && bocDocument(p.documentCode) && p.ordinal != null) {
+              doc = { documentCode: p.documentCode, ordinal: p.ordinal }
+            }
           } catch {
             /* ignore malformed session value */
           }
         }
         get().navigateBoc(doc.documentCode, doc.ordinal)
+      }
+    },
+
+    showCommentary: async (target) => {
+      const existing = get().tabs.find((t) => t.kind === 'commentary')
+      if (existing && !target) {
+        get().focusTab(existing.id)
+        return
+      }
+      const content = await commentaryStartContent(target)
+      if (existing) {
+        get().setTabContent(existing.id, content)
+        get().focusTab(existing.id)
+      } else if (target) {
+        // Jumping in from a verse (the reference bar): keep the Bible visible beside it.
+        get().openTabInSplit(content)
+      } else {
+        get().openTab(content)
+      }
+    },
+
+    showDogmatics: async (target) => {
+      const existing = get().tabs.find((t) => t.kind === 'dogmatics')
+      if (existing && !target) {
+        get().focusTab(existing.id)
+        return
+      }
+      const content = await dogmaticsStartContent(target)
+      if (existing) {
+        get().setTabContent(existing.id, content)
+        get().focusTab(existing.id)
+      } else {
+        get().openTab(content)
       }
     },
 
