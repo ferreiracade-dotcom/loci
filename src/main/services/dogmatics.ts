@@ -30,7 +30,12 @@ export const BUNDLED_DOGMATICS: Record<string, { title: string; author: string }
     title: 'Theologia Didactico-Polemica',
     author: 'Johannes Andreas Quenstedt'
   },
-  'Calov Systema Locorum Theologicorum.md': { title: 'Systema Locorum Theologicorum', author: 'Abraham Calov' }
+  'Calov Systema Locorum Theologicorum.md': { title: 'Systema Locorum Theologicorum', author: 'Abraham Calov' },
+  'Hollaz Examen Theologicum Acroamaticum.md': { title: 'Examen Theologicum Acroamaticum', author: 'David Hollaz' },
+  'Baier Compendium Theologiae Positivae.md': {
+    title: 'Compendium Theologiae Positivae',
+    author: 'Johann Wilhelm Baier, ed. C. F. W. Walther'
+  }
 }
 
 interface SourceRow {

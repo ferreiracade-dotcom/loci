@@ -48,3 +48,14 @@ describe('topicsOf on Quenstedt and Calov', () => {
     expect(topicsOf('Concerning Glorification')).toEqual(['eternal-life'])
   })
 })
+
+describe('topicsOf on Hollaz and Baier', () => {
+  it('takes their chapters for their topics', () => {
+    expect(topicsOf('Of Christ: His Person, States and Office')).toEqual(['person-of-christ', 'work-of-christ'])
+    expect(topicsOf('On the Redemption of Christ, His Person and Office')).toEqual(['person-of-christ', 'work-of-christ'])
+    expect(topicsOf('On Eternal Blessedness')).toEqual(['eternal-life'])
+    expect(topicsOf('On Preserving Grace, and Perseverance')).toEqual(['sanctification'])
+    expect(topicsOf('On the Means of Salvation in General, and the Law')).toEqual(['means-of-grace', 'law'])
+    expect(topicsOf('Concerning Christ the Redeemer')).toEqual(['person-of-christ'])
+  })
+})

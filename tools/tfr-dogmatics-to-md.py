@@ -17,7 +17,9 @@ Several slugs (a work's volumes) make one file, one work per slug unless --one-w
 
   --title TITLE        the work's heading (default: the catalogue's title)
   --one-work           all the slugs are one work (volumes of it), under one heading
-  --end PAGE           stop before this page (default: the first index page, if listed)
+  --end [VOL:]PAGE     stop before this page (default: the first index page, if listed)
+  --drop-running-heads leave out short paragraphs in capitals recurring on three pages or more
+  --open-titles        name a long stretch's parts by their opening words, not "(continued)"
   --book-depth N       the contents depth of the loci (default 2); deeper entries are sections
   --book-match REGEX   only entries at that depth matching REGEX are loci (the rest run on)
   --any-depth          loci and sections by --book-match and --section-match alone, at any depth
@@ -34,7 +36,7 @@ Several slugs (a work's volumes) make one file, one work per slug unless --one-w
   --rename [VOL:]PAGE=TITLE  a locus's title, where the contents garble it
                        (VOL: in that volume only, counting the slugs from 1)
 
-Hutter, Quenstedt and Calov, as Loci ships them:
+Hutter, Quenstedt, Calov, Hollaz and Baier, as Loci ships them:
 
   python3 tools/tfr-dogmatics-to-md.py "resources/dogmatics/Hutter Loci Communes.md" leonhard-hutter-loci-communes-theologici --title "Loci Communes Theologici" \\
     --book "136=Topic II. Concerning the Person, or the two Natures of Christ the Savior" \\
@@ -64,8 +66,89 @@ Hutter, Quenstedt and Calov, as Loci ships them:
     --book "10:157=CHAPTER I. ON THE FOURTH COMMANDMENT, ON HONORING PARENTS" \\
     --rename "10:157=Concerning the Second Table of the Law, on the Love of Neighbour"
 
+  python3 tools/tfr-dogmatics-to-md.py "resources/dogmatics/Hollaz Examen Theologicum Acroamaticum.md" david-hollaz-examen-theologicum-acroamaticum \\
+    --title "Examen Theologicum Acroamaticum" --any-depth --book-match '(?!x)x' --chapter-match '(?!x)x' \\
+    --section-match '^(?!.*\\b(?:chapter|caput|capvt|part|propaedeutics|preface|examen)\\b)' \\
+    --book "30=THEOLOGICAL PROPAEDEUTICS CHAPTER I. PRESENTING A GENERAL PROLEGOMENON" --rename "30=Prolegomenon I: On Theology" \\
+    --book "61=PRESENTING PROLEGOMENON II." --rename "61=Prolegomenon II: On Religion, the General Object of Theology" \\
+    --book "89=CHAPTER III. PROLEGOMENON III. ON THE PROPER AND ADEQUATE PRINCIPLE OF THEOLOGY" --rename "89=Prolegomenon III: On Holy Scripture, the Principle of Theology" \\
+    --book "216=OF THE FIRST PART OF THEOLOGY" --rename "216=Concerning God" \\
+    --book "311=CHAPTER II. CONCERNING THE HIGHEST MYSTERY OF THE HOLY TRINITY" --rename "311=On the Highest Mystery of the Holy Trinity" \\
+    --book "379=CHAPTER III. ON DIVINE ACTIONS IN GENERAL, AND IN PARTICULAR ON CREATION" --rename "379=On Divine Actions in General, and on Creation" \\
+    --book "403=CHAPTER IV. CONCERNING ANGELS." --rename "403=Concerning Angels" \\
+    --book "435=Q. I. What is man?" --rename "435=Concerning Man" \\
+    --book "449=I. What is divine providence?" --rename "449=On Divine Providence" \\
+    --book "480=OF THE FIRST PART OF THEOLOGY CHAPTER VII. OF THE FORMAL END OF THEOLOGY" --rename "480=On the Formal End of Theology, the Vision and Enjoyment of God" \\
+    --book "490=PART II OF THEOLOGY CONCERNING THE SUBJECT OF THEOLOGY" --rename "490=On the Subject of Theology, Fallen Man, and the Image of God" \\
+    --book "517=PART II. CHAPTER II OF THEOLOGY. OF SIN IN GENERAL." --rename "517=Of Sin in General" \\
+    --book "535=ON THE FIRST AND ORIGINAL SIN OF MEN." --rename "535=On the First and Original Sin of Men" \\
+    --book "566=I. What is actual sin?" --rename "566=On Actual Sin" \\
+    --book "598=THEOL. PART II. CHAP. V. CONCERNING THE DEFECT OF FREE WILL" --rename "598=On the Defect of Free Will in Spiritual Matters" \\
+    --book "614=THE THIRD PART OF THEOLOGY. CONCERNING THE PRINCIPLES AND MEANS OF SALVATION" --rename "614=On the Principles of Salvation, and the Universal Benevolence of God" \\
+    --book "633=CHAPTER II. CONCERNING THE SPECIAL BENEVOLENCE OF GOD AND THE PREDESTINATION" --rename "633=On the Special Benevolence of God, and Predestination" \\
+    --book "679=CHAPTER III. CONCERNING THE FRATERNAL REDEMPTION OF CHRIST" --rename "679=On the Redemption of Christ, His Person and Office" \\
+    --book "820=CHAPTER IV. ON THE APPLYING GRACE OF THE HOLY SPIRIT" --rename "820=On the Applying Grace of the Holy Spirit, and the Call" \\
+    --book "848=CHAPTER V. OF ILLUMINATING GRACE" --rename "848=On Illuminating Grace, and Illumination" \\
+    --book "881=CHAPTER VI. CONCERNING THE CONVERTING GRACE OF THE HOLY SPIRIT" --rename "881=On Converting Grace, and Conversion" \\
+    --book "905=CHAPTER VII ON REGENERATING GRACE." --rename "905=On Regenerating Grace, and Regeneration" \\
+    --book "921=OF JUSTIFYING GRACE, AND THE JUSTIFICATION OF THE SINNER BEFORE GOD." --rename "921=On Justifying Grace, and the Justification of the Sinner" \\
+    --book "961=CHAPTER IX. ON INHABITING GRACE, AND ON THE MYSTICAL UNION" --rename "961=On Inhabiting Grace, and the Mystical Union" \\
+    --book "975=CHAPTER X. ON RENEWING GRACE AND THE RENEWAL OF JUSTIFIED MEN." --rename "975=On Renewing Grace, and Renewal" \\
+    --book "992=CHAPTER XI. OF PRESERVING GRACE, AND THE PERSEVERANCE OF THE FAITHFUL." --rename "992=On Preserving Grace, and Perseverance" \\
+    --book "999=CHAPTER XII. CONCERNING GLORIFYING GRACE, AND THE ETERNAL BLESSEDNESS" --rename "999=On Glorifying Grace, and Eternal Blessedness" \\
+    --book "1020=CHAPTER I. ON THE MEANS OF SALVATION IN GENERAL, AND ON THE WORD OF THE LAW" --rename "1020=On the Means of Salvation in General, and the Law" \\
+    --book "1061=is a proclamation of purely gratuitous grace" --rename "1061=On the Gospel" \\
+    --book "1082=THEOL. PART. III. SECT. II. CAPVT III. ON THE SACRAMENTS IN GENERAL" --rename "1082=On the Sacraments in General, and of the Old Testament" \\
+    --book "1106=THEOLOGY PART 3, SECTION 2, CHAPTER 4. CONCERNING THE SACRAMENTS OF THE NEW TESTAMENT" --rename "1106=On the Sacraments of the New Testament, and Baptism" \\
+    --book "1132=CHAPTER V. OF THE EUCHARIST, OR THE LORD'S SUPPER." --rename "1132=On the Eucharist, or the Lord's Supper" \\
+    --book "1170=THEOL. PART. III. SECT. II. CAPVT VI. ON THE PENITENCE OF THE SINNER" --rename "1170=On the Penitence of the Sinner" \\
+    --book "1192=CHAPTER VII. ON FAITH IN CHRIST." --rename "1192=On Faith in Christ" \\
+    --book "1219=ON THE EFFECTS OF FAITH, OR GOOD WORKS, AND THEIR EXERCISE." --rename "1219=On Good Works, the Effects of Faith" \\
+    --book "1252=CHAPTER IX. CONCERNING THE ISAGOGIC, OR EXECUTIVE, MEANS OF SALVATION" --rename "1252=On Death, and the Resurrection of the Dead" \\
+    --book "1275=CHAPTER X. CONCERNING THE LAST JUDGMENT AND THE CONSUMMATION OF THE AGE" --rename "1275=On the Last Judgment and the Consummation of the Age" \\
+    --book "1305=OF THEOLOGY, CHAPTER I. OF THE CHURCH." --rename "1305=Of the Church" \\
+    --book "1360=PART IV OF THEOLOGY, CHAPTER II. ON THE TRIPLE HIERARCHICAL STATE" --rename "1360=On the Threefold Hierarchical State, and the Ministry" \\
+    --book "1381=OF THEOLOGY CHAPTER III. OF THE POLITICAL MAGISTRATE." --rename "1381=Of the Political Magistrate"
+
+  B=baier-compendium-theologiae-positivae
+  python3 tools/tfr-dogmatics-to-md.py "resources/dogmatics/Baier Compendium Theologiae Positivae.md" $B-vol-1 $B-vol-2 $B-vol-3a $B-vol-3b \\
+    --one-work --title "Compendium Theologiae Positivae" --any-depth --open-titles --drop-running-heads \\
+    --book-match '(?!x)x' --section-match '(?!x)x' --end 4:219 \\
+    --book "1:1=Prolegomena, Chapter I. On the nature of theology" --rename "1:1=Prolegomena: On the Nature of Theology" \\
+    --book "1:77=PROLEGOMENA Chapter II. ON THE PRINCIPLE OF REVEALED THEOLOGY" --rename "1:77=Prolegomena: On the Principle of Revealed Theology, or Holy Scripture" \\
+    --book "2:1=THEOLOGY PART ONE Chapter I. CONCERNING GOD. § 1." --rename "2:1=Concerning God" \\
+    --book "2:65=Chapter II. On creation" --rename "2:65=On Creation" \\
+    --book "2:91=Chapter III. CONCERNING ANGELS. § 1." --rename "2:91=Concerning Angels" \\
+    --book "2:129=ON THE IMAGE OF GOD BESTOWED UPON MAN IN THE FIRST CREATION. § 1." --rename "2:129=On the Image of God Bestowed upon Man in the First Creation" \\
+    --book "2:146=ON THE PROVIDENCE OF GOD. § 1." --rename "2:146=On the Providence of God" \\
+    --book "2:165=PART I. CHAP. VI. Chapter VI. ON ETERNAL BLESSEDNESS. § 1." --rename "2:165=On Eternal Blessedness" \\
+    --book "2:187=Chapter VII. Concerning death or eternal damnation" --rename "2:187=Concerning Eternal Death, or Damnation" \\
+    --book "2:205=Chapter VIII. ON TEMPORAL DEATH. § 1." --rename "2:205=On Temporal Death" \\
+    --book "2:221=Chapter IX. On the resurrection of the dead" --rename "2:221=On the Resurrection of the Dead" \\
+    --book "2:231=Chapter X. Concerning the last judgment and the consummation of the age" --rename "2:231=Concerning the Last Judgment and the Consummation of the Age" \\
+    --book "2:243=PART TWO Chapter I. CONCERNING SIN IN GENERAL. §" --rename "2:243=Concerning Sin in General" \\
+    --book "2:257=Chapter II. On original sin" --rename "2:257=On Original Sin" \\
+    --book "2:280=CONCERNING ACTUAL SINS. § 1. Actual sin, by the force of the word" --rename "2:280=Concerning Actual Sins" \\
+    --book "3:1=OF POSITIVE THEOLOGY PART THREE Chapter 1. CONCERNING THE GRACE OF GOD" --rename "3:1=Concerning the Grace of God toward Fallen Men" \\
+    --book "3:15=CONCERNING CHRIST, THE PRINCIPLE AND FOUNDATION OF OUR SALVATION" --rename "3:15=Of Christ: His Person, States and Office" \\
+    --book "3:117=ON FAITH IN CHRIST. § 1." --rename "3:117=On Faith in Christ" \\
+    --book "3:153=Chapter IV. ON REGENERATION AND CONVERSION. § 1." --rename "3:153=On Regeneration and Conversion" \\
+    --book "3:211=ON JUSTIFICATION. § 1." --rename "3:211=On Justification" \\
+    --book "3:255=Chapter VI. ON RENEWAL AND GOOD WORKS. § 1." --rename "3:255=On Renewal and Good Works" \\
+    --book "4:2=PART III. CHAP. VII. Chapter VII. CONCERNING THE WORD OF LAW AND GOSPEL. § 1." --rename "4:2=Concerning the Word of Law and Gospel" \\
+    --book "4:52=ON THE SACRAMENTS IN GENERAL. § I." --rename "4:52=On the Sacraments in General" \\
+    --book "4:71=PART III. CAP. IX. Chapter IX. ON THE SACRAMENTS OF THE OLD TESTAMENT. § I." --rename "4:71=On the Sacraments of the Old Testament" \\
+    --book "4:84=Chapter X. ON BAPTISM. § 1." --rename "4:84=On Baptism" \\
+    --book "4:131=PART III. CHAP. XI. Chapter XI. OF THE SACRED SUPPER. § 1." --rename "4:131=Of the Holy Supper" \\
+    --book "4:165=Chapter XII. On predestination and reprobation" --rename "4:165=On Predestination and Reprobation"
+
 Calov's tomes are those of the Wittenberg edition (1655-77; the sixth is bound with the fifth),
-each opening with a synopsis of its own contents before the text.
+each opening with a synopsis of its own contents before the text. Hollaz's and Baier's contents
+miss or misplace too many chapters to go by, so their chapters are listed here, each found by its
+opening words (Hollaz's chapters end with a prayer, a "Suspirium", before the next begins). Baier is
+Walther's edition, of which The Faith Received's last volume breaks off after Predestination (the
+Church, the Ministry, the Magistrate and the Household survive only in fragments, left out); where a
+chapter's opening words did not survive, it starts at the top of the page its running heads begin.
 
 Downloads are cached in tools/sources/tfr/ (not committed).
 """
@@ -131,6 +214,24 @@ def tidy(title, keep_number=False):
     return t[:1].upper() + t[1:]
 
 
+def drop_running_heads(flat):
+    """Leave out running heads set as paragraphs ("PART I. CHAP. VII.", "DE PRINCIPIO THEOLOGIAE."):
+    short paragraphs in capitals that recur on three or more pages."""
+    def key(t):
+        letters = [c for c in t if c.isalpha()]
+        if not t or len(t) > 90 or not letters or sum(c.isupper() for c in letters) < 0.8 * len(letters):
+            return None
+        return re.sub(r"[^A-Z]", "", t.upper())
+    pages = {}
+    for b in flat:
+        for t in (b[2], b[3]):
+            k = key(t)
+            if k:
+                pages.setdefault(k, set()).add(b[0])
+    common = {k for k, ps in pages.items() if len(ps) >= 3}
+    return [b for b in flat if b[1] == "head" or not all(key(t) in common for t in (b[2], b[3]) if t)]
+
+
 def blocks_of(slug):
     meta = json.loads(tb.get(slug, "meta.json"))
     en, la = tb.pages(slug, "en", meta["tei_v"]), tb.pages(slug, "la", meta["tei_v"])
@@ -153,8 +254,8 @@ def locate(flat, entries):
         best, score = None, 0.0
         for p in (e["page"], e["page"] + 1, e["page"] - 1):
             for i in by_page.get(p, []):
-                if i < floor or flat[i][1] != "head":
-                    continue
+                if i < floor or flat[i][1] != "head" and not e.get("added"):
+                    continue  # a locus given by --book may open at a paragraph
                 s = similarity(e["title"], flat[i][2])
                 if i + 1 < len(flat) and flat[i + 1][1] == "head":
                     s = max(s, similarity(e["title"], flat[i][2] + " " + flat[i + 1][2]))
@@ -196,7 +297,16 @@ def section_text(blocks):
 LONG = 20000  # characters of English and Latin together, about three pages
 
 
-def split_long(title, prefix, body):
+def opening(blocks):
+    """A part's first words, as far as the end of a clause, to title it by."""
+    text = next((b[2] for b in blocks if b[2] and b[1] == "p"), "")
+    text = re.sub(r"^[\W\d]+", "", text)
+    cut = re.match(r"(.{20,80}?)[.;:?!](?:\s|$)", text)
+    t = cut.group(1) if cut else text[:80].rsplit(" ", 1)[0]
+    return t + ("" if cut else "…")
+
+
+def split_long(title, prefix, body, open_titles=False):
     """A section too long to read as one (the contents skip the headings below a chapter), cut at
     its own headings into parts of a few pages, each titled by the prefix and its first heading."""
     size = lambda bs: sum(len(b[2]) + len(b[3]) for b in bs)
@@ -223,7 +333,10 @@ def split_long(title, prefix, body):
                 n += 1
             out.append((t, bs[:n]))
             bs = bs[n:]
-            t = t if t.endswith("(continued)") else f"{t} (continued)"
+            if open_titles:
+                t = f"{prefix}: {opening(bs)}"  # a part with no heading, named by its opening
+            else:
+                t = t if t.endswith("(continued)") else f"{t} (continued)"
         out.append((t, bs))
     return out
 
@@ -234,7 +347,9 @@ def main():
     ap.add_argument("slugs", nargs="+")
     ap.add_argument("--title")
     ap.add_argument("--one-work", action="store_true")
-    ap.add_argument("--end", type=int)
+    ap.add_argument("--end", action="append", default=[])
+    ap.add_argument("--open-titles", action="store_true")
+    ap.add_argument("--drop-running-heads", action="store_true")
     ap.add_argument("--book-depth", type=int, default=2)
     ap.add_argument("--book-match")
     ap.add_argument("--any-depth", action="store_true")
@@ -256,6 +371,7 @@ def main():
         return (int(vol) if vol else None), int(page), title
 
     adds = [scoped(x) for x in args.book]
+    ends = [scoped(x + "=") for x in args.end]
     renames = [scoped(x) for x in args.rename]
     depth = args.book_depth
     book_rx = re.compile(args.book_match, re.I) if args.book_match else None
@@ -266,11 +382,14 @@ def main():
     out, n_books, n_sections = [], 0, 0
     for k, slug in enumerate(args.slugs):
         meta, flat = blocks_of(slug)
+        if args.drop_running_heads:
+            flat = drop_running_heads(flat)
         if k == 0 or not args.one_work:
             out.append(f"# {args.title or meta.get('title') or slug}\n")
             n_books = 0
         index_pages = [int(x["page"]) for x in meta.get("index_pages") or [] if str(x["page"]).isdigit()]
-        end = args.end or (min(index_pages) if index_pages and not book_rx else flat[-1][0] + 1)
+        end = next((page for vol, page, _ in ends if vol in (None, k + 1)), None) or (
+            min(index_pages) if index_pages and not book_rx else flat[-1][0] + 1)
         structure = meta["structure"]
         if args.start_match:
             # A tome's synopsis of its own contents comes before its body; the body opens with
@@ -357,7 +476,7 @@ def main():
                              None) or tidy(e["title"])
                 out.append(f"\n## {n_books} {title}\n")
                 # A long opening, too, is cut: its first part is the locus's introduction.
-                for k_, (sub, part) in enumerate(split_long(title, title, body)):
+                for k_, (sub, part) in enumerate(split_long(title, title, body, args.open_titles)):
                     if k_:
                         out.append(f"\n### {sub}\n")
                         n_sections += 1
@@ -376,7 +495,7 @@ def main():
                 title = own
             else:
                 title = f"{chapter}: {own}" if chapter else own
-            for title, part in split_long(title, chapter or own, body):
+            for title, part in split_long(title, chapter or own, body, args.open_titles):
                 if len(title) > 220:
                     title = title[:220].rsplit(" ", 1)[0] + "…"
                 if re.match(r"\d", title):
