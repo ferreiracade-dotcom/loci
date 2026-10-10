@@ -1,5 +1,6 @@
 // Shared IPC contract — imported by main, preload, and renderer.
 // The renderer never touches Node/fs directly; everything goes through this surface.
+import type { FathersSeries } from './fathers'
 
 import type { RemoteTab, SyncChanges, SyncKind, SyncSnapshot } from './sync'
 
@@ -57,6 +58,8 @@ export const Channels = {
   listAllQuotes: 'quotes:listAll',
   addBocQuote: 'quotes:addBoc',
   addBocCommentaryQuote: 'quotes:addBocCommentary',
+  addFathersQuote: 'quotes:addFathers',
+  listFathersQuotes: 'quotes:listFathers',
   addDogmaticsQuote: 'quotes:addDogmatics',
   listDogmaticsQuotes: 'quotes:listDogmatics',
   saveNote: 'notes:save',
@@ -112,6 +115,12 @@ export const Channels = {
   listBocSources: 'boc:listSources',
   listBocCommentarySources: 'boc:listCommentarySources',
 
+  listFathersVolumes: 'fathers:listVolumes',
+  listFathersSections: 'fathers:listSections',
+  getFathersSection: 'fathers:getSection',
+  listFathersAuthors: 'fathers:listAuthors',
+  getFathersAuthor: 'fathers:getAuthor',
+  fathersCatena: 'fathers:catena',
   listDogmaticsSources: 'dogmatics:listSources',
   listDogmaticsOutline: 'dogmatics:listOutline',
   listDogmaticsBook: 'dogmatics:listBook',
@@ -318,6 +327,10 @@ export interface LociApi {
   /** Capture a Book of Concord commentary excerpt as a quote (anchored to the commentary
    *  source rather than the primary-text source). */
   addBocCommentaryQuote(input: BocQuoteInput): Promise<Quote>
+  /** Capture a selection from a Church Fathers section as a quote, cited "Author, *Work* III.3 (ANF 1:415)". */
+  addFathersQuote(input: FathersQuoteInput): Promise<Quote>
+  /** Every quote captured from one Fathers volume, in reading order. */
+  listFathersQuotes(volumeCode: string): Promise<Quote[]>
   /** Capture a dogmatics section (or a selected portion of one) as a quote. */
   addDogmaticsQuote(input: DogmaticsQuoteInput): Promise<Quote>
   /** Saved quotes from one dogmatics source, in reading order. */
@@ -415,6 +428,16 @@ export interface LociApi {
   listBocSources(): Promise<BocSource[]>
   listBocCommentarySources(): Promise<BocSource[]>
 
+  /** Church Fathers volumes (ANF/NPNF) present in the vault, with index status. */
+  listFathersVolumes(): Promise<FathersVolume[]>
+  /** Every section of a volume in reading order (no html/text), for the navigation drawer. */
+  listFathersSections(volumeCode: string): Promise<FathersSectionSummary[]>
+  getFathersSection(volumeCode: string, sectionId: string): Promise<FathersSection | null>
+  /** Authors with indexed sections, oldest first (undated last). */
+  listFathersAuthors(): Promise<FathersAuthorSummary[]>
+  getFathersAuthor(authorId: string): Promise<FathersAuthor | null>
+  /** The Fathers on a Bible passage, grouped by verse and ordered by author date. */
+  fathersCatena(book: string, chapter: number, verse?: number | null): Promise<FathersCatenaResult>
   /** Dogmatics sources (one per Markdown file in the vault's dogmatics folder). */
   listDogmaticsSources(): Promise<DogmaticsSource[]>
   /** A source's works and their books, for the reader's navigation. */
@@ -573,6 +596,19 @@ export interface BocQuoteInput {
   color?: string
 }
 
+/** Capture a selection from a Church Fathers section as a quote (`addFathersQuote`). */
+export interface FathersQuoteInput {
+  volumeCode: string
+  /** CCEL section id within the volume, e.g. 'ix.ii.ii'. */
+  sectionId: string
+  /** Printed page the selection starts on ('415', 'xiv'), if the reader could tell. */
+  page: string | null
+  /** 1-based paragraph index within the section, if known. */
+  paragraph: number | null
+  text: string
+  color?: string
+}
+
 /** Rows for the Quotes nav section: everything that has at least one saved quote. */
 /** Fill in any group list the main process didn't send. During development the renderer
  *  hot-reloads while the main process does not, so a freshly-reloaded renderer can briefly talk
@@ -584,7 +620,8 @@ export function normalizeQuoteGroups(g: Partial<QuoteGroups> | null | undefined)
     scripture: g?.scripture ?? [],
     commentary: g?.commentary ?? [],
     boc: g?.boc ?? [],
-    dogmatics: g?.dogmatics ?? []
+    dogmatics: g?.dogmatics ?? [],
+    fathers: g?.fathers ?? []
   }
 }
 
@@ -608,6 +645,8 @@ export interface QuoteGroups {
   }[]
   /** Dogmatics sources with captured quotes. */
   dogmatics: { sourceId: string; displayName: string; author: string | null; count: number }[]
+  /** Church Fathers volumes (ANF/NPNF) with captured quotes. */
+  fathers: { volumeCode: string; name: string; count: number }[]
 }
 
 export interface Annotation {
@@ -667,7 +706,7 @@ export type LinkTarget =
   | { type: 'note'; path: string }
   | null
 
-export type SearchKind = 'all' | 'page' | 'quote' | 'note' | 'scripture' | 'confession'
+export type SearchKind = 'all' | 'page' | 'quote' | 'note' | 'scripture' | 'confession' | 'father'
 
 export interface SearchScope {
   kind: SearchKind
@@ -679,7 +718,7 @@ export interface SearchScope {
 }
 
 export interface SearchHit {
-  kind: 'page' | 'quote' | 'note' | 'scripture' | 'confession'
+  kind: 'page' | 'quote' | 'note' | 'scripture' | 'confession' | 'father'
   bookId: string | null
   ref: string | null
   page: number | null
@@ -958,6 +997,109 @@ export interface BocCommentaryMatch {
   sectionEnd: number
 }
 
+// ---------- Church Fathers (CCEL ThML) ----------
+
+export interface FathersVolume {
+  /** CCEL code, e.g. 'anf01', 'npnf105'. */
+  code: string
+  series: FathersSeries
+  number: number
+  title: string
+  status: 'indexed' | 'error' | 'unindexed'
+  /** Why indexing failed, when status is 'error'. */
+  error: string | null
+  sectionCount: number
+}
+export interface FathersSectionSummary {
+  /** CCEL div id, e.g. 'ix.ii.ii'. */
+  id: string
+  ordinal: number
+  depth: number
+  /** Ancestor titles, outermost first, own title last. */
+  titles: string[]
+  shortTitle: string
+  authorId: string | null
+  /** Curated name, or one derived from the id when the author table lacks it. */
+  authorName: string | null
+  workTitle: string | null
+  /** Editor's matter (introductory notes, prefaces, indexes) rather than a Father's text. */
+  editorial: boolean
+  /** Printed page the section starts on ('415', or a roman numeral for front matter). */
+  startPage: string | null
+}
+export interface FathersNote {
+  anchor: string
+  n: string
+  /** Sanitized HTML (allow-listed tags only). */
+  html: string
+}
+export interface FathersSection extends FathersSectionSummary {
+  volumeCode: string
+  series: FathersSeries
+  volumeNumber: number
+  volumeTitle: string
+  /** Sanitized display HTML (allow-listed tags only). */
+  html: string
+  notes: FathersNote[]
+  prevId: string | null
+  nextId: string | null
+}
+export interface FathersAuthorSummary {
+  id: string
+  name: string
+  datesLabel: string | null
+  sortYear: number | null
+  workCount: number
+  sectionCount: number
+}
+export interface FathersWork {
+  volumeCode: string
+  series: FathersSeries
+  volumeNumber: number
+  volumeTitle: string
+  workTitle: string
+  firstSectionId: string
+  sectionCount: number
+}
+export interface FathersAuthor {
+  id: string
+  name: string
+  sortYear: number | null
+  datesLabel: string | null
+  bio: string | null
+  works: FathersWork[]
+}
+export interface FathersCatenaEntry {
+  volumeCode: string
+  series: FathersSeries
+  volumeNumber: number
+  sectionId: string
+  sectionTitle: string
+  workTitle: string
+  authorId: string | null
+  authorName: string | null
+  datesLabel: string | null
+  /** The citation as the Father's text prints it, e.g. "1 Pet. v. 1-5". */
+  passage: string
+  /** The reference sits in an editor's footnote rather than the Father's own text. */
+  inNote: boolean
+  /** Printed page of the reference. */
+  page: string | null
+  snippet: string
+}
+/** The catena for a passage; `truncated` when more references exist than the `limit` shown. */
+export interface FathersCatenaResult {
+  groups: FathersCatenaGroup[]
+  truncated: boolean
+  limit: number
+}
+export interface FathersCatenaGroup {
+  /** The verse the group's references start on; null = chapter-level. */
+  verse: number | null
+  label: string
+  entries: FathersCatenaEntry[]
+}
+
 export interface Quote {
   id: string
   bookId: string
@@ -995,6 +1137,11 @@ export interface Quote {
   dogmaticsAuthor?: string
   dogmaticsRef?: string
   dogmaticsLabel?: string
+  /** For Church Fathers quotes: the volume code, the section id (for jumping back) and the
+   *  author's display name (for grouping), if known. */
+  fathersVolume?: string
+  fathersSectionId?: string
+  fathersAuthor?: string
 }
 
 /** A location recorded for the History page. `location` is the tab content, as JSON. */

@@ -40,7 +40,16 @@ export interface TileInput {
 export const TILE_LIMITS = { books: 4, recent: 8, notes: 6 }
 
 /** Kinds that count as a "passage or location" for the Recent row. */
-const RECENT_KINDS = new Set<string>(['bible', 'boc', 'commentary', 'dogmatics', 'pdf', 'quotes'])
+const RECENT_SUBTITLES: Record<string, string> = {
+  bible: 'Bible',
+  boc: 'Confessions',
+  commentary: 'Commentary',
+  dogmatics: 'Dogmatics',
+  fathers: 'Church Fathers',
+  pdf: 'Library',
+  quotes: 'Quotes'
+}
+const RECENT_KINDS = new Set<string>(Object.keys(RECENT_SUBTITLES))
 
 /**
  * A tile's identity: where it points, ignoring view details that don't make it a different
@@ -150,18 +159,7 @@ export function buildTiles(input: TileInput): TileSections {
     if (!RECENT_KINDS.has(c.kind) || taken.has(key) || recent.length >= TILE_LIMITS.recent) continue
     if (c.kind === 'pdf' && !bookById.has(c.bookId)) continue
     const title = c.kind === 'pdf' ? (bookById.get(c.bookId)?.title ?? v.title) : v.title
-    const subtitle =
-      c.kind === 'bible'
-        ? 'Bible'
-        : c.kind === 'boc'
-          ? 'Confessions'
-          : c.kind === 'commentary'
-            ? 'Commentary'
-            : c.kind === 'dogmatics'
-              ? 'Dogmatics'
-              : c.kind === 'pdf'
-                ? 'Library'
-                : 'Quotes'
+    const subtitle = RECENT_SUBTITLES[c.kind] ?? 'Quotes'
     tile = { key, content: c, title, subtitle, kind: c.kind, at: v.at }
     if (!isHidden(tile, input.hidden)) recent.push(tile)
   }

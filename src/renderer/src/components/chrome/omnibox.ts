@@ -10,7 +10,7 @@ export type OmniAction =
   /** A Confessions article: its section ordinal is looked up when it is opened. */
   | { type: 'boc'; code: string; article?: string; section?: string }
   /** The Bible or Confessions at the last-read place. */
-  | { type: 'view'; view: 'bible' | 'confessions' | 'commentary' | 'dogmatics' }
+  | { type: 'view'; view: 'bible' | 'confessions' | 'commentary' | 'dogmatics' | 'fathers' }
   | { type: 'switch'; tabId: string }
   | { type: 'search'; query: string }
 
@@ -38,7 +38,6 @@ const PAGES: { label: string; kind: PageKind }[] = [
   { label: 'Library', kind: 'library' },
   { label: 'Notes', kind: 'notes' },
   { label: 'Quotes', kind: 'quotesIndex' },
-  { label: 'Church Fathers', kind: 'fathers' },
   { label: 'History', kind: 'history' },
   { label: 'Bookmarks', kind: 'bookmarks' },
   { label: 'Settings', kind: 'settings' }
@@ -158,6 +157,10 @@ export function buildSuggestions(query: string, data: OmniData, opts: { searchFi
       {
         title: 'Dogmatics',
         suggestion: { action: { type: 'view', view: 'dogmatics' }, label: 'Dogmatics', hint: 'Go to', icon: 'dogmatics' }
+      },
+      {
+        title: 'Church Fathers',
+        suggestion: { action: { type: 'view', view: 'fathers' }, label: 'Church Fathers', hint: 'Go to', icon: 'fathers' }
       },
       ...PAGES.map((p) => ({
         title: p.label,

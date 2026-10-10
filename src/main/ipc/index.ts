@@ -12,6 +12,7 @@ import type {
   CommentaryQuoteInput,
   CommentarySourceUpdate,
   ExportOptions,
+  FathersQuoteInput,
   ImportProgress,
   IndexedPage,
   NewCommentarySource,
@@ -34,6 +35,7 @@ import * as commentary from '../services/commentary'
 import * as commentaryIndex from '../services/commentaryIndex'
 import { SERMON_INDEX_CATALOG, downloadModule } from '../services/sermonIndex'
 import * as boc from '../services/boc'
+import * as fathers from '../services/fathers'
 import * as dogmatics from '../services/dogmatics'
 import { deleteCorrectionsForSource } from '../services/commentaryCorrections'
 import { syncVault } from '../services/vaultsync'
@@ -290,6 +292,8 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.addBocCommentaryQuote, (_e, input: BocQuoteInput) =>
     quotes.addBocCommentaryQuote(input)
   )
+  ipcMain.handle(Channels.addFathersQuote, (_e, input: FathersQuoteInput) => quotes.addFathersQuote(input))
+  ipcMain.handle(Channels.listFathersQuotes, (_e, volumeCode: string) => quotes.listFathersQuotes(volumeCode))
 
   // --- Notes (Phase 2c) ---
   ipcMain.handle(Channels.saveNote, (_e, path: string, content: string) =>
@@ -472,6 +476,15 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.listBocDocumentSections, (_e, d: string, s: string) => boc.listSections(d, s))
   ipcMain.handle(Channels.listBocSources, () => boc.listSources())
   ipcMain.handle(Channels.listBocCommentarySources, () => boc.listCommentarySources())
+
+  ipcMain.handle(Channels.listFathersVolumes, () => fathers.listVolumes())
+  ipcMain.handle(Channels.listFathersSections, (_e, v: string) => fathers.listSections(v))
+  ipcMain.handle(Channels.getFathersSection, (_e, v: string, s: string) => fathers.getSection(v, s))
+  ipcMain.handle(Channels.listFathersAuthors, () => fathers.listAuthors())
+  ipcMain.handle(Channels.getFathersAuthor, (_e, id: string) => fathers.getAuthor(id))
+  ipcMain.handle(Channels.fathersCatena, (_e, book: string, chapter: number, verse?: number | null) =>
+    fathers.catenaResult(book, chapter, verse)
+  )
   ipcMain.handle(Channels.listDogmaticsSources, () => dogmatics.listSources())
   ipcMain.handle(Channels.listDogmaticsOutline, (_e, s: string) => dogmatics.listOutline(s))
   ipcMain.handle(Channels.listDogmaticsBook, (_e, s: string, w: number, b: number) => dogmatics.listBook(s, w, b))

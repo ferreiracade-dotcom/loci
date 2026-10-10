@@ -11,7 +11,7 @@ interface Migration {
  *  (which may hold several works); sections are discovered from the file, so the edition's
  *  printed numbers and titles are stored per row. Quotes carry the source, a "w.b.s"
  *  ordinal ref for navigation and the citable location captured at quote time.
- *  Idempotent, because it runs as both version 20 and version 22 (see there). */
+ *  Idempotent, because it runs as both version 20 and version 24 (see there). */
 function createDogmatics(db: Database.Database): void {
   db.exec(`
     CREATE TABLE IF NOT EXISTS dogmatics_sources (
@@ -51,6 +51,121 @@ function createDogmatics(db: Database.Database): void {
   for (const [name, type] of add) {
     if (!cols.has(name)) db.exec(`ALTER TABLE quotes ADD COLUMN ${name} ${type}`)
   }
+}
+
+/** Church Fathers tables and quote columns (version 21; idempotent, also run by 24). */
+function createFathers(db: Database.Database): void {
+  // Church Fathers (CCEL ThML, Schaff's ANF/NPNF series). The vault's fathers/*.xml files
+  // are the source of truth; everything here is a rebuildable index of them, so a volume is
+  // re-indexed by deleting its rows and re-inserting (fathersIndex.ts). Kept apart from the
+  // Bible-commentary and Book of Concord tables for the same reason those are apart.
+  //
+  // fathers_scripture_refs.in_note: ~99% of the files' scripRefs sit inside footnotes (the
+  // editors' cross-references), so footnote refs are indexed too; char_offset is where the
+  // reference — or, for a footnote ref, its marker — sits in the section's plain text.
+  //
+  // fathers_authors is reseeded from src/main/data/fathersAuthors.ts on every sync (it is
+  // curated data, not user data), so edits there need no further migration.
+  //
+  // quotes: a Fathers quote is anchored by (volume, section) — deliberately NOT a foreign
+  // key, so re-indexing a volume can never cascade-delete the user's quotes — plus the page
+  // (a printed page label such as "415" or "xiv") and paragraph captured at quote time.
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS fathers_volumes (
+      code        TEXT PRIMARY KEY,
+      series      TEXT NOT NULL,
+      number      INTEGER NOT NULL,
+      title       TEXT NOT NULL DEFAULT '',
+      file_key    TEXT NOT NULL,
+      mtime       INTEGER,
+      status      TEXT NOT NULL DEFAULT 'unindexed',
+      error       TEXT,
+      indexed_at  TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS fathers_sections (
+      volume_code  TEXT NOT NULL REFERENCES fathers_volumes(code) ON DELETE CASCADE,
+      id           TEXT NOT NULL,
+      ordinal      INTEGER NOT NULL,
+      depth        INTEGER NOT NULL,
+      titles_json  TEXT NOT NULL,
+      short_title  TEXT NOT NULL,
+      author_id    TEXT,
+      work_title   TEXT,
+      editorial    INTEGER NOT NULL DEFAULT 0,
+      start_page   TEXT,
+      html         TEXT NOT NULL,
+      text         TEXT NOT NULL,
+      PRIMARY KEY (volume_code, id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_fathers_sections_order ON fathers_sections(volume_code, ordinal);
+    CREATE INDEX IF NOT EXISTS idx_fathers_sections_author ON fathers_sections(author_id);
+
+    CREATE TABLE IF NOT EXISTS fathers_scripture_refs (
+      volume_code    TEXT NOT NULL,
+      section_id     TEXT NOT NULL,
+      anchor         TEXT NOT NULL,
+      osis           TEXT NOT NULL,
+      passage        TEXT NOT NULL,
+      book           TEXT NOT NULL,
+      chapter_start  INTEGER NOT NULL,
+      verse_start    INTEGER,
+      chapter_end    INTEGER NOT NULL,
+      verse_end      INTEGER,
+      in_note        INTEGER NOT NULL DEFAULT 0,
+      char_offset    INTEGER NOT NULL DEFAULT 0,
+      FOREIGN KEY (volume_code, section_id) REFERENCES fathers_sections(volume_code, id) ON DELETE CASCADE
+    );
+    CREATE INDEX IF NOT EXISTS idx_fathers_refs_lookup ON fathers_scripture_refs(book, chapter_start, chapter_end);
+    CREATE INDEX IF NOT EXISTS idx_fathers_refs_section ON fathers_scripture_refs(volume_code, section_id);
+
+    CREATE TABLE IF NOT EXISTS fathers_notes (
+      volume_code  TEXT NOT NULL,
+      section_id   TEXT NOT NULL,
+      anchor       TEXT NOT NULL,
+      n            TEXT NOT NULL,
+      html         TEXT NOT NULL,
+      FOREIGN KEY (volume_code, section_id) REFERENCES fathers_sections(volume_code, id) ON DELETE CASCADE
+    );
+    CREATE INDEX IF NOT EXISTS idx_fathers_notes_section ON fathers_notes(volume_code, section_id);
+
+    CREATE TABLE IF NOT EXISTS fathers_pages (
+      volume_code  TEXT NOT NULL,
+      section_id   TEXT NOT NULL,
+      n            TEXT NOT NULL,
+      char_offset  INTEGER NOT NULL,
+      FOREIGN KEY (volume_code, section_id) REFERENCES fathers_sections(volume_code, id) ON DELETE CASCADE
+    );
+    CREATE INDEX IF NOT EXISTS idx_fathers_pages_section ON fathers_pages(volume_code, section_id);
+
+    CREATE TABLE IF NOT EXISTS fathers_authors (
+      id           TEXT PRIMARY KEY,
+      name         TEXT NOT NULL,
+      sort_year    INTEGER,
+      dates_label  TEXT,
+      bio          TEXT
+    );
+
+  `)
+  // Idempotent: this migration was first drafted as v20 (before main's dogmatics took that
+  // number), so tolerate a database that already has some of these columns.
+  const have = new Set((db.prepare('PRAGMA table_info(quotes)').all() as { name: string }[]).map((c) => c.name))
+  for (const [col, type] of [
+    ['fathers_volume', 'TEXT'],
+    ['fathers_section_id', 'TEXT'],
+    ['fathers_page', 'TEXT'],
+    ['fathers_paragraph', 'INTEGER']
+  ] as const) {
+    if (!have.has(col)) db.exec(`ALTER TABLE quotes ADD COLUMN ${col} ${type}`)
+  }
+}
+
+/** The Fathers quote citation column (version 22; idempotent, also run by 24). */
+function addFathersCitation(db: Database.Database): void {
+  // The citation computed at capture, so a Fathers quote still cites correctly (and its note
+  // block re-mirrors) when its volume is not currently indexed.
+  const have = new Set((db.prepare('PRAGMA table_info(quotes)').all() as { name: string }[]).map((c) => c.name))
+  if (!have.has('fathers_citation')) db.exec('ALTER TABLE quotes ADD COLUMN fathers_citation TEXT')
 }
 
 // Append new migrations here; never edit a shipped one. The index is rebuildable
@@ -474,12 +589,21 @@ const migrations: Migration[] = [
   },
   {
     version: 21,
+    name: 'church-fathers',
+    up: (db) => createFathers(db)
+  },
+  {
+    version: 22,
+    name: 'fathers-quote-citation',
+    up: (db) => addFathersCitation(db)
+  },
+  {
+    version: 23,
     name: 'history',
     up: (db) => {
       // Browsing history for the History page tab: one row per visited tab location.
       // `location` is the tab's content (TabContent) as JSON, so a row can be reopened.
-      // IF NOT EXISTS: a database from before the merge with main may already have this table
-      // (it was version 20 there).
+      // IF NOT EXISTS: a database from the Chrome UI branch already has it (its version 20).
       db.exec(`
         CREATE TABLE IF NOT EXISTS history (
           id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -493,12 +617,18 @@ const migrations: Migration[] = [
     }
   },
   {
-    version: 22,
-    name: 'dogmatics (databases whose version 20 was history)',
-    // Two lines of development both shipped a version 20 (dogmatics on main, history on the
-    // Chrome UI branch). A database at either one reaches 22 with both tables; this re-runs the
-    // idempotent dogmatics setup for the branch's databases and is a no-op otherwise.
-    up: (db) => createDogmatics(db)
+    version: 24,
+    name: 'reconcile main and the Chrome UI branch',
+    // Two lines of development numbered their migrations independently: main has dogmatics (20),
+    // Church Fathers (21, 22); the Chrome UI branch had history as its 20, and an interim merge
+    // of the two had history as 21 and dogmatics again as 22. Whichever of those a database
+    // came from, it is at a version whose tables may be missing here, so set them all up again.
+    // Every step is idempotent: a database that already has them is unchanged.
+    up: (db) => {
+      createDogmatics(db)
+      createFathers(db)
+      addFathersCitation(db)
+    }
   }
 ]
 

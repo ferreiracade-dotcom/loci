@@ -11,7 +11,8 @@ const KINDS: { id: SearchKind; label: string }[] = [
   { id: 'quote', label: 'Quotes' },
   { id: 'note', label: 'Notes' },
   { id: 'scripture', label: 'Scripture' },
-  { id: 'confession', label: 'Confessions' }
+  { id: 'confession', label: 'Confessions' },
+  { id: 'father', label: 'Fathers' }
 ]
 
 const NO_HITS: SearchHit[] = []
@@ -35,6 +36,7 @@ export function SearchView({ query, onQueryChange }: { query: string; onQueryCha
   const openNote = useStore((s) => s.openNote)
   const navigateScripture = useStore((s) => s.navigateScripture)
   const navigateBoc = useStore((s) => s.navigateBoc)
+  const navigateFathers = useStore((s) => s.navigateFathers)
   const setActiveHit = useStore((s) => s.setActiveHit)
   const indexing = useStore((s) => s.indexing)
   const startIndexing = useStore((s) => s.startIndexing)
@@ -66,6 +68,9 @@ export function SearchView({ query, onQueryChange }: { query: string; onQueryCha
       // ref is "<document code>:<section ordinal>" (formatBocRef); bookId is the BoC source id.
       const parsed = parseBocRef(h.ref)
       if (parsed) navigateBoc(parsed.code, parsed.ordinal, h.bookId ?? undefined)
+    } else if (h.kind === 'father' && h.bookId && h.ref) {
+      // bookId is the volume code ('anf01'), ref the CCEL section id (indexFathersForSearch).
+      navigateFathers(h.bookId, h.ref)
     }
   }
 

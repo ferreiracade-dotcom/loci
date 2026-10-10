@@ -4,8 +4,10 @@ import { dirname, join } from 'path'
 import { getDb } from '../db/connection'
 import { localVaultDir } from './config'
 import * as search from './search'
+import * as fathers from './fathers'
 import {
   bocCitation,
+  fathersCitation,
   formatCitation,
   parseAuthors,
   scriptureCitation,
@@ -13,6 +15,7 @@ import {
   type CitationSource,
   type ScriptureCiteRef
 } from '../../shared/citation'
+import { fathersVolumeLabel } from '../../shared/fathers'
 import { bookByCode } from '../../shared/scriptureRef'
 import { bocDocument, formatBocRef, parseBocRef, type BocDocumentCode } from '../../shared/bookOfConcord'
 import { groupValuesById, sanitizeName } from './library'
@@ -20,6 +23,7 @@ import type {
   Annotation,
   BocQuoteInput,
   CommentaryQuoteInput,
+  FathersQuoteInput,
   DogmaticsQuoteInput,
   NewQuote,
   NewScriptureHighlight,
@@ -60,6 +64,11 @@ interface QuoteRow {
   boc_section_number: string | null
   boc_section_label: string | null
   boc_paragraph: number | null
+  fathers_volume: string | null
+  fathers_section_id: string | null
+  fathers_page: string | null
+  fathers_paragraph: number | null
+  fathers_citation: string | null
   dogmatics_source_id: string | null
   dogmatics_ref: string | null
   dogmatics_label: string | null
@@ -410,6 +419,17 @@ function citationForRow(r: QuoteRow, ctx?: QuoteListCtx): string {
       return bocCitationOf(doc.abbreviation, r.boc_section_number, r.boc_section_label, r.boc_paragraph, src)
     }
   }
+  if (r.fathers_volume && r.fathers_section_id) {
+    // Author / work / series are read from the index each time, so a corrected author table or a
+    // re-indexed volume is reflected; only the page was captured at quote time.
+    const meta = fathers.citeMeta(r.fathers_volume, r.fathers_section_id)
+    if (meta) return fathersCitation({ ...meta, page: r.fathers_page })
+    // Volume not indexed right now: the citation captured with the quote, else a bare locator.
+    return (
+      r.fathers_citation ||
+      `${fathersVolumeLabel(r.fathers_volume)} ${r.fathers_section_id}${r.fathers_page ? ':' + r.fathers_page : ''}`
+    )
+  }
   if (r.dogmatics_source_id) {
     const src = dogmaticsSourceMeta(r.dogmatics_source_id)
     if (src) return dogmaticsCitationOf(src, r.dogmatics_label)
@@ -471,6 +491,10 @@ function rowToQuote(r: QuoteRow, ctx?: QuoteListCtx): Quote {
     dogmaticsSource = src?.display_name
     dogmaticsAuthor = src?.author ?? undefined
   }
+  const fathersAuthor =
+    r.fathers_volume && r.fathers_section_id
+      ? (fathers.citeMeta(r.fathers_volume, r.fathers_section_id)?.authorName ?? undefined)
+      : undefined
   return {
     id: r.id,
     bookId: r.book_id ?? '',
@@ -495,7 +519,10 @@ function rowToQuote(r: QuoteRow, ctx?: QuoteListCtx): Quote {
     dogmaticsSource,
     dogmaticsAuthor,
     dogmaticsRef: r.dogmatics_ref ?? undefined,
-    dogmaticsLabel: r.dogmatics_label ?? undefined
+    dogmaticsLabel: r.dogmatics_label ?? undefined,
+    fathersVolume: r.fathers_volume ?? undefined,
+    fathersSectionId: r.fathers_section_id ?? undefined,
+    fathersAuthor
   }
 }
 
@@ -1062,6 +1089,85 @@ export function addBocCommentaryQuote(input: BocQuoteInput): Quote {
   return rowToQuote(row)
 }
 
+// Church Fathers quotes live in one note per author, under notes/fathers/.
+function fathersNoteRel(authorName: string): string {
+  return `notes/fathers/${sanitizeName(authorName)}.md`
+}
+
+function ensureFathersNote(vault: string, authorName: string): string {
+  const rel = fathersNoteRel(authorName)
+  const abs = join(vault, rel)
+  if (!existsSync(abs)) {
+    mkdirSync(dirname(abs), { recursive: true })
+    const fm =
+      `---\n` +
+      `title: ${authorName.replace(/\r?\n/g, ' ')}\n` +
+      `type: fathers-note\n` +
+      `---\n\n# ${authorName}\n`
+    writeFileSync(abs, fm, 'utf-8')
+  }
+  return rel
+}
+
+/**
+ * Capture a selection from a Church Fathers section as a quote, cited "Irenaeus, *Against
+ * Heresies* III.3 (ANF 1:415)" and filed under notes/fathers/<author>.md (quotes with no known
+ * author go under "Unattributed"). Anchored by (volume, section) — not a foreign key, so
+ * re-indexing a volume never deletes the user's quotes.
+ */
+export function addFathersQuote(input: FathersQuoteInput): Quote {
+  const vault = localVaultDir()
+  if (!vault) throw new Error('No vault')
+  const meta = fathers.citeMeta(input.volumeCode, input.sectionId)
+  if (!meta) throw new Error('Church Fathers section not found')
+
+  const id = randomUUID()
+  const color = input.color ?? 'amber'
+  const citation = fathersCitation({ ...meta, page: input.page })
+
+  const rel = ensureFathersNote(vault, meta.authorName ?? 'Unattributed')
+  upsertQuoteBlock(vault, rel, id, buildBlock(id, input.text, citation, []))
+
+  getDb()
+    .prepare(
+      `INSERT INTO quotes
+         (id, book_id, text, page, color, note_path, used_in, created,
+          fathers_volume, fathers_section_id, fathers_page, fathers_paragraph, fathers_citation)
+       VALUES (?, NULL, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+    .run(
+      id,
+      input.text,
+      color,
+      rel,
+      JSON.stringify([rel]),
+      Date.now(),
+      input.volumeCode,
+      input.sectionId,
+      input.page,
+      input.paragraph,
+      citation
+    )
+
+  reindexQuote(id)
+  const row = getDb().prepare('SELECT * FROM quotes WHERE id = ?').get(id) as QuoteRow
+  return rowToQuote(row)
+}
+
+/** Every quote captured from one Fathers volume, in reading order (then oldest first). */
+export function listFathersQuotes(volumeCode: string): Quote[] {
+  const rows = getDb()
+    .prepare(
+      `SELECT q.* FROM quotes q
+       LEFT JOIN fathers_sections s ON s.volume_code = q.fathers_volume AND s.id = q.fathers_section_id
+       WHERE q.fathers_volume = ?
+       ORDER BY COALESCE(s.ordinal, 1000000000), COALESCE(q.fathers_paragraph, 1000000000), q.created`
+    )
+    .all(volumeCode) as QuoteRow[]
+  const ctx = buildQuoteListCtx()
+  return rows.map((r) => rowToQuote(r, ctx))
+}
+
 /** All saved commentary quotes for a source, ordered by chapter then verse (for the panel). */
 export function listCommentaryQuotes(sourceId: string): Quote[] {
   const rows = getDb()
@@ -1260,7 +1366,14 @@ export function listQuoteGroups(translation: string): QuoteGroups {
     )
     .all() as QuoteGroups['dogmatics']
 
-  return { books, scripture, commentary, boc, dogmatics }
+  const fathersRows = db
+    .prepare('SELECT fathers_volume AS volumeCode, COUNT(*) AS count FROM quotes WHERE fathers_volume IS NOT NULL GROUP BY fathers_volume')
+    .all() as { volumeCode: string; count: number }[]
+  const fathersGroups = fathersRows
+    .map((r) => ({ volumeCode: r.volumeCode, name: fathersVolumeLabel(r.volumeCode), count: r.count }))
+    .sort((a, b) => a.volumeCode.localeCompare(b.volumeCode))
+
+  return { books, scripture, commentary, boc, dogmatics, fathers: fathersGroups }
 }
 
 /** Every quote captured from one BoC source within one document, in section order. Mirrors

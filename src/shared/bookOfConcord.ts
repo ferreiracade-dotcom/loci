@@ -212,3 +212,17 @@ export function bocRowMatches(row: { number: string | null; label: string }, rom
   const lead = /^(?:Articles?\s+)?([IVXLC]+[ab]?)(?:\.\s|\s*$)/i.exec(row.label.trim())
   return !!lead && articleNumbers(lead[1]).includes(want)
 }
+
+/** The section a Confessions query names: by article number (see bocRowMatches), or by a word
+ *  in its label (a creed's name). Undefined when nothing matches. */
+export function pickBocSection<R extends { ordinal: number; number: string | null; label: string }>(
+  rows: R[],
+  target: { article?: string; section?: string }
+): R | undefined {
+  if (target.article) return rows.find((r) => bocRowMatches(r, target.article!))
+  if (target.section) {
+    const word = target.section.toLowerCase()
+    return rows.find((r) => r.label.toLowerCase().includes(word))
+  }
+  return undefined
+}

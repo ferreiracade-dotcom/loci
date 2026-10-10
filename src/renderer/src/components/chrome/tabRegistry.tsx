@@ -22,6 +22,7 @@ import type { ProjectItem } from '@shared/ipc'
 import { bookByCode } from '@shared/scriptureRef'
 import { bocDocument } from '@shared/bookOfConcord'
 import { dogmaticsTopic } from '@shared/dogmaticsTopics'
+import { fathersVolumeLabel } from '@shared/fathers'
 import { ALL_COMMENTARIES } from '@shared/ipc'
 import { RichNoteEditor } from '../library/RichNoteEditor'
 import { PdfReader } from '../library/PdfReader'
@@ -30,6 +31,7 @@ import { BocPane } from '../library/BocPane'
 import { QuoteGroupPane } from '../library/QuoteGroupPane'
 import { CommentaryPane } from '../library/CommentaryPane'
 import { DogmaticsPane } from '../library/DogmaticsPane'
+import { FathersPane } from '../library/FathersPane'
 import { PanePicker } from '../library/PanePicker'
 import { LibraryView } from '../library/LibraryView'
 import { NotesView } from '../library/NotesView'
@@ -38,7 +40,6 @@ import { Settings } from '../Settings'
 import { NewTabPage } from './NewTabPage'
 import { SearchPage } from './SearchPage'
 import { HistoryPage } from './HistoryPage'
-import { FathersPage } from './FathersPage'
 import { BookmarksManager } from './BookmarksManager'
 
 /** What a tab's title may need to look up. */
@@ -47,9 +48,9 @@ export interface TitleContext {
   notes: { path: string; title: string }[]
   /** The focused Confessions section's number/label, when the caller has looked it up. */
   bocSection?: { number: string | null; label: string } | null
-  /** The focused Commentary/Dogmatics tab's source name and (Dogmatics) book title, when the
-   *  caller has looked them up. */
-  reader?: { source?: string; place?: string } | null
+  /** The focused Commentary/Dogmatics/Fathers tab's source (Fathers: the author), work and
+   *  place (Dogmatics book, Fathers section), when the caller has looked them up. */
+  reader?: { source?: string; work?: string; place?: string } | null
 }
 
 /** What a tab's body is rendered with. */
@@ -115,6 +116,15 @@ function dogmaticsPlace(tab: Tab, ctx: TitleContext): string | undefined {
   return ctx.reader?.place
 }
 
+/** A Fathers tab's location parts: author, work and section when looked up, else the volume. */
+function fathersParts(tab: Tab, ctx: TitleContext): string[] {
+  const r = ctx.reader
+  if (tab.fathersAuthor) return [r?.source ?? 'Author']
+  if (!tab.fathersVolume) return []
+  const parts = [r?.source, r?.work, r?.place].filter((x): x is string => !!x)
+  return parts.length ? parts : [fathersVolumeLabel(tab.fathersVolume)]
+}
+
 function quotesLabel(tab: Tab): string {
   const g = tab.quotesGroup
   if (!g) return 'Quotes'
@@ -127,6 +137,7 @@ function quotesLabel(tab: Tab): string {
     case 'dogmatics':
       return g.displayName
     case 'boc':
+    case 'fathers':
       return g.name
     case 'author':
       return g.author
@@ -250,7 +261,16 @@ export const TAB_REGISTRY: Record<TabKind, TabKindDef> = {
   library: page(Library, 'Library', 'Your books', () => <LibraryView />),
   notes: page(NotebookPen, 'Notes', 'All notes', () => <NotesView />),
   quotesIndex: page(Quote, 'Quotes', 'Saved quotes', () => <QuotesView />),
-  fathers: page(Church, 'Church Fathers', 'Church Fathers corpus', () => <FathersPage />),
+  fathers: {
+    icon: Church,
+    // Volume code only in the strip (main's choice); the omnibox has author › work › section.
+    title: (tab) => (tab.fathersVolume && !tab.fathersAuthor ? fathersVolumeLabel(tab.fathersVolume) : 'Church Fathers'),
+    subtitle: (tab) => (tab.fathersAuthor ? 'Church Fathers · author' : 'Church Fathers'),
+    render: (tab) => <FathersPane tab={tab} />,
+    recordHistory: true,
+    breadcrumb: (tab, ctx) => ['Church Fathers', ...fathersParts(tab, ctx)],
+    locationText: (tab, ctx) => fathersParts(tab, ctx).join(', ') || 'Church Fathers'
+  },
   settings: page(SettingsIcon, 'Settings', 'loci://settings', () => <Settings />),
   history: page(History, 'History', 'loci://history', () => <HistoryPage />),
   bookmarks: page(BookmarkIcon, 'Bookmarks', 'loci://bookmarks', () => <BookmarksManager />)

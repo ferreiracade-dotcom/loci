@@ -5,7 +5,8 @@ import { MODES_FOR_PILL, resolveCorpusMode, type CorpusMode, type RefPill } from
 const MODE_LABELS: Record<CorpusMode, string> = {
   books: 'Books',
   bible: 'Bible',
-  confessions: 'Confessions'
+  confessions: 'Confessions',
+  fathers: 'Fathers'
 }
 
 /** The mode a pill should show, plus the setter that pins it. Auto-follows the focused centre

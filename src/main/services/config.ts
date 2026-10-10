@@ -45,6 +45,10 @@ export interface LociConfig {
   bundledDogmatics: string[] | null
   /** SHA-256 of the shipped dogmatics version last put in the vault, by file name (as above). */
   bundledDogmaticsHashes: Record<string, string> | null
+  /** Church Fathers volumes shipped with Loci already copied into the vault, by file name. */
+  bundledFathers: string[] | null
+  /** SHA-256 of the shipped Fathers volume last put in the vault, by file name. */
+  bundledFathersHashes: Record<string, string> | null
   /** Legacy single flag from before per-module tracking; true meant Lenski was installed. */
   sermonIndexDefaultsInstalled?: boolean
 }
@@ -71,7 +75,9 @@ const defaults: LociConfig = {
   bundledCommentaries: null,
   bundledCommentaryHashes: null,
   bundledDogmatics: null,
-  bundledDogmaticsHashes: null
+  bundledDogmaticsHashes: null,
+  bundledFathers: null,
+  bundledFathersHashes: null
 }
 
 function configPath(): string {
@@ -108,6 +114,12 @@ export function bocVaultDir(): string {
 /** The vault's Book of Concord commentary-Markdown folder (notes keyed to BoC sections). */
 export function bocCommentaryVaultDir(): string {
   return join(localVaultDir(), 'confessions-commentary')
+}
+
+/** The vault's Church Fathers folder: CCEL ThML volumes (anf01.xml … npnf214.xml) copied in
+ *  unchanged. Local to this device like `confessions/`; not mirrored to Drive (vaultsync). */
+export function fathersVaultDir(): string {
+  return join(localVaultDir(), 'fathers')
 }
 
 export function readConfig(): LociConfig {

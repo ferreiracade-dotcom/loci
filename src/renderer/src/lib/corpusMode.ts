@@ -1,16 +1,17 @@
 /** Which corpus a multi-mode reference panel is currently showing. */
-export type CorpusMode = 'books' | 'bible' | 'confessions'
+export type CorpusMode = 'books' | 'bible' | 'confessions' | 'fathers'
 
 /** The five reference-panel pills. */
 export type RefPill = 'quotes' | 'notes' | 'books' | 'texts' | 'commentary'
 
 /** Modes each pill can offer. An empty list means the pill is single-mode and shows no switch. */
 export const MODES_FOR_PILL: Record<RefPill, CorpusMode[]> = {
-  quotes: ['books', 'bible', 'confessions'],
+  quotes: ['books', 'bible', 'confessions', 'fathers'],
   notes: [],
   books: [],
   texts: ['bible', 'confessions'],
-  commentary: ['bible', 'confessions']
+  // Commentary/fathers is the catena: the Fathers on the Bible passage you are reading.
+  commentary: ['bible', 'confessions', 'fathers']
 }
 
 /** The corpus implied by a focused centre tab, or null for tabs that have none. */
@@ -18,6 +19,7 @@ export function modeForTabKind(kind: string | undefined): CorpusMode | null {
   if (kind === 'pdf') return 'books'
   if (kind === 'bible') return 'bible'
   if (kind === 'boc') return 'confessions'
+  if (kind === 'fathers') return 'fathers'
   return null
 }
 

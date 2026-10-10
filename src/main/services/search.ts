@@ -9,7 +9,7 @@ function ftsQuery(raw: string): string {
 }
 
 interface HitRow {
-  kind: 'page' | 'quote' | 'note' | 'scripture' | 'confession'
+  kind: 'page' | 'quote' | 'note' | 'scripture' | 'confession' | 'father'
   bookId: string | null
   ref: string | null
   page: number | null
@@ -220,6 +220,37 @@ export function indexBocForSearch(sourceId: string): void {
 
 export function removeBocFromSearch(sourceId: string): void {
   getDb().prepare("DELETE FROM search_fts WHERE kind = 'confession' AND book_id = ?").run(sourceId)
+}
+
+/**
+ * Index a Church Fathers volume's sections for search — one `search_fts` row per
+ * `fathers_sections` row. `book_id` is the volume code ('anf01'), `ref` the CCEL section id,
+ * `page` the numeric printed page the section starts on (null for roman-numeral front matter),
+ * and `title` the section's short title. Replaces the volume's previous rows.
+ */
+export function indexFathersForSearch(volumeCode: string): void {
+  const db = getDb()
+  const rows = db
+    .prepare(
+      `SELECT id, short_title AS title, start_page AS startPage, text
+       FROM fathers_sections WHERE volume_code = ? ORDER BY ordinal`
+    )
+    .all(volumeCode) as { id: string; title: string; startPage: string | null; text: string }[]
+  db.transaction(() => {
+    db.prepare("DELETE FROM search_fts WHERE kind = 'father' AND book_id = ?").run(volumeCode)
+    const ins = db.prepare(
+      "INSERT INTO search_fts (content, kind, book_id, ref, page, title) VALUES (?, 'father', ?, ?, ?, ?)"
+    )
+    for (const r of rows) {
+      if (!r.text.trim()) continue
+      const page = r.startPage && /^\d+$/.test(r.startPage) ? Number(r.startPage) : null
+      ins.run(r.text, volumeCode, r.id, page, r.title)
+    }
+  })()
+}
+
+export function removeFathersFromSearch(volumeCode: string): void {
+  getDb().prepare("DELETE FROM search_fts WHERE kind = 'father' AND book_id = ?").run(volumeCode)
 }
 
 export function unindexedBooks(): { id: string; title: string }[] {

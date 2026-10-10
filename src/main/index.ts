@@ -21,6 +21,7 @@ import { syncCommentaryFolder } from './services/commentaryIndex'
 import { installDefaultModules } from './services/sermonIndex'
 import { installBundledCommentaries } from './services/bundledCommentaries'
 import { syncBocFolder } from './services/bocIndex'
+import { installBundledFathers, syncFathersFolder } from './services/fathersIndex'
 import { installBundledDogmatics, syncDogmaticsFolder } from './services/dogmatics'
 import { Channels } from '../shared/ipc'
 
@@ -249,6 +250,23 @@ app.whenReady().then(() => {
         })
         .then((indexed) => {
           if (indexed > 0)
+            BrowserWindow.getAllWindows().forEach((w) => w.webContents.send(Channels.libraryChanged))
+        })
+        .catch(() => {})
+        // Then the Church Fathers (CCEL ThML) volumes in the vault's fathers/ folder. Parsing a
+        // 5 MB volume is synchronous, so this is chained after the dogmatics sync + bundled
+        // install rather than overlapping them, and yields between volumes (see syncFathersFolder).
+        .then(async () => {
+          let installed = 0
+          try {
+            installed = installBundledFathers().length
+          } catch {
+            /* best effort — a locked vault folder retries next launch */
+          }
+          return installed + (await syncFathersFolder())
+        })
+        .then((changed) => {
+          if (changed > 0)
             BrowserWindow.getAllWindows().forEach((w) => w.webContents.send(Channels.libraryChanged))
         })
         .catch(() => {}),

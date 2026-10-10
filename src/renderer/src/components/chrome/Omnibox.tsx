@@ -46,32 +46,59 @@ function useBocSection(tab: Tab | undefined): { number: string | null; label: st
   return key ? (sectionCache.get(key) ?? null) : null
 }
 
-const readerCache = new Map<string, { source?: string; place?: string } | null>()
+type ReaderNames = { source?: string; work?: string; place?: string }
+const readerCache = new Map<string, ReaderNames | null>()
 
-/** The focused Commentary/Dogmatics tab's source name and (Dogmatics) book title, for its
- *  breadcrumb ("Dogmatics › Hollaz › Of God"). */
-function useReaderNames(tab: Tab | undefined): { source?: string; place?: string } | null {
-  const kind = tab?.kind === 'commentary' || tab?.kind === 'dogmatics' ? tab.kind : undefined
-  const sourceId = kind === 'commentary' ? tab?.commentarySourceId : kind === 'dogmatics' ? tab?.dogmaticsSourceId : undefined
-  const work = tab?.dogmaticsWork
-  const book = tab?.dogmaticsBook
-  const key = kind && sourceId ? `${kind}:${sourceId}:${kind === 'dogmatics' ? `${work}:${book}` : ''}` : ''
+/** What a Commentary/Dogmatics/Fathers tab's breadcrumb needs looked up: the source name and
+ *  (Dogmatics) book title, or (Fathers) author › work › section. Null for other kinds. */
+function readerKey(tab: Tab | undefined): string {
+  if (!tab) return ''
+  if (tab.kind === 'commentary' && tab.commentarySourceId) return `commentary:${tab.commentarySourceId}`
+  if (tab.kind === 'dogmatics' && tab.dogmaticsSourceId)
+    return `dogmatics:${tab.dogmaticsSourceId}:${tab.dogmaticsWork}:${tab.dogmaticsBook}`
+  if (tab.kind === 'fathers' && tab.fathersAuthor) return `fathersAuthor:${tab.fathersAuthor}`
+  if (tab.kind === 'fathers' && tab.fathersVolume && tab.fathersSection)
+    return `fathers:${tab.fathersVolume}:${tab.fathersSection}`
+  return ''
+}
+
+async function lookupReaderNames(tab: Tab): Promise<ReaderNames | null> {
+  if (tab.kind === 'commentary') {
+    const source = (await api.listCommentarySources()).find((s) => s.id === tab.commentarySourceId)
+    return source ? { source: source.displayName } : null
+  }
+  if (tab.kind === 'dogmatics') {
+    const source = (await api.listDogmaticsSources()).find((s) => s.id === tab.dogmaticsSourceId)
+    if (!source) return null
+    const outline = await api.listDogmaticsOutline(source.id)
+    const b = outline.find((w) => w.ordinal === tab.dogmaticsWork)?.books.find((x) => x.ordinal === tab.dogmaticsBook)
+    return { source: source.displayName, place: b ? [b.number, b.title].filter(Boolean).join(' ') : undefined }
+  }
+  if (tab.kind === 'fathers' && tab.fathersAuthor) {
+    const author = await api.getFathersAuthor(tab.fathersAuthor)
+    return author ? { source: author.name } : null
+  }
+  if (tab.kind === 'fathers' && tab.fathersVolume && tab.fathersSection) {
+    const sec = await api.getFathersSection(tab.fathersVolume, tab.fathersSection)
+    if (!sec) return null
+    return {
+      source: sec.authorName ?? undefined,
+      work: sec.workTitle ?? undefined,
+      place: sec.shortTitle && sec.shortTitle !== sec.workTitle ? sec.shortTitle : undefined
+    }
+  }
+  return null
+}
+
+function useReaderNames(tab: Tab | undefined): ReaderNames | null {
+  const key = readerKey(tab)
   const [, bump] = useState(0)
   useEffect(() => {
-    if (!key || readerCache.has(key) || !sourceId) return
+    if (!key || readerCache.has(key) || !tab) return
     let alive = true
     void (async () => {
       try {
-        if (kind === 'commentary') {
-          const source = (await api.listCommentarySources()).find((s) => s.id === sourceId)
-          readerCache.set(key, source ? { source: source.displayName } : null)
-        } else {
-          const source = (await api.listDogmaticsSources()).find((s) => s.id === sourceId)
-          const outline = source ? await api.listDogmaticsOutline(sourceId) : []
-          const b = outline.find((w) => w.ordinal === work)?.books.find((x) => x.ordinal === book)
-          const place = b ? [b.number, b.title].filter(Boolean).join(' ') : undefined
-          readerCache.set(key, source ? { source: source.displayName, place } : null)
-        }
+        readerCache.set(key, await lookupReaderNames(tab))
       } catch {
         readerCache.set(key, null)
       }
@@ -80,7 +107,8 @@ function useReaderNames(tab: Tab | undefined): { source?: string; place?: string
     return () => {
       alive = false
     }
-  }, [key, kind, sourceId, work, book])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key])
   return key ? (readerCache.get(key) ?? null) : null
 }
 

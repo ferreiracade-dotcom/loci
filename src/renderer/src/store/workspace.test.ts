@@ -329,6 +329,20 @@ describe('tabContent / contentKey', () => {
       sectionOrdinal: 5,
       dogmaticsTopic: undefined
     })
+    expect(
+      tabContent({ ...base, kind: 'fathers', fathersVolume: 'anf01', fathersSection: 'ix.ii.ii' })
+    ).toEqual({ kind: 'fathers', fathersVolume: 'anf01', fathersSection: 'ix.ii.ii', fathersAuthor: undefined })
+  })
+
+  it('opens a Fathers tab, and setTabContent swaps reader <-> author page without leaking fields', () => {
+    let ws: Workspace = EMPTY_WORKSPACE
+    const opened = openTab(ws, { kind: 'fathers', fathersVolume: 'anf01', fathersSection: 'a' })
+    ws = opened.ws
+    expect(ws.tabs[0]).toMatchObject({ kind: 'fathers', fathersVolume: 'anf01', fathersSection: 'a' })
+    ws = setTabContent(ws, opened.tabId, { kind: 'fathers', fathersAuthor: 'irenaeus' })
+    expect(ws.tabs[0].fathersAuthor).toBe('irenaeus')
+    expect(ws.tabs[0].fathersVolume).toBeUndefined()
+    expect(ws.tabs[0].fathersSection).toBeUndefined()
   })
 
   it('treats highlights as the same location and chapters as different', () => {
@@ -436,6 +450,7 @@ describe('restore: validate, sanitize, round trip, legacy migration', () => {
       tabs: [
         { id: 'c1', paneId: 'L', order: 0, kind: 'commentary', commentarySourceId: 'lenski', book: 'ROM', chapter: 3, verse: 28 },
         { id: 'b1', paneId: 'L', order: 1, kind: 'bible', book: 'ROM', chapter: 3 },
+        { id: 'f1', paneId: 'L', order: 2, kind: 'fathers', fathersVolume: 'anf01', fathersSection: 'ix.ii.ii' },
         {
           id: 'd1',
           paneId: 'R',
@@ -455,7 +470,13 @@ describe('restore: validate, sanitize, round trip, legacy migration', () => {
       activePaneId: 'L'
     }
     const ws = parsePersistedWorkspace(JSON.stringify(legacy))
-    expect(sortedTabs(ws.tabs).map((t) => t.id)).toEqual(['c1', 'd1', 'b1'])
+    expect(sortedTabs(ws.tabs).map((t) => t.id)).toEqual(['c1', 'd1', 'b1', 'f1'])
+    expect(tabContent(ws.tabs.find((t) => t.id === 'f1')!)).toEqual({
+      kind: 'fathers',
+      fathersVolume: 'anf01',
+      fathersSection: 'ix.ii.ii',
+      fathersAuthor: undefined
+    })
     expect(splitPartner(ws.tabs, 'c1')?.id).toBe('d1')
     expect(ws.activeTabId).toBe('c1')
     const c = ws.tabs.find((t) => t.id === 'c1')!

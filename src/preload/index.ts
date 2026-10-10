@@ -62,6 +62,8 @@ const api: LociApi = {
   listAllQuotes: () => ipcRenderer.invoke(Channels.listAllQuotes),
   addBocQuote: (input) => ipcRenderer.invoke(Channels.addBocQuote, input),
   addBocCommentaryQuote: (input) => ipcRenderer.invoke(Channels.addBocCommentaryQuote, input),
+  addFathersQuote: (input) => ipcRenderer.invoke(Channels.addFathersQuote, input),
+  listFathersQuotes: (volumeCode) => ipcRenderer.invoke(Channels.listFathersQuotes, volumeCode),
   addDogmaticsQuote: (input) => ipcRenderer.invoke(Channels.addDogmaticsQuote, input),
   listDogmaticsQuotes: (sourceId) => ipcRenderer.invoke(Channels.listDogmaticsQuotes, sourceId),
   saveNote: (path, content) => ipcRenderer.invoke(Channels.saveNote, path, content),
@@ -139,6 +141,13 @@ const api: LociApi = {
   listDogmaticsBook: (sourceId, work, book) => ipcRenderer.invoke(Channels.listDogmaticsBook, sourceId, work, book),
   listDogmaticsTopics: () => ipcRenderer.invoke(Channels.listDogmaticsTopics),
   listDogmaticsTopic: (topicId) => ipcRenderer.invoke(Channels.listDogmaticsTopic, topicId),
+
+  listFathersVolumes: () => ipcRenderer.invoke(Channels.listFathersVolumes),
+  listFathersSections: (v) => ipcRenderer.invoke(Channels.listFathersSections, v),
+  getFathersSection: (v, s) => ipcRenderer.invoke(Channels.getFathersSection, v, s),
+  listFathersAuthors: () => ipcRenderer.invoke(Channels.listFathersAuthors),
+  getFathersAuthor: (id) => ipcRenderer.invoke(Channels.getFathersAuthor, id),
+  fathersCatena: (book, chapter, verse) => ipcRenderer.invoke(Channels.fathersCatena, book, chapter, verse),
 
   onImportProgress: (cb) => {
     const listener = (_e: IpcRendererEvent, p: ImportProgress): void => cb(p)

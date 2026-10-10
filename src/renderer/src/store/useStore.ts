@@ -16,6 +16,7 @@ import type {
   BocCommentaryMatch,
   BocQuoteInput,
   CommentaryMatch,
+  FathersQuoteInput,
   ImportProgress,
   ImportResult,
   NewQuote,
@@ -103,7 +104,7 @@ import {
 } from './tabGroups'
 import type { GroupColor, GroupState, TabGroup } from './tabGroups'
 import { createSequentialQueue } from '../lib/sequentialQueue'
-import { commentaryStartContent, dogmaticsStartContent } from '../lib/readerStart'
+import { commentaryStartContent, dogmaticsStartContent, fathersStartContent } from '../lib/readerStart'
 import { diffItems, isEmptyChanges, stableJson } from '@shared/sync'
 import type { DeviceTabs, SyncChanges, SyncItem, SyncKind, SyncSnapshot } from '@shared/sync'
 import {
@@ -329,6 +330,9 @@ interface Store {
    *  Mirrored to the session store under `refMode:<pill>`; deliberately NOT in PanelLayout,
    *  which is a database row. */
   refModes: Partial<Record<RefPill, CorpusMode>>
+  /** A passage another surface (a Fathers scripture link) asked the Texts-pill Bible to show.
+   *  A fresh object per request, so asking for the same passage twice still re-navigates. */
+  refBibleTarget: { book: string; chapter: number; highlight: number[] } | null
 
   // --- Tab workspace (one Chrome-style strip) ---
   /** Every open tab, in strip order via `order`; the source of truth. */
@@ -444,6 +448,8 @@ interface Store {
   // --- Reference panel pins ---
   /** Pin a reference pill to a corpus mode. Persisted to the session store. */
   setRefMode: (pill: RefPill, mode: CorpusMode) => void
+  /** Capture a selection from a Church Fathers section as a quote. */
+  addFathersQuote: (input: FathersQuoteInput) => Promise<void>
 
   // --- Book of Concord (Confessions) ---
   /** Route a document/section into a BoC pane: reuse the existing BoC pane if there is one,
@@ -468,6 +474,18 @@ interface Store {
   /** Quote an excerpt from a BoC *commentary* source (anchored to the commentary source row,
    *  not the primary text — they live in separate tables). */
   addBocCommentaryQuote: (input: BocQuoteInput) => Promise<void>
+
+  // --- Church Fathers ---
+  /** Route a volume/section into a Fathers pane: reuse the focused or any existing Fathers tab,
+   *  otherwise open one. */
+  navigateFathers: (volumeCode: string, sectionId: string) => void
+  /** Same routing, but to an author's page. */
+  openFathersAuthor: (authorId: string) => void
+  /** Open/focus the Fathers as a center pane (left-rail "Church Fathers" entry), resuming where
+   *  the user left off. */
+  showFathers: () => Promise<void>
+  /** Show a passage in the Texts pill's Bible (a scripture link was clicked in a Father). */
+  showPassageInTexts: (book: string, chapter: number, highlight?: number[]) => void
 
   // --- Tab workspace ---
   /**
@@ -641,6 +659,19 @@ export const useStore = create<Store>((set, get) => {
   let indexCancel = false
   let bibleIndexCancel = false
 
+  // Shared by navigateFathers / openFathersAuthor: the focused tab if it is already a Fathers tab,
+  // else any existing Fathers tab, else a new one.
+  const routeFathers = (content: TabContent): void => {
+    const current = focusedTab(get())
+    const existing = current?.kind === 'fathers' ? current : get().tabs.find((t) => t.kind === 'fathers')
+    if (existing) {
+      get().setTabContent(existing.id, content)
+      get().focusTab(existing.id)
+    } else {
+      get().openTab(content)
+    }
+  }
+
   // Coalesce background "library changed" events into at most one refresh per 1.5s.
   const scheduleRefresh = (): void => {
     const since = Date.now() - lastRefresh
@@ -765,6 +796,7 @@ export const useStore = create<Store>((set, get) => {
     bocLookup: null,
     bocMatches: [],
     refModes: {},
+    refBibleTarget: null,
     tabs: [],
     activeTabId: null,
     splitRatios: {},
@@ -871,7 +903,7 @@ export const useStore = create<Store>((set, get) => {
       await Promise.all(
         (['quotes', 'texts', 'commentary'] as RefPill[]).map(async (pill) => {
           const v = await api.getSession(`refMode:${pill}`)
-          if (v === 'books' || v === 'bible' || v === 'confessions') pins[pill] = v
+          if (v === 'books' || v === 'bible' || v === 'confessions' || v === 'fathers') pins[pill] = v
         })
       )
       set({ refModes: pins })
@@ -1338,8 +1370,9 @@ export const useStore = create<Store>((set, get) => {
       set({ commentaryMatches: matches })
       get().saveLayout({ activeRightTab: 'commentary', notesCollapsed: false })
       // A click on a verse is a request for *this* passage's commentary — more specific than
-      // whatever the pill was pinned to, so it re-pins.
-      get().setRefMode('commentary', 'bible')
+      // whatever the pill was pinned to, so it re-pins. Except a pin on Fathers: the catena
+      // follows the same click (it reads `commentaryLookup`), so leave it be.
+      if (get().refModes.commentary !== 'fathers') get().setRefMode('commentary', 'bible')
     },
 
     showScripture: async () => {
@@ -1413,6 +1446,16 @@ export const useStore = create<Store>((set, get) => {
     setRefMode: (pill, mode) => {
       set({ refModes: { ...get().refModes, [pill]: mode } })
       void api.setSession(`refMode:${pill}`, mode)
+    },
+
+    addFathersQuote: async (input) => {
+      try {
+        await api.addFathersQuote(input)
+        // Bump the shared token so the Quotes panel reloads.
+        set({ noteReloadToken: get().noteReloadToken + 1 })
+      } catch (err) {
+        set({ toast: err instanceof Error ? err.message : 'Could not save this quote' })
+      }
     },
 
     // --- Book of Concord (Confessions) ---
@@ -1520,6 +1563,36 @@ export const useStore = create<Store>((set, get) => {
     addBocCommentaryQuote: async (input) => {
       await api.addBocCommentaryQuote(input)
       set({ noteReloadToken: get().noteReloadToken + 1 })
+    },
+
+    // --- Church Fathers ---
+    // In-place navigation, like navigateBoc: the focused tab if it is already a Fathers tab,
+    // else any existing Fathers tab (so a catena click does not pile up tabs), else a new one.
+    navigateFathers: (volumeCode, sectionId) => {
+      routeFathers({ kind: 'fathers', fathersVolume: volumeCode, fathersSection: sectionId })
+      void api.setSession('lastFathers', JSON.stringify({ volumeCode, sectionId }))
+    },
+
+    openFathersAuthor: (authorId) => {
+      routeFathers({ kind: 'fathers', fathersAuthor: authorId })
+    },
+
+    showFathers: async () => {
+      const existing = get().tabs.find((t) => t.kind === 'fathers')
+      if (existing) {
+        get().focusTab(existing.id)
+          return
+      }
+      // Resume where the user left off; with no history the pane opens on its volume list.
+      get().openTab(await fathersStartContent())
+    },
+
+    showPassageInTexts: (book, chapter, highlight = []) => {
+      set({ refBibleTarget: { book, chapter, highlight } })
+      get().setRefMode('texts', 'bible')
+      // Same patch as ThreePanel.selectRightTab: open the panel and give a reader pill room.
+      const widen = (get().layout?.notesWidth ?? 0) < 460 ? { notesWidth: 560 } : {}
+      get().saveLayout({ activeRightTab: 'texts', notesCollapsed: false, ...widen })
     },
 
     openTab: (content, opts = {}) => {

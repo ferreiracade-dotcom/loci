@@ -1,9 +1,9 @@
 import { useStore } from '../../store/useStore'
 import type { TabContent } from '../../store/useStore'
 import { api } from '../../lib/api'
-import { bocDocument, bocRowMatches } from '@shared/bookOfConcord'
+import { bocDocument, pickBocSection } from '@shared/bookOfConcord'
 import { parseReference } from '@shared/scriptureRef'
-import { commentaryStartContent, dogmaticsStartContent } from '../../lib/readerStart'
+import { commentaryStartContent, dogmaticsStartContent, fathersStartContent } from '../../lib/readerStart'
 import type { OmniAction } from './omnibox'
 
 /** Where the Bible was last read (JHN 1 by default), as tab content. */
@@ -36,20 +36,6 @@ export async function lastBocContent(): Promise<TabContent> {
     /* ignore malformed session value */
   }
   return { kind: 'boc', documentCode: 'AC', sectionOrdinal: 1 }
-}
-
-/** The section a Confessions query names: by article number (see bocRowMatches), or by a word
- *  in its label (a creed's name). Undefined when nothing matches. */
-export function pickBocSection<R extends { ordinal: number; number: string | null; label: string }>(
-  rows: R[],
-  target: { article?: string; section?: string }
-): R | undefined {
-  if (target.article) return rows.find((r) => bocRowMatches(r, target.article!))
-  if (target.section) {
-    const word = target.section.toLowerCase()
-    return rows.find((r) => r.label.toLowerCase().includes(word))
-  }
-  return undefined
 }
 
 /**
@@ -189,6 +175,7 @@ export async function fixedViewContent(view: FixedView): Promise<TabContent> {
   if (view === 'confessions') return lastBocContent()
   if (view === 'commentary') return commentaryStartContent()
   if (view === 'dogmatics') return dogmaticsStartContent()
+  if (view === 'fathers') return fathersStartContent()
   return { kind: view }
 }
 

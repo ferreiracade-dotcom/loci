@@ -3,6 +3,7 @@ import { CorpusSwitch, useCorpusMode } from './CorpusSwitch'
 import { QuotesPanel } from './QuotesPanel'
 import { ScriptureHighlightsPanel } from './ScriptureHighlightsPanel'
 import { BocQuotesPanel } from './BocQuotesPanel'
+import { FathersQuotesPanel } from './FathersQuotesPanel'
 
 /** The Quotes pill: quotes for whatever you have open, per corpus. */
 export function QuotesReferencePanel(): ReactNode {
@@ -14,6 +15,8 @@ export function QuotesReferencePanel(): ReactNode {
         <ScriptureHighlightsPanel />
       ) : mode === 'confessions' ? (
         <BocQuotesPanel />
+      ) : mode === 'fathers' ? (
+        <FathersQuotesPanel />
       ) : (
         <QuotesPanel />
       )}

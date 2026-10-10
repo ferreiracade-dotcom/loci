@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Search, GripVertical } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
@@ -33,9 +33,13 @@ export function ReferenceBiblePanel() {
     if (!translation && defaultTranslation) setTranslation(defaultTranslation)
   }, [defaultTranslation, translation])
 
+  // Set once any navigation happened (user, go-to box, or a consumed refBibleTarget): the async
+  // saved-location restore below must never override it.
+  const navigatedRef = useRef(false)
+
   useEffect(() => {
     void api.getSession('refBibleLoc').then((v) => {
-      if (!v) return
+      if (!v || navigatedRef.current || useStore.getState().refBibleTarget) return
       try {
         const p = JSON.parse(v) as { book?: string; chapter?: number }
         if (p.book && p.chapter) {
@@ -52,11 +56,21 @@ export function ReferenceBiblePanel() {
   }, [])
 
   const navigate = (b: string, c: number, hl: number[] = []): void => {
+    navigatedRef.current = true
     setBook(b)
     setChapter(c)
     setHighlight(hl)
     void api.setSession('refBibleLoc', JSON.stringify({ book: b, chapter: c }))
   }
+
+  // Another surface (a scripture link in the Church Fathers reader) asked for a passage.
+  const refBibleTarget = useStore((s) => s.refBibleTarget)
+  useEffect(() => {
+    if (!refBibleTarget) return
+    navigate(refBibleTarget.book, refBibleTarget.chapter, refBibleTarget.highlight)
+    useStore.setState({ refBibleTarget: null }) // consumed: do not replay on a later mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refBibleTarget])
 
   const pickTranslation = (id: string): void => {
     setTranslation(id)
