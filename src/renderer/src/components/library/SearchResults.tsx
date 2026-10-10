@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { BookOpen, FileText, ScrollText, ChevronRight, ChevronDown, Landmark } from 'lucide-react'
+import { BookOpen, FileText, ScrollText, ChevronRight, ChevronDown, Church } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { getCachedCover, setCachedCover } from '../../lib/coverCache'
@@ -64,7 +64,7 @@ function GroupThumb({ bookId, kind, books }: { bookId: string | null; kind: stri
       {bookId ? (
         <BookOpen size={15} />
       ) : kind === 'father' ? (
-        <Landmark size={15} />
+        <Church size={15} />
       ) : kind === 'scripture' || kind === 'confession' ? (
         <ScrollText size={15} />
       ) : (

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Landmark } from 'lucide-react'
+import { Church } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { api } from '../../lib/api'
 import { fathersVolumeLabel } from '@shared/fathers'
@@ -58,7 +58,7 @@ export function FathersQuotesPanel() {
   return (
     <div className="quotes-list">
       <div className="qn-head">
-        <Landmark size={14} />
+        <Church size={14} />
         <select className="book-select" value={volumeCode} onChange={(e) => setVolumeCode(e.target.value)}>
           {volumes.map((v) => (
             <option key={v.code} value={v.code}>

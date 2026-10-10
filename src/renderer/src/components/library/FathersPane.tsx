@@ -3,7 +3,7 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronRight,
-  Landmark,
+  Church,
   PanelLeftClose,
   PanelLeftOpen
 } from 'lucide-react'
@@ -257,7 +257,7 @@ export function FathersPane({ tab }: { tab: Tab }) {
   } else {
     main = (
       <div className="sr-loading" style={{ flexDirection: 'column' }}>
-        <Landmark size={22} />
+        <Church size={22} />
         <div>Choose a volume or an author from the drawer.</div>
         {navCollapsed && (
           <button className="btn btn-sm" onClick={() => toggleNav(false)}>
