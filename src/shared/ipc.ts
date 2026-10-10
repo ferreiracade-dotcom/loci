@@ -590,7 +590,7 @@ export type LinkTarget =
   | { type: 'note'; path: string }
   | null
 
-export type SearchKind = 'all' | 'page' | 'quote' | 'note' | 'scripture' | 'confession'
+export type SearchKind = 'all' | 'page' | 'quote' | 'note' | 'scripture' | 'confession' | 'father'
 
 export interface SearchScope {
   kind: SearchKind
@@ -602,7 +602,7 @@ export interface SearchScope {
 }
 
 export interface SearchHit {
-  kind: 'page' | 'quote' | 'note' | 'scripture' | 'confession'
+  kind: 'page' | 'quote' | 'note' | 'scripture' | 'confession' | 'father'
   bookId: string | null
   ref: string | null
   page: number | null

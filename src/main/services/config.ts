@@ -75,6 +75,12 @@ export function bocCommentaryVaultDir(): string {
   return join(localVaultDir(), 'confessions-commentary')
 }
 
+/** The vault's Church Fathers folder: CCEL ThML volumes (anf01.xml … npnf214.xml) copied in
+ *  unchanged. Local to this device like `confessions/`; not mirrored to Drive (vaultsync). */
+export function fathersVaultDir(): string {
+  return join(localVaultDir(), 'fathers')
+}
+
 export function readConfig(): LociConfig {
   const p = configPath()
   if (!existsSync(p)) return { ...defaults }

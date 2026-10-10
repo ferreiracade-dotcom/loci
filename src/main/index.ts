@@ -18,6 +18,7 @@ import { rebuildAllSidecars } from './services/sidecar'
 import { syncVault } from './services/vaultsync'
 import { syncCommentaryFolder } from './services/commentaryIndex'
 import { syncBocFolder } from './services/bocIndex'
+import { syncFathersFolder } from './services/fathersIndex'
 import { Channels } from '../shared/ipc'
 
 /** One-time whole-library sidecar write, triggered by a flag file, run off the boot path. */
@@ -147,6 +148,9 @@ app.whenReady().then(() => {
   // Same auto-register + index, for the Book of Concord's confessions/ + confessions-commentary/
   // vault folders. Staggered a beat after the commentary sync so the two don't contend.
   setTimeout(() => void syncBocFolder().catch(() => {}), 2500)
+  // Church Fathers (CCEL ThML) volumes in the vault's fathers/ folder. Parsing a 5 MB volume is
+  // synchronous, so this starts last and yields between volumes (see syncFathersFolder).
+  setTimeout(() => void syncFathersFolder().catch(() => {}), 3500)
 
   // Keep the Drive backup fresh during long sessions (best-effort, skips when offline).
   setInterval(() => {
