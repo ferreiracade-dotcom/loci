@@ -25,3 +25,26 @@ describe('topicsOf', () => {
     expect(new Set(DOGMATICS_TOPICS.map((t) => t.id)).size).toBe(DOGMATICS_TOPICS.length)
   })
 })
+
+describe('topicsOf on real titles', () => {
+  it("takes Hutter's loci for their topics", () => {
+    expect(topicsOf('On God, One and Triune')).toEqual(['god', 'trinity'])
+    expect(topicsOf('On Penance')).toEqual(['repentance'])
+    expect(topicsOf('On the Worship and Invocation of GOD')).toEqual(['prayer'])
+    expect(topicsOf('Various errors of the Anabaptists')).not.toContain('baptism')
+    expect(topicsOf('Paedobaptism against the Anabaptists')).toContain('baptism')
+    expect(topicsOf('On the Law of GOD')).toEqual(['law'])
+  })
+})
+
+describe('topicsOf on Quenstedt and Calov', () => {
+  it('takes their chapters and articles for their topics', () => {
+    expect(topicsOf('Concerning Man')).toEqual(['man'])
+    expect(topicsOf('Concerning the Unity and Simplicity of God')).toEqual(['god'])
+    expect(topicsOf('Concerning the Universal Benevolence of God')).toEqual(['grace'])
+    expect(topicsOf('Concerning the Dual State of Christ')).toEqual(['work-of-christ'])
+    expect(topicsOf('Concerning Vocation, and its Related Concepts')).toEqual(['call'])
+    expect(topicsOf('On the Great Anti-Christ')).toEqual(['antichrist'])
+    expect(topicsOf('Concerning Glorification')).toEqual(['eternal-life'])
+  })
+})

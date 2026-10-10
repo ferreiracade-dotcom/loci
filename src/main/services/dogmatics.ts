@@ -20,10 +20,18 @@ import type {
 // Dogmatic works, read like a commentary: the work in the Bible book's place, its books in the
 // chapters' and its sections in the verses'. Each Markdown file in the vault's dogmatics/ folder
 // is one source (see dogmaticsMarkdown.ts for the format); like the commentaries, the ones Loci
-// ships are copied in from resources/dogmatics on first launch and travel with the vault.
+// ships are copied in from resources/dogmatics on first launch and travel with the vault. They
+// come from The Faith Received's Latin and its machine translation, by tools/tfr-dogmatics-to-md.py.
 
 /** Title and author for each shipped file (a Markdown file carries only its name). */
-export const BUNDLED_DOGMATICS: Record<string, { title: string; author: string }> = {}
+export const BUNDLED_DOGMATICS: Record<string, { title: string; author: string }> = {
+  'Hutter Loci Communes.md': { title: 'Loci Communes Theologici', author: 'Leonhard Hutter' },
+  'Quenstedt Theologia Didactico-Polemica.md': {
+    title: 'Theologia Didactico-Polemica',
+    author: 'Johannes Andreas Quenstedt'
+  },
+  'Calov Systema Locorum Theologicorum.md': { title: 'Systema Locorum Theologicorum', author: 'Abraham Calov' }
+}
 
 interface SourceRow {
   id: string
