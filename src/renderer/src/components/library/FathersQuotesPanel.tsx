@@ -24,12 +24,21 @@ export function FathersQuotesPanel() {
   const [volumeCode, setVolumeCode] = useState<string>('')
   const [quotes, setQuotes] = useState<Quote[]>([])
 
+  // Reload the volume list at mount and whenever the library changes (the startup sync indexes,
+  // or drops, volumes after the panel may already be open).
   useEffect(() => {
-    void api.listFathersVolumes().then((v) => {
-      const indexed = v.filter((x) => x.status === 'indexed')
-      setVolumes(indexed)
-      setVolumeCode((cur) => cur || indexed[0]?.code || '')
-    })
+    const load = (): void => {
+      void api
+        .listFathersVolumes()
+        .then((v) => {
+          const indexed = v.filter((x) => x.status === 'indexed')
+          setVolumes(indexed)
+          setVolumeCode((cur) => (cur && indexed.some((x) => x.code === cur) ? cur : indexed[0]?.code || ''))
+        })
+        .catch(() => setVolumes([]))
+    }
+    load()
+    return api.onLibraryChanged(load)
   }, [])
 
   // Follow the focused Fathers tab's volume.

@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3'
-import { existsSync, mkdirSync, mkdtempSync, rmSync, utimesSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, unlinkSync, utimesSync, writeFileSync } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -22,7 +22,7 @@ afterEach(() => {
   rmSync(dataDir, { recursive: true, force: true })
 })
 
-import { deriveWorkTitle, parseVolumeFile, syncFathersFolder } from './fathersIndex'
+import { FATHERS_INDEX_VERSION, deriveWorkTitle, parseVolumeFile, syncFathersFolder } from './fathersIndex'
 import { search } from './search'
 
 const fathersDir = (): string => join(dataDir, 'vault', 'fathers')
@@ -200,5 +200,57 @@ describe('syncFathersFolder', () => {
     expect(
       db.prepare("SELECT status, error FROM fathers_volumes WHERE code='anf02'").get()
     ).toEqual({ status: 'indexed', error: null })
+  })
+})
+
+describe('syncFathersFolder: index version, change count, cleanup', () => {
+  it('returns how many volumes it indexed or removed (0 when nothing changed)', async () => {
+    writeVolume('anf01.xml', ANF_MINI)
+    expect(await syncFathersFolder()).toBe(1)
+    expect(await syncFathersFolder()).toBe(0)
+  })
+
+  it('persists FATHERS_INDEX_VERSION in the mtime cache and re-indexes everything when it differs', async () => {
+    writeVolume('anf01.xml', ANF_MINI)
+    await syncFathersFolder()
+    const cache = join(dataDir, 'fathers-index-mtimes.json')
+    expect(JSON.parse(readFileSync(cache, 'utf8')).__version).toBe(FATHERS_INDEX_VERSION)
+
+    db.prepare("DELETE FROM fathers_sections WHERE volume_code='anf01' AND id='ii'").run()
+    await syncFathersFolder() // same version, same mtime: skipped
+    expect(count("SELECT COUNT(*) AS n FROM fathers_sections WHERE volume_code='anf01'")).toBe(10)
+
+    const parsed = JSON.parse(readFileSync(cache, 'utf8'))
+    parsed.__version = FATHERS_INDEX_VERSION - 1
+    writeFileSync(cache, JSON.stringify(parsed))
+    await syncFathersFolder()
+    expect(count("SELECT COUNT(*) AS n FROM fathers_sections WHERE volume_code='anf01'")).toBe(11)
+    expect(JSON.parse(readFileSync(cache, 'utf8')).__version).toBe(FATHERS_INDEX_VERSION)
+
+    // A cache with no version at all is also treated as stale.
+    db.prepare("DELETE FROM fathers_sections WHERE volume_code='anf01' AND id='ii'").run()
+    delete parsed.__version
+    writeFileSync(cache, JSON.stringify(parsed))
+    await syncFathersFolder()
+    expect(count("SELECT COUNT(*) AS n FROM fathers_sections WHERE volume_code='anf01'")).toBe(11)
+  })
+
+  it('removes a volume (rows, search rows, cache entry) whose file is gone, keeping quotes', async () => {
+    writeVolume('anf01.xml', ANF_MINI)
+    const p2 = writeVolume('npnf101.xml', NPNF_MINI)
+    await syncFathersFolder()
+    db.prepare(
+      "INSERT INTO quotes (id, text, color, used_in, created, fathers_volume, fathers_section_id) VALUES ('q','t','amber','[]',1,'npnf101','x')"
+    ).run()
+    unlinkSync(p2)
+    expect(await syncFathersFolder()).toBe(1)
+    for (const t of ['fathers_volumes', 'fathers_sections', 'fathers_scripture_refs', 'fathers_notes', 'fathers_pages']) {
+      const col = t === 'fathers_volumes' ? 'code' : 'volume_code'
+      expect(count(`SELECT COUNT(*) AS n FROM ${t} WHERE ${col}='npnf101'`)).toBe(0)
+    }
+    expect(count("SELECT COUNT(*) AS n FROM search_fts WHERE kind='father' AND book_id='npnf101'")).toBe(0)
+    expect(count("SELECT COUNT(*) AS n FROM fathers_sections WHERE volume_code='anf01'")).toBe(11)
+    expect(count('SELECT COUNT(*) AS n FROM quotes')).toBe(1)
+    expect(JSON.parse(readFileSync(join(dataDir, 'fathers-index-mtimes.json'), 'utf8'))['fathers/npnf101.xml']).toBeUndefined()
   })
 })

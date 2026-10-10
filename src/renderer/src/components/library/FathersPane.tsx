@@ -63,6 +63,9 @@ export function FathersPane({ tab }: { tab: Tab }) {
     void refresh()
   }, [refresh])
 
+  // The startup sync announces when it has indexed or dropped volumes.
+  useEffect(() => api.onLibraryChanged(() => void refresh()), [refresh])
+
   // The startup sync indexes volumes one by one in the background: keep refreshing while the list
   // is empty or any volume is still waiting, so the drawer fills in without reopening the pane.
   const needsPoll = volumes === null || volumes.length === 0 || volumes.some((v) => v.status === 'unindexed')

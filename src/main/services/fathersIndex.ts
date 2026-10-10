@@ -4,7 +4,7 @@ import { join } from 'path'
 import { getDataDir, getDb } from '../db/connection'
 import { fathersVaultDir } from './config'
 import { shouldReindex } from './commentaryIndex'
-import { indexFathersForSearch } from './search'
+import { indexFathersForSearch, removeFathersFromSearch } from './search'
 import { parseThml } from './thml'
 import type { ThmlVolume, ThmlWarning } from './thml'
 import { correctedAuthor, seedFathersAuthors } from '../data/fathersAuthors'
@@ -126,6 +126,12 @@ function markVolumeError(code: string, mtime: number, message: string): void {
     .run(message.slice(0, 500), mtime, new Date().toISOString(), code)
 }
 
+/** Bump when the indexer's output changes (parser, author table, schema of the indexed rows) so
+ *  every volume is re-indexed once on next launch even though no file changed. Stored in the
+ *  mtime cache under `__version`. */
+export const FATHERS_INDEX_VERSION = 1
+const VERSION_KEY = '__version'
+
 /** Local, rebuildable record of the mtime (whole seconds) each volume file had when last indexed
  *  on THIS device — same rationale and format as boc-index-mtimes.json in bocIndex.ts. */
 function indexMtimesPath(): string {
@@ -154,17 +160,48 @@ function saveIndexMtimes(mtimes: Record<string, number>): void {
  * Fathers drawer) so one bad file neither blocks the others nor fails silently. An errored volume
  * is not retried until its file changes.
  */
-export async function syncFathersFolder(): Promise<void> {
+export async function syncFathersFolder(): Promise<number> {
   seedFathersAuthors(getDb())
   const folder = fathersVaultDir()
-  if (!existsSync(folder)) return
+  if (!existsSync(folder)) return 0
   let files: string[]
   try {
     files = readdirSync(folder).sort()
   } catch {
-    return
+    return 0
   }
+  let changed = 0
   const mtimes = loadIndexMtimes()
+  // A cache written by an older indexer (or none) is stale: forget the per-file mtimes so every
+  // volume is re-indexed once.
+  const stale = mtimes[VERSION_KEY] !== FATHERS_INDEX_VERSION
+  if (stale) {
+    for (const k of Object.keys(mtimes)) delete mtimes[k]
+    mtimes[VERSION_KEY] = FATHERS_INDEX_VERSION
+  }
+  // Drop volumes whose file has left the folder (the index is rebuildable; the user's quotes are
+  // not foreign-keyed to it and stay).
+  const present = new Set<string>()
+  for (const fileName of files) {
+    const info = parseVolumeFile(fileName)
+    if (info) present.add(info.code)
+  }
+  const db = getDb()
+  for (const { code, file_key } of db.prepare('SELECT code, file_key FROM fathers_volumes').all() as {
+    code: string
+    file_key: string
+  }[]) {
+    if (present.has(code)) continue
+    db.transaction(() => {
+      for (const t of ['fathers_scripture_refs', 'fathers_notes', 'fathers_pages', 'fathers_sections']) {
+        db.prepare(`DELETE FROM ${t} WHERE volume_code = ?`).run(code)
+      }
+      db.prepare('DELETE FROM fathers_volumes WHERE code = ?').run(code)
+      removeFathersFromSearch(code)
+    })()
+    delete mtimes[file_key]
+    changed++
+  }
   // Register every volume first, so the drawer lists them all ("indexing…") while they are parsed
   // one by one below.
   for (const fileName of files) {
@@ -195,7 +232,10 @@ export async function syncFathersFolder(): Promise<void> {
     }
     mtimes[key] = mtime
     saveIndexMtimes(mtimes)
+    changed++
     // Parsing a 5 MB volume is synchronous; yield between volumes so the window stays responsive.
     await new Promise<void>((resolve) => setImmediate(resolve))
   }
+  if (stale || changed > 0) saveIndexMtimes(mtimes)
+  return changed
 }

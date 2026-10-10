@@ -195,6 +195,10 @@ app.whenReady().then(() => {
         // 5 MB volume is synchronous, so this is chained after the dogmatics sync + bundled
         // install rather than overlapping them, and yields between volumes (see syncFathersFolder).
         .then(() => syncFathersFolder())
+        .then((changed) => {
+          if (changed > 0)
+            BrowserWindow.getAllWindows().forEach((w) => w.webContents.send(Channels.libraryChanged))
+        })
         .catch(() => {}),
     3000
   )
