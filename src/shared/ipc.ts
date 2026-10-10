@@ -421,7 +421,7 @@ export interface LociApi {
   listFathersAuthors(): Promise<FathersAuthorSummary[]>
   getFathersAuthor(authorId: string): Promise<FathersAuthor | null>
   /** The Fathers on a Bible passage, grouped by verse and ordered by author date. */
-  fathersCatena(book: string, chapter: number, verse?: number | null): Promise<FathersCatenaGroup[]>
+  fathersCatena(book: string, chapter: number, verse?: number | null): Promise<FathersCatenaResult>
   /** Dogmatics sources (one per Markdown file in the vault's dogmatics folder). */
   listDogmaticsSources(): Promise<DogmaticsSource[]>
   /** A source's works and their books, for the reader's navigation. */
@@ -1054,6 +1054,12 @@ export interface FathersCatenaEntry {
   /** Printed page of the reference. */
   page: string | null
   snippet: string
+}
+/** The catena for a passage; `truncated` when more references exist than the `limit` shown. */
+export interface FathersCatenaResult {
+  groups: FathersCatenaGroup[]
+  truncated: boolean
+  limit: number
 }
 export interface FathersCatenaGroup {
   /** The verse the group's references start on; null = chapter-level. */

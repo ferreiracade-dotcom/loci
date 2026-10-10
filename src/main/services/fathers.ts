@@ -8,6 +8,7 @@ import type {
   FathersAuthorSummary,
   FathersCatenaEntry,
   FathersCatenaGroup,
+  FathersCatenaResult,
   FathersNote,
   FathersSection,
   FathersSectionSummary,
@@ -239,6 +240,16 @@ const CATENA_LIMIT = 600
  * editors' cross-references, which is most of them) are included, flagged `inNote`.
  */
 export function catena(book: string, chapter: number, verse?: number | null): FathersCatenaGroup[] {
+  return catenaResult(book, chapter, verse).groups
+}
+
+/** `catena` plus whether the result was cut at `limit` rows (the panel then says so). */
+export function catenaResult(
+  book: string,
+  chapter: number,
+  verse?: number | null,
+  limit: number = CATENA_LIMIT
+): FathersCatenaResult {
   const db = getDb()
   const v = verse ?? null
   // Dedupe in SQL (one row per verse-group, section: the earliest reference) BEFORE limiting, so
@@ -268,7 +279,7 @@ export function catena(book: string, chapter: number, verse?: number | null): Fa
        LEFT JOIN fathers_authors a ON a.id = s.author_id
        WHERE f.rn = 1
        ORDER BY (a.sort_year IS NULL), a.sort_year, f.volume_code, s.ordinal, f.char_offset
-       LIMIT ${CATENA_LIMIT}`
+       LIMIT ${limit + 1}`
     )
     .all({ book, ch: chapter, v }) as {
     volumeCode: string
@@ -288,6 +299,9 @@ export function catena(book: string, chapter: number, verse?: number | null): Fa
     authorName: string | null
     datesLabel: string | null
   }[]
+
+  const truncated = rows.length > limit
+  if (truncated) rows.length = limit
 
   const pageStmt = db.prepare(
     'SELECT n, char_offset AS charOffset FROM fathers_pages WHERE volume_code = ? AND section_id = ? ORDER BY char_offset'
@@ -338,7 +352,11 @@ export function catena(book: string, chapter: number, verse?: number | null): Fa
     }
     g.entries.push(entry)
   }
-  return [...groups.values()].sort((a, b) => (a.verse ?? -1) - (b.verse ?? -1))
+  return {
+    groups: [...groups.values()].sort((a, b) => (a.verse ?? -1) - (b.verse ?? -1)),
+    truncated,
+    limit
+  }
 }
 
 // ---------- citation metadata (used by quotes.ts) ----------

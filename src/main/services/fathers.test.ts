@@ -12,7 +12,7 @@ beforeEach(() => {
 })
 
 import {
-  catena, citeMeta, getAuthor, getSection, humanizeAuthorId, listAuthors, listSections, listVolumes,
+  catena, catenaResult, citeMeta, getAuthor, getSection, humanizeAuthorId, listAuthors, listSections, listVolumes,
   pageAt, snippetAround
 } from './fathers'
 
@@ -243,6 +243,15 @@ describe('catena', () => {
     ])
     expect(groups[0].entries.map((e) => e.sectionId)).toEqual(['a2'])
     expect(groups[2].entries.map((e) => e.sectionId)).toEqual(['a1', 'a5'])
+  })
+
+  it('reports truncation only when more rows exist than the limit', () => {
+    expect(catenaResult('JHN', 3, 16).truncated).toBe(false)
+    expect(catenaResult('JHN', 3, 16, 4).truncated).toBe(false) // exactly at the limit
+    const cut = catenaResult('JHN', 3, 16, 2)
+    expect(cut.truncated).toBe(true)
+    expect(cut.limit).toBe(2)
+    expect(cut.groups.flatMap((g) => g.entries)).toHaveLength(2)
   })
 
   it('keeps one entry per section within a group', () => {

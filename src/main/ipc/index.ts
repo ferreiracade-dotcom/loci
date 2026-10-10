@@ -462,7 +462,7 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.listFathersAuthors, () => fathers.listAuthors())
   ipcMain.handle(Channels.getFathersAuthor, (_e, id: string) => fathers.getAuthor(id))
   ipcMain.handle(Channels.fathersCatena, (_e, book: string, chapter: number, verse?: number | null) =>
-    fathers.catena(book, chapter, verse)
+    fathers.catenaResult(book, chapter, verse)
   )
   ipcMain.handle(Channels.listDogmaticsSources, () => dogmatics.listSources())
   ipcMain.handle(Channels.listDogmaticsOutline, (_e, s: string) => dogmatics.listOutline(s))

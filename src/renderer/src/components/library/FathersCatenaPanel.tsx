@@ -18,18 +18,23 @@ export function FathersCatenaPanel() {
   const target = resolveCatenaTarget(lookup, passage)
   const key = target ? `${target.book}|${target.chapter}|${target.verse ?? ''}` : ''
   const [groups, setGroups] = useState<FathersCatenaGroup[] | null>(null)
+  const [cut, setCut] = useState<number | null>(null)
 
   useEffect(() => {
     if (!target) {
       setGroups(null)
+      setCut(null)
       return
     }
     let alive = true
     setGroups(null)
+    setCut(null)
     void api
       .fathersCatena(target.book, target.chapter, target.verse)
-      .then((g) => {
-        if (alive) setGroups(g)
+      .then((r) => {
+        if (!alive) return
+        setGroups(r.groups)
+        setCut(r.truncated ? r.limit : null)
       })
       .catch(() => {
         if (alive) setGroups([])
@@ -51,6 +56,7 @@ export function FathersCatenaPanel() {
   return (
     <div className="fathers-catena">
       <div className="fathers-catena-head">Fathers on {headLabel}</div>
+      {cut !== null && <div className="quotes-empty">Showing the first {cut} references (earliest authors first).</div>}
       {groups === null ? (
         <div className="sr-loading" style={{ height: 'auto', padding: 12 }}>
           <Loader2 size={16} className="spin" /> Loading…
