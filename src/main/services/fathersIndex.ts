@@ -1,8 +1,10 @@
+import { app } from 'electron'
 import { existsSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync } from 'fs'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 import { getDataDir, getDb } from '../db/connection'
 import { fathersVaultDir } from './config'
+import { installBundled } from './bundledCommentaries'
 import { shouldReindex } from './commentaryIndex'
 import { indexFathersForSearch, removeFathersFromSearch } from './search'
 import { parseThml } from './thml'
@@ -238,4 +240,17 @@ export async function syncFathersFolder(): Promise<number> {
   }
   if (stale || changed > 0) saveIndexMtimes(mtimes)
   return changed
+}
+
+/** Where the shipped Church Fathers volumes are: the installer's resources, or the repository. */
+export function bundledFathersDir(): string {
+  return app.isPackaged
+    ? join(process.resourcesPath, 'fathers')
+    : join(app.getAppPath(), 'resources', 'fathers')
+}
+
+/** Copy the shipped CCEL volumes into the vault's fathers/ folder, once each, updating them
+ *  while untouched. Returns the file names copied or updated. */
+export function installBundledFathers(sourceDir: string = bundledFathersDir()): string[] {
+  return installBundled(sourceDir, fathersVaultDir(), 'bundledFathers', 'bundledFathersHashes')
 }

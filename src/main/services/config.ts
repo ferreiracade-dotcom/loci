@@ -37,6 +37,10 @@ export interface LociConfig {
   bundledDogmatics: string[] | null
   /** SHA-256 of the shipped dogmatics version last put in the vault, by file name (as above). */
   bundledDogmaticsHashes: Record<string, string> | null
+  /** Church Fathers volumes shipped with Loci already copied into the vault, by file name. */
+  bundledFathers: string[] | null
+  /** SHA-256 of the shipped Fathers volume last put in the vault, by file name. */
+  bundledFathersHashes: Record<string, string> | null
   /** Legacy single flag from before per-module tracking; true meant Lenski was installed. */
   sermonIndexDefaultsInstalled?: boolean
 }
@@ -60,7 +64,9 @@ const defaults: LociConfig = {
   bundledCommentaries: null,
   bundledCommentaryHashes: null,
   bundledDogmatics: null,
-  bundledDogmaticsHashes: null
+  bundledDogmaticsHashes: null,
+  bundledFathers: null,
+  bundledFathersHashes: null
 }
 
 function configPath(): string {

@@ -83,8 +83,8 @@ export function installBundledCommentaries(sourceDir: string = bundledCommentary
 export function installBundled(
   sourceDir: string,
   folder: string,
-  recordKey: 'bundledCommentaries' | 'bundledDogmatics',
-  hashKey: 'bundledCommentaryHashes' | 'bundledDogmaticsHashes'
+  recordKey: 'bundledCommentaries' | 'bundledDogmatics' | 'bundledFathers',
+  hashKey: 'bundledCommentaryHashes' | 'bundledDogmaticsHashes' | 'bundledFathersHashes'
 ): string[] {
   if (!existsSync(sourceDir)) return []
   const config = readConfig()
@@ -93,7 +93,7 @@ export function installBundled(
   const hashes = { ...(config[hashKey] ?? {}) }
   const before = JSON.stringify(hashes)
   const copied: string[] = []
-  for (const fileName of readdirSync(sourceDir).filter((f) => /\.(md|sqlite3)$/i.test(f))) {
+  for (const fileName of readdirSync(sourceDir).filter((f) => /\.(md|sqlite3|xml)$/i.test(f))) {
     const source = join(sourceDir, fileName)
     const dest = join(folder, fileName)
     const shipped = sha256(source)

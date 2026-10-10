@@ -8,13 +8,15 @@ files:
   - package.json
 asarUnpack:
   - "**/*.node"
-# Commentaries and dogmatics Loci ships and copies into the vault on first launch
-# (bundledCommentaries.ts, dogmatics.ts).
+# Commentaries, dogmatics and Church Fathers volumes Loci ships and copies into the vault on
+# first launch (bundledCommentaries.ts, dogmatics.ts, fathersIndex.ts).
 extraResources:
   - from: resources/commentaries
     to: commentaries
   - from: resources/dogmatics
     to: dogmatics
+  - from: resources/fathers
+    to: fathers
 win:
   target:
     - nsis
