@@ -269,7 +269,7 @@ export interface LociApi {
 
   listBooks(): Promise<Book[]>
   importFromSource(): Promise<ImportResult>
-  importFiles(): Promise<ImportResult>
+  importFiles(kind?: BookKind): Promise<ImportResult>
   updateBook(id: string, patch: BookUpdate): Promise<void>
   deleteBook(id: string): Promise<void>
   setBookShelves(id: string, shelfIds: string[]): Promise<void>

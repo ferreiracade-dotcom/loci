@@ -5,6 +5,7 @@ import type {
   Annotation,
   AppState,
   BocQuoteInput,
+  BookKind,
   DogmaticsQuoteInput,
   BookUpdate,
   CommentaryExcerptReassign,
@@ -182,10 +183,10 @@ export function registerIpc(): void {
     return result
   })
 
-  ipcMain.handle(Channels.importFiles, async (e) => {
+  ipcMain.handle(Channels.importFiles, async (e, kind?: BookKind) => {
     const win = BrowserWindow.fromWebContents(e.sender)
     const opts: OpenDialogOptions = {
-      title: 'Import PDFs',
+      title: kind === 'article' ? 'Import articles' : 'Import books',
       properties: ['openFile', 'multiSelections'],
       filters: [{ name: 'PDF', extensions: ['pdf'] }]
     }
@@ -195,7 +196,7 @@ export function registerIpc(): void {
     }
     const notify = (p: ImportProgress): void => e.sender.send(Channels.importProgress, p)
     const changed = (): void => e.sender.send(Channels.libraryChanged)
-    const result = await library.quickImport(res.filePaths, notify)
+    const result = await library.quickImport(res.filePaths, notify, kind)
     changed()
     void library.enrichPending(notify, changed) // background, throttled
     return result

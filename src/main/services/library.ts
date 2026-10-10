@@ -17,6 +17,7 @@ import { getDataDir, getDb } from '../db/connection'
 import { localVaultDir, readConfig } from './config'
 import { removeFromDrive } from './vaultsync'
 import * as search from './search'
+import { kindFromPath, type KindRoots } from '../../shared/libraryKind'
 import {
   moveSidecar,
   readSidecar,
@@ -186,6 +187,11 @@ function logImport(line: string): void {
   } catch {
     /* best effort */
   }
+}
+
+/** The two roots the folder-decides-the-kind rule is evaluated against. */
+function kindRoots(vaultPath: string | null, localLibrary: string | null): KindRoots {
+  return { vaultPdfs: vaultPath ? join(vaultPath, 'pdfs') : null, localLibrary }
 }
 
 /** Where this book will be read from, without actually opening it. */
@@ -566,7 +572,7 @@ type ImportOutcome = 'imported' | 'skipped' | 'failed'
 
 async function importOneLocal(
   sourcePath: string,
-  opts?: { skipDownload?: boolean }
+  opts?: { skipDownload?: boolean; kind?: BookKind }
 ): Promise<ImportOutcome> {
   try {
     const cfg = readConfig()
@@ -608,6 +614,13 @@ async function importOneLocal(
     const seriesNumber = side?.seriesNumber ?? parsed.seriesNumber
     const sanitized = sanitizeName(title)
 
+    // The folder decides the kind. A file already in the vault keeps what its folder implies; one
+    // coming from outside uses the kind the caller asked for, else what its local folder implies.
+    const roots = kindRoots(cfg.vaultPath, cfg.primaryLibraryPath)
+    const kind: BookKind = isInside(sourcePath, cfg.vaultPath)
+      ? (kindFromPath(sourcePath, roots) ?? 'book')
+      : (opts?.kind ?? kindFromPath(sourcePath, roots) ?? 'book')
+
     let pdfPath: string
     if (isInside(sourcePath, cfg.vaultPath)) {
       // Already in the vault — reference in place; never duplicate (or hydrate Drive).
@@ -616,11 +629,11 @@ async function importOneLocal(
       // A book added from outside the vault (e.g. dropped in the local library folder): copy it
       // up to the Drive vault's Books folder under a canonical "Title (Series N) - Author" name,
       // so the two folders stay mirrored and the book is rebuildable from its sidecar.
-      const booksDir = join(cfg.vaultPath, 'pdfs', 'Books')
-      mkdirSync(booksDir, { recursive: true })
+      const targetDir = join(cfg.vaultPath, 'pdfs', kind === 'article' ? 'Articles' : 'Books')
+      mkdirSync(targetDir, { recursive: true })
       const base = fileBaseFor(title, author, series, seriesNumber)
-      let dest = join(booksDir, `${base}.pdf`)
-      if (existsSync(dest)) dest = join(booksDir, `${base}-${id.slice(0, 8)}.pdf`)
+      let dest = join(targetDir, `${base}.pdf`)
+      if (existsSync(dest)) dest = join(targetDir, `${base}-${id.slice(0, 8)}.pdf`)
       await copyFile(sourcePath, dest)
       pdfPath = dest
     }
@@ -640,8 +653,11 @@ async function importOneLocal(
       } else if (!opts?.skipDownload) {
         try {
           const intoLibrary = !!cfg.primaryLibraryPath && existsSync(cfg.primaryLibraryPath)
+          const libraryRoot = cfg.primaryLibraryPath as string
           const dir = intoLibrary
-            ? (cfg.primaryLibraryPath as string)
+            ? kind === 'article'
+              ? join(libraryRoot, 'Articles')
+              : libraryRoot
             : join(getDataDir(), 'pdf-cache')
           mkdirSync(dir, { recursive: true })
           const dest = intoLibrary ? join(dir, basename(sourcePath)) : join(dir, `${id}.pdf`)
@@ -660,10 +676,11 @@ async function importOneLocal(
         `INSERT INTO books
            (id, title, title_sanitized, author, series, series_number, series_abbr, year,
             publisher, city, page_offset, pdf_path, local_path, source_path, date_added, status,
-            meta_fetched)
+            meta_fetched, kind, journal, volume, issue, pages, doi)
          VALUES
            (@id, @title, @san, @author, @series, @num, @abbr, @year, @publisher, @city,
-            @offset, @pdf, @local, @source, @added, @status, @fetched)`
+            @offset, @pdf, @local, @source, @added, @status, @fetched, @kind, @journal, @volume,
+            @issue, @pages, @doi)`
       )
       .run({
         id,
@@ -684,7 +701,13 @@ async function importOneLocal(
         status,
         // Title/author/series are already parsed from the file name above — nothing left
         // to enrich in the background.
-        fetched: 1
+        fetched: 1,
+        kind,
+        journal: side?.journal ?? null,
+        volume: side?.volume ?? null,
+        issue: side?.issue ?? null,
+        pages: side?.pages ?? null,
+        doi: side?.doi ?? null
       })
 
     if (side) {
@@ -704,12 +727,13 @@ async function importOneLocal(
 /** Phase A: copy/reference + insert records only (no network). Fast and responsive. */
 export async function quickImport(
   paths: string[],
-  onProgress: (p: ImportProgress) => void
+  onProgress: (p: ImportProgress) => void,
+  kind?: BookKind
 ): Promise<ImportResult> {
   const result: ImportResult = { imported: 0, skipped: 0, failed: 0, titles: [] }
   const total = paths.length
   for (let i = 0; i < total; i++) {
-    const outcome = await importOneLocal(paths[i])
+    const outcome = await importOneLocal(paths[i], { kind })
     result[outcome]++
     if (outcome === 'imported' && result.titles.length < 50) {
       result.titles.push(titleFromFilename(paths[i]))
@@ -825,7 +849,8 @@ export async function syncLibrary(
   if (!cfg.vaultPath) return { added: 0, removed: 0, total: bookCount(), titles }
 
   const booksDir = join(cfg.vaultPath, 'pdfs', 'Books')
-  const vaultFiles = existsSync(booksDir) ? walkPdfs(booksDir, NO_EXCLUDES) : []
+  const articlesDir = join(cfg.vaultPath, 'pdfs', 'Articles')
+  const vaultFiles = [booksDir, articlesDir].flatMap((d) => (existsSync(d) ? walkPdfs(d, NO_EXCLUDES) : []))
   const localFiles =
     cfg.primaryLibraryPath && existsSync(cfg.primaryLibraryPath)
       ? walkPdfs(cfg.primaryLibraryPath, NO_EXCLUDES)
@@ -908,8 +933,8 @@ export async function syncLibrary(
   if (existsSync(cfg.vaultPath)) {
     const catalogedInVault = (
       getDb()
-        .prepare('SELECT COUNT(*) c FROM books WHERE pdf_path LIKE ?')
-        .get(`${booksDir}%`) as { c: number }
+        .prepare('SELECT COUNT(*) c FROM books WHERE pdf_path LIKE ? OR pdf_path LIKE ?')
+        .get(`${booksDir}%`, `${articlesDir}%`) as { c: number }
     ).c
     if (vaultScanLooksIncomplete(vaultFiles.length, catalogedInVault)) {
       console.warn(
@@ -939,9 +964,38 @@ export async function syncLibrary(
     }
   }
 
+  // The folder is the source of truth for kind: re-derive every row (Decision 5).
+  rederiveKinds()
+
   onProgress?.({ phase: 'done', done: 0, total: 0 })
   onChanged?.()
   return { added: titles.length, removed, total: bookCount(), titles }
+}
+
+/** Set every row's kind from where its file lives. The vault copy decides when it is under
+ *  `<vault>/pdfs`; otherwise the local library copy does. Rows whose files sit elsewhere (the
+ *  id-named cache, external originals) keep their stored kind. Returns how many rows changed. */
+export function rederiveKinds(): number {
+  const cfg = readConfig()
+  const roots = kindRoots(cfg.vaultPath, cfg.primaryLibraryPath)
+  const rows = getDb().prepare('SELECT id, kind, pdf_path, local_path FROM books').all() as {
+    id: string
+    kind: string
+    pdf_path: string | null
+    local_path: string | null
+  }[]
+  const update = getDb().prepare('UPDATE books SET kind = ? WHERE id = ?')
+  let changed = 0
+  for (const r of rows) {
+    const derived =
+      (r.pdf_path ? kindFromPath(r.pdf_path, roots) : null) ??
+      (r.local_path ? kindFromPath(r.local_path, roots) : null)
+    if (derived && derived !== r.kind) {
+      update.run(derived, r.id)
+      changed++
+    }
+  }
+  return changed
 }
 
 // ---------- Enrichment (fast, filename-only, background) ----------

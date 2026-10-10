@@ -23,7 +23,7 @@ const api: LociApi = {
 
   listBooks: () => ipcRenderer.invoke(Channels.listBooks),
   importFromSource: () => ipcRenderer.invoke(Channels.importFromSource),
-  importFiles: () => ipcRenderer.invoke(Channels.importFiles),
+  importFiles: (kind) => ipcRenderer.invoke(Channels.importFiles, kind),
   updateBook: (id, patch) => ipcRenderer.invoke(Channels.updateBook, id, patch),
   deleteBook: (id) => ipcRenderer.invoke(Channels.deleteBook, id),
   setBookShelves: (id, shelfIds) => ipcRenderer.invoke(Channels.setBookShelves, id, shelfIds),

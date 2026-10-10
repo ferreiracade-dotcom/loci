@@ -17,6 +17,7 @@ import type {
   BocQuoteInput,
   CommentaryMatch,
   FathersQuoteInput,
+  BookKind,
   ImportProgress,
   ImportResult,
   NewQuote,
@@ -401,7 +402,7 @@ interface Store {
   bumpReload: () => void
   refreshLibrary: () => Promise<void>
   importFromSource: () => Promise<ImportResult>
-  importFiles: () => Promise<ImportResult>
+  importFiles: (kind?: BookKind) => Promise<ImportResult>
   updateBook: (id: string, patch: BookUpdate) => Promise<void>
   deleteBook: (id: string) => Promise<void>
   backfillLocal: () => Promise<BackfillResult>
@@ -1122,10 +1123,10 @@ export const useStore = create<Store>((set, get) => {
       }
     },
 
-    importFiles: async () => {
+    importFiles: async (kind) => {
       set({ libraryBusy: true })
       try {
-        const result = await api.importFiles()
+        const result = await api.importFiles(kind)
         await get().refreshLibrary()
         return result
       } finally {
