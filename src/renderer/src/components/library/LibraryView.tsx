@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import {
   FolderInput,
+  DatabaseZap,
   LayoutGrid,
   List as ListIcon,
   RefreshCw,
@@ -29,6 +30,7 @@ import { BookInfoDrawer } from './BookInfoDrawer'
 import { ShelvesManager } from './ShelvesManager'
 import { CommentariesManager } from './CommentariesManager'
 import { DriveStatus } from './DriveStatus'
+import { useBookIndexing } from './useBookIndexing'
 import { OpenElsewhereItems } from './OpenElsewhere'
 import type { Book, BookKind, PdfSource, ReadingStatus } from '@shared/ipc'
 import { KIND_PLURAL, ofKind } from '@shared/libraryKind'
@@ -195,6 +197,7 @@ export function BookListRow({
 let libraryScrollTop = 0
 
 export function LibraryView() {
+  const { indexing, label: indexLabel, startIndexing, cancelIndexing } = useBookIndexing()
   const books = useStore((s) => s.books)
   const shelves = useStore((s) => s.shelves)
   const layout = useStore((s) => s.layout)!
@@ -404,6 +407,23 @@ export function LibraryView() {
               >
                 <FolderInput size={14} /> Add {plural}…
               </button>
+              {contentTab === 'books' && (
+                <>
+                  <button
+                    className="btn btn-sm"
+                    disabled={!!indexing}
+                    title="Make all unindexed books and articles searchable, regardless of the current filter"
+                    onClick={() => void startIndexing()}
+                  >
+                    <DatabaseZap size={14} /> {indexLabel}
+                  </button>
+                  {indexing && indexing.total > 0 && (
+                    <button className="btn btn-sm" onClick={cancelIndexing}>
+                      <X size={14} /> Stop indexing
+                    </button>
+                  )}
+                </>
+              )}
               {libraryBusy && (
                 <span className="muted-inline">
                   <RefreshCw size={14} className="spin" /> Working…
