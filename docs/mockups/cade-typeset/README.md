@@ -6,6 +6,7 @@ These proposals adapt the supplied Article Reformatting Toolkit to Loci's readin
 
 | Page | Direction | Mockup |
 | --- | --- | --- |
+| Search home | A prominent search field, collection links, recent reading, and recent notes in the same editorial style. | [View](home-search.png) |
 | Bible | A typeset reading page with embedded verse numbers and optional study sidebar. | [View](bible-typeset.png) |
 | Confessions | Publication typography, contents navigation, and contextual commentary. The reading pattern can also guide Dogmatics, Fathers, and Commentary. | [View](confessions-typeset.png) |
 | Library → Articles | An editorial bibliography with filters, indexing, and a document preview. | [View](library-typeset.png) |
@@ -16,7 +17,7 @@ These proposals adapt the supplied Article Reformatting Toolkit to Loci's readin
 
 - Page: 6 × 9 inches; left/right margins 0.9 inches, top 0.8 inches, bottom 0.9 inches.
 - Body: EB Garamond, 11 pt with 16 pt leading, justified paragraphs, 1.5 em first-line indents, no added paragraph gap.
-- Opening: centered bold capital title, 13.5/19 pt; small-cap author; smaller source line.
+- Note opening: centered bold capital title, 13.5/19 pt; optional italic subtitle, 11/16 pt; small-cap author/name; optional date and smaller source/publication line.
 - Section: centered bold capitals; subsection: smaller spaced capitals.
 - Quotations: inset on both sides, 10/14 pt; preserve original italics.
 - Footnotes: bottom of page, 9/11.5 pt, hanging numbers, short dividing rule.
@@ -32,9 +33,13 @@ Generated UI images approximate these typography rules. The compiled sample belo
 - [Editable LaTeX note template](notes-template.tex)
 - [Cade Article stylesheet](cadearticle.sty)
 
-The stylesheet comes from the supplied toolkit; its font declarations were adjusted to load the bundled font files. Page geometry and typography settings are preserved. EB Garamond font files come from the upstream octaviopardo/EBGaramond12 repository and retain the included SIL Open Font License.
+The stylesheet comes from the supplied toolkit; its font declarations were adjusted to load the bundled font files, and a note-specific metadata opening was added. Original article formatting and the three-argument article opening remain available. EB Garamond font files come from the upstream octaviopardo/EBGaramond12 repository and retain the included SIL Open Font License.
 
 To compile, run `xelatex -no-shell-escape notes-template.tex` twice from this directory. Replace the sample text, opening metadata, and source notes with your own material.
+
+Edit the `\notesetup{...}` block to set **title**, **subtitle**, **author/name**, **date**, **source/publication details**, and an optional **short-title**. Only the title is needed; blank optional fields collapse without leaving gaps. The title supplies the running header unless a short title is set. Title and author also supply the PDF metadata. Use `\noteopening` at the start of the document to render the opening block.
+
+In the proposed app editor these are document fields, edited through a **Document details** panel or by selecting the opening block on the page. The template controls their typography; the user supplies their contents. Hiding an optional field removes its line and spacing from both the editor and export.
 
 ## Notes editing proposal
 

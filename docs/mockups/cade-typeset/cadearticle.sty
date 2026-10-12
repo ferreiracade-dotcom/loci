@@ -31,4 +31,43 @@
 \newcommand{\opening}[3]{\thispagestyle{opening}\vspace*{-0.2in}
  \begin{center}{\fontsize{13.5}{19}\selectfont\bfseries\MakeUppercase{#1}}\\[14pt]
  {\scshape\MakeLowercase{#2}}\\[10pt]{\footnotesize #3}\end{center}\vspace{16pt}}
+% Editable note metadata; blank optional fields contribute no space.
+% The original three-argument article opening above remains available.
+\ExplSyntaxOn
+\tl_new:N \l_cade_title_tl
+\tl_new:N \l_cade_subtitle_tl
+\tl_new:N \l_cade_author_tl
+\tl_new:N \l_cade_date_tl
+\tl_new:N \l_cade_source_tl
+\tl_new:N \l_cade_short_title_tl
+\tl_set:Nn \l_cade_title_tl { Untitled~note }
+\keys_define:nn { cade/note }
+ {
+  title .tl_set:N = \l_cade_title_tl,
+  subtitle .tl_set:N = \l_cade_subtitle_tl,
+  author .tl_set:N = \l_cade_author_tl,
+  date .tl_set:N = \l_cade_date_tl,
+  source .tl_set:N = \l_cade_source_tl,
+  short-title .tl_set:N = \l_cade_short_title_tl
+ }
+\NewDocumentCommand{\notesetup}{m}{\keys_set:nn { cade/note } {#1}}
+\NewDocumentCommand{\noteopening}{}{
+ \tl_if_blank:VTF \l_cade_short_title_tl
+  {\runninghead{\MakeUppercase{\tl_use:N \l_cade_title_tl}}}
+  {\runninghead{\MakeUppercase{\tl_use:N \l_cade_short_title_tl}}}
+ \hypersetup{pdftitle={\tl_use:N \l_cade_title_tl},pdfauthor={\tl_use:N \l_cade_author_tl}}
+ \thispagestyle{opening}\vspace*{-0.2in}
+ \begin{center}
+ {\fontsize{13.5}{19}\selectfont\bfseries\MakeUppercase{\tl_use:N \l_cade_title_tl}}\par
+ \tl_if_blank:VF \l_cade_subtitle_tl
+  {\vspace{7pt}{\fontsize{11}{16}\selectfont\itshape\tl_use:N \l_cade_subtitle_tl}\par}
+ \tl_if_blank:VF \l_cade_author_tl
+  {\vspace{14pt}{\scshape\MakeLowercase{\tl_use:N \l_cade_author_tl}}\par}
+ \tl_if_blank:VF \l_cade_date_tl
+  {\vspace{8pt}{\footnotesize\tl_use:N \l_cade_date_tl}\par}
+ \tl_if_blank:VF \l_cade_source_tl
+  {\vspace{8pt}{\footnotesize\tl_use:N \l_cade_source_tl}\par}
+ \end{center}\vspace{16pt}
+}
+\ExplSyntaxOff
 \emergencystretch=2em\tolerance=2000\hyphenpenalty=50
