@@ -8,7 +8,7 @@
 //
 //   node tools/bsb-topics-to-json.mjs [bsb_topical_index.xlsx] [out.json]
 //
-// As Loci ships it (public domain, Berean Bible Translation Committee ->
+// As Loci ships it (license unconfirmed: merges Torrey's/Nave's/OpenBible.info/BibleHub topics; see NOTICE.md; from bereanbible.com ->
 // tools/sources/bsb/bsb_topical_index.xlsx, not committed):
 //
 //   node tools/bsb-topics-to-json.mjs tools/sources/bsb/bsb_topical_index.xlsx resources/scripture/topics.json

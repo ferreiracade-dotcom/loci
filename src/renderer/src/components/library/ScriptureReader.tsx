@@ -95,11 +95,13 @@ export function ScriptureReader({
     let alive = true
     setLoading(true)
     setError(null)
+    setAudio([])
     void api
       .getScriptureChapter(translation, book, chapter)
       .then((p) => {
         if (!alive) return
         setPassage(p)
+        setAudio(p?.audio ?? [])
         setLoading(false)
         if (!p) setError('Could not load this chapter.')
         // Opportunistically index this chapter for search, same as PDFs index on open — only
@@ -264,7 +266,7 @@ export function ScriptureReader({
         )}
       </div>
 
-      {audio.length > 0 && (
+      {translation === 'BSB' && audio.length > 0 && (
         <ScriptureAudio key={`${book}:${chapter}`} tracks={audio} chapterKey={`${book}:${chapter}`} />
       )}
 
