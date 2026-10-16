@@ -197,7 +197,7 @@ export function BookListRow({
 let libraryScrollTop = 0
 
 export function LibraryView() {
-  const { indexing, label: indexLabel, startIndexing, cancelIndexing } = useBookIndexing()
+  const { indexing, label: indexLabel, upToDate, startIndexing, cancelIndexing } = useBookIndexing()
   const books = useStore((s) => s.books)
   const shelves = useStore((s) => s.shelves)
   const layout = useStore((s) => s.layout)!
@@ -407,22 +407,18 @@ export function LibraryView() {
               >
                 <FolderInput size={14} /> Add {plural}…
               </button>
-              {contentTab === 'books' && (
-                <>
-                  <button
-                    className="btn btn-sm"
-                    disabled={!!indexing}
-                    title="Make all unindexed books and articles searchable, regardless of the current filter"
-                    onClick={() => void startIndexing()}
-                  >
-                    <DatabaseZap size={14} /> {indexLabel}
-                  </button>
-                  {indexing && indexing.total > 0 && (
-                    <button className="btn btn-sm" onClick={cancelIndexing}>
-                      <X size={14} /> Stop indexing
-                    </button>
-                  )}
-                </>
+              <button
+                className="btn btn-sm"
+                disabled={!!indexing || upToDate}
+                title="Make all unindexed books and articles searchable, regardless of the current tab or filter"
+                onClick={() => void startIndexing()}
+              >
+                <DatabaseZap size={14} /> {indexLabel}
+              </button>
+              {indexing && indexing.total > 0 && (
+                <button className="btn btn-sm" onClick={cancelIndexing}>
+                  <X size={14} /> Stop indexing
+                </button>
               )}
               {libraryBusy && (
                 <span className="muted-inline">

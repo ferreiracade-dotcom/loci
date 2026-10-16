@@ -221,7 +221,7 @@ function HistoryButton({ tab, dir, onGo }: { tab: Tab | undefined; dir: -1 | 1; 
  * is hidden they are listed here too, so they stay one click away.
  */
 function AppMenu({ x, y, onClose }: { x: number; y: number; onClose: () => void }) {
-  const { indexing, label: indexLabel, startIndexing, cancelIndexing } = useBookIndexing()
+  const { indexing, label: indexLabel, upToDate, startIndexing, cancelIndexing } = useBookIndexing()
   const newTab = useStore((s) => s.newTab)
   const reopenClosedTab = useStore((s) => s.reopenClosedTab)
   const closedCount = useStore((s) => s.closedTabs.length)
@@ -317,7 +317,7 @@ function AppMenu({ x, y, onClose }: { x: number; y: number; onClose: () => void 
       )
     },
     'sep',
-    { label: indexLabel, icon: DatabaseZap, disabled: !!indexing, onSelect: () => void startIndexing() },
+    { label: indexLabel, icon: DatabaseZap, disabled: !!indexing || upToDate, onSelect: () => void startIndexing() },
     ...(indexing && indexing.total > 0
       ? [{ label: 'Stop indexing', icon: X, onSelect: cancelIndexing }]
       : []),

@@ -27,13 +27,16 @@ export function useBookIndexing() {
     }
   }, [books, indexing])
 
+  const upToDate = !indexing && pending === 0
   const label = indexing
     ? indexing.total === 0
       ? 'Index up to date'
       : `Indexing ${indexing.done}/${indexing.total}…`
     : pending === null
-      ? 'Index books'
-      : `Index books (${pending} pending)`
+      ? 'Build index'
+      : pending === 0
+        ? 'Index up to date'
+        : `Build index (${pending} pending)`
 
-  return { indexing, label, startIndexing, cancelIndexing }
+  return { indexing, label, upToDate, startIndexing, cancelIndexing }
 }
