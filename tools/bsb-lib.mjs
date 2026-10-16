@@ -106,7 +106,7 @@ export function stripUsfmInline(s) {
 }
 
 // Paragraph markers whose whole line is structure (headings, cross-reference lists, ids), not verse text.
-const SKIP_LINE = /^\\(?:id|usfm|ide|h|toc\d|mt\d?|s\d?|ms\d?|mr|r|sr|rq|sp|cl|cd|cp|ca|va|vp)\b/
+const SKIP_LINE = /^\\(?:id|usfm|ide|h|toc\d|mt\d?|s\d?|ms\d?|mr|qa|r|sr|rq|sp|cl|cd|cp|ca|va|vp)\b/
 
 /** Parse one USFM book into { code, chapters: { "<n>": [[verse, text], ...] } } in source order.
  *  Verse numbers are kept as in the source (never assumed contiguous). A verse range marker
@@ -126,7 +126,7 @@ export function parseUsfmBook(text) {
     verse = null
     buf = []
   }
-  for (const line of text.replace(/^﻿/, '').split(/\r?\n/)) {
+  for (const line of text.replace(/^\uFEFF/, '').split(/\r?\n/)) {
     const cm = /^\\c\s+(\d+)/.exec(line)
     if (cm) {
       flush()
@@ -135,6 +135,8 @@ export function parseUsfmBook(text) {
       continue
     }
     if (SKIP_LINE.test(line) || chapter === null) continue
+    // \d is a Psalm superscription: verse text when it carries a \v (Ps 3:1), else a bare heading.
+    if (/^\\d\b/.test(line) && !/\\v\s/.test(line)) continue
     // A line may carry several \v markers; text between them belongs to the preceding verse.
     const parts = line.split(/\\v\s+(\d+)(?:-\d+)?\s*/)
     // parts: [before, num, after, num, after, ...]
@@ -152,17 +154,26 @@ export function parseUsfmBook(text) {
 
 // ---------------------------------------------------------------- BLB
 
+/** Remove the HTML fragments embedded in blb.txt: the Psalm superscription's inline verse-number
+ *  link (`<span class=|reftext|><a href=|#|><b>1</b></a>`, deleted with its number) and the stray
+ *  `<p class=...>` paragraph tags. [supplied word] brackets are left alone. */
+export function stripBlbHtml(s) {
+  return s
+    .replace(/<span class=\|reftext\|>.*?<\/a>/g, '')
+    .replace(/<\/?(?:p|span|a|b|br)\b[^>]*>/g, ' ')
+}
+
 /** Parse blb.txt ("Genesis 1:1<TAB>text", header lines, then a "Verse<TAB>…" column row). */
 export function parseBlb(text, resolver) {
   const out = {}
-  for (const line of text.replace(/^﻿/, '').split(/\r?\n/)) {
+  for (const line of text.replace(/^\uFEFF/, '').split(/\r?\n/)) {
     const tab = line.indexOf('\t')
     if (tab < 0) continue
     const m = /^(.+?) (\d+):(\d+)$/.exec(line.slice(0, tab))
     if (!m) continue // header lines and the "Verse<TAB>…" column row
     const code = resolver.byName(m[1])
     const ch = Number(m[2])
-    const verse = unfold(line.slice(tab + 1))
+    const verse = unfold(stripBlbHtml(line.slice(tab + 1)))
     if (!verse) continue // verses the BLB leaves blank (e.g. Matt 17:21) are omitted, like the BSB's
     ;(((out[code] ||= {})[ch]) ||= []).push([Number(m[3]), verse])
   }
@@ -203,6 +214,7 @@ export function parseInterlinear(tsv, resolver) {
     cur.words.sort((a, b) => a.key - b.key || a.tie - b.tie)
     const book = (out[cur.code] ||= {})
     const ch = (book[cur.chapter] ||= {})
+    if (ch[cur.verse]) throw new Error(`duplicate verse ${cur.code} ${cur.chapter}:${cur.verse} in bsb_tables.tsv`)
     ch[cur.verse] = cur.words.map((w) => w.w)
   }
   for (let i = 1; i < lines.length; i++) {

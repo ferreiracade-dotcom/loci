@@ -3,7 +3,9 @@
 // Output: { "<CODE>": { "<chapter>": [[verse, "text"], ...] } }, keyed by the app's own book codes
 // (src/shared/scriptureRef.ts), books in canonical order. Verses are [number, text] pairs, never
 // assumed contiguous (the BSB omits e.g. Matthew 17:21). Plain verse text only: section headings,
-// cross-reference lines, footnote bodies and USFM markup are stripped. Fails loudly on a book
+// cross-reference lines, Psalm 119's acrostic letter headings (\qa), a book's closing \mr note
+// (e.g. the musical direction after Habakkuk 3:19), footnote bodies and USFM markup are stripped.
+// A Psalm superscription (\d) is kept as part of verse 1 when it carries the \v. Fails loudly on a book
 // that is not one of the app's 66.
 //
 //   node tools/bsb-usfm-to-json.mjs [bsb_usfm.zip] [out.json]
