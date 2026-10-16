@@ -89,6 +89,11 @@ const api: LociApi = {
     ipcRenderer.invoke(Channels.getScriptureChapter, translation, book, chapter),
   getScripturePassage: (translation, ref) =>
     ipcRenderer.invoke(Channels.getScripturePassage, translation, ref),
+  getInterlinearChapter: (book, chapter) =>
+    ipcRenderer.invoke(Channels.getInterlinearChapter, book, chapter),
+  searchScriptureTopics: (query, limit) =>
+    ipcRenderer.invoke(Channels.searchScriptureTopics, query, limit),
+  getScriptureTopic: (name) => ipcRenderer.invoke(Channels.getScriptureTopic, name),
   setApiBibleKey: (key) => ipcRenderer.invoke(Channels.setApiBibleKey, key),
   hasApiBibleKey: () => ipcRenderer.invoke(Channels.hasApiBibleKey),
   setEsvKey: (key) => ipcRenderer.invoke(Channels.setEsvKey, key),

@@ -33,6 +33,8 @@ import * as notes from '../services/notes'
 import * as search from '../services/search'
 import * as exporter from '../services/export'
 import * as scripture from '../services/scripture'
+import { getInterlinearChapter } from '../services/interlinear'
+import { searchScriptureTopics, getScriptureTopic } from '../services/scriptureTopics'
 import * as commentary from '../services/commentary'
 import * as commentaryIndex from '../services/commentaryIndex'
 import { SERMON_INDEX_CATALOG, downloadModule } from '../services/sermonIndex'
@@ -350,6 +352,13 @@ export function registerIpc(): void {
   ipcMain.handle(Channels.getScripturePassage, (_e, translation: string, ref: string) =>
     scripture.getPassage(translation, ref)
   )
+  ipcMain.handle(Channels.getInterlinearChapter, (_e, book: string, chapter: number) =>
+    getInterlinearChapter(book, chapter)
+  )
+  ipcMain.handle(Channels.searchScriptureTopics, (_e, query: string, limit?: number) =>
+    searchScriptureTopics(query, limit)
+  )
+  ipcMain.handle(Channels.getScriptureTopic, (_e, name: string) => getScriptureTopic(name))
   ipcMain.handle(Channels.setApiBibleKey, (_e, key: string) => {
     const ok = setApiBibleKey(key)
     scripture.invalidateRegistry()
