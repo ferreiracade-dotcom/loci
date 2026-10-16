@@ -17,6 +17,8 @@ extraResources:
     to: dogmatics
   - from: resources/fathers
     to: fathers
+  - from: resources/scripture
+    to: scripture
 win:
   target:
     - nsis

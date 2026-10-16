@@ -770,7 +770,7 @@ export interface IndexedPage {
   text: string
 }
 
-export type ScriptureProvider = 'free-use' | 'api-bible' | 'esv'
+export type ScriptureProvider = 'bundled' | 'api-bible' | 'esv'
 
 /** A translation offered in the Bible reader's dropdown. */
 export interface ScriptureTranslation {

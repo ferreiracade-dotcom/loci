@@ -87,7 +87,8 @@ export function ScriptureReader({
 
   // Highlighting is allowed only on public-domain providers (their text is licence-safe
   // to store); copyrighted translations show no popover and no saved marks.
-  const canHighlight = translations?.find((t) => t.id === translation)?.provider === 'free-use'
+  // Highlights/quotes are saved only from public-domain BSB (BLB is bundled too, but not citeable here).
+  const canHighlight = translations?.some((t) => t.id === translation && t.id === 'BSB') ?? false
 
   useEffect(() => {
     if (!translation) return
