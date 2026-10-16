@@ -85,10 +85,16 @@ const api: LociApi = {
   exportNotePdf: (opts) => ipcRenderer.invoke(Channels.exportNotePdf, opts),
 
   listScriptureTranslations: () => ipcRenderer.invoke(Channels.listScriptureTranslations),
-  getScriptureChapter: (translation, book, chapter) =>
-    ipcRenderer.invoke(Channels.getScriptureChapter, translation, book, chapter),
+  getScriptureChapter: (translation, book, chapter, opts) =>
+    ipcRenderer.invoke(Channels.getScriptureChapter, translation, book, chapter, opts),
+  getScriptureAudio: (book, chapter) => ipcRenderer.invoke(Channels.getScriptureAudio, book, chapter),
   getScripturePassage: (translation, ref) =>
     ipcRenderer.invoke(Channels.getScripturePassage, translation, ref),
+  getInterlinearChapter: (book, chapter) =>
+    ipcRenderer.invoke(Channels.getInterlinearChapter, book, chapter),
+  searchScriptureTopics: (query, limit) =>
+    ipcRenderer.invoke(Channels.searchScriptureTopics, query, limit),
+  getScriptureTopic: (name) => ipcRenderer.invoke(Channels.getScriptureTopic, name),
   setApiBibleKey: (key) => ipcRenderer.invoke(Channels.setApiBibleKey, key),
   hasApiBibleKey: () => ipcRenderer.invoke(Channels.hasApiBibleKey),
   setEsvKey: (key) => ipcRenderer.invoke(Channels.setEsvKey, key),

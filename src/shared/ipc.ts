@@ -80,7 +80,11 @@ export const Channels = {
 
   listScriptureTranslations: 'scripture:listTranslations',
   getScriptureChapter: 'scripture:getChapter',
+  getScriptureAudio: 'scripture:getAudio',
   getScripturePassage: 'scripture:getPassage',
+  getInterlinearChapter: 'scripture:getInterlinearChapter',
+  searchScriptureTopics: 'scripture:searchTopics',
+  getScriptureTopic: 'scripture:getTopic',
   setApiBibleKey: 'scripture:setApiBibleKey',
   hasApiBibleKey: 'scripture:hasApiBibleKey',
   setEsvKey: 'scripture:setEsvKey',
@@ -370,15 +374,25 @@ export interface LociApi {
   getScriptureChapter(
     translation: string,
     book: string,
-    chapter: number
+    chapter: number,
+    /** audio:false skips the background BSB audio fetch (bulk indexing, hovers). */
+    opts?: { audio?: boolean }
   ): Promise<ScripturePassage | null>
+  /** BSB narration links for a chapter (cached, else one deduped fetch); [] when unavailable. */
+  getScriptureAudio(book: string, chapter: number): Promise<ScriptureAudioTrack[]>
   /** Resolve a reference string (e.g. "Rom 3:28") to just its verse(s), for hover/click. */
   getScripturePassage(translation: string, ref: string): Promise<ScripturePassage | null>
+  /** BSB word-level interlinear for a chapter (bundled, offline). */
+  getInterlinearChapter(book: string, chapter: number): Promise<InterlinearChapter | null>
+  /** Search the bundled topical index by topic name (prefix matches first). */
+  searchScriptureTopics(query: string, limit?: number): Promise<ScriptureTopicHit[]>
+  /** One topic's references, or null if unknown. */
+  getScriptureTopic(name: string): Promise<ScriptureTopic | null>
   setApiBibleKey(key: string): Promise<boolean>
   hasApiBibleKey(): Promise<boolean>
   setEsvKey(key: string): Promise<boolean>
   hasEsvKey(): Promise<boolean>
-  /** Save a verse-range highlight as a citeable Scripture quote (BSB/public-domain only). */
+  /** Save a verse-range highlight as a citeable Scripture quote (bundled public-domain translations: BSB, BLB). */
   addScriptureHighlight(input: NewScriptureHighlight): Promise<Quote>
   /** Existing highlights for a chapter, for re-highlighting on return. */
   listScriptureHighlights(
@@ -770,7 +784,7 @@ export interface IndexedPage {
   text: string
 }
 
-export type ScriptureProvider = 'free-use' | 'api-bible' | 'esv'
+export type ScriptureProvider = 'bundled' | 'api-bible' | 'esv'
 
 /** A translation offered in the Bible reader's dropdown. */
 export interface ScriptureTranslation {
@@ -796,6 +810,40 @@ export interface ScriptureAudioTrack {
   label: string
   /** Direct MP3 URL. */
   url: string
+}
+
+/** One original-language word of the BSB interlinear. */
+export interface InterlinearWord {
+  /** Original (Hebrew/Greek) word. */
+  o: string
+  /** Transliteration. */
+  t: string
+  /** Strong's number, e.g. "H7225" / "G976"; "" when none. */
+  s: string
+  /** Short parsing. */
+  p: string
+  /** BSB English for this word. */
+  e: string
+}
+export interface InterlinearVerse {
+  verse: number
+  words: InterlinearWord[]
+}
+export interface InterlinearChapter {
+  /** USFM book code. */
+  book: string
+  chapter: number
+  /** Verses in ascending verse order; empty when the chapter has no interlinear data. */
+  verses: InterlinearVerse[]
+}
+export interface ScriptureTopicHit {
+  name: string
+  refCount: number
+}
+export interface ScriptureTopic {
+  name: string
+  /** Reference strings as the topical index gives them, e.g. "Exodus 17:12". */
+  refs: string[]
 }
 
 /** A chapter (for the reader) or a referenced slice (for hover/click). */

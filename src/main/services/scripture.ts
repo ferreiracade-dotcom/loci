@@ -1,3 +1,6 @@
+import { app } from 'electron'
+import { existsSync, readFileSync } from 'fs'
+import { join } from 'path'
 import { getDb } from '../db/connection'
 import { getApiBibleKey, getEsvKey } from './config'
 import { bookByCode, parseReference, refLabel } from '../../shared/scriptureRef'
@@ -12,7 +15,7 @@ import type {
 /** Normalized result of fetching/caching a single chapter. */
 interface LoadedChapter {
   verses: ScriptureVerse[]
-  /** Narrated readings, when the provider offers audio (free-use only so far). */
+  /** Narrated readings, when available (bundled BSB, from helloao). */
   audio?: ScriptureAudioTrack[]
 }
 
@@ -25,23 +28,65 @@ interface RegEntry {
   name: string
   abbr: string
   provider: ScriptureProvider
-  /** Translation/version id at the provider (Free-Use code; resolved bibleId; '' for ESV). */
+  /** Translation/version id at the provider (bundled file id; resolved bibleId; '' for ESV). */
   providerId: string
-  cachePolicy: 'full' | 'session'
+  cachePolicy: 'full' | 'session' | 'bundled'
   copyright: string | null
 }
 
-const FREE_USE: RegEntry[] = [
+// Translations that ship inside the installer (resources/scripture/<ID>.json). They read fully
+// offline and never touch scripture_cache; bible.helloao.org is used only for BSB audio links.
+const BUNDLED: RegEntry[] = [
   {
     id: 'BSB',
     name: 'Berean Standard Bible',
     abbr: 'BSB',
-    provider: 'free-use',
+    provider: 'bundled',
     providerId: 'BSB',
-    cachePolicy: 'full',
+    cachePolicy: 'bundled',
     copyright: 'Berean Standard Bible (BSB). Public domain. berean.bible'
+  },
+  {
+    id: 'BLB',
+    name: 'Berean Literal Bible',
+    abbr: 'BLB',
+    provider: 'bundled',
+    providerId: 'BLB',
+    cachePolicy: 'bundled',
+    copyright:
+      'Berean Literal Bible (BLB). Public domain. Berean Bible Translation Committee, literalbible.com (draft).'
   }
 ]
+
+/** Where the shipped Scripture files are: the installer's resources, or the repository. */
+export function bundledScriptureDir(): string {
+  return app.isPackaged
+    ? join(process.resourcesPath, 'scripture')
+    : join(app.getAppPath(), 'resources', 'scripture')
+}
+
+type BundledBook = Record<string, [number, string][]>
+const bundledFiles = new Map<string, Record<string, BundledBook>>()
+
+/** Load a shipped translation once (lazily) and keep it in memory; null if missing/unreadable. */
+function bundledFile(id: string): Record<string, BundledBook> | null {
+  const hit = bundledFiles.get(id)
+  if (hit) return hit
+  try {
+    const path = join(bundledScriptureDir(), id + '.json')
+    if (!existsSync(path)) return null
+    const data = JSON.parse(readFileSync(path, 'utf8')) as Record<string, BundledBook>
+    bundledFiles.set(id, data)
+    return data
+  } catch {
+    return null
+  }
+}
+
+function bundledVerses(id: string, code: string, chapter: number): ScriptureVerse[] {
+  const rows = bundledFile(id)?.[code]?.[String(chapter)]
+  return (rows ?? []).map(([verse, text]) => ({ verse, text }))
+}
 
 // Copyrighted translations we try to light up from an API.Bible key. The bibleId is
 // resolved from the account's catalog at runtime (the key's Starter plan picks decide
@@ -76,12 +121,12 @@ export function invalidateRegistry(): void {
 }
 
 /**
- * Translations available with no network round-trip: public-domain BSB always, plus ESV when
+ * Translations available with no network round-trip: bundled public-domain BSB and BLB always, plus ESV when
  * its key is set (the ESV entry is static). Only API.Bible versions (NKJV/NASB) need a catalog
- * lookup, so reading BSB or ESV must never wait on {@link getRegistry}.
+ * lookup, so reading BSB, BLB or ESV must never wait on {@link getRegistry}.
  */
 function instantRegistry(): RegEntry[] {
-  const out: RegEntry[] = [...FREE_USE]
+  const out: RegEntry[] = [...BUNDLED]
   if (getEsvKey()) out.push(ESV_ENTRY)
   return out
 }
@@ -94,7 +139,7 @@ async function getRegistry(): Promise<RegEntry[]> {
   if (registryInFlight && resolvedSig === sig) return registryInFlight
   resolvedSig = sig
   const p = (async () => {
-    const out: RegEntry[] = [...FREE_USE]
+    const out: RegEntry[] = [...BUNDLED]
     if (apiBibleKey) out.push(...(await resolveApiBible(apiBibleKey)))
     if (esvKey) out.push(ESV_ENTRY)
     return out
@@ -124,7 +169,7 @@ export async function listTranslations(): Promise<ScriptureTranslation[]> {
   return (await getRegistry()).map(toPublic)
 }
 
-// ---- Free Use Bible API (bible.helloao.org) — no key, fully cacheable ----
+// ---- Free Use Bible API (bible.helloao.org) — BSB narrated-audio links only ----
 
 const FU_BASE = 'https://bible.helloao.org'
 
@@ -135,14 +180,7 @@ interface FuBook {
 interface FuBooksResponse {
   books?: FuBook[]
 }
-type FuVerseContent = string | { text?: string }
-interface FuContentItem {
-  type?: string
-  number?: number
-  content?: FuVerseContent[]
-}
 interface FuChapterResponse {
-  chapter?: { content?: FuContentItem[] }
   /** Map of reader id → MP3 URL for this chapter, e.g. { david: "https://…/david.mp3" }. */
   thisChapterAudioLinks?: Record<string, string>
 }
@@ -169,51 +207,34 @@ function fuAudioTracks(links: Record<string, string> | undefined): ScriptureAudi
 // Map our canonical 1-66 order to the provider's book id, per translation (cached in memory).
 const fuBooksCache = new Map<string, Map<number, string>>()
 
-async function fuBookId(translationId: string, code: string): Promise<string> {
+async function fuBookId(translationId: string, code: string, signal?: AbortSignal): Promise<string> {
   const def = bookByCode(code)
   if (!def) return code
   let map = fuBooksCache.get(translationId)
   if (!map) {
     map = new Map<number, string>()
     try {
-      const res = await fetch(`${FU_BASE}/api/${translationId}/books.json`)
-      if (res.ok) {
-        const data = (await res.json()) as FuBooksResponse | FuBook[]
-        const arr = Array.isArray(data) ? data : (data.books ?? [])
-        for (const b of arr) if (typeof b.order === 'number' && b.id) map.set(b.order, b.id)
-      }
+      const res = await fetch(`${FU_BASE}/api/${translationId}/books.json`, { signal })
+      if (!res.ok) throw new Error(`Free Use Bible API ${res.status}`)
+      const data = (await res.json()) as FuBooksResponse | FuBook[]
+      const arr = Array.isArray(data) ? data : (data.books ?? [])
+      for (const b of arr) if (typeof b.order === 'number' && b.id) map.set(b.order, b.id)
+      fuBooksCache.set(translationId, map)
     } catch {
-      /* fall back to the USFM code below */
+      /* fall back to the USFM code below; a failed lookup is not cached */
     }
-    fuBooksCache.set(translationId, map)
   }
   return map.get(def.order) ?? code
 }
 
-function flattenVerse(content: FuVerseContent[] | undefined): string {
-  if (!content) return ''
-  const parts: string[] = []
-  for (const c of content) {
-    if (typeof c === 'string') parts.push(c)
-    else if (c && typeof c.text === 'string') parts.push(c.text)
-  }
-  return parts.join(' ').replace(/\s+/g, ' ').trim()
-}
-
-async function fuChapter(translationId: string, code: string, chapter: number): Promise<LoadedChapter> {
-  const bookId = await fuBookId(translationId, code)
-  const res = await fetch(`${FU_BASE}/api/${translationId}/${bookId}/${chapter}.json`)
+/** Narrated-reading links for a BSB chapter from helloao; throws on any failure (caller swallows). */
+async function fuAudio(code: string, chapter: number): Promise<ScriptureAudioTrack[]> {
+  const signal = AbortSignal.timeout(4000)
+  const bookId = await fuBookId('BSB', code, signal)
+  const res = await fetch(`${FU_BASE}/api/BSB/${bookId}/${chapter}.json`, { signal })
   if (!res.ok) throw new Error(`Free Use Bible API ${res.status}`)
   const data = (await res.json()) as FuChapterResponse
-  const verses: ScriptureVerse[] = []
-  for (const item of data.chapter?.content ?? []) {
-    if (item?.type === 'verse' && typeof item.number === 'number') {
-      const text = flattenVerse(item.content)
-      if (text) verses.push({ verse: item.number, text })
-    }
-  }
-  const audio = fuAudioTracks(data.thisChapterAudioLinks)
-  return audio.length ? { verses, audio } : { verses }
+  return fuAudioTracks(data.thisChapterAudioLinks)
 }
 
 // API.Bible and ESV text endpoints return a chapter as plain text with inline verse
@@ -256,7 +277,7 @@ async function resolveApiBible(key: string): Promise<RegEntry[]> {
   try {
     const res = await fetch(`${AB_BASE}/bibles?language=eng`, {
       headers: { 'api-key': key },
-      // Never let a slow/unreachable catalog hang the resolution; the free-use registry still works.
+      // Never let a slow/unreachable catalog hang the resolution; the bundled registry still works.
       signal: AbortSignal.timeout(8000)
     })
     if (res.ok) bibles = ((await res.json()) as AbBiblesResponse).data ?? []
@@ -322,8 +343,8 @@ async function esvChapter(code: string, chapter: number): Promise<LoadedChapter>
 
 async function fetchChapter(entry: RegEntry, code: string, chapter: number): Promise<LoadedChapter> {
   switch (entry.provider) {
-    case 'free-use':
-      return fuChapter(entry.providerId, code, chapter)
+    case 'bundled':
+      return { verses: bundledVerses(entry.providerId, code, chapter) }
     case 'api-bible':
       return apiBibleChapter(entry.providerId, code, chapter)
     case 'esv':
@@ -359,7 +380,63 @@ function writeCache(translation: string, book: string, chapter: number, loaded: 
 // Session-only cache for copyrighted translations (never persisted, per ABS/Crossway terms).
 const sessionCache = new Map<string, LoadedChapter>()
 
-async function loadChapter(entry: RegEntry, code: string, chapter: number): Promise<LoadedChapter> {
+/** True when a cached row carries an `audio` key (legacy rows without it retry once). */
+function cachedAudio(code: string, chapter: number): { has: boolean; audio: ScriptureAudioTrack[] } {
+  try {
+    const cached = readCache('BSB', code, chapter)
+    if (cached && 'audio' in cached) return { has: true, audio: cached.audio ?? [] }
+  } catch {
+    /* db unavailable: treat as uncached */
+  }
+  return { has: false, audio: [] }
+}
+
+const audioInFlight = new Map<string, Promise<ScriptureAudioTrack[]>>()
+
+/** One deduped background fetch of a BSB chapter's audio links; resolves [] on any failure and
+ *  caches only a success (as an audio-only scripture_cache row). Never rejects. */
+function fetchBsbAudio(code: string, chapter: number): Promise<ScriptureAudioTrack[]> {
+  const key = `${code}:${chapter}`
+  const running = audioInFlight.get(key)
+  if (running) return running
+  const p = (async () => {
+    try {
+      const audio = await fuAudio(code, chapter)
+      writeCache('BSB', code, chapter, { verses: [], audio })
+      return audio
+    } catch {
+      return []
+    } finally {
+      audioInFlight.delete(key)
+    }
+  })()
+  audioInFlight.set(key, p)
+  return p
+}
+
+/** BSB narration for a chapter: cached links, else the (deduped) fetch; [] when unavailable. */
+export async function getAudio(book: string, chapter: number): Promise<ScriptureAudioTrack[]> {
+  const def = bookByCode(book)
+  if (!def || chapter < 1 || chapter > def.chapters) return []
+  const c = cachedAudio(def.code, chapter)
+  return c.has ? c.audio : fetchBsbAudio(def.code, chapter)
+}
+
+async function loadChapter(
+  entry: RegEntry,
+  code: string,
+  chapter: number,
+  audioWanted: boolean
+): Promise<LoadedChapter | null> {
+  if (entry.cachePolicy === 'bundled') {
+    // Bundled text never comes from scripture_cache (old helloao rows are audio sources only).
+    const verses = bundledVerses(entry.providerId, code, chapter)
+    if (!verses.length) return null // missing/unreadable data must not look like an empty chapter
+    if (entry.id !== 'BSB') return { verses }
+    const c = cachedAudio(code, chapter)
+    if (!c.has && audioWanted) void fetchBsbAudio(code, chapter) // background; never awaited
+    return c.audio.length ? { verses, audio: c.audio } : { verses }
+  }
   const key = `${entry.id}:${code}:${chapter}`
   if (entry.cachePolicy === 'full') {
     const cached = readCache(entry.id, code, chapter)
@@ -380,7 +457,8 @@ async function loadChapter(entry: RegEntry, code: string, chapter: number): Prom
 export async function getChapter(
   translation: string,
   book: string,
-  chapter: number
+  chapter: number,
+  opts: { audio?: boolean } = {}
 ): Promise<ScripturePassage | null> {
   const def = bookByCode(book)
   if (!def) return null
@@ -394,7 +472,9 @@ export async function getChapter(
     entry = reg.find((r) => r.id === translation) ?? reg[0]
   }
   if (!entry) return null
-  const { verses, audio } = await loadChapter(entry, def.code, chapter)
+  const loaded = await loadChapter(entry, def.code, chapter, opts.audio !== false)
+  if (!loaded) return null
+  const { verses, audio } = loaded
   return {
     translation: entry.id,
     translationName: entry.name,
@@ -416,7 +496,7 @@ export async function getPassage(
 ): Promise<ScripturePassage | null> {
   const parsed = parseReference(ref)
   if (!parsed) return null
-  const chap = await getChapter(translation, parsed.book, parsed.chapter)
+  const chap = await getChapter(translation, parsed.book, parsed.chapter, { audio: false })
   if (!chap) return null
   const start = parsed.verseStart
   if (start == null) return chap

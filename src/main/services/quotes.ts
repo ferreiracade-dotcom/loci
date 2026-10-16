@@ -3,6 +3,8 @@ import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from '
 import { dirname, join } from 'path'
 import { getDb } from '../db/connection'
 import { localVaultDir } from './config'
+import { isCiteableTranslation } from './citeable'
+export { isCiteableTranslation }
 import * as search from './search'
 import * as fathers from './fathers'
 import {
@@ -646,9 +648,12 @@ function upsertScriptureBlock(
  * Save a verse-range highlight as a citeable Scripture quote (no book_id). The verse text is
  * stored and auto-homed into the per-book scripture note under its chapter section — the
  * location-anchored analog of a PDF highlight. Restricted by the caller to public-domain
- * translations (BSB), so storing the text is licence-safe.
+ * translations (BSB, BLB), so storing the text is licence-safe.
  */
 export function addScriptureQuote(input: NewScriptureHighlight): Quote {
+  if (!isCiteableTranslation(input.translation)) {
+    throw new Error('Only bundled public-domain translations can be saved as quotes')
+  }
   const vault = localVaultDir()
   if (!vault) throw new Error('No vault')
   const def = bookByCode(input.book)

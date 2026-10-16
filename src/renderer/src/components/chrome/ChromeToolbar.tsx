@@ -121,8 +121,13 @@ function useChapterAudio(tab: Tab | undefined): boolean {
     let alive = true
     const [t, book, chapter] = key.split('|')
     void api
-      .getScriptureChapter(t, book, Number(chapter))
-      .then((p) => alive && setHas({ key, value: !!p?.audio?.length }))
+      .getScriptureChapter(t, book, Number(chapter), { audio: false })
+      .then(async (p) => {
+        let value = !!p?.audio?.length
+        // Bundled BSB text carries only cached narration; ask for it (one deduped fetch) otherwise.
+        if (p && !value && t === 'BSB') value = (await api.getScriptureAudio(book, Number(chapter))).length > 0
+        if (alive) setHas({ key, value })
+      })
       .catch(() => alive && setHas({ key, value: false }))
     return () => {
       alive = false

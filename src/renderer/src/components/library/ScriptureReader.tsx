@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Loader2, X } from 'lucide-react'
 import { api } from '../../lib/api'
 import { useStore } from '../../store/useStore'
 import { bookByCode, bookByOrder } from '@shared/scriptureRef'
-import type { ScripturePassage, ScriptureTranslation } from '@shared/ipc'
+import type { ScriptureAudioTrack, ScripturePassage, ScriptureTranslation } from '@shared/ipc'
 import { ScriptureAudio } from './ScriptureAudio'
 
 interface Props {
@@ -76,6 +76,7 @@ export function ScriptureReader({
   onClose
 }: Props) {
   const [passage, setPassage] = useState<ScripturePassage | null>(null)
+  const [audio, setAudio] = useState<ScriptureAudioTrack[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [quoted, setQuoted] = useState<Map<number, string>>(new Map())
@@ -85,26 +86,38 @@ export function ScriptureReader({
   const addScriptureHighlight = useStore((s) => s.addScriptureHighlight)
   const noteReloadToken = useStore((s) => s.noteReloadToken)
 
-  // Highlighting is allowed only on public-domain providers (their text is licence-safe
-  // to store); copyrighted translations show no popover and no saved marks.
-  const canHighlight = translations?.find((t) => t.id === translation)?.provider === 'free-use'
+  // Highlighting and quotes are allowed for the bundled public-domain translations (BSB, BLB), which
+  // are licence-safe to store; keyed translations (ESV etc.) show no popover or saved marks.
+  const canHighlight =
+    translations?.some((t) => t.id === translation && t.provider === 'bundled') ?? false
 
   useEffect(() => {
     if (!translation) return
     let alive = true
     setLoading(true)
     setError(null)
+    setAudio([])
     void api
       .getScriptureChapter(translation, book, chapter)
       .then((p) => {
         if (!alive) return
         setPassage(p)
+        setAudio(p?.audio ?? [])
         setLoading(false)
         if (!p) setError('Could not load this chapter.')
         // Opportunistically index this chapter for search, same as PDFs index on open — only
-        // for the public-domain translation (canHighlight is already this exact distinction).
-        else if (canHighlight) {
-          void api.indexScriptureChapter(translation, book, chapter, p.reference, p.verses)
+        // for BSB (the main process indexes BSB only; BLB is highlightable but not text-searched).
+        else {
+          if (translation === 'BSB') void api.indexScriptureChapter(translation, book, chapter, p.reference, p.verses)
+          // BSB narration arrives from a background fetch; merge it in when it lands.
+          if (translation === 'BSB' && !p.audio?.length) {
+            void api
+              .getScriptureAudio(book, chapter)
+              .then((audio) => {
+                if (alive && audio.length) setAudio(audio)
+              })
+              .catch(() => {})
+          }
         }
       })
       .catch(() => {
@@ -254,8 +267,8 @@ export function ScriptureReader({
         )}
       </div>
 
-      {passage?.audio && passage.audio.length > 0 && (
-        <ScriptureAudio key={`${book}:${chapter}`} tracks={passage.audio} chapterKey={`${book}:${chapter}`} />
+      {translation === 'BSB' && audio.length > 0 && (
+        <ScriptureAudio key={`${book}:${chapter}`} tracks={audio} chapterKey={`${book}:${chapter}`} />
       )}
 
       <div

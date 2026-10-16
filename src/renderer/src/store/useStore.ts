@@ -1254,7 +1254,7 @@ export const useStore = create<Store>((set, get) => {
         for (let c = 1; c <= b.chapters; c++) {
           if (bibleIndexCancel) break chapters
           try {
-            const passage = await api.getScriptureChapter('BSB', b.code, c)
+            const passage = await api.getScriptureChapter('BSB', b.code, c, { audio: false })
             if (passage) {
               await api.indexScriptureChapter('BSB', b.code, c, passage.reference, passage.verses)
             }
@@ -1263,8 +1263,7 @@ export const useStore = create<Store>((set, get) => {
           }
           done++
           set({ bibleIndexing: { done, total } })
-          // Already-cached chapters return almost instantly; this only meaningfully throttles
-          // the (much slower) network fetches on a fresh pass, to stay a polite API citizen.
+          // Bundled chapters return instantly; the short pause just keeps the UI responsive during the pass.
           await new Promise((r) => setTimeout(r, 40))
         }
       }
