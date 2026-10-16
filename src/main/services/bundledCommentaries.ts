@@ -3,6 +3,7 @@ import { createHash } from 'crypto'
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from 'fs'
 import { join } from 'path'
 import { commentaryVaultDir, readConfig, writeConfig } from './config'
+import { catalogEntryForFile, moduleFileName } from './sermonIndex'
 
 // Commentaries Loci ships itself: books converted for Loci that no site publishes in a usable
 // form (Philippi on Romans, re-OCR'd from the 1878 scans; the Lutheran Commentary on the New
@@ -14,7 +15,11 @@ import { commentaryVaultDir, readConfig, writeConfig } from './config'
 // module with each entry put back at its passage by tools/luther-sermonindex-to-md.py; Gerhard on 1 and 2 Peter and on Matthew, and
 // Calov's Biblia Illustrata on both Testaments, Heshusius on 1 Corinthians, and Melanchthon's
 // commentaries, from The Faith Received's Latin and its machine translation, by tools/tfr-to-md.py,
-// tools/tfr-books-to-md.py and tools/tfr-quotes-to-md.py). They live in resources/commentaries
+// tools/tfr-books-to-md.py and tools/tfr-quotes-to-md.py; Kretzmann's Popular Commentary, the
+// project owner's curated Markdown conversion). Two SermonIndex MyBible modules ship as they are,
+// as .SQLite3 files: Lenski's New Testament commentary (SI-LENSKI) and Keil & Delitzsch on the Old
+// Testament (SI-KD). Their titles come from the SermonIndex catalog, not BUNDLED_COMMENTARIES,
+// and the folder sync indexes them like a downloaded module. They live in resources/commentaries
 // in the repository and in the installer's resources; on first launch each is copied into the
 // vault's commentaries folder, where the folder sync indexes it and vault sync carries it to
 // every device, like any other commentary file.
@@ -54,6 +59,7 @@ export const BUNDLED_COMMENTARIES: Record<string, { title: string; author: strin
     author: 'Philip Melanchthon'
   },
   'Luther Selected Passages.md': { title: "Luther's Commentary on Selected Bible Passages", author: 'Martin Luther' },
+  'Kretzmann Popular Commentary.md': { title: 'The Popular Commentary of the Bible', author: 'Paul E. Kretzmann' },
   'Hengstenberg.md': {
     title: "Hengstenberg's Commentaries on Psalms, Ecclesiastes, Ezekiel, John and Revelation",
     author: 'E. W. Hengstenberg'
@@ -75,7 +81,27 @@ const sha256 = (path: string): string => createHash('sha256').update(readFileSyn
  *  vault copy while that copy is still the one Loci put there, never one the user has changed.
  *  Returns the file names copied or updated. */
 export function installBundledCommentaries(sourceDir: string = bundledCommentaryDir()): string[] {
+  skipSupersededShipped(sourceDir, commentaryVaultDir())
   return installBundled(sourceDir, commentaryVaultDir(), 'bundledCommentaries', 'bundledCommentaryHashes')
+}
+
+/** Record, without copying, shipped files the user has already dealt with another way: a
+ *  SermonIndex module whose default install was recorded (so deleting it stays deleted), and the
+ *  Kretzmann Markdown when the optional SI-POPULAR module is already in the vault (no duplicate). */
+function skipSupersededShipped(sourceDir: string, folder: string): void {
+  if (!existsSync(sourceDir)) return
+  const config = readConfig()
+  const done = new Set(config.bundledCommentaries ?? [])
+  const defaults = new Set(config.sermonIndexDefaults ?? (config.sermonIndexDefaultsInstalled ? ['lenski'] : []))
+  const before = done.size
+  for (const fileName of readdirSync(sourceDir)) {
+    if (done.has(fileName) || existsSync(join(folder, fileName))) continue
+    const entry = catalogEntryForFile(fileName)
+    if (entry && defaults.has(entry.slug)) done.add(fileName)
+    if (fileName === 'Kretzmann Popular Commentary.md' && existsSync(join(folder, moduleFileName('SI-POPULAR'))))
+      done.add(fileName)
+  }
+  if (done.size !== before) writeConfig({ bundledCommentaries: [...done] })
 }
 
 /** The same once-only, update-while-untouched install, for any shipped folder (the dogmatics

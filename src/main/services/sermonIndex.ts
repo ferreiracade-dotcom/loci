@@ -69,7 +69,12 @@ export async function downloadModule(
 }
 
 /** Modules installed by default. Lenski replaces the PDF-converted copy; Keil & Delitzsch is
- *  the Old Testament counterpart. Adding a slug here installs it on the next launch. */
+ *  the Old Testament counterpart. Loci now ships both inside the installer (resources/commentaries,
+ *  copied into the vault by installBundledCommentaries, which runs first), so this is the online
+ *  fallback: when the bundled file is already in the vault under the same name, nothing is
+ *  downloaded. Kretzmann's Popular Commentary ('popular') is also shipped, as Markdown, and is
+ *  deliberately not a default, so it is offered for download only. Adding a slug here installs it
+ *  on the next launch. */
 const DEFAULT_MODULES = ['lenski', 'keildelitzsch']
 
 /** Install each default module once, unless the vault already has it (e.g. synced from another

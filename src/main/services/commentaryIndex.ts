@@ -154,6 +154,7 @@ export async function syncCommentaryFolder(): Promise<void> {
   const mtimes = loadIndexMtimes()
   let changed = false
   for (const fileName of files) {
+    await new Promise((r) => setImmediate(r)) // let the main process breathe between files
     const storedPath = `commentaries/${fileName}`
     let mtime: number
     try {
