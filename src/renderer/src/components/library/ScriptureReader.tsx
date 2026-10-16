@@ -106,9 +106,9 @@ export function ScriptureReader({
         setLoading(false)
         if (!p) setError('Could not load this chapter.')
         // Opportunistically index this chapter for search, same as PDFs index on open — only
-        // for the public-domain translation (canHighlight is already this exact distinction).
+        // for BSB (the main process indexes BSB only; BLB is highlightable but not text-searched).
         else {
-          if (canHighlight) void api.indexScriptureChapter(translation, book, chapter, p.reference, p.verses)
+          if (translation === 'BSB') void api.indexScriptureChapter(translation, book, chapter, p.reference, p.verses)
           // BSB narration arrives from a background fetch; merge it in when it lands.
           if (translation === 'BSB' && !p.audio?.length) {
             void api
