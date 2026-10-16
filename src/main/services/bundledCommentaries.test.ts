@@ -96,6 +96,30 @@ describe('installBundledCommentaries', () => {
     expect(installBundledCommentaries(shipped)).toEqual(['SI-LENSKI.commentaries.SQLite3'])
   })
 
+  it('does not bring back a default SermonIndex module the user already removed', () => {
+    writeFileSync(join(shipped, 'SI-LENSKI.commentaries.SQLite3'), 'module bytes')
+    writeFileSync(join(shipped, 'SI-KD.commentaries.SQLite3'), 'kd bytes')
+    writeConfig({ sermonIndexDefaults: ['lenski'] })
+    expect(installBundledCommentaries(shipped).sort()).toEqual(['Philippi Romans.md', 'SI-KD.commentaries.SQLite3'])
+    expect(existsSync(vaultFile('SI-LENSKI.commentaries.SQLite3'))).toBe(false)
+    expect(readConfig().bundledCommentaries).toContain('SI-LENSKI.commentaries.SQLite3')
+  })
+
+  it('treats the legacy single flag as Lenski having been installed', () => {
+    writeFileSync(join(shipped, 'SI-LENSKI.commentaries.SQLite3'), 'module bytes')
+    writeConfig({ sermonIndexDefaultsInstalled: true })
+    expect(installBundledCommentaries(shipped)).toEqual(['Philippi Romans.md'])
+  })
+
+  it('skips Kretzmann when the optional Popular module is already in the vault', () => {
+    writeFileSync(join(shipped, 'Kretzmann Popular Commentary.md'), '# Genesis\n## 1:1\nx')
+    mkdirSync(join(dataDir, 'vault', 'commentaries'), { recursive: true })
+    writeFileSync(vaultFile('SI-POPULAR.commentaries.SQLite3'), 'popular')
+    installBundledCommentaries(shipped)
+    expect(existsSync(vaultFile('Kretzmann Popular Commentary.md'))).toBe(false)
+    expect(readConfig().bundledCommentaries).toContain('Kretzmann Popular Commentary.md')
+  })
+
   it('does nothing when there is no shipped folder', () => {
     expect(installBundledCommentaries(join(dataDir, 'missing'))).toEqual([])
   })

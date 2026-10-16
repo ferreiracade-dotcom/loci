@@ -3,6 +3,7 @@ import { createHash } from 'crypto'
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from 'fs'
 import { join } from 'path'
 import { commentaryVaultDir, readConfig, writeConfig } from './config'
+import { catalogEntryForFile, moduleFileName } from './sermonIndex'
 
 // Commentaries Loci ships itself: books converted for Loci that no site publishes in a usable
 // form (Philippi on Romans, re-OCR'd from the 1878 scans; the Lutheran Commentary on the New
@@ -80,7 +81,27 @@ const sha256 = (path: string): string => createHash('sha256').update(readFileSyn
  *  vault copy while that copy is still the one Loci put there, never one the user has changed.
  *  Returns the file names copied or updated. */
 export function installBundledCommentaries(sourceDir: string = bundledCommentaryDir()): string[] {
+  skipSupersededShipped(sourceDir, commentaryVaultDir())
   return installBundled(sourceDir, commentaryVaultDir(), 'bundledCommentaries', 'bundledCommentaryHashes')
+}
+
+/** Record, without copying, shipped files the user has already dealt with another way: a
+ *  SermonIndex module whose default install was recorded (so deleting it stays deleted), and the
+ *  Kretzmann Markdown when the optional SI-POPULAR module is already in the vault (no duplicate). */
+function skipSupersededShipped(sourceDir: string, folder: string): void {
+  if (!existsSync(sourceDir)) return
+  const config = readConfig()
+  const done = new Set(config.bundledCommentaries ?? [])
+  const defaults = new Set(config.sermonIndexDefaults ?? (config.sermonIndexDefaultsInstalled ? ['lenski'] : []))
+  const before = done.size
+  for (const fileName of readdirSync(sourceDir)) {
+    if (done.has(fileName) || existsSync(join(folder, fileName))) continue
+    const entry = catalogEntryForFile(fileName)
+    if (entry && defaults.has(entry.slug)) done.add(fileName)
+    if (fileName === 'Kretzmann Popular Commentary.md' && existsSync(join(folder, moduleFileName('SI-POPULAR'))))
+      done.add(fileName)
+  }
+  if (done.size !== before) writeConfig({ bundledCommentaries: [...done] })
 }
 
 /** The same once-only, update-while-untouched install, for any shipped folder (the dogmatics
