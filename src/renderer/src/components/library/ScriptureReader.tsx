@@ -85,9 +85,8 @@ export function ScriptureReader({
   const addScriptureHighlight = useStore((s) => s.addScriptureHighlight)
   const noteReloadToken = useStore((s) => s.noteReloadToken)
 
-  // Highlighting is allowed only on public-domain providers (their text is licence-safe
-  // to store); copyrighted translations show no popover and no saved marks.
-  // Highlights/quotes are saved only from public-domain BSB (BLB is bundled too, but not citeable here).
+  // Highlighting and quotes are allowed only for BSB (public domain and licence-safe to store);
+  // BLB is bundled too but not citeable here, and keyed translations show no popover or saved marks.
   const canHighlight = translations?.some((t) => t.id === translation && t.id === 'BSB') ?? false
 
   useEffect(() => {
@@ -104,8 +103,17 @@ export function ScriptureReader({
         if (!p) setError('Could not load this chapter.')
         // Opportunistically index this chapter for search, same as PDFs index on open — only
         // for the public-domain translation (canHighlight is already this exact distinction).
-        else if (canHighlight) {
-          void api.indexScriptureChapter(translation, book, chapter, p.reference, p.verses)
+        else {
+          if (canHighlight) void api.indexScriptureChapter(translation, book, chapter, p.reference, p.verses)
+          // BSB narration arrives from a background fetch; merge it in when it lands.
+          if (translation === 'BSB' && !p.audio?.length) {
+            void api
+              .getScriptureAudio(book, chapter)
+              .then((audio) => {
+                if (alive && audio.length) setPassage((cur) => (cur && cur.book === book && cur.chapter === chapter ? { ...cur, audio } : cur))
+              })
+              .catch(() => {})
+          }
         }
       })
       .catch(() => {

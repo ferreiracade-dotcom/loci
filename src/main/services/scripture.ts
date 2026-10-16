@@ -28,7 +28,7 @@ interface RegEntry {
   name: string
   abbr: string
   provider: ScriptureProvider
-  /** Translation/version id at the provider (Free-Use code; resolved bibleId; '' for ESV). */
+  /** Translation/version id at the provider (bundled file id; resolved bibleId; '' for ESV). */
   providerId: string
   cachePolicy: 'full' | 'session' | 'bundled'
   copyright: string | null
@@ -180,14 +180,7 @@ interface FuBook {
 interface FuBooksResponse {
   books?: FuBook[]
 }
-type FuVerseContent = string | { text?: string }
-interface FuContentItem {
-  type?: string
-  number?: number
-  content?: FuVerseContent[]
-}
 interface FuChapterResponse {
-  chapter?: { content?: FuContentItem[] }
   /** Map of reader id → MP3 URL for this chapter, e.g. { david: "https://…/david.mp3" }. */
   thisChapterAudioLinks?: Record<string, string>
 }
@@ -284,7 +277,7 @@ async function resolveApiBible(key: string): Promise<RegEntry[]> {
   try {
     const res = await fetch(`${AB_BASE}/bibles?language=eng`, {
       headers: { 'api-key': key },
-      // Never let a slow/unreachable catalog hang the resolution; the free-use registry still works.
+      // Never let a slow/unreachable catalog hang the resolution; the bundled registry still works.
       signal: AbortSignal.timeout(8000)
     })
     if (res.ok) bibles = ((await res.json()) as AbBiblesResponse).data ?? []
@@ -387,29 +380,62 @@ function writeCache(translation: string, book: string, chapter: number, loaded: 
 // Session-only cache for copyrighted translations (never persisted, per ABS/Crossway terms).
 const sessionCache = new Map<string, LoadedChapter>()
 
-/**
- * BSB audio, best-effort: tracks from a cached helloao row (the old verse-text cache rows carry them
- * too), else one short-timeout fetch cached as an audio-only row. Any failure returns no audio and
- * caches nothing, so offline reading never throws or surfaces an error.
- */
-async function bsbAudio(code: string, chapter: number): Promise<ScriptureAudioTrack[] | undefined> {
+/** True when a cached row carries an `audio` key (legacy rows without it retry once). */
+function cachedAudio(code: string, chapter: number): { has: boolean; audio: ScriptureAudioTrack[] } {
   try {
     const cached = readCache('BSB', code, chapter)
-    if (cached) return cached.audio?.length ? cached.audio : undefined
-    const audio = await fuAudio(code, chapter)
-    writeCache('BSB', code, chapter, { verses: [], audio })
-    return audio.length ? audio : undefined
+    if (cached && 'audio' in cached) return { has: true, audio: cached.audio ?? [] }
   } catch {
-    return undefined
+    /* db unavailable: treat as uncached */
   }
+  return { has: false, audio: [] }
 }
 
-async function loadChapter(entry: RegEntry, code: string, chapter: number): Promise<LoadedChapter> {
+const audioInFlight = new Map<string, Promise<ScriptureAudioTrack[]>>()
+
+/** One deduped background fetch of a BSB chapter's audio links; resolves [] on any failure and
+ *  caches only a success (as an audio-only scripture_cache row). Never rejects. */
+function fetchBsbAudio(code: string, chapter: number): Promise<ScriptureAudioTrack[]> {
+  const key = `${code}:${chapter}`
+  const running = audioInFlight.get(key)
+  if (running) return running
+  const p = (async () => {
+    try {
+      const audio = await fuAudio(code, chapter)
+      writeCache('BSB', code, chapter, { verses: [], audio })
+      return audio
+    } catch {
+      return []
+    } finally {
+      audioInFlight.delete(key)
+    }
+  })()
+  audioInFlight.set(key, p)
+  return p
+}
+
+/** BSB narration for a chapter: cached links, else the (deduped) fetch; [] when unavailable. */
+export async function getAudio(book: string, chapter: number): Promise<ScriptureAudioTrack[]> {
+  const def = bookByCode(book)
+  if (!def || chapter < 1 || chapter > def.chapters) return []
+  const c = cachedAudio(def.code, chapter)
+  return c.has ? c.audio : fetchBsbAudio(def.code, chapter)
+}
+
+async function loadChapter(
+  entry: RegEntry,
+  code: string,
+  chapter: number,
+  audioWanted: boolean
+): Promise<LoadedChapter | null> {
   if (entry.cachePolicy === 'bundled') {
-    // Bundled text never comes from scripture_cache (old helloao rows are audio-only sources now).
+    // Bundled text never comes from scripture_cache (old helloao rows are audio sources only).
     const verses = bundledVerses(entry.providerId, code, chapter)
-    const audio = entry.id === 'BSB' && verses.length ? await bsbAudio(code, chapter) : undefined
-    return audio ? { verses, audio } : { verses }
+    if (!verses.length) return null // missing/unreadable data must not look like an empty chapter
+    if (entry.id !== 'BSB') return { verses }
+    const c = cachedAudio(code, chapter)
+    if (!c.has && audioWanted) void fetchBsbAudio(code, chapter) // background; never awaited
+    return c.audio.length ? { verses, audio: c.audio } : { verses }
   }
   const key = `${entry.id}:${code}:${chapter}`
   if (entry.cachePolicy === 'full') {
@@ -431,7 +457,8 @@ async function loadChapter(entry: RegEntry, code: string, chapter: number): Prom
 export async function getChapter(
   translation: string,
   book: string,
-  chapter: number
+  chapter: number,
+  opts: { audio?: boolean } = {}
 ): Promise<ScripturePassage | null> {
   const def = bookByCode(book)
   if (!def) return null
@@ -445,7 +472,9 @@ export async function getChapter(
     entry = reg.find((r) => r.id === translation) ?? reg[0]
   }
   if (!entry) return null
-  const { verses, audio } = await loadChapter(entry, def.code, chapter)
+  const loaded = await loadChapter(entry, def.code, chapter, opts.audio !== false)
+  if (!loaded) return null
+  const { verses, audio } = loaded
   return {
     translation: entry.id,
     translationName: entry.name,
@@ -467,7 +496,7 @@ export async function getPassage(
 ): Promise<ScripturePassage | null> {
   const parsed = parseReference(ref)
   if (!parsed) return null
-  const chap = await getChapter(translation, parsed.book, parsed.chapter)
+  const chap = await getChapter(translation, parsed.book, parsed.chapter, { audio: false })
   if (!chap) return null
   const start = parsed.verseStart
   if (start == null) return chap

@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+const appPath = vi.hoisted(() => ({ value: process.cwd() }))
+
 // Fake scripture_cache: rows keyed by translation/book/chapter.
 const rows = new Map<string, string>()
 const db = {
@@ -17,10 +19,12 @@ const db = {
 vi.mock('../db/connection', () => ({ getDb: () => db }))
 vi.mock('./config', () => ({ getEsvKey: () => '', getApiBibleKey: () => '' }))
 vi.mock('electron', () => ({
-  app: { isPackaged: false, getAppPath: () => process.cwd() }
+  app: { isPackaged: false, getAppPath: () => appPath.value }
 }))
 
-import { getChapter, getPassage, listTranslations } from './scripture'
+import { getAudio, getChapter, getPassage, listTranslations } from './scripture'
+
+const flush = (): Promise<void> => new Promise((r) => setTimeout(r, 0))
 
 const fetchMock = vi.fn()
 
@@ -92,27 +96,63 @@ describe('bundled Scripture', () => {
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
-  it('fetches BSB audio once when online and caches it as an audio-only row', async () => {
+  const online = (): void => {
     fetchMock.mockImplementation(async (url: string) => {
       if (url.endsWith('books.json')) return { ok: true, json: async () => ({ books: [] }) }
-      return {
-        ok: true,
-        json: async () => ({ thisChapterAudioLinks: { david: 'https://x/david.mp3' } })
-      }
+      return { ok: true, json: async () => ({ thisChapterAudioLinks: { david: 'https://x/david.mp3' } }) }
     })
-    const ch = await getChapter('BSB', 'JHN', 3)
-    expect(ch?.audio?.[0]).toMatchObject({ reader: 'david', url: 'https://x/david.mp3' })
-    expect(JSON.parse(rows.get('BSB/JHN/3')!).verses).toEqual([])
-    const calls = fetchMock.mock.calls.length
-    await getChapter('BSB', 'JHN', 3)
-    expect(fetchMock.mock.calls.length).toBe(calls) // served from cache
+  }
+
+  it('returns immediately without waiting on a never-resolving audio fetch', async () => {
+    fetchMock.mockReturnValue(new Promise(() => {})) // leaves JHN 5 in flight; other tests use other chapters
+    const ch = await getChapter('BSB', 'JHN', 5)
+    expect(ch?.verses.length).toBeGreaterThan(30)
+    expect(ch?.audio).toBeUndefined()
   })
 
-  it('treats a non-ok audio response as no audio and caches nothing', async () => {
+  it('fetches audio in the background once, deduped, and caches it as an audio-only row', async () => {
+    online()
+    const [a, b] = await Promise.all([getChapter('BSB', 'JHN', 3), getChapter('BSB', 'JHN', 3)])
+    expect(a?.audio).toBeUndefined()
+    expect(b?.audio).toBeUndefined()
+    const audio = await getAudio('JHN', 3)
+    expect(audio[0]).toMatchObject({ reader: 'david', url: 'https://x/david.mp3' })
+    expect(fetchMock.mock.calls.filter(([u]) => !String(u).endsWith('books.json'))).toHaveLength(1)
+    expect(JSON.parse(rows.get('BSB/JHN/3')!).verses).toEqual([])
+    const again = await getChapter('BSB', 'JHN', 3)
+    expect(again?.audio).toHaveLength(1)
+  })
+
+  it('does not fetch when audio:false (indexing, hovers)', async () => {
+    online()
+    await getChapter('BSB', 'JHN', 3, { audio: false })
+    await getPassage('BSB', 'John 3:16')
+    await flush()
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('getAudio returns [] on failure and caches nothing', async () => {
+    expect(await getAudio('JHN', 3)).toEqual([])
     fetchMock.mockResolvedValue({ ok: false, status: 500, json: async () => ({}) })
-    const ch = await getChapter('BSB', 'JHN', 3)
-    expect(ch?.verses.length).toBeGreaterThan(0)
-    expect(ch?.audio).toBeUndefined()
+    expect(await getAudio('JHN', 4)).toEqual([])
     expect(rows.size).toBe(0)
+  })
+
+  it('retries once for a legacy cached row without an audio key', async () => {
+    rows.set('BSB/JHN/3', JSON.stringify([{ verse: 1, text: 'old' }]))
+    online()
+    expect(await getAudio('JHN', 3)).toHaveLength(1)
+  })
+
+  it('returns null when the bundled file is missing (never an empty chapter)', async () => {
+    vi.resetModules()
+    appPath.value = '/nonexistent'
+    try {
+      const fresh = await import('./scripture')
+      expect(await fresh.getChapter('BSB', 'JHN', 3)).toBeNull()
+      expect(await fresh.getChapter('BLB', 'JHN', 3)).toBeNull()
+    } finally {
+      appPath.value = process.cwd()
+    }
   })
 })

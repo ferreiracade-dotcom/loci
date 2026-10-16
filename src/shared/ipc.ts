@@ -80,6 +80,7 @@ export const Channels = {
 
   listScriptureTranslations: 'scripture:listTranslations',
   getScriptureChapter: 'scripture:getChapter',
+  getScriptureAudio: 'scripture:getAudio',
   getScripturePassage: 'scripture:getPassage',
   getInterlinearChapter: 'scripture:getInterlinearChapter',
   searchScriptureTopics: 'scripture:searchTopics',
@@ -373,8 +374,12 @@ export interface LociApi {
   getScriptureChapter(
     translation: string,
     book: string,
-    chapter: number
+    chapter: number,
+    /** audio:false skips the background BSB audio fetch (bulk indexing, hovers). */
+    opts?: { audio?: boolean }
   ): Promise<ScripturePassage | null>
+  /** BSB narration links for a chapter (cached, else one deduped fetch); [] when unavailable. */
+  getScriptureAudio(book: string, chapter: number): Promise<ScriptureAudioTrack[]>
   /** Resolve a reference string (e.g. "Rom 3:28") to just its verse(s), for hover/click. */
   getScripturePassage(translation: string, ref: string): Promise<ScripturePassage | null>
   /** BSB word-level interlinear for a chapter (bundled, offline). */

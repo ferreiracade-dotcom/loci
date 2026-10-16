@@ -346,8 +346,11 @@ export function registerIpc(): void {
 
   // --- Scripture (Phase 8) ---
   ipcMain.handle(Channels.listScriptureTranslations, () => scripture.listTranslations())
-  ipcMain.handle(Channels.getScriptureChapter, (_e, translation: string, book: string, chapter: number) =>
-    scripture.getChapter(translation, book, chapter)
+  ipcMain.handle(Channels.getScriptureChapter, (_e, translation: string, book: string, chapter: number, opts?: { audio?: boolean }) =>
+    scripture.getChapter(translation, book, chapter, opts)
+  )
+  ipcMain.handle(Channels.getScriptureAudio, (_e, book: string, chapter: number) =>
+    scripture.getAudio(book, chapter)
   )
   ipcMain.handle(Channels.getScripturePassage, (_e, translation: string, ref: string) =>
     scripture.getPassage(translation, ref)

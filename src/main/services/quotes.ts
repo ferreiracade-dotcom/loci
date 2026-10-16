@@ -649,6 +649,7 @@ function upsertScriptureBlock(
  * translations (BSB), so storing the text is licence-safe.
  */
 export function addScriptureQuote(input: NewScriptureHighlight): Quote {
+  if (input.translation !== 'BSB') throw new Error('Only BSB passages can be saved as quotes')
   const vault = localVaultDir()
   if (!vault) throw new Error('No vault')
   const def = bookByCode(input.book)
