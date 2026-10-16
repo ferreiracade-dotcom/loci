@@ -13,7 +13,8 @@ vi.mock('electron', () => ({
 }))
 
 import { BUNDLED_COMMENTARIES, installBundledCommentaries } from './bundledCommentaries'
-import { writeConfig } from './config'
+import { readConfig, writeConfig } from './config'
+import { catalogEntryForFile } from './sermonIndex'
 import { parseCommentaryMarkdown } from './commentaryMarkdown'
 import { validateSource } from './commentaryValidate'
 import { VERSE_COUNTS } from '../../shared/versification'
@@ -85,6 +86,16 @@ describe('installBundledCommentaries', () => {
     expect(installBundledCommentaries(shipped)).toEqual(['Philippi Romans.md'])
   })
 
+  it('copies and records shipped MyBible .SQLite3 modules like Markdown files', () => {
+    writeFileSync(join(shipped, 'SI-LENSKI.commentaries.SQLite3'), 'module bytes')
+    expect(installBundledCommentaries(shipped).sort()).toEqual(['Philippi Romans.md', 'SI-LENSKI.commentaries.SQLite3'])
+    expect(readFileSync(vaultFile('SI-LENSKI.commentaries.SQLite3'), 'utf8')).toBe('module bytes')
+    expect(readConfig().bundledCommentaries).toContain('SI-LENSKI.commentaries.SQLite3')
+    expect(installBundledCommentaries(shipped)).toEqual([])
+    writeFileSync(join(shipped, 'SI-LENSKI.commentaries.SQLite3'), 'module bytes v2')
+    expect(installBundledCommentaries(shipped)).toEqual(['SI-LENSKI.commentaries.SQLite3'])
+  })
+
   it('does nothing when there is no shipped folder', () => {
     expect(installBundledCommentaries(join(dataDir, 'missing'))).toEqual([])
   })
@@ -93,6 +104,20 @@ describe('installBundledCommentaries', () => {
 describe('the commentaries Loci ships', () => {
   const dir = join(__dirname, '..', '..', '..', 'resources', 'commentaries')
   const files = readdirSync(dir).filter((f) => /\.md$/i.test(f))
+
+  it('ships Lenski and Keil & Delitzsch as MyBible modules named as the SermonIndex catalog expects', () => {
+    for (const f of ['SI-LENSKI.commentaries.SQLite3', 'SI-KD.commentaries.SQLite3']) {
+      expect(existsSync(join(dir, f)), f).toBe(true)
+      expect(catalogEntryForFile(f), f).toBeDefined()
+    }
+  })
+
+  it('has metadata for Kretzmann', () => {
+    expect(BUNDLED_COMMENTARIES['Kretzmann Popular Commentary.md']).toEqual({
+      title: 'The Popular Commentary of the Bible',
+      author: 'Paul E. Kretzmann'
+    })
+  })
 
   it('each has a title and author', () => {
     for (const f of files) expect(BUNDLED_COMMENTARIES[f], f).toBeDefined()

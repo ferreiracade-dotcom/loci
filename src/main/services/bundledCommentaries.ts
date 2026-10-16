@@ -14,7 +14,11 @@ import { commentaryVaultDir, readConfig, writeConfig } from './config'
 // module with each entry put back at its passage by tools/luther-sermonindex-to-md.py; Gerhard on 1 and 2 Peter and on Matthew, and
 // Calov's Biblia Illustrata on both Testaments, Heshusius on 1 Corinthians, and Melanchthon's
 // commentaries, from The Faith Received's Latin and its machine translation, by tools/tfr-to-md.py,
-// tools/tfr-books-to-md.py and tools/tfr-quotes-to-md.py). They live in resources/commentaries
+// tools/tfr-books-to-md.py and tools/tfr-quotes-to-md.py; Kretzmann's Popular Commentary, the
+// project owner's curated Markdown conversion). Two SermonIndex MyBible modules ship as they are,
+// as .SQLite3 files: Lenski's New Testament commentary (SI-LENSKI) and Keil & Delitzsch on the Old
+// Testament (SI-KD). Their titles come from the SermonIndex catalog, not BUNDLED_COMMENTARIES,
+// and the folder sync indexes them like a downloaded module. They live in resources/commentaries
 // in the repository and in the installer's resources; on first launch each is copied into the
 // vault's commentaries folder, where the folder sync indexes it and vault sync carries it to
 // every device, like any other commentary file.
@@ -54,6 +58,7 @@ export const BUNDLED_COMMENTARIES: Record<string, { title: string; author: strin
     author: 'Philip Melanchthon'
   },
   'Luther Selected Passages.md': { title: "Luther's Commentary on Selected Bible Passages", author: 'Martin Luther' },
+  'Kretzmann Popular Commentary.md': { title: 'The Popular Commentary of the Bible', author: 'Paul E. Kretzmann' },
   'Hengstenberg.md': {
     title: "Hengstenberg's Commentaries on Psalms, Ecclesiastes, Ezekiel, John and Revelation",
     author: 'E. W. Hengstenberg'
