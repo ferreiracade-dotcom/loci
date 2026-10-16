@@ -86,9 +86,10 @@ export function ScriptureReader({
   const addScriptureHighlight = useStore((s) => s.addScriptureHighlight)
   const noteReloadToken = useStore((s) => s.noteReloadToken)
 
-  // Highlighting and quotes are allowed only for BSB (public domain and licence-safe to store);
-  // BLB is bundled too but not citeable here, and keyed translations show no popover or saved marks.
-  const canHighlight = translations?.some((t) => t.id === translation && t.id === 'BSB') ?? false
+  // Highlighting and quotes are allowed for the bundled public-domain translations (BSB, BLB), which
+  // are licence-safe to store; keyed translations (ESV etc.) show no popover or saved marks.
+  const canHighlight =
+    translations?.some((t) => t.id === translation && t.provider === 'bundled') ?? false
 
   useEffect(() => {
     if (!translation) return

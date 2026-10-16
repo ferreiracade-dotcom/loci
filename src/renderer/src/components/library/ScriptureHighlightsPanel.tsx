@@ -63,7 +63,7 @@ export function ScriptureHighlightsPanel() {
   if (books.length === 0) {
     return (
       <div className="quotes-empty">
-        Select verse text in a BSB chapter and pick a colour to capture it here. Each highlight
+        Select verse text in a BSB or BLB chapter and pick a colour to capture it here. Each highlight
         becomes a card you can tag, comment on, copy, or drag into a note.
       </div>
     )

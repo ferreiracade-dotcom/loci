@@ -392,7 +392,7 @@ export interface LociApi {
   hasApiBibleKey(): Promise<boolean>
   setEsvKey(key: string): Promise<boolean>
   hasEsvKey(): Promise<boolean>
-  /** Save a verse-range highlight as a citeable Scripture quote (BSB/public-domain only). */
+  /** Save a verse-range highlight as a citeable Scripture quote (bundled public-domain translations: BSB, BLB). */
   addScriptureHighlight(input: NewScriptureHighlight): Promise<Quote>
   /** Existing highlights for a chapter, for re-highlighting on return. */
   listScriptureHighlights(
