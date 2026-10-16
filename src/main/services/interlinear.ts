@@ -22,10 +22,11 @@ function loadBook(code: string): InterlinearBook {
   return data
 }
 
-/** Interlinear words for a chapter grouped by verse (ascending); null for an unknown book/chapter. */
+/** Interlinear words for a chapter grouped by verse (ascending); null for an unknown book or a chapter outside the book (matches scripture.getChapter);
+ *  an in-range chapter with no bundled data yields empty verses. */
 export function getInterlinearChapter(book: string, chapter: number): InterlinearChapter | null {
   const def = bookByCode(String(book ?? ''))
-  if (!def || !Number.isInteger(chapter) || chapter < 1) return null
+  if (!def || !Number.isInteger(chapter) || chapter < 1 || chapter > def.chapters) return null
   const rows = loadBook(def.code)[String(chapter)] ?? {}
   const verses = Object.keys(rows)
     .map(Number)

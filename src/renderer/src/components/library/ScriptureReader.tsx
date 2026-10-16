@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Loader2, X } from 'lucide-react'
 import { api } from '../../lib/api'
 import { useStore } from '../../store/useStore'
 import { bookByCode, bookByOrder } from '@shared/scriptureRef'
-import type { ScripturePassage, ScriptureTranslation } from '@shared/ipc'
+import type { ScriptureAudioTrack, ScripturePassage, ScriptureTranslation } from '@shared/ipc'
 import { ScriptureAudio } from './ScriptureAudio'
 
 interface Props {
@@ -76,6 +76,7 @@ export function ScriptureReader({
   onClose
 }: Props) {
   const [passage, setPassage] = useState<ScripturePassage | null>(null)
+  const [audio, setAudio] = useState<ScriptureAudioTrack[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [quoted, setQuoted] = useState<Map<number, string>>(new Map())
@@ -110,7 +111,7 @@ export function ScriptureReader({
             void api
               .getScriptureAudio(book, chapter)
               .then((audio) => {
-                if (alive && audio.length) setPassage((cur) => (cur && cur.book === book && cur.chapter === chapter ? { ...cur, audio } : cur))
+                if (alive && audio.length) setAudio(audio)
               })
               .catch(() => {})
           }
@@ -263,8 +264,8 @@ export function ScriptureReader({
         )}
       </div>
 
-      {passage?.audio && passage.audio.length > 0 && (
-        <ScriptureAudio key={`${book}:${chapter}`} tracks={passage.audio} chapterKey={`${book}:${chapter}`} />
+      {audio.length > 0 && (
+        <ScriptureAudio key={`${book}:${chapter}`} tracks={audio} chapterKey={`${book}:${chapter}`} />
       )}
 
       <div

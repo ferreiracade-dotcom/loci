@@ -25,13 +25,14 @@ describe('getInterlinearChapter', () => {
   it('accepts lowercase codes', () => {
     expect(getInterlinearChapter('gen', 1)?.book).toBe('GEN')
   })
-  it('returns empty verses for a missing chapter or missing book file', () => {
-    expect(getInterlinearChapter('GEN', 99)?.verses).toEqual([])
+  it('returns empty verses for an in-range chapter or book file with no data', () => {
+    expect(getInterlinearChapter('GEN', 2)?.verses).toEqual([])
     expect(getInterlinearChapter('EXO', 1)?.verses).toEqual([])
   })
   it('returns null for unknown book or bad chapter', () => {
     expect(getInterlinearChapter('ZZZ', 1)).toBeNull()
     expect(getInterlinearChapter('GEN', 0)).toBeNull()
+    expect(getInterlinearChapter('GEN', 99)).toBeNull()
     expect(getInterlinearChapter('GEN', 1.5)).toBeNull()
   })
 })
